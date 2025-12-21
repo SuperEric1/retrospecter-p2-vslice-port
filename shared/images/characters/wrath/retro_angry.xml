@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="retro_angry.png">
+	<!-- Created with Adobe Animate version 23.0.2.103 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Retro Down Note instance 10000" x="0" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10001" x="0" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10002" x="858" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10003" x="858" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10004" x="1716" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10005" x="1716" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10006" x="2574" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10007" x="2574" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10008" x="3432" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10009" x="3432" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10010" x="4290" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10011" x="4290" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10012" x="4290" y="0" width="858" height="735"/>
+	<SubTexture name="Retro Down Note instance 10013" x="4290" y="0" width="858" height="735"/>
+	<SubTexture name="Retro ANGRY LEFT0000" x="5148" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0001" x="5148" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0002" x="5989" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0003" x="5989" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0004" x="6830" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0005" x="6830" y="0" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0006" x="0" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0007" x="0" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0008" x="841" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0009" x="841" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0010" x="1682" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0011" x="1682" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0012" x="1682" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY LEFT0013" x="1682" y="810" width="841" height="810"/>
+	<SubTexture name="Retro ANGRY RIGHT0000" x="2523" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0001" x="2523" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0002" x="3305" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0003" x="3305" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0004" x="4087" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0005" x="4087" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0006" x="4869" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0007" x="4869" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0008" x="5651" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0009" x="5651" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0010" x="6433" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0011" x="6433" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0012" x="6433" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY RIGHT0013" x="6433" y="810" width="782" height="825"/>
+	<SubTexture name="Retro ANGRY UP0000" x="7215" y="810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0001" x="7215" y="810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0002" x="0" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0003" x="0" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0004" x="719" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0005" x="719" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0006" x="1438" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0007" x="1438" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0008" x="2157" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0009" x="2157" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0010" x="2876" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0011" x="2876" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0012" x="2876" y="1810" width="719" height="1000"/>
+	<SubTexture name="Retro ANGRY UP0013" x="2876" y="1810" width="719" height="1000"/>
+	<SubTexture name="Enough0000" x="3595" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0001" x="4264" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0002" x="4264" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0003" x="4933" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0004" x="5602" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0005" x="6271" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0006" x="6940" y="1810" width="669" height="931"/>
+	<SubTexture name="Enough0007" x="0" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0008" x="669" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0009" x="669" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0010" x="1338" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0011" x="1338" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0012" x="2007" y="2810" width="669" height="931"/>
+	<SubTexture name="Enough0013" x="2007" y="2810" width="669" height="931"/>
+</TextureAtlas>

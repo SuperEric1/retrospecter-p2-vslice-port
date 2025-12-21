@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="dozirc_zzz.png" width="7559" height="1962">
+	<SubTexture name="Dozirc snore0001" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0002" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0003" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0004" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0005" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0006" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0007" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0008" x="1" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0009" x="6721" y="930" width="837" height="1031" frameX="-91" frameY="-20" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0010" x="6721" y="930" width="837" height="1031" frameX="-91" frameY="-20" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0011" x="5881" y="924" width="837" height="1022" frameX="-91" frameY="-29" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0012" x="5881" y="924" width="837" height="1022" frameX="-91" frameY="-29" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0013" x="5041" y="914" width="837" height="1017" frameX="-91" frameY="-34" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0014" x="5041" y="914" width="837" height="1017" frameX="-91" frameY="-34" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0015" x="4201" y="901" width="837" height="990" frameX="-91" frameY="-61" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0016" x="4201" y="901" width="837" height="990" frameX="-91" frameY="-61" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0017" x="3361" y="854" width="837" height="954" frameX="-91" frameY="-97" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0018" x="3361" y="854" width="837" height="954" frameX="-91" frameY="-97" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0019" x="4201" y="1" width="837" height="897" frameX="-91" frameY="-154" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0020" x="4201" y="1" width="837" height="897" frameX="-91" frameY="-154" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0021" x="2521" y="1" width="837" height="848" frameX="-91" frameY="-203" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0022" x="2521" y="1" width="837" height="848" frameX="-91" frameY="-203" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0023" x="2521" y="1" width="837" height="848" frameX="-91" frameY="-203" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0024" x="2521" y="1" width="837" height="848" frameX="-91" frameY="-203" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0025" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0026" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0027" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0028" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0029" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0030" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0031" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0032" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0033" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0034" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0035" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0036" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0037" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0038" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0039" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0040" x="841" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0041" x="3361" y="1" width="837" height="850" frameX="-91" frameY="-201" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0042" x="3361" y="1" width="837" height="850" frameX="-91" frameY="-201" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0043" x="5041" y="1" width="837" height="910" frameX="-91" frameY="-141" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0044" x="5041" y="1" width="837" height="910" frameX="-91" frameY="-141" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0045" x="5881" y="1" width="837" height="920" frameX="-91" frameY="-131" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0046" x="5881" y="1" width="837" height="920" frameX="-91" frameY="-131" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0047" x="6721" y="1" width="837" height="926" frameX="-91" frameY="-125" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0048" x="6721" y="1" width="837" height="926" frameX="-91" frameY="-125" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0049" x="1" y="851" width="837" height="932" frameX="-91" frameY="-119" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0050" x="1" y="851" width="837" height="932" frameX="-91" frameY="-119" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0051" x="841" y="851" width="837" height="939" frameX="-91" frameY="-112" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0052" x="841" y="851" width="837" height="939" frameX="-91" frameY="-112" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0053" x="1681" y="851" width="837" height="941" frameX="-91" frameY="-110" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0054" x="1681" y="851" width="837" height="941" frameX="-91" frameY="-110" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0055" x="2521" y="852" width="837" height="941" frameX="-91" frameY="-110" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0056" x="2521" y="852" width="837" height="941" frameX="-91" frameY="-110" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0057" x="1681" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0058" x="1681" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0059" x="1681" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+	<SubTexture name="Dozirc snore0060" x="1681" y="1" width="837" height="847" frameX="-91" frameY="-204" frameWidth="1000" frameHeight="1051"/>
+</TextureAtlas>

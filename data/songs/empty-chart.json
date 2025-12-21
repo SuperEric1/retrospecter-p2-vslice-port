@@ -1,0 +1,19 @@
+{
+	"events": [
+		
+	],
+	"notes": {
+		"easy": [
+			
+		], 
+		"normal": [
+			
+		], 
+		"hard": [
+      
+		]
+	},
+	"scrollSpeed": {"easy": 1, "normal": 1, "hard": 1},
+	"generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
+	"version": "2.0.0"
+}

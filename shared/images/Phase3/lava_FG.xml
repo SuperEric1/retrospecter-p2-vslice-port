@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="lava_FG.png">
+<SubTexture name="lava_FG0000" x="0" y="300" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0001" x="0" y="300" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0002" x="0" y="300" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0003" x="0" y="1486" width="2967" height="295" frameX="0" frameY="-7" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0004" x="0" y="1486" width="2967" height="295" frameX="0" frameY="-7" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0005" x="0" y="1486" width="2967" height="295" frameX="0" frameY="-7" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0006" x="0" y="1781" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0007" x="0" y="1781" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0008" x="0" y="1781" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0009" x="0" y="2075" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0010" x="0" y="2075" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0011" x="0" y="2075" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0012" x="0" y="0" width="2967" height="300" frameX="0" frameY="-2" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0013" x="0" y="0" width="2967" height="300" frameX="0" frameY="-2" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0014" x="0" y="0" width="2967" height="300" frameX="0" frameY="-2" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0015" x="0" y="894" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0016" x="0" y="894" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0017" x="0" y="894" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0018" x="0" y="2952" width="2967" height="290" frameX="0" frameY="-12" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0019" x="0" y="2952" width="2967" height="290" frameX="0" frameY="-12" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0020" x="0" y="2952" width="2967" height="290" frameX="0" frameY="-12" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0021" x="0" y="3813" width="2967" height="283" frameX="0" frameY="-19" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0022" x="0" y="3813" width="2967" height="283" frameX="0" frameY="-19" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0023" x="0" y="3813" width="2967" height="283" frameX="0" frameY="-19" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0024" x="0" y="3529" width="2967" height="284" frameX="0" frameY="-18" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0025" x="0" y="3529" width="2967" height="284" frameX="0" frameY="-18" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0026" x="0" y="3529" width="2967" height="284" frameX="0" frameY="-18" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0027" x="0" y="3242" width="2967" height="287" frameX="0" frameY="-15" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0028" x="0" y="3242" width="2967" height="287" frameX="0" frameY="-15" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0029" x="0" y="3242" width="2967" height="287" frameX="0" frameY="-15" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0030" x="0" y="2663" width="2967" height="293" frameX="0" frameY="-9" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0031" x="0" y="2663" width="2967" height="293" frameX="0" frameY="-9" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0032" x="0" y="2663" width="2967" height="293" frameX="0" frameY="-9" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0033" x="0" y="1190" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0034" x="0" y="1190" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0035" x="0" y="1190" width="2967" height="296" frameX="0" frameY="-6" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0036" x="0" y="597" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0037" x="0" y="597" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0038" x="0" y="597" width="2967" height="297" frameX="0" frameY="-5" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0039" x="0" y="2369" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0040" x="0" y="2369" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+<SubTexture name="lava_FG0041" x="0" y="2369" width="2967" height="294" frameX="0" frameY="-8" frameWidth="3000" frameHeight="339" />
+</TextureAtlas>

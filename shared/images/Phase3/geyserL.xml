@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="geyserL.png">
+<SubTexture name="geyserL0000" x="1036" y="740" width="153" height="139" frameX="-123" frameY="-599" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0001" x="1036" y="740" width="153" height="139" frameX="-123" frameY="-599" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0002" x="995" y="0" width="269" height="674" frameX="-76" frameY="-61" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0003" x="995" y="0" width="269" height="674" frameX="-76" frameY="-61" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0004" x="0" y="0" width="320" height="740" frameX="-40" frameY="0" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0005" x="0" y="0" width="320" height="740" frameX="-40" frameY="0" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0006" x="320" y="0" width="343" height="691" frameX="-20" frameY="-39" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0007" x="320" y="0" width="343" height="691" frameX="-20" frameY="-39" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0008" x="663" y="0" width="332" height="678" frameX="-5" frameY="-63" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0009" x="663" y="0" width="332" height="678" frameX="-5" frameY="-63" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0010" x="663" y="0" width="332" height="678" frameX="-5" frameY="-63" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0011" x="1264" y="0" width="359" height="632" frameX="0" frameY="-108" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0012" x="1264" y="0" width="359" height="632" frameX="0" frameY="-108" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0013" x="1264" y="0" width="359" height="632" frameX="0" frameY="-108" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0014" x="510" y="740" width="188" height="506" frameX="-105" frameY="-236" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0015" x="510" y="740" width="188" height="506" frameX="-105" frameY="-236" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0016" x="145" y="740" width="198" height="514" frameX="-99" frameY="-232" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0017" x="145" y="740" width="198" height="514" frameX="-99" frameY="-232" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0018" x="145" y="740" width="198" height="514" frameX="-99" frameY="-232" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0019" x="343" y="740" width="167" height="512" frameX="-115" frameY="-238" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0020" x="343" y="740" width="167" height="512" frameX="-115" frameY="-238" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0021" x="343" y="740" width="167" height="512" frameX="-115" frameY="-238" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0022" x="849" y="740" width="187" height="472" frameX="-103" frameY="-275" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0023" x="849" y="740" width="187" height="472" frameX="-103" frameY="-275" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0024" x="0" y="740" width="145" height="518" frameX="-119" frameY="-254" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0025" x="0" y="740" width="145" height="518" frameX="-119" frameY="-254" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0026" x="698" y="740" width="151" height="477" frameX="-138" frameY="-281" frameWidth="359" frameHeight="768" />
+<SubTexture name="geyserL0027" x="698" y="740" width="151" height="477" frameX="-138" frameY="-281" frameWidth="359" frameHeight="768" />
+</TextureAtlas>

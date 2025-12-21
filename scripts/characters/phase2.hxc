@@ -1,0 +1,56 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import funkin.play.character.MultiSparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+
+class PhaseTwoCharacter extends MultiSparrowCharacter {
+	var isGfDoingAnim:Bool = false;
+
+	function new() {
+		super('phase2');
+	}
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			if (event.note.noteData.getDirection() == 3 && event.note.isHoldNote && isGfDoingAnim == false) {
+				PlayState.instance.currentStage.getGirlfriend().playAnimation('hair', true);
+				isGfDoingAnim = true;
+				new FlxTimer().start(1.2, function(tmr) {
+					if (PlayState.instance == null) return;
+					isGfDoingAnim = false;
+				});
+			}
+		}
+		super.onNoteHit(event);
+	}
+
+	override public function onUpdate(event):Void {
+    super.onUpdate(event);
+	}
+
+  public function onSongRetry(event):Void {
+    super.onSongRetry(event);
+		isGfDoingAnim = false;
+  }
+
+  function onCreate(event) {
+		super.onCreate(event);
+	}
+
+	public function onDestroy(event):Void {
+		super.onDestroy(event);
+		isGfDoingAnim = false;
+	}
+
+	public function onPause(event) {
+		super.onPause(event);
+	}
+
+	public function onResume(event) {
+		super.onResume(event);
+	}
+}

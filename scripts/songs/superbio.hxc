@@ -1,0 +1,117 @@
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.stage.StageProp;
+import funkin.play.PlayStatePlaylist;
+import funkin.graphics.FunkinSprite;
+import funkin.util.Constants;
+import funkin.ui.FullScreenScaleMode;
+
+class SuperbioSong extends Song
+{
+  var tweens = [];
+  var pausedTweens = [];
+
+  var bgSprite:FunkinSprite;
+
+  public function new()
+  {
+    super('superbio');
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+  }
+
+  public function onStepHit(event) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+
+    if (event.step == 400) {
+      FlxG.camera.flash(0xFFFFFFFF, 1.2);
+    }
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+  }
+
+  public override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    if (PlayState.instance == null) return;
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
+  }
+}

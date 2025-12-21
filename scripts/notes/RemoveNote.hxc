@@ -1,0 +1,43 @@
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.modding.events.HitNoteScriptEvent;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+
+class RemoveNote extends Module {
+	public function new() {
+		super("RemoveNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if (PlayState.instance == null) return;
+		if (event.note.noteData.kind != "none") return;
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		// Pointer to the original onNoteMiss function in source code.
+		// Required when calling source code functions.
+		super.onNoteMiss( event );
+		for ( note in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "none" )
+			{
+				event.note.length = 0;
+				event.note.kill();
+				event.cancel();
+			}
+		}
+	}
+}

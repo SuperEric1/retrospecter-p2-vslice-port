@@ -1,0 +1,106 @@
+{
+  "version": "1.0.0",
+  "name": "Story Zerktro",
+  "assetPath": "characters/wrath/optimized/zerktro-story",
+  "renderType": "multisparrow",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.444,
+  "healthIcon": {
+    "id": "zerktro",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "initial",
+      "prefix": "initial",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [6, 7, 8, 9, 10, 11]
+    },
+    {
+      "name": "transformation",
+      "prefix": "transformation",
+      "assetPath": "characters/wrath/retro-tf",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "roar",
+      "prefix": "roar",
+      "assetPath": "characters/wrath/retro-tf",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "size": 0.5,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "final",
+      "prefix": "final",
+      "offsets": [27, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "static",
+      "prefix": "static",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

@@ -1,0 +1,39 @@
+/**
+ * I found this script on this mod: https://gamebanana.com/mods/511838
+ * Credits to them
+ */
+
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.FlxState;
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.play.PlayState;
+import funkin.Paths;
+import funkin.util.ReflectUtil;
+import funkin.util.Constants;
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+
+class RetroSplashText extends Module
+{
+  public var retroVNUM:String = '1.0.0';
+
+  public function new()
+  {
+    super('RetroSplashText');
+  }
+
+  override function onUpdate(event:UpdateScriptEvent)
+  {
+	  super.onUpdate(event);
+
+      if (ReflectUtil.getClassNameOf(FlxG.state) == "funkin.ui.mainmenu.MainMenuState")
+      {
+          FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port - v" + retroVNUM;
+          FlxG.state.leftWatermarkText.y = FlxG.height - 35;
+      }
+  }
+}

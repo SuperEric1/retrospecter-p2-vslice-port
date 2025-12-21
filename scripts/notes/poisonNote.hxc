@@ -1,0 +1,88 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class poisonNote extends Module {
+	public function new() {
+		super("poison");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+		super.onNoteHit(ev);
+
+		if (PlayState.instance == null) return;
+		if (!ev.note.noteData.getMustHitNote()) return;
+		if (ev.note.noteData.kind != "poison") return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "poison" )
+		{
+      var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			event.note.x += -3;
+			event.note.yOffset += -70;
+
+      if (downscroll) {
+        event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_down' );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left' );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down' );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up' );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right' );
+      } else {
+        event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_up' );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left' );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down' );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up' );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right' );
+      }
+
+			var poisonNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						poisonNote = "purpleScroll";
+					case 1:
+						poisonNote = "blueScroll";
+					case 2:
+						poisonNote = "greenScroll";
+					case 3:
+						poisonNote = "redScroll";
+				}
+
+			event.note.animation.play( poisonNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		for ( poisonNote in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "poison" )
+			{
+        event.cancel();
+        event.stopPropagation();
+			}
+		}
+	}
+}

@@ -1,0 +1,398 @@
+{
+  "version": "1.0.2",
+  "name": "Pride",
+  "props": [
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/background-no-floor",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "bg",
+      "position": [
+        -1814,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 0
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/bg-floor",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "bgf",
+      "position": [
+        -1814,
+        240
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 1
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_4",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar4r",
+      "position": [
+        25,
+        -883
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 3
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_4",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar4l",
+      "position": [
+        -432,
+        -883
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 2
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_3",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar3r",
+      "position": [
+        -2,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.66,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 4
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_3",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar3l",
+      "position": [
+        -1032,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.66,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 3
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_2",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar2r",
+      "position": [
+        418,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.73,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 5
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_2",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar2l",
+      "position": [
+        -1045,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.73,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 4
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_1",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar1r",
+      "position": [
+        768,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.78,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 301
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/izzy_pillar_1",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar1l",
+      "position": [
+        -1405,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.78,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 201
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/foreground_pillar_blur",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar0r",
+      "position": [
+        998,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.84,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 302
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [      ],
+      "assetPath": "pride/foreground_pillar_blur",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "pillar0l",
+      "position": [
+        -1945,
+        -1005
+      ],
+      "scale": 1.1,
+      "scroll": [
+        0.84,
+        0.1
+      ],
+      "startingAnimation": null,
+      "zIndex": 202
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "pride/Stichriol_IzzyBG",
+      "blend": "",
+      "color": "#FFFFFF",
+      "danceEvery": 2,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "stich",
+      "position": [
+        298,
+        106
+      ],
+      "scale": 0.5,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "startingAnimation": "idle",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "Stitchriol BG Idle",
+          "flipX": false,
+          "name": "idle"
+        }
+      ],
+      "zIndex": 2
+    }
+  ],
+  "characters": {
+    "bf": {
+      "alpha": 1,
+      "angle": 0,
+      "cameraOffsets": [
+        -375,
+        -100
+      ],
+      "position": [
+        370.05,
+        823
+      ],
+      "scale": 1.095,
+      "scroll": [
+        0.7,
+        0.1
+      ],
+      "zIndex": 300
+    },
+    "dad": {
+      "alpha": 1,
+      "angle": 0,
+      "cameraOffsets": [
+        -50,
+        -100
+      ],
+      "position": [
+        -370.5,
+        824
+      ],
+      "scale": 1,
+      "scroll": [
+        0.7,
+        0.1
+      ],
+      "zIndex": 200
+    },
+    "gf": {
+      "alpha": 1,
+      "angle": 0,
+      "cameraOffsets": [
+        -1100,
+        -100
+      ],
+      "position": [
+        127,
+        330
+      ],
+      "scale": 0.4,
+      "scroll": [
+        0.6,
+        0.1
+      ],
+      "zIndex": 100
+    }
+  },
+  "cameraZoom": 0.38,
+  "directory": "shared"
+}

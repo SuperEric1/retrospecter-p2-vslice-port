@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Insatian.png" width="8182" height="5245">
+
+	<SubTexture name="Insatian_Idle0001" x="3026" y="4187" width="1046" height="914" frameX="-231" frameY="-211" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0002" x="3026" y="4187" width="1046" height="914" frameX="-231" frameY="-211" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0003" x="1" y="1458" width="1002" height="862" frameX="-240" frameY="-263" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0004" x="1" y="1458" width="1002" height="862" frameX="-240" frameY="-263" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0005" x="6539" y="729" width="992" height="860" frameX="-243" frameY="-265" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0006" x="6539" y="729" width="992" height="860" frameX="-243" frameY="-265" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0007" x="1006" y="1475" width="1026" height="874" frameX="-238" frameY="-251" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0008" x="1006" y="1475" width="1026" height="874" frameX="-238" frameY="-251" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0009" x="4073" y="2376" width="1058" height="899" frameX="-227" frameY="-226" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0010" x="4073" y="2376" width="1058" height="899" frameX="-227" frameY="-226" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0011" x="6792" y="3405" width="1055" height="908" frameX="-232" frameY="-217" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0012" x="6792" y="3405" width="1055" height="908" frameX="-232" frameY="-217" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0013" x="1968" y="4185" width="1055" height="908" frameX="-232" frameY="-217" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0014" x="1968" y="4185" width="1055" height="908" frameX="-232" frameY="-217" frameWidth="1348" frameHeight="1140"/>
+
+	<SubTexture name="Insatian_Down0015" x="5125" y="4304" width="1053" height="940" rotated="true" frameX="-387" frameY="-87" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0016" x="5125" y="4304" width="1053" height="940" rotated="true" frameX="-387" frameY="-87" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0017" x="4075" y="4189" width="1047" height="928" rotated="true" frameX="-392" frameY="-93" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0018" x="4075" y="4189" width="1047" height="928" rotated="true" frameX="-392" frameY="-93" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0019" x="3040" y="1476" width="1044" height="897" rotated="true" frameX="-403" frameY="-96" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0020" x="3040" y="1476" width="1044" height="897" rotated="true" frameX="-403" frameY="-96" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0021" x="4087" y="1476" width="1054" height="897" rotated="true" frameX="-403" frameY="-86" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0022" x="4087" y="1476" width="1054" height="897" rotated="true" frameX="-403" frameY="-86" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0023" x="5144" y="1477" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0024" x="5144" y="1477" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0025" x="6198" y="1592" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0026" x="6198" y="1592" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0027" x="3019" y="2376" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Down0028" x="3019" y="2376" width="1051" height="897" rotated="true" frameX="-403" frameY="-89" frameWidth="1348" frameHeight="1140"/>
+
+	<SubTexture name="Insatian_Left0029" x="1" y="4128" width="984" height="921" frameX="-0" frameY="-198" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0030" x="1" y="4128" width="984" height="921" frameX="-0" frameY="-198" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0031" x="988" y="4160" width="977" height="924" frameX="-8" frameY="-195" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0032" x="988" y="4160" width="977" height="924" frameX="-8" frameY="-195" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0033" x="7252" y="1592" width="929" height="906" frameX="-60" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0034" x="7252" y="1592" width="929" height="906" frameX="-60" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0035" x="3011" y="3276" width="946" height="906" frameX="-43" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0036" x="3011" y="3276" width="946" height="906" frameX="-43" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0037" x="3960" y="3278" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0038" x="3960" y="3278" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0039" x="4904" y="3280" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0040" x="4904" y="3280" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0041" x="5848" y="3395" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Left0042" x="5848" y="3395" width="941" height="906" frameX="-48" frameY="-213" frameWidth="1348" frameHeight="1140"/>
+
+	<SubTexture name="Insatian_Right0043" x="1" y="707" width="935" height="744" frameX="-413" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0044" x="1" y="707" width="935" height="744" frameX="-413" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0045" x="939" y="711" width="928" height="744" frameX="-411" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0046" x="939" y="711" width="928" height="744" frameX="-411" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0047" x="5606" y="729" width="930" height="745" frameX="-373" frameY="-373" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0048" x="5606" y="729" width="930" height="745" frameX="-373" frameY="-373" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0049" x="1870" y="728" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0050" x="1870" y="728" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0051" x="2804" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0052" x="2804" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0053" x="3738" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0054" x="3738" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0055" x="4672" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Right0056" x="4672" y="729" width="931" height="744" frameX="-372" frameY="-374" frameWidth="1348" frameHeight="1140"/>
+
+	<SubTexture name="Insatian_Up0057" x="1" y="1" width="1125" height="703" rotated="true" frameX="-294" frameY="-0" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0058" x="1" y="1" width="1125" height="703" rotated="true" frameX="-294" frameY="-0" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0059" x="1129" y="1" width="1108" height="707" rotated="true" frameX="-295" frameY="-17" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0060" x="1129" y="1" width="1108" height="707" rotated="true" frameX="-295" frameY="-17" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0061" x="2240" y="1" width="1065" height="724" rotated="true" frameX="-287" frameY="-60" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0062" x="2240" y="1" width="1065" height="724" rotated="true" frameX="-287" frameY="-60" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0063" x="3308" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0064" x="3308" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0065" x="4380" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0066" x="4380" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0067" x="5452" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0068" x="5452" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0069" x="6524" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Up0070" x="6524" y="1" width="1069" height="725" rotated="true" frameX="-286" frameY="-56" frameWidth="1348" frameHeight="1140"/>
+
+	<SubTexture name="Insatian_SCREAM0071" x="2035" y="1476" width="1002" height="887" rotated="true" frameX="-192" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0072" x="2035" y="1476" width="1002" height="887" rotated="true" frameX="-192" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0073" x="1005" y="3254" width="1000" height="903" rotated="true" frameX="-176" frameY="-119" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0074" x="1005" y="3254" width="1000" height="903" rotated="true" frameX="-176" frameY="-119" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0075" x="2008" y="3269" width="1000" height="905" rotated="true" frameX="-183" frameY="-119" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0076" x="2008" y="3269" width="1000" height="905" rotated="true" frameX="-183" frameY="-119" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0077" x="2014" y="2366" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0078" x="2014" y="2366" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0079" x="1" y="3223" width="1001" height="902" rotated="true" frameX="-183" frameY="-118" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0080" x="1" y="3223" width="1001" height="902" rotated="true" frameX="-183" frameY="-118" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0081" x="5134" y="2377" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0082" x="5134" y="2377" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0083" x="1006" y="2352" width="1005" height="899" rotated="true" frameX="-186" frameY="-114" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0084" x="1006" y="2352" width="1005" height="899" rotated="true" frameX="-186" frameY="-114" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0085" x="1" y="2323" width="1002" height="897" rotated="true" frameX="-188" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0086" x="1" y="2323" width="1002" height="897" rotated="true" frameX="-188" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0087" x="6139" y="2492" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0088" x="6139" y="2492" width="1002" height="900" rotated="true" frameX="-185" frameY="-117" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0089" x="7144" y="2501" width="1005" height="901" rotated="true" frameX="-184" frameY="-114" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_SCREAM0090" x="7144" y="2501" width="1005" height="901" rotated="true" frameX="-184" frameY="-114" frameWidth="1348" frameHeight="1140"/>
+</TextureAtlas>

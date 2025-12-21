@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="izzy.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="Izzy Alt Idle0000" x="1782" y="0" width="573" height="826" frameX="-33" frameY="-4" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0001" x="1782" y="0" width="573" height="826" frameX="-33" frameY="-4" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0002" x="0" y="0" width="608" height="826" frameX="2" frameY="-4" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0003" x="0" y="0" width="608" height="826" frameX="2" frameY="-4" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0004" x="0" y="826" width="607" height="827" frameX="2" frameY="-3" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0005" x="0" y="826" width="607" height="827" frameX="2" frameY="-3" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0006" x="608" y="0" width="593" height="831" frameX="-11" frameY="1" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0007" x="608" y="0" width="593" height="831" frameX="-11" frameY="1" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0008" x="1201" y="0" width="581" height="832" frameX="-21" frameY="2" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0009" x="1201" y="0" width="581" height="832" frameX="-21" frameY="2" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0010" x="2355" y="0" width="563" height="832" frameX="-39" frameY="2" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0011" x="2355" y="0" width="563" height="832" frameX="-39" frameY="2" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0012" x="0" y="1653" width="563" height="832" frameX="-40" frameY="2" frameWidth="605" frameHeight="829"/>
+	<SubTexture name="Izzy Alt Idle0013" x="0" y="1653" width="563" height="832" frameX="-40" frameY="2" frameWidth="605" frameHeight="829"/>
+</TextureAtlas>

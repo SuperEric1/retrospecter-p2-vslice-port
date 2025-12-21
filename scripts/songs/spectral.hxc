@@ -1,0 +1,297 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.effects.IntervalShake;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.graphics.shaders.DropShadowShader;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.PlayStatePlaylist;
+import funkin.graphics.FunkinSprite;
+import funkin.util.Constants;
+import funkin.ui.FullScreenScaleMode;
+
+class SpectralSong extends Song
+{
+  var tweens = [];
+  var pausedTweens = [];
+
+  var hasPlayedInGameCutscene:Bool;
+  var hasPlayedEndCutscene:Bool;
+  var isModcharting:Bool = false;
+
+  var growlSound: FunkinSound;
+  var groundShakeSound: FunkinSound;
+  var roarSound: FunkinSound;
+  var firstSlam: FunkinSound;
+
+  var bgSprite:FunkinSprite;
+  var bgFlamesY:Float;
+  var bgFlames:StageProp;
+  var ogStrumY:Float;
+  var characterStageShader:DropShadowShader;
+
+  public function new()
+  {
+    super('spectral');
+
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+    {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedInGameCutscene = true;
+
+    if (!hasPlayedInGameCutscene) {
+      hasPlayedInGameCutscene = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      playState.camHUD.visible = false;
+
+      buildProps(true); // preparar props para a cutscene
+      loadSounds();
+      introCutscene();
+    }
+
+  }
+
+  function fixRetroPos() {
+    var retro = playStage.getDad();
+    var retroOGPos:Array<Float> = [
+      retro.x,
+      retro.y
+    ];
+
+    retro.x = retroOGPos[0];
+    retro.y = retroOGPos[1] + 125; // isso é estranho
+  }
+
+  function buildProps(hide:Bool = false) {
+    bgFlames = playStage.getNamedProp("flames");
+    if (hide) {
+      bgFlamesY = playStage.getNamedProp("flames").y;
+      bgFlames.y = bgFlamesY + 1000;
+      playStage.getNamedProp("vortex").visible = false;
+    } else {
+      playStage.getNamedProp("vortex").visible = true;
+    }
+  }
+
+  function introCutscene() {
+    playState.togglePauseButton();
+    playState.isInCutscene = true;
+    playState.mayPauseGame = false;
+
+    var bfPos:Array<Float> = [
+      PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x,
+      PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y
+    ];
+    var gfPos:Array<Float> = [
+      PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x,
+      PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y
+    ];
+    var retro = playStage.getDad();
+    var retroPos:Array<Float> = [
+      retro.cameraFocusPoint.x,
+      retro.cameraFocusPoint.y
+    ];
+    characterStageShader = retro.shader; // guardando o shader desse stage para aplicar depois da cutscene
+    //enquanto isso, aplicar o shader do stage anterior
+    var rim = new DropShadowShader();
+    rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
+    rim.color = 0xFF29c23e; // #29c23eff
+    rim.angle = 90;
+    retro.shader = rim;
+    rim.attachedSprite = retro;
+    retro.animation.onFrameChange.add(function() {
+      if (retro != null)
+      {
+        rim.updateFrameInfo(retro.frame);
+      }
+    });
+
+    // Início (TODO: construir props)
+    retro.playAnimation('transformation', true);
+    growlSound.play();
+    groundShakeSound.play();
+    PlayState.instance.tweenCameraZoom(0.85, 0, true, FlxEase.quadInOut);
+    playState.tweenCameraToPosition(retroPos[0] + 70, retroPos[1] - 10, 0, FlxEase.quadInOut);
+
+    //smash ground + unzoom
+    new FlxTimer().start(2, function(tmr) {
+      firstSlam.play();
+      PlayState.instance.tweenCameraZoom(0.6, 0.5, true, FlxEase.quadInOut);
+    });
+    new FlxTimer().start(2.3, function(tmr) {
+      FlxG.camera.flash(0xFFFFFFFF, 0.4);
+      buildProps();
+      FlxG.camera.shake(0.075, 0.5);
+      FlxG.camera.shake(0.025, 0.35);
+    });
+
+    // roar
+    new FlxTimer().start(3.25, function(tmr) {
+      FlxTween.tween(bgFlames, {y: bgFlamesY}, 1.4, {ease: FlxEase.backOut});
+      retro.playAnimation('roar', true);
+      roarSound.play();
+      FlxG.camera.shake(0.025, 0.35);
+      PlayState.instance.tweenCameraZoom(playState.stageZoom, 0.5, true, FlxEase.quadInOut);
+    });
+    new FlxTimer().start(4, function(tmr) {
+      // adicionando o shader do stage de volta
+      var rim = characterStageShader;
+      retro.shader = rim;
+      rim.attachedSprite = retro;
+      retro.animation.onFrameChange.add(function() {
+          if (retro != null)
+          {
+            rim.updateFrameInfo(retro.frame);
+          }
+        });
+    });
+    new FlxTimer().start(4.75, function(tmr) {
+      retro.playAnimation('idle', true);
+    });
+
+    // Cutscene acaba.
+    new FlxTimer().start(4.75, function(tmr) {
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.startCountdown();
+
+      PlayState.instance.togglePauseButton(true);
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.mayPauseGame = true;
+    });
+  }
+
+  function loadSounds() {
+    growlSound = FunkinSound.load(Paths.sound("Growl"), true);
+    groundShakeSound = FunkinSound.load(Paths.sound("groundShake"), true);
+    firstSlam = FunkinSound.load(Paths.sound("fistSlam"), true);
+    roarSound = FunkinSound.load(Paths.sound("roar"), true);
+
+    growlSound.volume = 1;
+    roarSound.volume = 1;
+    groundShakeSound.volume = 1;
+    firstSlam.volume = 1;
+  }
+
+  public function onStepHit(event) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+
+    var objectsToShake = [
+      playState.playerStrumline,
+      playState.opponentStrumline,
+    ];
+
+    // chacoalhar strums
+    if (event.step >= 128 && event.step < 1536) {
+      for (obj in objectsToShake) {
+        IntervalShake.shake(obj, 0.7, 0.010, 0.010, 0.010, FlxEase.ease);
+      }
+    }
+    // fade nas notas do oponente
+    if (event.step >= 1536 && event.step < 1540) {
+      tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
+    }
+    //ativar modchart
+    if (event.step >= 1536) {
+      isModcharting = true;
+    }
+  }
+
+  public function onUpdate(event):Void {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (isModcharting) {
+      playState.camHUD.angle = Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0) * 3;
+
+      playState.playerStrumline.y = playState.playerStrumline.y + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0) * 1;
+    }
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+
+  /**
+   * Don't replay the cutscene between restarts.
+   */
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+    hasPlayedInGameCutscene = true;
+    hasPlayedEndCutscene = false;
+    isModcharting = false;
+    playState.camHUD.angle = 0;
+    playState.playerStrumline.y = ogStrumY;
+    fixRetroPos();
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+    isModcharting = false;
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
+    ogStrumY = playState.playerStrumline.y;
+    fixRetroPos();
+  }
+}

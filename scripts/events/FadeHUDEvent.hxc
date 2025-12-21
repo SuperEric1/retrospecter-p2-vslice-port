@@ -1,0 +1,173 @@
+import funkin.play.PlayState;
+import funkin.Conductor;
+import flixel.FlxG;
+import funkin.play.event.SongEvent;
+import funkin.data.event.SongEventSchema;
+import funkin.modding.PolymodErrorHandler;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.FlxSprite;
+import flixel.math.FlxRect;
+import flixel.tweens.FlxEase;
+import funkin.play.event.ScriptedSongEvent;
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.module.ScriptedModule;
+import funkin.data.event.SongEventRegistry;
+import funkin.play.components.HealthIcon;
+import funkin.play.notes.NoteHoldCover;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.NoteSprite;
+
+/*
+   MODULE: FadeHUDFixes
+   Fix para elementos de HUD que não respeitam alpha do Strumline
+*/
+class FadeHUDFixes extends ScriptedModule
+{
+  var shouldFixFadeEvent:Bool = true;
+
+  public function new()
+  {
+    super("FadeHUDFixes");
+  }
+
+  function onUpdate(event)
+  {
+    var pstate = PlayState.instance;
+    if (pstate == null || pstate.opponentStrumline == null || pstate.playerStrumline == null)
+      return;
+
+    syncStrumlineAlpha(pstate.opponentStrumline);
+    syncStrumlineAlpha(pstate.playerStrumline);
+  }
+
+  inline function syncStrumlineAlpha(str:Strumline)
+  {
+    var a = str.alpha;
+
+    for (n in str.notes)         n.alpha = a;
+    for (n in str.holdNotes)     n.alpha = a;
+    for (n in str.noteHoldCovers)n.alpha = a;
+    // strumlineNotes é opcional dependendo da build
+    if (str.strumlineNotes != null)
+      for (n in str.strumlineNotes) n.alpha = a;
+  }
+}
+
+/*
+   EVENT: FadeHUDEvent
+   Fade individual ou completo da HUD
+*/
+class FadeHUDEvent extends ScriptedSongEvent
+{
+	public var eventTitle:String = "HUD Fade";
+	var tweens = [];
+  var pausedTweens = [];
+
+	function new()
+	{
+		super("FadeHUDEvent");
+	}
+
+	override function handleEvent(data):Void
+	{
+		var pstate = PlayState.instance;
+		if (pstate == null || pstate.camHUD == null || pstate.isMinimal) return;
+
+		var mode:String = data.getString("mode") ?? "both"; // <- both nao funciona e honestamente nao é necessario
+
+		var fadeInSteps:Float  = data.getFloat("fadeInSteps")  ?? 2.0;
+		var staySteps:Float    = data.getFloat("duration")      ?? 4.0;
+		var fadeOutSteps:Float = data.getFloat("fadeOutSteps") ?? 2.0;
+
+		var fadeInTime  = (Conductor.instance.stepLengthMs * fadeInSteps)  / 1000;
+		var stayTime    = (Conductor.instance.stepLengthMs * staySteps)    / 1000;
+		var fadeOutTime = (Conductor.instance.stepLengthMs * fadeOutSteps) / 1000;
+
+		var elements = [
+			PlayState.instance.healthBar,
+			PlayState.instance.healthBarBG,
+			PlayState.instance.scoreText,
+			PlayState.instance.opponentStrumline,
+			PlayState.instance.playerStrumline,
+			PlayState.instance.iconP2,
+			PlayState.instance.iconP1
+		];
+
+		if (mode == "in")
+		{
+			for (element in elements)
+				tweens.push(FlxTween.tween(element, {alpha: 1}, fadeInTime, {ease: FlxEase.quadInOut}));
+			return;
+		}
+
+		if (mode == "out")
+		{
+			for (element in elements)
+				tweens.push(FlxTween.tween(element, {alpha: 0}, fadeOutTime, {ease: FlxEase.quadInOut}));
+			return;
+		}
+
+		// FADE IN
+		for (element in elements)
+		{
+			tweens.push(FlxTween.tween(element, {alpha: 1}, fadeInTime, { ease: FlxEase.quadInOut }));
+		}
+
+		// FADE OUT após o tempo
+		new FlxTimer().start(stayTime, (tmr) ->
+		{
+			for (element in elements)
+				tweens.push(FlxTween.tween(element, {alpha: 0}, fadeOutTime, {ease: FlxEase.quadInOut}));
+		});
+	}
+
+	override function getTitle()
+	{
+		return eventTitle;
+	}
+
+	override function getEventSchema()
+	{
+		return [
+			{
+				name: "mode",
+				title: "Fade Mode",
+				defaultValue: "both",
+				keys: [
+						"Fade In" => "in",
+						"Fade Out" => "out",
+						"Both" => "both"
+				],
+				type: "enum"
+			},
+			{
+				name: "fadeInSteps",
+				title: "Fade In Steps",
+				defaultValue: 2.0,
+				step: 0.5,
+				min: 0.1,
+				type: "float",
+				units: "steps"
+			},
+			{
+				name: "duration",
+				title: "Stay Duration",
+				defaultValue: 4.0,
+				step: 1.0,
+				min: 0.1,
+				type: "float",
+				units: "steps"
+			},
+			{
+				name: "fadeOutSteps",
+				title: "Fade Out Steps",
+				defaultValue: 2.0,
+				step: 0.5,
+				min: 0.1,
+				type: "float",
+				units: "steps"
+			}
+		];
+	}
+}

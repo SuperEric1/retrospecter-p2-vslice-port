@@ -1,0 +1,297 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.audio.FunkinSound;
+import funkin.data.song.SongRegistry;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.stage.StageProp;
+import funkin.play.PlayStatePlaylist;
+import funkin.graphics.FunkinSprite;
+import funkin.util.Constants;
+import funkin.ui.FullScreenScaleMode;
+
+class SatisfractureSong extends Song
+{
+  var tweens = [];
+  var pausedTweens = [];
+
+  var hasPlayedInGameCutscene:Bool;
+  var hasPlayedEndCutscene:Bool;
+
+  var beepSound: FunkinSound;
+  var micSound: FunkinSound;
+  var cutsceneMusic: FunkinSound;
+
+  var cutsceneConductor:Conductor;
+  var bgSprite:FunkinSprite;
+
+  public function new()
+  {
+    super('satisfracture');
+
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedInGameCutscene = true;
+
+    if (!hasPlayedInGameCutscene) {
+      hasPlayedInGameCutscene = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      playState.camHUD.visible = false;
+
+      bgSprite = new FunkinSprite(0, 0);
+      bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
+      bgSprite.cameras = [PlayState.instance.camCutscene]; // Show over the HUD but below the video.
+      bgSprite.zIndex = 100000;
+      bgSprite.visible = true;
+      PlayState.instance.add(bgSprite);
+      PlayState.instance.refresh();
+
+      loadIntroSounds();
+      introCutscene();
+    }
+
+  }
+
+
+  function introCutscene() {
+    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) return;
+    playState.togglePauseButton();
+    playState.isInCutscene = true;
+    playState.mayPauseGame = false;
+
+    var bfPos:Array<Float> = [
+      PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x,
+      PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y
+    ];
+    var gfPos:Array<Float> = [
+      PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.x,
+      PlayState.instance.currentStage.getGirlfriend().cameraFocusPoint.y
+    ];
+    var retro = playStage.getDad();
+    var retroPos:Array<Float> = [
+      retro.cameraFocusPoint.x,
+      retro.cameraFocusPoint.y
+    ];
+
+    retro.playAnimation('introIdle', true);
+
+    var cutsceneDelay = 1.5;
+
+    cutsceneConductor = new Conductor();
+    cutsceneConductor.onBeatHit.add(onCutsceneBeatHit);
+
+    // Início
+    new FlxTimer().start(0.1, function(tmr) {
+      FlxTween.tween(bgSprite, {alpha: 0}, 1.7, null, function() {
+        bgSprite.visible = false;
+      });
+    });
+
+    // Câmera vai até boyfriend.
+    new FlxTimer().start(cutsceneDelay, function(tmr) {
+      playState.tweenCameraToPosition(bfPos[0] + -50, bfPos[1] - 100, 1.5, FlxEase.quadInOut); //x, y, rot? eu acho
+    });
+    // beep + micsound
+    new FlxTimer().start(1.7 + cutsceneDelay, function(tmr) {
+      playStage.getBoyfriend().playAnimation('singUP', true);
+      beepSound.play();
+    });
+    new FlxTimer().start(1.723 + cutsceneDelay, function(tmr) {
+      micSound.play();
+    });
+    /* after beep (o jogo ja muda pro idle)
+    new FlxTimer().start(2.4 + cutsceneDelay, function(tmr) {
+      playStage.getBoyfriend().playAnimation('idle', true);
+    }); */
+    // retro acorda
+    new FlxTimer().start(2.65 + cutsceneDelay, function(tmr) {
+      retro.playAnimation('intro', true);
+    });
+
+    // Cutscene acaba.
+    new FlxTimer().start(6.3 + cutsceneDelay, function(tmr) {
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.startCountdown();
+
+      PlayState.instance.togglePauseButton(true);
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.mayPauseGame = true;
+    });
+  }
+
+  function loadIntroSounds() {
+    beepSound = FunkinSound.load(Paths.sound("beep"), true);
+    beepSound.volume = 1;
+    micSound = FunkinSound.load(Paths.sound("phase1intro"), true);
+    micSound.volume = 1;
+  }
+
+  public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+
+    // ENOUGH
+    // As animações alt ativam no script do personagem
+    if (event.step == 176) { //notas do retro somem
+      tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
+    }
+    if (event.step == 188) { //enough
+      playState.mayPauseGame = false;
+      var retro = playStage.getDad();
+      var retroPos:Array<Float> = [
+        retro.cameraFocusPoint.x,
+        retro.cameraFocusPoint.y
+      ];
+      // desativar controles para nao perder vida sem querer
+      PlayState.instance.disableKeys = true;
+      playState.tweenCameraToPosition(retroPos[0] - 50, retroPos[1] - 50, 0.1, FlxEase.quadInOut);
+
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 0.5)  / 1000, {ease: FlxEase.linear}));
+    }
+    if (event.step == 191) { // aparecer notas novamente
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
+    }
+    if (event.step == 192) {
+      playState.mayPauseGame = true;
+      PlayState.instance.disableKeys = false;
+      PlayState.instance.opponentStrumline.alpha = 1;
+      FlxG.camera.flash(0xFFFFFFFF, 0.3);
+    }
+
+    var healthBar = [
+			playState.healthBar,
+			playState.healthBarBG,
+			playState.scoreText,
+			playState.iconP2,
+			playState.iconP1
+		];
+
+    // Eventos perto do fim
+    if (event.step == 1120) { // fade notas do oponente
+      tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
+    };
+
+    var noteFadeDuration = 2;
+    var heightOffset = FlxG.height + 50;
+
+    if (event.step == 1146) {
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[1], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadInOut}));
+    }
+    if (event.step == 1148) {
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[2], {y: heightOffset}, noteFadeDuration + 1, {ease: FlxEase.quadInOut}));
+    }
+    if (event.step == 1150) {
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {x: playState.playerStrumline.width + playState.playerStrumline.x + 10}, noteFadeDuration * 1.5, {ease: FlxEase.easeOutCirc}));
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadInOut}));
+    }
+
+    if (event.step == 1153) { // fade final no hud
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.linear}));
+
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[0], {x: playState.playerStrumline.x - 40}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.quadInOut}));
+      for (bar in healthBar) {
+        tweens.push(FlxTween.tween(bar, {alpha: 0}, (Conductor.instance.stepLengthMs * 18)  / 1000, {ease: FlxEase.linear}));
+      }
+    };
+  }
+
+  function onCutsceneBeatHit()
+  {
+    if (PlayState.instance.currentStage.getGirlfriend().isAnimationFinished())
+    {
+      PlayState.instance.currentStage.getGirlfriend().dance(true);
+    }
+    if (PlayState.instance.currentStage.getBoyfriend().isAnimationFinished()
+      && PlayState.instance.currentStage.getBoyfriend().getCurrentAnimation() != 'singUP')
+    {
+      PlayState.instance.currentStage.getBoyfriend().dance(true);
+    }
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+
+  /**
+   * Don't replay the cutscene between restarts.
+   */
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+    playState.mayPauseGame = true;
+    hasPlayedInGameCutscene = true;
+    hasPlayedEndCutscene = false;
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    playState.mayPauseGame = true;
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
+  }
+}

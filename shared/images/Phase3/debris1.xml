@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="debris1.png">
+<SubTexture name="debris0000" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0001" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0002" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0003" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0004" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0005" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0006" x="0" y="0" width="286" height="357" frameX="-1" frameY="0" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0007" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0008" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0009" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0010" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0011" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0012" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+<SubTexture name="debris0013" x="286" y="0" width="289" height="355" frameX="0" frameY="-2" frameWidth="285" frameHeight="353" />
+</TextureAtlas>

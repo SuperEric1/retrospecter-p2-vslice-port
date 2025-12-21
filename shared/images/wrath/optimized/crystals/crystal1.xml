@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="crystal1.png" width="6096" height="472">
+	<SubTexture name="anim0001" x="5652" y="1" width="443" height="470" frameX="-43" frameY="-28" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0002" x="3445" y="1" width="428" height="463" frameX="-51" frameY="-28" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0003" x="5214" y="1" width="435" height="468" frameX="-47" frameY="-26" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0004" x="3020" y="1" width="422" height="462" frameX="-54" frameY="-26" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0005" x="3876" y="1" width="443" height="467" frameX="-43" frameY="-31" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0006" x="851" y="1" width="428" height="453" frameX="-51" frameY="-38" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0007" x="2144" y="1" width="435" height="459" frameX="-47" frameY="-35" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0008" x="1" y="1" width="422" height="447" frameX="-54" frameY="-41" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0009" x="4322" y="1" width="443" height="467" frameX="-43" frameY="-31" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0010" x="1282" y="1" width="428" height="453" frameX="-51" frameY="-38" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0011" x="2582" y="1" width="435" height="459" frameX="-47" frameY="-35" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0012" x="426" y="1" width="422" height="447" frameX="-54" frameY="-41" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0013" x="4768" y="1" width="443" height="467" frameX="-43" frameY="-31" frameWidth="532" frameHeight="533"/>
+	<SubTexture name="anim0014" x="1713" y="1" width="428" height="453" frameX="-51" frameY="-38" frameWidth="532" frameHeight="533"/>
+</TextureAtlas>

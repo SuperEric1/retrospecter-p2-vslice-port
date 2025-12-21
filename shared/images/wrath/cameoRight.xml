@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="cameoRight.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bgcameo_serpenscheme0000" x="0" y="219" width="237" height="212" frameX="0" frameY="-2" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0001" x="0" y="219" width="237" height="212" frameX="0" frameY="-2" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0002" x="242" y="219" width="234" height="212" frameX="-3" frameY="-2" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0003" x="242" y="219" width="234" height="212" frameX="-3" frameY="-2" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0004" x="481" y="0" width="231" height="213" frameX="-6" frameY="-1" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0005" x="481" y="0" width="231" height="213" frameX="-6" frameY="-1" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0006" x="481" y="218" width="231" height="213" frameX="-8" frameY="-1" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0007" x="481" y="218" width="231" height="213" frameX="-8" frameY="-1" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0008" x="240" y="0" width="234" height="214" frameX="-4" frameY="0" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0009" x="240" y="0" width="234" height="214" frameX="-4" frameY="0" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0010" x="0" y="0" width="235" height="214" frameX="-3" frameY="0" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0011" x="0" y="0" width="235" height="214" frameX="-3" frameY="0" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0012" x="0" y="0" width="235" height="214" frameX="-3" frameY="0" frameWidth="239" frameHeight="214"/>
+	<SubTexture name="bgcameo_serpenscheme0013" x="0" y="0" width="235" height="214" frameX="-3" frameY="0" frameWidth="239" frameHeight="214"/>
+</TextureAtlas>

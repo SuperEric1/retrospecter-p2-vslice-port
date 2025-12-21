@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="cameoMiddle.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bgcameo_biles0000" x="511" y="0" width="252" height="164" frameX="-1" frameY="-2" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0001" x="511" y="0" width="252" height="164" frameX="-1" frameY="-2" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0002" x="0" y="0" width="252" height="165" frameX="0" frameY="-1" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0003" x="0" y="0" width="252" height="165" frameX="0" frameY="-1" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0004" x="257" y="0" width="249" height="166" frameX="-2" frameY="-1" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0005" x="257" y="0" width="249" height="166" frameX="-2" frameY="-1" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0006" x="768" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0007" x="768" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0008" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0009" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0010" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0011" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0012" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+	<SubTexture name="bgcameo_biles0013" x="1020" y="0" width="247" height="167" frameX="-3" frameY="0" frameWidth="253" frameHeight="167"/>
+</TextureAtlas>

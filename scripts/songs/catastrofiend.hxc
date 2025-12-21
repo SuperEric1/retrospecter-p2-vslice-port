@@ -1,0 +1,206 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.PlayStatePlaylist;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.FullScreenScaleMode;
+
+class CatastrofiendSong extends Song
+{
+  var tweens = [];
+  var pausedTweens = [];
+  var hasPlayedCutscene:Bool;
+  var hasPlayedEndCutscene:Bool;
+  var bgSprite:FunkinSprite;
+
+  public function new()
+  {
+    super('catastrofiend');
+
+    hasPlayedCutscene = false;
+    hasPlayedEndCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene)
+    {
+      bgSprite = new FunkinSprite(-100, -100);
+      bgSprite.makeSolidColor(2000, 2500, 0xFFFFFFFF);
+      bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+      bgSprite.zIndex = 1000000;
+      bgSprite.alpha = 1;
+      PlayState.instance.add(bgSprite);
+      PlayState.instance.refresh();
+
+      hasPlayedCutscene = true;
+
+      VideoCutscene.onVideoEnded.addOnce(function() {
+          FlxTween.tween(bgSprite, {alpha: 0}, 1.5, null, function() {
+            bgSprite.visible = false;
+          });
+
+          // Antigo
+          //bgSprite.alpha = 1;
+          //FlxTween.tween(bgSprite, {alpha: 0}, 2, null);
+      });
+
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      VideoCutscene.play(Paths.videos('Phase4'));
+    }
+
+  }
+
+  public function onStepHit(event) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    var elements = [
+			PlayState.instance.healthBar,
+			PlayState.instance.healthBarBG,
+			PlayState.instance.scoreText,
+      PlayState.instance.opponentStrumline,
+			PlayState.instance.iconP2,
+			PlayState.instance.iconP1
+		];
+
+    // I WILL BE YOUR END!!!
+    if (event.step == 2515) {
+      for (element in elements)
+        element.visible = false;
+    };
+    if (event.step == 2560) { // a vida a as notas do oponente so vao aparecer quando a cutscene acabar por completo
+      for (element in elements)
+        element.visible = true;
+    };
+  }
+
+   public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndCutscene = true;
+
+    if (!hasPlayedEndCutscene)
+    {
+      PlayState.instance.isInCutscene = true;
+      PlayState.instance.mayPauseGame = false;
+      hasPlayedEndCutscene = true;
+
+      event.cancel();
+
+      // start the video cutscene
+      startFinale();
+    }
+    else
+    {
+      // Make sure the cutscene can play again next time!
+      hasPlayedEndCutscene = false;
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.mayPauseGame = true;
+      // DO NOT CANCEL THE EVENT!
+    }
+  }
+
+  function startFinale()
+  {
+    if (FlxG.onMobile)
+    {
+      FlxTween.tween(PlayState.instance.pauseButton,
+        {x: (FlxG.width - PlayState.instance.pauseButton.width) - (40 + (FullScreenScaleMode.gameCutoutSize.x / 2))}, 1.0, {ease: FlxEase.quintOut});
+    }
+
+    VideoCutscene.onVideoEnded.addOnce(function() {
+      if (FlxG.onMobile)
+      {
+        PlayState.instance.pauseButton.x = (FlxG.width - PlayState.instance.pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x);
+      }
+      FullScreenScaleMode.removeCutouts();
+    });
+
+    PlayState.instance.camHUD.visible = false;
+
+    PlayState.instance.isInCutscene = true;
+    hasPlayedEndCutscene = true;
+
+    PlayState.instance.currentStage.getBoyfriend().danceEvery = 0;
+    PlayState.instance.currentStage.getDad().danceEvery = 0;
+
+    VideoCutscene.play(Paths.videos('Phase4_OUTRO'), CutsceneType.ENDING);
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+
+  /**
+   * Don't replay the cutscene between restarts.
+   */
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+    hasPlayedEndCutscene = true;
+  }
+
+  /**
+   * Replay the cutscene after leaving the song.
+   */
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    hasPlayedEndCutscene = false;
+  }
+}

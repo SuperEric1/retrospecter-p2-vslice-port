@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="lavaflow_R.png">
+<SubTexture name="lavaflow_R0000" x="1206" y="0" width="140" height="924" frameX="-25" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0001" x="1206" y="0" width="140" height="924" frameX="-25" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0002" x="1206" y="0" width="140" height="924" frameX="-25" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0003" x="454" y="0" width="148" height="934" frameX="-22" frameY="0" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0004" x="454" y="0" width="148" height="934" frameX="-22" frameY="0" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0005" x="454" y="0" width="148" height="934" frameX="-22" frameY="0" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0006" x="0" y="0" width="150" height="938" frameX="-19" frameY="-1" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0007" x="0" y="0" width="150" height="938" frameX="-19" frameY="-1" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0008" x="0" y="0" width="150" height="938" frameX="-19" frameY="-1" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0009" x="602" y="0" width="152" height="928" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0010" x="602" y="0" width="152" height="928" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0011" x="602" y="0" width="152" height="928" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0012" x="150" y="0" width="153" height="937" frameX="-16" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0013" x="150" y="0" width="153" height="937" frameX="-16" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0014" x="150" y="0" width="153" height="937" frameX="-16" frameY="-12" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0015" x="1057" y="0" width="149" height="925" frameX="-15" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0016" x="1057" y="0" width="149" height="925" frameX="-15" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0017" x="1057" y="0" width="149" height="925" frameX="-15" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0018" x="754" y="0" width="157" height="926" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0019" x="754" y="0" width="157" height="926" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0020" x="754" y="0" width="157" height="926" frameX="-17" frameY="-11" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0021" x="1346" y="0" width="147" height="920" frameX="-17" frameY="-10" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0022" x="1346" y="0" width="147" height="920" frameX="-17" frameY="-10" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0023" x="1346" y="0" width="147" height="920" frameX="-17" frameY="-10" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0024" x="1671" y="0" width="161" height="915" frameX="-11" frameY="-16" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0025" x="1671" y="0" width="161" height="915" frameX="-11" frameY="-16" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0026" x="1671" y="0" width="161" height="915" frameX="-11" frameY="-16" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0027" x="1995" y="0" width="171" height="909" frameX="-2" frameY="-9" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0028" x="1995" y="0" width="171" height="909" frameX="-2" frameY="-9" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0029" x="1995" y="0" width="171" height="909" frameX="-2" frameY="-9" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0030" x="1493" y="0" width="178" height="917" frameX="0" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0031" x="1493" y="0" width="178" height="917" frameX="0" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0032" x="1493" y="0" width="178" height="917" frameX="0" frameY="-7" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0033" x="1832" y="0" width="165" height="911" frameX="-8" frameY="-6" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0034" x="1832" y="0" width="165" height="911" frameX="-8" frameY="-6" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0035" x="1832" y="0" width="165" height="911" frameX="-8" frameY="-6" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0036" x="303" y="0" width="151" height="936" frameX="-18" frameY="-13" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0037" x="303" y="0" width="151" height="936" frameX="-18" frameY="-13" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0038" x="303" y="0" width="151" height="936" frameX="-18" frameY="-13" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0039" x="911" y="0" width="146" height="926" frameX="-19" frameY="-15" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0040" x="911" y="0" width="146" height="926" frameX="-19" frameY="-15" frameWidth="174" frameHeight="945" />
+<SubTexture name="lavaflow_R0041" x="911" y="0" width="146" height="926" frameX="-19" frameY="-15" frameWidth="174" frameHeight="945" />
+</TextureAtlas>

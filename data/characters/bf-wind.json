@@ -1,0 +1,170 @@
+{
+  "version": "1.0.0",
+  "name": "Bf Wind",
+  "assetPath": "characters/BfSkins/default_wind",
+  "renderType": "multisparrow",
+  "singTime": 8,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "id": "bf_default",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF idle dance",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "BF NOTE LEFT0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "BF NOTE UP0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "BF NOTE DOWN0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "BF idle dance",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [10, 11, 12, 13]
+    },
+    {
+      "name": "singLEFT-hold",
+      "prefix": "BF NOTE LEFT0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [108, 109, 110, 111]
+    },
+    {
+      "name": "singUP-hold",
+      "prefix": "BF NOTE UP0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [52, 53, 54, 55]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "BF NOTE RIGHT0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT-hold",
+      "prefix": "BF NOTE RIGHT0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [80, 81, 82, 83]
+    },
+    {
+      "name": "singDOWN-hold",
+      "prefix": "BF NOTE DOWN0",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "looped": true,
+      "frameIndices": [24, 25, 26, 27]
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "BF dies0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-85, 72],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "deathLoop",
+      "prefix": "BF Dead Loop0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-85, 72],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "BF Dead confirm0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-85, 72],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "firstDeath-acid",
+      "prefix": "BF dies acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [195, 139],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathLoop-acid",
+      "prefix": "BF Dead Loop acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [195, 139],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathConfirm-acid",
+      "prefix": "BF Dead confirm acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [195, 139],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": true
+}

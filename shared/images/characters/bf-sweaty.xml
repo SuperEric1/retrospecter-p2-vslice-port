@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bf-wipingbrow.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BF brow wipe0000" x="5" y="5" width="327" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0001" x="342" y="5" width="327" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0002" x="342" y="5" width="327" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0003" x="679" y="5" width="327" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0004" x="679" y="5" width="327" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0005" x="1016" y="5" width="326" height="417" frameX="-4" frameY="-6" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0006" x="1016" y="5" width="326" height="417" frameX="-4" frameY="-6" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0007" x="1016" y="5" width="326" height="417" frameX="-4" frameY="-6" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0008" x="1352" y="5" width="328" height="415" frameX="-2" frameY="-8" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0009" x="1352" y="5" width="328" height="415" frameX="-2" frameY="-8" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0010" x="1690" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0011" x="1690" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0012" x="1690" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0013" x="2027" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0014" x="2027" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0015" x="2364" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0016" x="2364" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0017" x="2701" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0018" x="2701" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0019" x="3038" y="5" width="327" height="416" frameX="-3" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0020" x="3375" y="5" width="471" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0021" x="3856" y="5" width="471" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0022" x="5" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0023" x="480" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0024" x="955" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0025" x="955" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0026" x="1430" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0027" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0028" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0029" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0030" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0031" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0032" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0033" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0034" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0035" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0036" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0037" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0038" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0039" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0040" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0041" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0042" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0043" x="1905" y="438" width="465" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0044" x="2380" y="438" width="465" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0045" x="2380" y="438" width="465" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0046" x="2380" y="438" width="465" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0047" x="2855" y="438" width="467" height="414" frameX="0" frameY="-9" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0048" x="2855" y="438" width="467" height="414" frameX="0" frameY="-9" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0049" x="3332" y="438" width="441" height="416" frameX="0" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0050" x="3332" y="438" width="441" height="416" frameX="0" frameY="-7" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0051" x="3783" y="438" width="327" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0052" x="3783" y="438" width="327" height="422" frameX="-3" frameY="-1" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0053" x="4120" y="438" width="327" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+	<SubTexture name="BF brow wipe0054" x="4120" y="438" width="327" height="423" frameX="-3" frameY="0" frameWidth="474" frameHeight="423"/>
+</TextureAtlas>

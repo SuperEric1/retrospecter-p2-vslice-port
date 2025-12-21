@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="FG_fire.png">
+<SubTexture name="FG_fire0000" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0001" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0002" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0003" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0004" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0005" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0006" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0007" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0008" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0009" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0010" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0011" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0012" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0013" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0014" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0015" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0016" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0017" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0018" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0019" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0020" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0021" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0022" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0023" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0024" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0025" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0026" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0027" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0028" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0029" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0030" x="735" y="0" width="728" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0031" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0032" x="1464" y="0" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0033" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0034" x="0" y="951" width="746" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0035" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0036" x="747" y="951" width="766" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0037" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0038" x="2202" y="0" width="733" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0039" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0040" x="0" y="1902" width="737" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+<SubTexture name="FG_fire0041" x="0" y="0" width="734" height="951" frameX="0" frameY="-16" frameWidth="764" frameHeight="963" />
+</TextureAtlas>

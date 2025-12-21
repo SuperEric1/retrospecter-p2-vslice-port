@@ -1,0 +1,86 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+
+class izzyNote extends Module {
+	public function new() {
+		super("izzyNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	var noteVibrationPreset:VibrationPreset =
+    {
+      period: 0.1,
+      duration: 0.1,
+      amplitude: 1,
+      sharpness: 1
+    };
+
+	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+		super.onNoteHit(ev);
+
+		if (PlayState.instance == null) return;
+		if (!ev.note.noteData.getMustHitNote()) return;
+		if (ev.note.noteData.kind != "izzyNote") return;
+
+		HapticUtil.vibrateByPreset(noteVibrationPreset);
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "izzyNote" )
+			{
+			event.note.x += -59;
+			event.note.yOffset += -65;
+
+			event.note.frames = Paths.getSparrowAtlas( 'Pride_Note_Assets' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left' );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down' );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up' );
+			event.note.animation.addByPrefix( 'redScroll', 'Right' );
+
+			var izzyNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						izzyNote = "purpleScroll";
+					case 1:
+						izzyNote = "blueScroll";
+					case 2:
+						izzyNote = "greenScroll";
+					case 3:
+						izzyNote = "redScroll";
+				}
+
+			event.note.animation.play( izzyNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		for ( izzyNote in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "izzyNote" )
+			{
+        event.cancel();
+        event.stopPropagation();
+			}
+		}
+	}
+}

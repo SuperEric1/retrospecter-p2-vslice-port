@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="retro.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="Retro IDLE0000" x="0" y="0" width="659" height="925" frameX="2" frameY="-8" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0001" x="0" y="0" width="659" height="925" frameX="2" frameY="-8" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0002" x="1948" y="932" width="644" height="927" frameX="2" frameY="-6" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0003" x="1948" y="932" width="644" height="927" frameX="2" frameY="-6" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0004" x="1948" y="0" width="644" height="932" frameX="-1" frameY="-1" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0005" x="1948" y="0" width="644" height="932" frameX="-1" frameY="-1" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0006" x="659" y="0" width="645" height="935" frameX="-8" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0007" x="659" y="0" width="645" height="935" frameX="-8" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0008" x="0" y="925" width="645" height="935" frameX="-12" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0009" x="0" y="925" width="645" height="935" frameX="-12" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0010" x="1304" y="0" width="644" height="935" frameX="-11" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0011" x="1304" y="0" width="644" height="935" frameX="-11" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0012" x="1304" y="0" width="644" height="935" frameX="-11" frameY="2" frameWidth="655" frameHeight="931"/>
+	<SubTexture name="Retro IDLE0013" x="1304" y="0" width="644" height="935" frameX="-11" frameY="2" frameWidth="655" frameHeight="931"/>
+</TextureAtlas>

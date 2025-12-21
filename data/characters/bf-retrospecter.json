@@ -1,0 +1,177 @@
+{
+  "version": "1.0.0",
+  "name": "Bf",
+  "assetPath": "characters/BOYFRIEND_Retro",
+  "renderType": "multisparrow",
+  "startingAnimation": "idle",
+  "danceEvery": 1,
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "id": "bf_default",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "BF idle dance",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "LEFT",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "UP",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "RIGHT",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "DOWN",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFTmiss",
+      "prefix": "BF NOTE LEFT MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWNmiss",
+      "prefix": "BF NOTE DOWN MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUPmiss",
+      "prefix": "BF NOTE UP MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHTmiss",
+      "prefix": "BF NOTE RIGHT MISS",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle-alt",
+      "prefix": "BF idle lookup",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "idle-angry",
+      "prefix": "BF idle annoyed instance",
+      "assetPath": "characters/bf-bitchy",
+      "offsets": [-140, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "hey",
+      "prefix": "BF HEY",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "brow",
+      "prefix": "BF brow wipe",
+      "offsets": [-140, -8],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sex",
+      "prefix": "BF brow wipe",
+      "offsets": [-140, -8],
+      "frameRate": 24,
+      "frameIndices": [43, 44, 49, 50, 51, 52, 53, 54, 55]
+    },
+    {
+      "name": "boo",
+      "prefix": "BF scare",
+      "offsets": [-139, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "firstDeath",
+      "prefix": "BF dies0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-103, 82],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "deathLoop",
+      "prefix": "BF Dead Loop0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-103, 82],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathConfirm",
+      "prefix": "BF Dead confirm0",
+      "assetPath": "characters/BfSkins/death/default_bf_death",
+      "offsets": [-103, 82],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "firstDeath-acid",
+      "prefix": "BF dies acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [172, 158],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "deathLoop-acid",
+      "prefix": "BF Dead Loop acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [172, 158],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathConfirm-acid",
+      "prefix": "BF Dead confirm acid",
+      "assetPath": "characters/BfSkins/death/default_bf_death_acid",
+      "offsets": [172, 158],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": true
+}

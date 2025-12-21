@@ -1,0 +1,455 @@
+{
+  "name": "Wrath_phase1",
+  "directory": "shared",
+  "cameraZoom": 0.9,
+  "version": "1.0.0",
+  "props": [
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/wrath_overlay",
+      "blend": "screen",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "overlay",
+      "scale": 2,
+      "position": [-832, -853],
+      "scroll": [0.5, 0.5],
+      "startingAnimation": null,
+      "zIndex": 1000
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/wrath_sky",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": true,
+      "isPixel": false,
+      "name": "sky",
+      "scale": 2,
+      "position": [-900, -800],
+      "scroll": [0.5, 0.5],
+      "startingAnimation": null,
+      "zIndex": 0
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/wrath_gates",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "gates",
+      "scale": 1.5,
+      "position": [-650, -900],
+      "scroll": [0.2, 0.1],
+      "startingAnimation": null,
+      "zIndex": 1
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/backrock_left",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "rockLeft",
+      "scale": 2,
+      "position": [-750, -445],
+      "scroll": [0.6, 0.6],
+      "startingAnimation": null,
+      "zIndex": 2
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/backrock_right",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "rockRight",
+      "scale": 2,
+      "position": [1000, -256],
+      "scroll": [0.6, 0.6],
+      "startingAnimation": null,
+      "zIndex": 2
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/cameoLeft",
+      "blend": "",
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "velasma",
+      "scale": 1,
+      "position": [-287, 346],
+      "scroll": [0.8, 0.8],
+      "danceEvery": 2,
+      "startingAnimation": "idle",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "bgcameo_velasma",
+          "flipX": false,
+          "name": "idle"
+        }
+      ],
+      "zIndex": 3
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/cameoRight",
+      "blend": "",
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "serpenscheme",
+      "scale": 1,
+      "position": [1263, 283],
+      "scroll": [0.8, 0.8],
+      "danceEvery": 2,
+      "startingAnimation": "idle",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "bgcameo_serpenscheme",
+          "flipX": false,
+          "name": "idle"
+        }
+      ],
+      "zIndex": 3
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/gem",
+      "blend": "",
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "gems",
+      "scale": 2,
+      "position": [-678, -604],
+      "scroll": [0.7, 0.7],
+      "danceEvery": 2,
+      "startingAnimation": "r1",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "r1"
+        },
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r2",
+          "flipX": false,
+          "name": "r2"
+        }
+      ],
+      "zIndex": 3
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/cave",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "caveRight",
+      "scale": 2.49116904962,
+      "position": [852, -496],
+      "scroll": [0.8, 0.8],
+      "startingAnimation": null,
+      "zIndex": 4
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/cave",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "caveLeft",
+      "scale": 2.49116904962,
+      "position": [-866, -410],
+      "scroll": [0.8, 0.8],
+      "startingAnimation": null,
+      "zIndex": 4
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "animations": [],
+      "assetPath": "wrath/optimized/ground",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "ground",
+      "scale": 1,
+      "position": [-866, -410],
+      "scroll": [1, 1],
+      "startingAnimation": null,
+      "zIndex": 5
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock1",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "R1",
+      "scale": 1,
+      "position": [1639, 1047],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock3",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "R2",
+      "scale": 1,
+      "position": [1486, 650],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock6",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "R3",
+      "scale": 1,
+      "position": [1768, 685],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock2",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "L1",
+      "scale": 1,
+      "position": [-38, 933],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock5",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "L2",
+      "scale": 1,
+      "position": [-608, 954],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/optimized/rock/rock4",
+      "blend": "",
+      "danceEvery": 0,
+      "flipX": true,
+      "flipY": false,
+      "isPixel": false,
+      "name": "L3",
+      "scale": 1,
+      "position": [-361, 600],
+      "scroll": [1, 1],
+      "startingAnimation": "green",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "r1",
+          "flipX": false,
+          "name": "green"
+        }
+      ],
+      "zIndex": 6
+    },
+
+    {
+      "alpha": 1,
+      "angle": 0,
+      "animType": "sparrow",
+      "assetPath": "wrath/cameoMiddle",
+      "blend": "",
+      "flipX": false,
+      "flipY": false,
+      "isPixel": false,
+      "name": "cat",
+      "scale": 1,
+      "position": [-317, 703],
+      "scroll": [0.8, 0.8],
+      "danceEvery": 2,
+      "startingAnimation": "idle",
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "bgcameo_biles",
+          "flipX": false,
+          "name": "idle"
+        }
+      ],
+      "zIndex": 7
+    }
+],
+"characters": {
+    "bf": {
+      "zIndex": 300,
+      "scale": 0.8,
+      "position": [970, 180],
+      "cameraOffsets": [-50, -100]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-150, 110],
+      "cameraOffsets": [0, 0]
+    },
+    "gf": {
+      "scale": 0.8,
+      "zIndex": 100,
+      "position": [252, 102.5],
+      "cameraOffsets": [0, 0]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.FullScreenScaleMode;
+
+class ApocalyptroSong extends Song
+{
+  var hasPlayedCutscene:Bool;
+
+  public function new()
+  {
+    super('apocalyptro');
+
+    hasPlayedCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene)
+    {
+      trace('Pausing countdown to play a video cutscene');
+
+      hasPlayedCutscene = true;
+
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      VideoCutscene.play(Paths.videos('Apocalyptro_Intro'));
+    }
+  }
+
+  // --- MOVIDO PARA A MUSICA FINAL --- 
+  /* function startFinale()
+  {
+    if (FlxG.onMobile)
+    {
+      FlxTween.tween(PlayState.instance.pauseButton,
+        {x: (FlxG.width - PlayState.instance.pauseButton.width) - (40 + (FullScreenScaleMode.gameCutoutSize.x / 2))}, 1.0, {ease: FlxEase.quintOut});
+    }
+    FullScreenScaleMode.addCutouts(1.0, FlxEase.quintOut);
+
+    VideoCutscene.onVideoEnded.addOnce(function() {
+      if (FlxG.onMobile)
+      {
+        PlayState.instance.pauseButton.x = (FlxG.width - PlayState.instance.pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x);
+      }
+      FullScreenScaleMode.removeCutouts();
+    });
+
+    PlayState.instance.camHUD.visible = false;
+
+    PlayState.instance.isInCutscene = true;
+    hasPlayedEndCutscene = true;
+
+    PlayState.instance.currentStage.getBoyfriend().danceEvery = 0;
+    PlayState.instance.currentStage.getDad().danceEvery = 0;
+
+    new FlxTimer().start(2, function(tmr) {
+      VideoCutscene.play(Paths.videos('Phase4'), CutsceneType.ENDING);
+    });
+  } */ 
+
+  /**
+   * Don't replay the cutscene between restarts.
+   */
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+    hasPlayedCutscene = true;
+  }
+
+  /**
+   * Replay the cutscene after leaving the song.
+   */
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    hasPlayedCutscene = false;
+  }
+}

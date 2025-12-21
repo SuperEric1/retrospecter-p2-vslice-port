@@ -1,0 +1,377 @@
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import funkin.play.GameOverSubState;
+import funkin.Preferences;
+import funkin.Conductor;
+import funkin.Highscore;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.graphics.FunkinSprite;
+import funkin.util.ReflectUtil;
+import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+import funkin.effects.IntervalShake;
+
+class RetroPlayState extends Module {
+  public function new() {
+    super('RetroPlayState');
+  }
+
+  var tweens = [];
+  var pausedTweens = [];
+
+  var ogStrumsX:Array<Float> = [];
+  var ogStrumsY:Array<Float> = [];
+
+  var poisonText:FlxText;
+  var hasAddedPoisonTxt:Bool = false;
+  var poisonAmount:Int = 0;
+
+  var izzyMechanicTimer:FlxTimer;
+  var izzyMechanicEndTween:FlxTween;
+  var isDrugged:Bool = false;
+
+  var solidCameraSprite:FunkinSprite;
+
+  var hurtNoteVibration:VibrationPreset =
+  {
+    period: 0.1,
+    duration: 0.1,
+    amplitude: 1,
+    sharpness: 1
+  };
+
+  override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+    poisonAmount = 0;
+    isDrugged = false;
+    izzyMechanicTimer = null;
+  }
+
+  function onNoteIncoming(event) {
+    if (izzyMechanicTimer != null) {
+      event.note.angle = 0;
+    }
+    var k = event.note.noteData.kind;
+
+    // Notas removíveis
+    if (k == 'none') {
+      if (event.note.noteData.getMustHitNote()) {
+        Highscore.tallies.totalNotes--;
+      }
+			event.cancelEvent();
+      event.stopPropagation();
+			event.note.kill();
+    }
+
+    // Notas que não contam pro score
+    if (k == 'Fake Note' || k == 'poison' || k == 'izzyNote') {
+      if (event.note.noteData.getMustHitNote()) {
+        Highscore.tallies.totalNotes--;
+      }
+    }
+
+    super('onNoteIncoming');
+  }
+
+  function onNoteHit(event) {
+    var k = event.note.noteData.kind;
+
+    if (k == 'poison') {
+      poisonAmount++;
+      updatePoisonText();
+      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      FlxG.sound.play(Paths.sound('acid'));
+      event.doesNotesplash = false;
+      #if mobile
+      HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #end
+    }
+
+    if (k == 'izzyNote') {
+      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
+      event.doesNotesplash = false;
+      if (solidCameraSprite == null) {
+        solidCameraSprite = new FunkinSprite(0, 0);
+        solidCameraSprite.makeSolidColor(2000, 2500, 0xFF66FFF7);
+        solidCameraSprite.cameras = [PlayState.instance.camCutscene];
+        solidCameraSprite.zIndex = 100000;
+        solidCameraSprite.alpha = 0;
+        solidCameraSprite.visible = true;
+        PlayState.instance.add(solidCameraSprite);
+        PlayState.instance.refresh();
+        if (Preferences.flashingLights) {
+          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+            tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.2}, 0.3, {ease: FlxEase.quadOut}));
+          }}));
+        }
+      } else {
+        if (Preferences.flashingLights) {
+          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+            tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.2}, 0.3, {ease: FlxEase.quadOut}));
+          }}));
+        }
+      }
+
+      scrambleStrumline();
+
+      #if mobile
+      HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #end
+    }
+
+    super('onNoteHit');
+  }
+
+  function onNoteMiss(event) {
+    super('onNoteMiss');
+
+  }
+
+  public override function onSongLoaded(event:ScriptEvent):Void
+  {
+		super.onSongLoaded(event);
+		if (PlayState.instance == null) return;
+
+    for (i in 0...4) {
+      var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+      ogStrumsX.push(strum.x);
+      ogStrumsY.push(strum.y);
+    }
+
+    loadUIElements();
+  }
+
+  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+  }
+
+  function updatePoisonText():Void
+  {
+    if (poisonText == null) return;
+    var commaSeparated:Bool = true;
+    poisonText.text = 'POISON: ' + FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
+    poisonText.visible = true;
+  }
+
+  function scrambleStrumline() {
+    if (izzyMechanicTimer != null) { //se acertar uma nota enquanto ja ta com o efeito, resetar strums e o timer pra acontecer novamente
+      izzyMechanicTimer.cancel();
+      izzyMechanicTimer = null;
+      unscrambleStrumline(true);
+    }
+    if (izzyMechanicEndTween != null) {
+      izzyMechanicEndTween.active = false;
+      izzyMechanicEndTween.cancel();
+      izzyMechanicEndTween = null;
+    }
+
+    var objects = [
+      PlayState.instance.playerStrumline.strumlineNotes.members[0],
+      PlayState.instance.playerStrumline.strumlineNotes.members[1],
+      PlayState.instance.playerStrumline.strumlineNotes.members[2],
+      PlayState.instance.playerStrumline.strumlineNotes.members[3],
+    ];
+    if (poisonText != null) {
+      objects.push(poisonText);
+    }
+
+    // Embaralhar strumline: essa função seta um ângulo aleatório negativo ou positivo com valor máximo para cada objeto passado.
+    PlayState.instance.camHUD.angle = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(3, 7);
+    for (obj in objects) {
+      var angle = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(10, 40);
+      obj.angle = angle;
+      var y = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(5, 15);
+      obj.y += y;
+      IntervalShake.shake(obj, 0.4, 0.010, 0.010, 0.010, FlxEase.ease);
+    }
+
+    isDrugged = true;
+
+    izzyMechanicTimer = new FlxTimer().start(6, function(tmr:FlxTimer) { //ao completar o timer
+      if (PlayState.instance == null) {
+        izzyMechanicTimer = null;
+        return;
+      }
+      if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+      unscrambleStrumline();
+    });
+  }
+  function unscrambleStrumline(instant:Bool = false) {
+    if (PlayState.instance == null) return;
+    izzyMechanicTimer = null;
+    isDrugged = false;
+
+    for (i in 0...4) {
+      var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+      tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, instant ? 0 : 1.5, {ease: FlxEase.quadOut}));
+      tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, instant ? 0 : 1.5, {ease: FlxEase.quadOut}));
+    }
+
+    var objects = [
+      PlayState.instance.camHUD,
+      PlayState.instance.playerStrumline.strumlineNotes.members[0],
+      PlayState.instance.playerStrumline.strumlineNotes.members[1],
+      PlayState.instance.playerStrumline.strumlineNotes.members[2],
+      PlayState.instance.playerStrumline.strumlineNotes.members[3],
+    ];
+    if (poisonText != null) {
+      objects.push(poisonText);
+    }
+
+    // Desembaralhar strumline: essa função seta o ângulo de cada objeto passado para 0 com uma transição suave.
+    for (obj in objects) {
+      if(instant) {
+        obj.angle = 0;
+        if (solidCameraSprite != null) {
+          solidCameraSprite.alpha = 0;
+        }
+      } else {
+        izzyMechanicEndTween = FlxTween.tween(obj, {angle: 0}, 3, {ease: FlxEase.quadOut});
+        if (solidCameraSprite != null) {
+          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0}, 2, {ease: FlxEase.quadOut}));
+        }
+      }
+    }
+  }
+
+  function loadUIElements()
+  {
+    var scoreTxt = PlayState.instance.scoreText;
+
+    poisonText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
+    poisonText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
+    poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
+    poisonText.y = PlayState.instance.healthBar.y - 5;
+    poisonText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
+    poisonText.zIndex = 901;
+    poisonText.cameras = [PlayState.instance.camHUD];
+    PlayState.instance.add(poisonText);
+    PlayState.instance.refresh();
+  }
+
+  public function onUpdate(event):Void {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+
+    if (poisonAmount > 0 && PlayState.instance.health > 0.08) {
+      PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
+    }
+
+    if (isDrugged) {
+      for (i in 0...4) {
+        var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        note.x = note.x + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0 + i) * 0.4;
+      }
+    }
+  }
+
+  function onSongRetry(event:ScriptEvent)
+	{
+	  super.onSongRetry(event);
+    if (PlayState.instance == null) return;
+
+    poisonAmount = 0;
+    if (poisonText != null) {
+      poisonText.visible = false;
+    }
+
+    isDrugged = false;
+    if (izzyMechanicTimer != null) {
+      izzyMechanicTimer.cancel();
+      unscrambleStrumline(true);
+      izzyMechanicTimer = null;
+    }
+  }
+
+  function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    poisonAmount = 0;
+    isDrugged = false;
+    if (izzyMechanicTimer != null) {
+      izzyMechanicTimer.cancel();
+      izzyMechanicTimer = null;
+    }
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+  override function onResume(event)
+	{
+		super.onResume(event);
+    if (izzyMechanicTimer != null) {
+      izzyMechanicTimer.active = true;
+    }
+    if (izzyMechanicEndTween != null) {
+      izzyMechanicEndTween.active = true;
+    }
+
+		for (tween in pausedTweens)
+		{
+			if (tween != null)
+				tween.active = true;
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+    if (izzyMechanicTimer != null) {
+      izzyMechanicTimer.active = false;
+    }
+    if (izzyMechanicEndTween != null) {
+      izzyMechanicEndTween.active = false;
+    }
+
+		for (tween in tweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    poisonAmount = 0;
+    isDrugged = false;
+  }
+}

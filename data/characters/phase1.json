@@ -1,0 +1,112 @@
+{
+  "version": "1.0.0",
+  "name": "Phase1",
+  "assetPath": "characters/wrath/WrathRetroSpecter",
+  "renderType": "multisparrow",
+  "startingAnimation": "idle",
+  "danceEvery": 1,
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 0.8,
+  "healthIcon": {
+    "id": "retro",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "singDOWN",
+      "prefix": "Retro DOWN",
+      "offsets": [97, -59],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "Retro UP",
+      "offsets": [-13, -6],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Retro RIGHT",
+      "offsets": [-26, -12],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Retro LEFT",
+      "offsets": [76, 16],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle",
+      "prefix": "Retro IDLE",
+      "offsets": [0, -10],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "enough",
+      "prefix": "RetroENOUGH0",
+      "assetPath": "characters/wrath/retro_enough",
+      "offsets": [0, 5],
+      "frameRate": 24,
+      "franeIndices": []
+    },
+    {
+      "name": "intro",
+      "prefix": "Phase 01 Instanz",
+      "assetPath": "characters/wrath/IntroCutscene",
+      "offsets": [0, 5.7],
+      "frameRate": 24,
+      "franeIndices": []
+    },
+    {
+      "loop": true,
+      "name": "introIdle",
+      "prefix": "Phase 01 Instanz 10000",
+      "assetPath": "characters/wrath/IntroCutscene",
+      "offsets": [0, 5.7],
+      "frameRate": 24,
+      "franeIndices": []
+    },
+    {
+      "offsets": [140, -150],
+      "frameRate": 24,
+      "name": "singDOWN-alt",
+      "assetPath": "characters/wrath/retro_angry",
+      "franeIndices": [],
+      "prefix": "Retro Down Note instance"
+    },
+    {
+      "offsets": [240, -90],
+      "frameRate": 24,
+      "name": "singLEFT-alt",
+      "assetPath": "characters/wrath/retro_angry",
+      "franeIndices": [],
+      "prefix": "Retro ANGRY LEFT"
+    },
+    {
+      "offsets": [150, 80],
+      "frameRate": 24,
+      "name": "singUP-alt",
+      "assetPath": "characters/wrath/retro_angry",
+      "franeIndices": [],
+      "prefix": "Retro ANGRY UP"
+    },
+    {
+      "offsets": [60, -80],
+      "frameRate": 24,
+      "name": "singRIGHT-alt",
+      "assetPath": "characters/wrath/retro_angry",
+      "franeIndices": [],
+      "prefix": "Retro ANGRY RIGHT"
+    }
+  ],
+  "flipX": false
+}

@@ -1,0 +1,87 @@
+import funkin.play.character.MultiSparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+
+class PhaseOneCharacter extends MultiSparrowCharacter {
+	function new() {
+		super('phase1');
+	}
+
+	var singDirection:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+	var isAngry:Bool = false;
+
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+		// aqui a nota nao é um mustHit pois é o dad cantando, entao nao tem relacao com o player
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			switch (event.note.noteData.kind)
+			{
+				case "hollowNotes":
+					return;
+				case "poison":
+					return;
+				case "Fake Note":
+					return;
+			}
+
+			var suffix = isAngry ? 'alt' : '';
+			holdTimer = 0;
+			playSingAnimation(event.note.noteData.getDirection(), suffix);
+			return;
+		}
+		super.onNoteHit(event);
+	}
+
+	public function onStepHit(event) {
+    super.onStepHit(event);
+		if (PlayState.instance.currentChart.song.id != 'satisfracture') return;
+
+    // ENOUGH
+    if (event.step >= 188 && isAngry == false) {
+			isAngry = true;
+    }
+  }
+
+	override public function playSingAnimation(dir:Int, ?suffix:String = ''):Void {
+		var suffixString:String = (suffix != '') ? '-' + suffix : '';
+		var anim:String = 'sing' + singDirection[dir] + suffixString;
+		this.playAnimation(anim, true, true);
+	}
+
+  /* ANTIGO - o stepHit é melhor pois as vezes nem sempre a animacao finaliza corretamente
+	override function onAnimationFinished(name:String) {
+		super.onAnimationFinished(name);
+
+		if (name == 'enough') {
+			isAngry = true;
+		}
+	} */
+
+	override public function onUpdate(event):Void {
+    super.onUpdate(event);
+	}
+
+  public function onSongRetry(event):Void {
+    super.onSongRetry(event);
+    isAngry = false;
+  }
+
+  function onCreate(event) {
+		super.onCreate(event);
+	}
+
+	public function onDestroy(event):Void {
+		super.onDestroy(event);
+	}
+
+	public function onPause(event) {
+		super.onPause(event);
+	}
+
+	public function onResume(event) {
+		super.onResume(event);
+	}
+}

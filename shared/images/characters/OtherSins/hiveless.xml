@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="hiveless.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="hive down0000" x="10" y="10" width="1197" height="614"/>
+	<SubTexture name="hive down0001" x="10" y="10" width="1197" height="614"/>
+	<SubTexture name="hive down0002" x="1217" y="10" width="1048" height="539" frameX="-58" frameY="-75" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0003" x="1217" y="10" width="1048" height="539" frameX="-58" frameY="-75" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0004" x="2275" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0005" x="2275" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0006" x="3401" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0007" x="3401" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0008" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0009" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0010" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0011" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0012" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0013" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive down0014" x="4527" y="10" width="1116" height="602" frameX="-38" frameY="-12" frameWidth="1197" frameHeight="614"/>
+	<SubTexture name="hive idle0000" x="5653" y="10" width="964" height="721" frameX="-12" frameY="-18" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0001" x="5653" y="10" width="964" height="721" frameX="-12" frameY="-18" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0002" x="6627" y="10" width="904" height="733" frameX="-41" frameY="-2" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0003" x="6627" y="10" width="904" height="733" frameX="-41" frameY="-2" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0004" x="10" y="753" width="955" height="723" frameX="-16" frameY="0" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0005" x="10" y="753" width="955" height="723" frameX="-16" frameY="0" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0006" x="975" y="753" width="967" height="719" frameX="-10" frameY="-4" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0007" x="975" y="753" width="967" height="719" frameX="-10" frameY="-4" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0008" x="1952" y="753" width="990" height="719" frameX="0" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0009" x="1952" y="753" width="990" height="719" frameX="0" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0010" x="2952" y="753" width="971" height="719" frameX="-8" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0011" x="2952" y="753" width="971" height="719" frameX="-8" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0012" x="3933" y="753" width="952" height="719" frameX="-16" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive idle0013" x="3933" y="753" width="952" height="719" frameX="-16" frameY="-5" frameWidth="990" frameHeight="739"/>
+	<SubTexture name="hive left0000" x="4895" y="753" width="795" height="676" frameX="-50" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0001" x="4895" y="753" width="795" height="676" frameX="-50" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0002" x="5700" y="753" width="844" height="666" frameX="0" frameY="-4" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0003" x="5700" y="753" width="844" height="666" frameX="0" frameY="-4" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0004" x="6554" y="753" width="822" height="665" frameX="-22" frameY="-5" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0005" x="6554" y="753" width="822" height="665" frameX="-22" frameY="-5" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0006" x="10" y="1486" width="822" height="669" frameX="-22" frameY="-1" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0007" x="10" y="1486" width="822" height="669" frameX="-22" frameY="-1" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0008" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0009" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0010" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0011" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0012" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0013" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive left0014" x="842" y="1486" width="822" height="670" frameX="-22" frameY="0" frameWidth="845" frameHeight="676"/>
+	<SubTexture name="hive right0000" x="1674" y="1486" width="700" height="813" frameX="-10" frameY="-22" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0001" x="1674" y="1486" width="700" height="813" frameX="-10" frameY="-22" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0002" x="2384" y="1486" width="667" height="835" frameX="-9" frameY="0" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0003" x="2384" y="1486" width="667" height="835" frameX="-9" frameY="0" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0004" x="3061" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0005" x="3061" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0006" x="3766" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0007" x="3766" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0008" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0009" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0010" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0011" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0012" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0013" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive right0014" x="4471" y="1486" width="695" height="820" frameX="0" frameY="-15" frameWidth="710" frameHeight="835"/>
+	<SubTexture name="hive up0000" x="5176" y="1486" width="929" height="877"/>
+	<SubTexture name="hive up0001" x="5176" y="1486" width="929" height="877"/>
+	<SubTexture name="hive up0002" x="6115" y="1486" width="845" height="859" frameX="-40" frameY="-18" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0003" x="6115" y="1486" width="845" height="859" frameX="-40" frameY="-18" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0004" x="6970" y="1486" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0005" x="6970" y="1486" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0006" x="10" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0007" x="10" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0008" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0009" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0010" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0011" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0012" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0013" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+	<SubTexture name="hive up0014" x="886" y="2373" width="866" height="856" frameX="-30" frameY="-21" frameWidth="929" frameHeight="877"/>
+</TextureAtlas>

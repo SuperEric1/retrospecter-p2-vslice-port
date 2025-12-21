@@ -1,0 +1,98 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.Paths;
+import funkin.Preferences;
+
+class fakeNote extends Module {
+	var fadingNotes:Array<Int> = []; // IDs das notas que já estão desaparecendo
+
+	public function new() {
+		super("Fake Note");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onUpdate(event:UpdateScriptEvent):Void
+	{
+		super.onUpdate(event);
+
+		if (PlayState.instance == null) return;
+
+		// Verifica todas as notas do jogador
+		for (note in PlayState.instance.playerStrumline.notes.members)
+		{
+			if (note == null || !note.alive || note.noteData.kind != "Fake Note") continue;
+
+			// Se a nota já está desaparecendo, pula
+			if (fadingNotes.contains(note.ID)) continue;
+
+			// Pega a posição Y do strumline correspondente à direção da nota
+			var strumNote = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()];
+			if (strumNote == null) continue;
+
+			// Calcula a distância entre a nota e o strumline
+			var distance = Math.abs(note.y - strumNote.y);
+
+			// Quando a nota está próxima (cerca de 80 pixels), faz ela desaparecer
+			if (distance < 80 && note.alpha > 0)
+			{
+				// Marca a nota como "desaparecendo"
+				fadingNotes.push(note.ID);
+
+				// Aplica o tween de fade out rápido
+				FlxTween.tween(note, {alpha: 0}, 0.2, {
+					ease: FlxEase.quadOut,
+					onComplete: function(twn:FlxTween) {
+						// Remove o ID da lista quando o tween terminar
+						fadingNotes.remove(note.ID);
+					}
+				});
+			}
+		}
+	}
+
+	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+		super.onNoteHit(ev);
+
+		if (PlayState.instance == null) return;
+		if (!ev.note.noteData.getMustHitNote()) return;
+		if (ev.note.noteData.kind != "Fake Note") return;
+
+		ev.cancel();
+	}
+
+	public override function onNoteHoldDrop(ev:HoldNoteScriptEvent):Void {
+		super.onNoteHoldDrop(ev);
+
+		if (PlayState.instance == null) return;
+		if (!ev.holdNote.noteData.getMustHitNote()) return;
+		if (ev.holdNote.noteData.kind != "Fake Note") return;
+
+		ev.cancel();
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		for ( fakeNote in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "Fake Note" )
+			{
+				event.note.kill();
+				event.cancel();
+			}
+		}
+	}
+}

@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bf-startled.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BF scare instance 10000" x="5" y="5" width="363" height="329" frameX="-2" frameY="-100" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10001" x="378" y="5" width="364" height="329" frameX="-1" frameY="-100" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10002" x="378" y="5" width="364" height="329" frameX="-1" frameY="-100" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10003" x="752" y="5" width="341" height="429" frameX="-17" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10004" x="752" y="5" width="341" height="429" frameX="-17" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10005" x="1103" y="5" width="340" height="433" frameX="-17" frameY="0" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10006" x="1103" y="5" width="340" height="433" frameX="-17" frameY="0" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10007" x="1453" y="5" width="341" height="428" frameX="-11" frameY="-5" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10008" x="1453" y="5" width="341" height="428" frameX="-11" frameY="-5" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10009" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10010" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10011" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10012" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10013" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10014" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10015" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10016" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10017" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10018" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10019" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10020" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10021" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10022" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10023" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10024" x="356" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10025" x="5" y="448" width="341" height="429" frameX="-11" frameY="-4" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10026" x="707" y="448" width="336" height="427" frameX="-12" frameY="-6" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10027" x="707" y="448" width="336" height="427" frameX="-12" frameY="-6" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10028" x="707" y="448" width="336" height="427" frameX="-12" frameY="-6" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10029" x="1053" y="448" width="329" height="424" frameX="0" frameY="-9" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10030" x="1053" y="448" width="329" height="424" frameX="0" frameY="-9" frameWidth="365" frameHeight="433"/>
+	<SubTexture name="BF scare instance 10031" x="1392" y="448" width="327" height="424" frameX="-1" frameY="-9" frameWidth="365" frameHeight="433"/>
+</TextureAtlas>

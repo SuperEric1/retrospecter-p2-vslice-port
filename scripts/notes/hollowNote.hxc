@@ -1,0 +1,63 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import flixel.util.FlxTimer;
+import funkin.Paths;
+import funkin.Preferences;
+
+class hollowNote extends Module {
+	public function new() {
+		super("hollowNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "hollowNotes" )
+		{
+			event.note.frames = Paths.getSparrowAtlas( 'hollowNotes' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'noteLeft' );
+			event.note.animation.addByPrefix( 'blueScroll', 'noteDown' );
+			event.note.animation.addByPrefix( 'greenScroll', 'noteUp' );
+			event.note.animation.addByPrefix( 'redScroll', 'noteRight' );
+
+			var hollowNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						hollowNote = "purpleScroll";
+					case 1:
+						hollowNote = "blueScroll";
+					case 2:
+						hollowNote = "greenScroll";
+					case 3:
+						hollowNote = "redScroll";
+				}
+
+			event.note.animation.play( hollowNote );
+		}
+	}
+
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		for ( hollowNote in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "hollowNotes" )
+			{
+
+			}
+		}
+	}
+}

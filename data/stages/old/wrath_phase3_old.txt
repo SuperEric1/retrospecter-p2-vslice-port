@@ -1,0 +1,341 @@
+{
+  "props": [
+    {
+      "danceEvery": 0,
+      "zIndex": 0,
+      "position": [0.0, -1820.0],
+      "scale": [0.8, 0.8],
+      "name": "bg",
+      "isPixel": false,
+      "assetPath": "Phase3/bg",
+      "scroll": [0.1, 0.8]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 0,
+      "position": [0.0, -2070.0],
+      "scale": [0.8, 0.8],
+      "name": "frontbg",
+      "isPixel": false,
+      "assetPath": "Phase3/frontbgWalls",
+      "scroll": [0.3, 0.9]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.8, 0.8],
+      "name": "frontbgLava",
+      "isPixel": false,
+      "assetPath": "Phase3/frontbgLava",
+      "scroll": [0.3, 0.9]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.8, 0.8],
+      "name": "bglight",
+      "isPixel": false,
+      "assetPath": "Phase3/bglight",
+      "scroll": [0.3, 0.85]
+    },
+    {
+      "danceEvery": 0,
+      "zIndex": 0,
+      "position": [-210.0, -550.0],
+      "scale": [0.9535, 0.9535],
+      "name": "FG_glow",
+      "isPixel": false,
+      "assetPath": "Phase3/FG_glow",
+      "scroll": [1.6, 1.2]
+    },
+    {
+      "zIndex": 0,
+      "position": [50.0, -645.0],
+      "scale": [0.9, 0.9],
+      "animType": "sparrow",
+      "name": "lavaflowL",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/lavaflow_L",
+      "scroll": [0.2, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "lavaflow_L",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [1200.0, -645.0],
+      "scale": [0.9, 0.9],
+      "animType": "sparrow",
+      "name": "lavaflowR",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/lavaflow_R",
+      "scroll": [0.2, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "lavaflow_R",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.8, 0.8],
+      "animType": "sparrow",
+      "name": "debris1",
+      "isPixel": false,
+      "startingAnimation": "debris",
+      "assetPath": "Phase3/debris1",
+      "scroll": [0.2, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "debris",
+          "looped": true,
+          "flipX": false,
+          "name": "debris"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.9, 0.9],
+      "animType": "sparrow",
+      "name": "geyserL",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/geyserL",
+      "scroll": [0.25, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "geyserL",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.9, 0.9],
+      "animType": "sparrow",
+      "name": "geyserM",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/geyserM",
+      "scroll": [0.2, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "geyserM",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.9, 0.9],
+      "animType": "sparrow",
+      "name": "geyserR",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/geyserR",
+      "scroll": [0.25, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "geyserR",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.8, 0.8],
+      "animType": "sparrow",
+      "name": "debris2",
+      "isPixel": false,
+      "startingAnimation": "debris",
+      "assetPath": "Phase3/debris2",
+      "scroll": [0.28, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "debris",
+          "looped": true,
+          "flipX": false,
+          "name": "debris"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.8, 0.8],
+      "animType": "sparrow",
+      "name": "debris3",
+      "isPixel": false,
+      "startingAnimation": "debris",
+      "assetPath": "Phase3/debris2",
+      "scroll": [0.28, 0.9],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "debris",
+          "looped": true,
+          "flipX": false,
+          "name": "debris"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [-200.0, 180.0],
+      "scale": [0.75, 0.75],
+      "animType": "sparrow",
+      "name": "lavabubbles",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/lavabubbles",
+      "scroll": [1.2, 1.05],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "lavabubbles",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [0.0, -720.0],
+      "scale": [0.75, 0.75],
+      "animType": "sparrow",
+      "name": "lava_FG",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/lava_FG",
+      "scroll": [1.5, 1.15],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "lava_FG",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [-210.0, -232.0],
+      "scale": [0.75, 0.75],
+      "animType": "sparrow",
+      "name": "FG_fire_L",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/FG_fire",
+      "scroll": [1.6, 1.2],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "FG_fire",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    },
+    {
+      "zIndex": 0,
+      "position": [1440.0, -232.0],
+      "scale": [0.75, 0.75],
+      "animType": "sparrow",
+      "name": "FG_fire_R",
+      "isPixel": false,
+      "startingAnimation": "anim",
+      "assetPath": "Phase3/FG_fire",
+      "flipX": true,
+      "scroll": [1.6, 1.2],
+      "animations": [
+        {
+          "offsets": [0, 0],
+          "flipY": false,
+          "frameRate": 24,
+          "prefix": "FG_fire",
+          "looped": true,
+          "flipX": false,
+          "name": "anim"
+        }
+      ]
+    }
+  ],
+  "cameraZoom": 0.9,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [1000, 200],
+      "scale": 0.2,
+      "cameraOffsets": [-170, -20]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [100, 100],
+      "cameraOffsets": [0, -20]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [200, 0],
+      "scale": 0.2,
+      "position": [300, 420]
+    }
+  },
+  "name": "Wrath_phase3"
+}

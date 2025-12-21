@@ -1,0 +1,227 @@
+{
+    "version": "1.0.0",
+    "name": "Bf Pride",
+    "assetPath": "characters/BfSkins/bf_pride",
+    "singTime": 4,
+    "isPixel": false,
+    "scale": 1,
+    "healthIcon": {
+        "id": "bf_pride",
+        "isPixel": false,
+        "flipX": false,
+        "scale": 0.9
+    },
+    "animations": [
+        {
+            "name": "idle",
+            "prefix": "BF idle dance",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singLEFT",
+            "prefix": "LEFT",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singUP",
+            "prefix": "UP",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singRIGHT",
+            "prefix": "RIGHT",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singDOWN",
+            "prefix": "DOWN",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singLEFTmiss",
+            "prefix": "BF NOTE LEFT MISS",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singDOWNmiss",
+            "prefix": "BF NOTE DOWN MISS",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singUPmiss",
+            "prefix": "BF NOTE UP MISS",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "singRIGHTmiss",
+            "prefix": "BF NOTE RIGHT MISS",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "idle-alt",
+            "prefix": "BF idle lookup",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "hey",
+            "prefix": "BF HEY",
+            "offsets": [
+                0,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "brow",
+            "prefix": "BF brow wipe",
+            "offsets": [
+                -140,
+                -8
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "sex",
+            "prefix": "BF brow wipe",
+            "offsets": [
+                -140,
+                -8
+            ],
+            "frameRate": 24,
+            "frameIndices": [
+                43,
+                44,
+                49,
+                50,
+                51,
+                52,
+                53,
+                54,
+                55
+            ]
+        },
+        {
+            "name": "boo",
+            "prefix": "BF scare",
+            "offsets": [
+                -139,
+                0
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "firstDeath",
+            "prefix": "BF dies0",
+            "offsets": [
+                -103,
+                82
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "deathLoop",
+            "prefix": "BF Dead Loop0",
+            "offsets": [
+                -103,
+                82
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "deathConfirm",
+            "prefix": "BF Dead confirm0",
+            "offsets": [
+                -103,
+                82
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "firstDeath-acid",
+            "prefix": "BF dies acid",
+            "offsets": [
+                172,
+                158
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "deathLoop-acid",
+            "prefix": "BF Dead Loop acid",
+            "offsets": [
+                172,
+                158
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        },
+        {
+            "name": "deathConfirm-acid",
+            "prefix": "BF Dead confirm acid",
+            "offsets": [
+                172,
+                158
+            ],
+            "frameRate": 24,
+            "frameIndices": []
+        }
+    ],
+    "flipX": true
+}

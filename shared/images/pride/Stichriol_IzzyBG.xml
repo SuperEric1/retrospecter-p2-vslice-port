@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Stichriol_IzzyBG.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Stitchriol BG Idle0000" x="10" y="10" width="317" height="482" frameX="0" frameY="-3" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0001" x="10" y="10" width="317" height="482" frameX="0" frameY="-3" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0002" x="337" y="10" width="323" height="483" frameX="0" frameY="-2" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0003" x="337" y="10" width="323" height="483" frameX="0" frameY="-2" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0004" x="670" y="10" width="324" height="484" frameX="0" frameY="-1" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0005" x="670" y="10" width="324" height="484" frameX="0" frameY="-1" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0006" x="1004" y="10" width="327" height="485"/>
+	<SubTexture name="Stitchriol BG Idle0007" x="1004" y="10" width="327" height="485"/>
+	<SubTexture name="Stitchriol BG Idle0008" x="1341" y="10" width="327" height="485"/>
+	<SubTexture name="Stitchriol BG Idle0009" x="1341" y="10" width="327" height="485"/>
+	<SubTexture name="Stitchriol BG Idle0010" x="1678" y="10" width="304" height="474" frameX="0" frameY="-11" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0011" x="1678" y="10" width="304" height="474" frameX="0" frameY="-11" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0012" x="10" y="505" width="310" height="479" frameX="0" frameY="-6" frameWidth="327" frameHeight="485"/>
+	<SubTexture name="Stitchriol BG Idle0013" x="10" y="505" width="310" height="479" frameX="0" frameY="-6" frameWidth="327" frameHeight="485"/>
+</TextureAtlas>

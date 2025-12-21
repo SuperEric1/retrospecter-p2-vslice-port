@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<TextureAtlas imagePath="lavarock_M.png">
+<SubTexture name="lavarock_M0000" x="1012" y="501" width="1007" height="249" frameX="-1" frameY="-7" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0001" x="1012" y="501" width="1007" height="249" frameX="-1" frameY="-7" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0002" x="1012" y="251" width="1007" height="250" frameX="-1" frameY="-6" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0003" x="1012" y="251" width="1007" height="250" frameX="-1" frameY="-6" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0004" x="1012" y="0" width="1007" height="251" frameX="-1" frameY="-5" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0005" x="1012" y="0" width="1007" height="251" frameX="-1" frameY="-5" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0006" x="0" y="259" width="1007" height="256" frameX="-1" frameY="0" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0007" x="0" y="0" width="1012" height="259" frameX="0" frameY="0" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0008" x="0" y="1020" width="1012" height="245" frameX="0" frameY="-14" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0009" x="0" y="1020" width="1012" height="245" frameX="0" frameY="-14" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0010" x="0" y="769" width="1012" height="251" frameX="0" frameY="-8" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0011" x="0" y="769" width="1012" height="251" frameX="0" frameY="-8" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0012" x="0" y="515" width="1012" height="254" frameX="0" frameY="-5" frameWidth="1008" frameHeight="255" />
+<SubTexture name="lavarock_M0013" x="0" y="515" width="1012" height="254" frameX="0" frameY="-5" frameWidth="1008" frameHeight="255" />
+</TextureAtlas>
