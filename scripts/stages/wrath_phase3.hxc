@@ -16,6 +16,7 @@ import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
 import flixel.text.FlxText;
 import funkin.Paths;
+import Std;
 
 class WrathPhase3 extends Stage
 {
@@ -96,7 +97,6 @@ class WrathPhase3 extends Stage
     override public function onCreate(event:ScriptEvent):Void
     {
         super.onCreate(event);
-        loadDebugElements();
 
         // Inicializar mapas
         stagePositions = new haxe.ds.StringMap();
@@ -116,8 +116,7 @@ class WrathPhase3 extends Stage
             "gf" => {x: 6, y: 8}
         ];
 
-        sinkables = ['bg', 'lavaflowL', 'lavaflowR', 'geyserM', 'geyserL', 'geyserR',
-                     'frontbg', 'FG_fire_L', 'FG_fire_R', 'FG_glow'];
+        sinkables = ['bg', 'lavaflowL', 'lavaflowR', 'geyserM', 'geyserL', 'geyserR', 'frontbg', 'FG_fire_L', 'FG_fire_R', 'FG_glow'];
         eruptionSprites = ['lavarock_L', 'lavarock_M', 'lavarock_R', 'lavabubbles', 'frontbgLava'];
 
         // Background
@@ -150,8 +149,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lavaflowR, 'lavaflowR');
 
         // Debris 1
-        debris1 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread),
-                                FlxG.random.float(-1000, -1200));
+        debris1 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread), FlxG.random.float(-1000, -1200));
         debris1.loadSparrow('Phase3/debris1');
         debris1.animation.addByPrefix('debris', 'debris', 24, true);
         debris1.animation.play('debris');
@@ -247,6 +245,7 @@ class WrathPhase3 extends Stage
 
         // Criar as rochas do chão
         createRocks();
+        var frontZIndex = 202;
 
         // Lava bubbles
         lavabubbles = FunkinSprite.create(-200, 900);
@@ -254,6 +253,7 @@ class WrathPhase3 extends Stage
         lavabubbles.animation.addByPrefix('anim', 'lavabubbles', 24, true);
         lavabubbles.animation.play('anim');
         lavabubbles.scale.set(0.75, 0.75);
+        lavabubbles.zIndex = frontZIndex;
         lavabubbles.updateHitbox();
         lavabubbles.scrollFactor.set(1.2, 1.05);
         PlayState.instance.add(lavabubbles, 'lavabubbles');
@@ -267,6 +267,7 @@ class WrathPhase3 extends Stage
         bglight.y -= bglight.height;
         bglight.blend = 'add';
         bglight.alpha = 0.15;
+        bglight.zIndex = frontZIndex;
         PlayState.instance.add(bglight, 'bglight');
 
         // Foreground lava
@@ -276,16 +277,18 @@ class WrathPhase3 extends Stage
         lava_FG.animation.play('anim');
         lava_FG.scrollFactor.set(1.5, 1.15);
         lava_FG.scale.set(0.75, 0.75);
+        lava_FG.zIndex = frontZIndex;
         lava_FG.updateHitbox();
         PlayState.instance.add(lava_FG, 'lava_FG');
 
         // Foreground fires
-        FG_fire_L = FunkinSprite.create(-10, 488);
+        FG_fire_L = FunkinSprite.create(70, 488);
         FG_fire_L.loadSparrow('Phase3/FG_fire');
         FG_fire_L.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_L.animation.play('anim');
         FG_fire_L.scrollFactor.set(1.6, 1.2);
         FG_fire_L.scale.set(0.75, 0.75);
+        FG_fire_L.zIndex = frontZIndex;
         FG_fire_L.updateHitbox();
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
 
@@ -295,6 +298,7 @@ class WrathPhase3 extends Stage
         FG_fire_R.animation.play('anim');
         FG_fire_R.scrollFactor.set(1.6, 1.2);
         FG_fire_R.scale.set(0.75, 0.75);
+        FG_fire_R.zIndex = frontZIndex;
         FG_fire_R.updateHitbox();
         FG_fire_R.flipX = true;
         PlayState.instance.add(FG_fire_R, 'FG_fire_R');
@@ -306,10 +310,17 @@ class WrathPhase3 extends Stage
         FG_glow.blend = 'add';
         FG_glow.scrollFactor.set(1.6, 1.2);
         FG_glow.scale.set(0.9535, 0.9535);
+        FG_glow.zIndex = frontZIndex + 1;
         FG_glow.updateHitbox();
         PlayState.instance.add(FG_glow, 'FG_glow');
 
         defaultCamZoom = 1.0; // Ajustar conforme necessário
+    }
+
+    override public function onSongLoaded(event:ScriptEvent):Void
+    {
+        super.onSongLoaded(event);
+        loadDebugElements();
 
         // Salvar posições iniciais
         saveInitialPositions();
@@ -323,7 +334,7 @@ class WrathPhase3 extends Stage
         stagePositions.set('ground_L', {x: ground_L.x, y: ground_L.y});
         stagePositions.set('ground_M', {x: ground_M.x, y: ground_M.y});
         stagePositions.set('ground_R', {x: ground_R.x, y: ground_R.y});
-        stagePositions.set('lavarock_L', {x: 0, y: lavarock_L.y});
+        stagePositions.set('lavarock_L', {x: lavarock_L.x, y: lavarock_L.y});
         stagePositions.set('lavarock_M', {x: 0, y: lavarock_M.y});
         stagePositions.set('lavarock_R', {x: 0, y: lavarock_R.y});
         stagePositions.set('lavabubbles', {x: 0, y: lavabubbles.y});
@@ -377,6 +388,7 @@ class WrathPhase3 extends Stage
         lavarock_L.animation.addByPrefix('anim', 'lavarock_L', 24, true);
         lavarock_L.animation.play('anim');
         lavarock_L.scale.set(0.75, 0.75);
+        lavarock_L.zIndex = 201; // ficar acima do dad
         lavarock_L.updateHitbox();
         PlayState.instance.add(lavarock_L, 'lavarock_L');
 
@@ -411,7 +423,7 @@ class WrathPhase3 extends Stage
             var camFollow = PlayState.instance.cameraFollowPoint;
             if (camFollow != null)
             {
-                var diff = lava_FG.y - camFollow.y - 245;
+                var diff = lava_FG.y - camFollow.y - 125; //245
                 if (diff < 0)
                     camFollow.y += Math.min(0, diff);
             }
@@ -426,7 +438,7 @@ class WrathPhase3 extends Stage
             geyserR.animation.play('loop');
 
         // Atualizar movimento das rochas
-        sinkUpdate(event.elapsed); //antes: event.elapsed
+        sinkUpdate(event.elapsed);
 
         // Debris recycling
         if (debris1.y >= debrisResetY)
@@ -469,12 +481,13 @@ class WrathPhase3 extends Stage
         // Sink logic
         if (sinkValue > 0)
         {
+            var elapsed = Conductor.instance.stepLengthMs;
             if (sinkValue >= 75)
-                sinkMult = Math.min(1, sinkMult + event.elapsed);
+                sinkMult = Math.min(1, sinkMult + elapsed);
             else
-                sinkMult = Math.max(0.75, sinkMult - event.elapsed / 6);
+                sinkMult = Math.max(0.75, sinkMult - elapsed / 6);
 
-            var sinkv = sinkValue / 30.0 * event.elapsed * sinkMult;
+            var sinkv = sinkValue / 30.0 * elapsed * sinkMult;
             sinkv = Math.min(sinkValue, sinkv);
             sinkValue -= sinkv;
 
@@ -502,14 +515,6 @@ class WrathPhase3 extends Stage
 
         sineValue += elapsed;
 
-        if (debugText != null) {
-          debugText.text = 'sineValue: ' + sineValue +
-          '\nelapsed: ' + elapsed;
-          //+ '\n\nground base: ' + pos.x + ',' + pos.y +
-          //'\noff: ' + offX + ',' + offY +
-          //'\nresult: ' + (pos.x + offX) + ',' + (pos.y + offY);
-        }
-
         var lavaFGOff = (lava_FG.y - lava_FG_Y) * 0.75;
 
         for (i in 0...3)
@@ -535,6 +540,11 @@ class WrathPhase3 extends Stage
                 charGroupPos = stagePositions.get('gf');
             }
 
+            /*if (debugText != null) {
+                debugText.text = 'sineValue: ' + sineValue +
+                '\nelapsed: ' + elapsed +
+                '\ncharGroupPos ' + charGroupPos;
+            }*/
             if (char == null || charGroupPos == null) continue;
             var groundName = 'ground_' + (i == 0 ? 'L' : (i == 1 ? 'R' : 'M'));
             var pos = stagePositions.get(groundName);
@@ -558,6 +568,11 @@ class WrathPhase3 extends Stage
         {
             var spr:StageProp = getNamedProp(sprName);
             var pos = stagePositions.get(sprName);
+            if (debugText != null) {
+                debugText.text = 'spr: ' + spr +
+                '\nsprName ' + sprName +
+                '\npos ' + pos;
+            }
             if (spr != null && pos != null)
             {
                 var mult = 1.0;
@@ -584,8 +599,8 @@ class WrathPhase3 extends Stage
 
       debugText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
       debugText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
-      debugText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
-      debugText.y = PlayState.instance.healthBar.y - 5;
+      debugText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width / 2;
+      debugText.y = PlayState.instance.healthBar.y + 20;
       debugText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
       debugText.zIndex = 901;
       debugText.cameras = [PlayState.instance.camHUD];
@@ -614,9 +629,12 @@ class WrathPhase3 extends Stage
     {
         super.onSongEvent(event);
 
-        /*switch (event.event)
+        if (event.eventData.eventKind == "WrathEvents") {
+        value = event.eventData.value;
+
+        switch (Std.int(value.eventType))
         {
-            case 'Phase3 geysers':
+            case 0:
                 geyserL.visible = true;
                 geyserM.visible = true;
                 geyserR.visible = true;
@@ -624,22 +642,20 @@ class WrathPhase3 extends Stage
                 geyserM.animation.play('spout', true);
                 geyserR.animation.play('spout', true);
 
-            case 'Phase3 eruption':
+            case 1:
                 inEruption = !inEruption;
-                var duration:Float = event.event.value != null && event.event.value != '' ? Std.parseFloat(event.event.value) : 20;
+                var duration:Float = 20;
                 if (Math.isNaN(duration)) duration = 20;
-                var targetY = inEruption ? (lava_FG_Y - 120) : lava_FG_Y;
+                var targetY = inEruption ? (lava_FG_Y - 1000) : lava_FG_Y;
                 FlxTween.tween(lava_FG, {y: targetY}, duration, {ease: FlxEase.linear});
                 sinkValue = 700;
-                sinkMult = 0;
-                if (PlayState.instance != null)
-                    PlayState.instance.cameraSpeed = 0.5;
+                sinkMult = 2;
 
-            case 'Phase3 sink':
+            case 2:
                 if (getBoyfriend() == null) return;
 
                 FlxG.sound.play(Paths.sound('sink'));
-                var duration:Float = event.event.value != null && event.event.value != '' ? Std.parseFloat(event.event.value) : 5;
+                var duration:Float = 5;
                 if (Math.isNaN(duration)) duration = 5;
                 disableDadRockMovement = true;
 
@@ -653,6 +669,8 @@ class WrathPhase3 extends Stage
                         lavarock_L.visible = false;
                     }
                 });
-        }*/
+            }
+        }
     }
+
 }

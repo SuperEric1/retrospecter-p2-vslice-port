@@ -1,0 +1,33 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+
+class SillyEvents extends SongEvent {
+  function new() {
+    super('WrathEvents');
+  }
+
+  override function getTitle() {
+      return "WrathEvents";
+  }
+
+  override function handleEvent(data) {
+      if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+      if (PlayState.instance.isMinimalMode) return;
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "eventType",
+        title: "Tipo do Evento",
+        defaultValue: 0,
+        type: "enum",
+        keys: [
+          "Phase3 geysers" => 0,
+          "Phase3 eruption" => 1,
+          "Phase3 sink" => 2,
+        ]
+      }
+    ];
+  }
+}

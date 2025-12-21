@@ -15,6 +15,27 @@
         "force": true
       }
     },
+        {
+      "t": 190188.679245283,
+      "e": "WrathEvents",
+      "v": {
+	"eventType": 1
+}
+    },
+    {
+      "t": 190188.679245283,
+      "e": "WrathEvents",
+      "v": {
+	"eventType": 0
+}
+    },
+    {
+      "t": 298867.924528301,
+      "e": "WrathEvents",
+      "v": {
+	"eventType": 2
+}
+    },
     {
       "t": 0,
       "e": "FocusCamera",
