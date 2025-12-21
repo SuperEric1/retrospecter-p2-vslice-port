@@ -504,7 +504,7 @@ class WrathPhase3 extends Stage
 
         if (debugText != null) {
           debugText.text = 'sineValue: ' + sineValue +
-          '\nelapsed: ' + elapsed
+          '\nelapsed: ' + elapsed;
           //+ '\n\nground base: ' + pos.x + ',' + pos.y +
           //'\noff: ' + offX + ',' + offY +
           //'\nresult: ' + (pos.x + offX) + ',' + (pos.y + offY);
