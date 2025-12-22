@@ -50,9 +50,11 @@ class ApocalyptroSong extends Song
 
     var curBeat = event.beat;
     if (curBeat == 796) {
+      playStage.getBoyfriend().danceEvery = 0;
       playStage.getBoyfriend().playAnimation('brow', true);
     } else if (curBeat == 800) {
       playStage.getBoyfriend().playAnimation('sex', true);
+      playStage.getBoyfriend().danceEvery = 1;
     }
   }
 
