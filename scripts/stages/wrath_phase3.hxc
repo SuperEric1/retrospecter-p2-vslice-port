@@ -133,6 +133,7 @@ class WrathPhase3 extends Stage
         spriteMap = new haxe.ds.StringMap();
 
         if (hasCreatedStage) return;
+        var bgoffset = 35;
 
         // Background
         bg = FunkinSprite.create(0, -1100);
@@ -142,12 +143,12 @@ class WrathPhase3 extends Stage
         bg.antialiasing = false;
         bg.updateHitbox();
         bg.screenCenter('X');
-        bg.x += -50;
+        bg.x += -50 + bgoffset; //-50
         PlayState.instance.add(bg, 'bg');
         spriteMap.set('bg', bg);
 
         // Lava flows
-        lavaflowL = FunkinSprite.create(50, 75);
+        lavaflowL = FunkinSprite.create(50 + bgoffset, 75);
         lavaflowL.loadSparrow('Phase3/lavaflow_L');
         lavaflowL.animation.addByPrefix('anim', 'lavaflow_L', 24, true);
         lavaflowL.animation.play('anim');
@@ -158,7 +159,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lavaflowL, 'lavaflowL');
         spriteMap.set('lavaflowL', lavaflowL);
 
-        lavaflowR = FunkinSprite.create(1200, 75);
+        lavaflowR = FunkinSprite.create(1200 + bgoffset, 75);
         lavaflowR.loadSparrow('Phase3/lavaflow_R');
         lavaflowR.animation.addByPrefix('anim', 'lavaflow_R', 24, true);
         lavaflowR.animation.play('anim');
@@ -183,7 +184,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(debris1, 'debris1');
 
         // Geysers
-        var geyserX:Float = 235;
+        var geyserX:Float = 235 + bgoffset;
         var geyserY:Float = 100;
 
         geyserL = FunkinSprite.create(geyserX, geyserY);
@@ -259,7 +260,7 @@ class WrathPhase3 extends Stage
         frontbg.scale.set(0.8, 0.8);
         frontbg.updateHitbox();
         frontbg.screenCenter('X');
-        frontbg.x -= 60;
+        frontbg.x += bg.x - 25; //-60
         frontbg.antialiasing = false;
         PlayState.instance.add(frontbg, 'frontbg');
         spriteMap.set('frontbg', frontbg);
@@ -314,7 +315,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lava_FG, 'lava_FG');
 
         // Foreground fires
-        FG_fire_L = FunkinSprite.create(-180, 488);
+        FG_fire_L = FunkinSprite.create(-235, 488);
         FG_fire_L.loadSparrow('Phase3/FG_fire');
         FG_fire_L.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_L.animation.play('anim');
@@ -325,7 +326,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
         spriteMap.set('FG_fire_L', FG_fire_L);
 
-        FG_fire_R = FunkinSprite.create(1440, 488);
+        FG_fire_R = FunkinSprite.create(1255, 488);
         FG_fire_R.loadSparrow('Phase3/FG_fire');
         FG_fire_R.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_R.animation.play('anim');
@@ -338,7 +339,7 @@ class WrathPhase3 extends Stage
         spriteMap.set('FG_fire_R', FG_fire_R);
 
         // Foreground glow
-        FG_glow = FunkinSprite.create(-210, 170);
+        FG_glow = FunkinSprite.create(-225, 170);
         FG_glow.loadTexture('Phase3/FG_glow');
         FG_glow.alpha = 0.35;
         FG_glow.blend = 'add';
@@ -387,9 +388,9 @@ class WrathPhase3 extends Stage
 
     function createRocks():Void
     {
-        var dadRockX:Float = 400;  // Ajustar conforme necessário
-        var bfRockX:Float = 1350;  // Ajustar conforme necessário
-        var gfRockX:Float = 900;   // Ajustar conforme necessário
+        var dadRockX:Float = 330;  // Ajustar conforme necessário
+        var bfRockX:Float = 1280;  // Ajustar conforme necessário
+        var gfRockX:Float = 830;   // Ajustar conforme necessário
 
         var frontRockY:Float = 740;
         var backRockY:Float = 710;
@@ -707,6 +708,21 @@ class WrathPhase3 extends Stage
                 }));
             }
         }
+        
+        if (event.eventData.eventKind == "FocusCamera")
+
+		{
+		    if (Conductor.instance.currentStep >= 1722 && Conductor.instance.currentStep <= 1735) return; // bf toca uma animação nesse tempo, a câmera tem um zoom customizado. não queremos que esse zoom conflite com os de baixo
+			var value = event.eventData.value;
+			switch (Std.parseInt(value.char)) {
+				case 0:
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.15}, 1, {ease: FlxEase.quadOut});
+				case 1:
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 1, {ease: FlxEase.quadOut});
+				default:
+
+			}
+		}
     }
 
     override function onDestroy(event)
