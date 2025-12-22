@@ -1,0 +1,187 @@
+import flixel.FlxG;
+import flixel.math.FlxAngle;
+import funkin.play.PlayState;
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.play.stage.Stage;
+import funkin.graphics.shaders.DropShadowShader;
+import openfl.filters.ShaderFilter;
+import funkin.play.character.CharacterType;
+import openfl.display.BitmapData;
+import flixel.graphics.FlxGraphic;
+
+class prideStage extends Stage
+{
+  var godraysShader:FlxRuntimeShader;
+  var lightPosX:Float = 0.5;
+  var lightPosY:Float = 0.3;
+  var shaderColor = 0xFFf5f5f5; // #f5f5f5ff
+
+  var shadersInit:Bool = false;
+
+  function new()
+  {
+    super('pride');
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    var objectsRight = [
+      'pillar1r',
+      'pillar2r',
+      'pillar3r',
+      'pillar4r'
+    ];
+    var objectsLeft = [
+      'pillar1l',
+      'pillar2l',
+      'pillar3l',
+      'pillar4l'
+    ];
+
+    var stichShader = new DropShadowShader();
+    stichShader.setAdjustColor(-8, 0, -4, 0); // brilho, hue, contraste e saturação
+    stichShader.color = shaderColor;
+    stichShader.angle = 120;
+    stichShader.distance = 15;
+    getNamedProp('stich').shader = stichShader;
+    stichShader.attachedSprite = getNamedProp('stich');
+    getNamedProp('stich').animation.onFrameChange.add(function() {
+      if (getNamedProp('stich') != null)
+      {
+        stichShader.updateFrameInfo(getNamedProp('stich').frame);
+      }
+    });
+
+    for (obj in objectsRight) {
+      // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
+      var rim = new DropShadowShader();
+      rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
+      rim.color = shaderColor;
+      rim.angle = 120;
+      rim.distance = 5;
+
+      getNamedProp(obj).shader = rim;
+      rim.attachedSprite = getNamedProp(obj);
+    }
+    for (obj in objectsLeft) {
+      var rim = new DropShadowShader();
+      rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
+      rim.color = shaderColor;
+      rim.angle = 120;
+      rim.distance = 5;
+
+      getNamedProp(obj).shader = rim;
+      rim.attachedSprite = getNamedProp(obj);
+    }
+  }
+
+  override public function onSongLoaded(event:ScriptEvent)
+  {
+    super.onSongLoaded(event);
+    //godraysShader = new FlxRuntimeShader(Paths.frag('godrays-screen'));
+
+    // Define a posição inicial da luz
+    // _LightPos é um vec2, então precisamos definir os 2 valores
+    /*if (godraysShader.data._LightPos != null)
+    {
+      godraysShader.data._LightPos.value = [lightPosX, lightPosY];
+    }*/
+
+    //FlxG.camera.filters = [new ShaderFilter(godraysShader)];
+    //PlayState.instance.camHUD.filters = [new ShaderFilter(godraysShader)];
+    shadersInit = true;
+  }
+
+  public function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    getBoyfriend().shader = null;
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    // Apply the shader automatically to each character as it gets added.
+    super.addCharacter(character, charType);
+    trace('Applied stage shader to ' + character.characterName);
+
+    var rim = new DropShadowShader();
+    rim.setAdjustColor(-8, 0, -4, 0); // brilho, hue, contraste e saturação
+    rim.color = shaderColor;
+    character.shader = rim;
+    rim.attachedSprite = character;
+
+    switch (charType)
+    {
+      case CharacterType.BF:
+        rim.angle = 140;
+        //rim.threshold = 0.3;
+        character.idleSuffix = '-alt';
+        character.danceEvery = 1;
+
+        character.animation.onFrameChange.add(function() {
+          if (getBoyfriend() != null)
+          {
+            rim.updateFrameInfo(getBoyfriend().frame);
+          }
+        });
+
+      case CharacterType.GF:
+        rim.angle = 90;
+        rim.distance = 20;
+
+        character.animation.onFrameChange.add(function() {
+          rim.updateFrameInfo(getGirlfriend().frame);
+        });
+
+      case CharacterType.DAD:
+        rim.angle = 40;
+        //rim.threshold = 0.3;
+
+        character.animation.onFrameChange.add(function() {
+          rim.updateFrameInfo(getDad().frame);
+        });
+
+      default:
+    }
+  }
+
+  /**
+   * Called when the chart hits a song event.
+   */
+  public override function onSongEvent(scriptEvent:SongEventScriptEvent)
+  {
+    super.onSongEvent(scriptEvent);
+  }
+
+  function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+  }
+
+  function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+  }
+
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+    shadersInit = false;
+    /*if (getGirlfriend().characterId == 'otis-speaker')
+    {
+      getNamedProp('tankBricks').setPosition(445, 774);
+    }*/
+  }
+
+  function onDestroy(event:Dynamic)
+  {
+      super.onDestroy(e);
+      if (PlayState.instance == null) return;
+      if (!shadersInit) return;
+      shadersInit = false;
+      FlxG.camera.filters = [];
+  }
+}

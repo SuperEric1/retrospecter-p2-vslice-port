@@ -27,7 +27,7 @@ class wrathPhaseOneStage extends Stage
     for (obj in objects) {
       // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
       var rim = new DropShadowShader();
-      rim.setAdjustColor(-15, 0, 0, 0); // brilho, hue, contraste e saturação
+      rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
       rim.color = 0xFF29c23e; // #29c23eff
       rim.angle = 90;
 

@@ -21,8 +21,6 @@ class PhaseOneCharacter extends MultiSparrowCharacter {
 			{
 				case "hollowNotes":
 					return;
-				case "poison":
-					return;
 				case "Fake Note":
 					return;
 			}

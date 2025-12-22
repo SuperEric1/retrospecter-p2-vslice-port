@@ -28,12 +28,29 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "izzyNote":
           return;
+        case "No Animation":
+          return;
         case "Fake Note":
           return;
       }
     }
     super.onNoteHit(event);
 	}
+
+  /*function onNoteMiss(event:NoteScriptEvent) {
+    super.onNoteMiss(event);
+
+    if (PlayState.instance == null) return;
+		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
+      switch (event.note.noteData.kind)
+      {
+        case "hollowNotes":
+          return;
+        case "No Animation":
+          return;
+      }
+    }
+  }*/
 
   function onAnimationFrame(name:String, frameNumber:Int, frameIndex:Int)
   {

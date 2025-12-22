@@ -104,6 +104,7 @@
     {
       "name": "brow",
       "prefix": "BF brow wipe",
+      "assetPath": "characters/bf-sweaty",
       "offsets": [-140, -8],
       "frameRate": 24,
       "frameIndices": []
@@ -111,6 +112,7 @@
     {
       "name": "sex",
       "prefix": "BF brow wipe",
+      "assetPath": "characters/bf-sweaty",
       "offsets": [-140, -8],
       "frameRate": 24,
       "frameIndices": [43, 44, 49, 50, 51, 52, 53, 54, 55]

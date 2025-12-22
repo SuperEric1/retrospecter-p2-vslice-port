@@ -10,6 +10,8 @@ import funkin.save.Save;
 import funkin.play.PlayState;
 import funkin.effects.IntervalShake;
 import funkin.audio.FunkinSound;
+import funkin.play.GameOverSubState;
+import funkin.util.ReflectUtil;
 import funkin.data.song.SongRegistry;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
@@ -192,6 +194,7 @@ class SpectralSong extends Song
   public function onStepHit(event) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
+    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
 
     var objectsToShake = [
       playState.playerStrumline,

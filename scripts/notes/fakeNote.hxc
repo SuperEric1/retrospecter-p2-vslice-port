@@ -7,10 +7,12 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import funkin.Paths;
+import funkin.FunkinMemory;
 import funkin.Preferences;
 
 class fakeNote extends Module {
 	var fadingNotes:Array<Int> = []; // IDs das notas que já estão desaparecendo
+	var cachedTexture:Bool = false;
 
 	public function new() {
 		super("Fake Note");
@@ -28,38 +30,6 @@ class fakeNote extends Module {
 		super.onUpdate(event);
 
 		if (PlayState.instance == null) return;
-
-		// Verifica todas as notas do jogador
-		for (note in PlayState.instance.playerStrumline.notes.members)
-		{
-			if (note == null || !note.alive || note.noteData.kind != "Fake Note") continue;
-
-			// Se a nota já está desaparecendo, pula
-			if (fadingNotes.contains(note.ID)) continue;
-
-			// Pega a posição Y do strumline correspondente à direção da nota
-			var strumNote = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()];
-			if (strumNote == null) continue;
-
-			// Calcula a distância entre a nota e o strumline
-			var distance = Math.abs(note.y - strumNote.y);
-
-			// Quando a nota está próxima (cerca de 80 pixels), faz ela desaparecer
-			if (distance < 80 && note.alpha > 0)
-			{
-				// Marca a nota como "desaparecendo"
-				fadingNotes.push(note.ID);
-
-				// Aplica o tween de fade out rápido
-				FlxTween.tween(note, {alpha: 0}, 0.2, {
-					ease: FlxEase.quadOut,
-					onComplete: function(twn:FlxTween) {
-						// Remove o ID da lista quando o tween terminar
-						fadingNotes.remove(note.ID);
-					}
-				});
-			}
-		}
 	}
 
 	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
@@ -70,6 +40,7 @@ class fakeNote extends Module {
 		if (ev.note.noteData.kind != "Fake Note") return;
 
 		ev.cancel();
+		ev.stopPropagation();
 	}
 
 	public override function onNoteHoldDrop(ev:HoldNoteScriptEvent):Void {
@@ -80,6 +51,7 @@ class fakeNote extends Module {
 		if (ev.holdNote.noteData.kind != "Fake Note") return;
 
 		ev.cancel();
+		ev.stopPropagation();
 	}
 
 	public override function onNoteMiss( event:NoteScriptEvent )
@@ -92,6 +64,7 @@ class fakeNote extends Module {
 			{
 				event.note.kill();
 				event.cancel();
+				event.stopPropagation();
 			}
 		}
 	}

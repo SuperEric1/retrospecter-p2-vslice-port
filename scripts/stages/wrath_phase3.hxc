@@ -21,12 +21,15 @@ import Std;
 class WrathPhase3 extends Stage
 {
     // Configurações
+    var tweens = [];
+    var pausedTweens = [];
     var debrisSpread:Float = 600;
     var debrisResetY:Float = 800;
     var debrisXCenter:Float = 600;
     var defaultCamZoom:Float = 1;
     var lava_FG_Y:Float = 950;
     var debugText:FlxText;
+    var hasCreatedStage:Bool = false;
 
     // Sprites principais
     var bg:StageProp;
@@ -75,6 +78,9 @@ class WrathPhase3 extends Stage
     var sinkables:Array<String>;
     var eruptionSprites:Array<String>;
 
+    // SOLUÇÃO: Map para armazenar referências diretas às sprites
+    var spriteMap:haxe.ds.StringMap<String, StageProp>;
+
     public function new()
     {
         super('wrath_phase3');
@@ -89,6 +95,10 @@ class WrathPhase3 extends Stage
       case CharacterType.BF:
         character.idleSuffix = '-alt';
         character.danceEvery = 1;
+        character.antialiasing = false;
+
+      case CharacterType.GF:
+        character.antialiasing = false;
 
       default:
     }
@@ -116,18 +126,25 @@ class WrathPhase3 extends Stage
             "gf" => {x: 6, y: 8}
         ];
 
-        sinkables = ['bg', 'lavaflowL', 'lavaflowR', 'geyserM', 'geyserL', 'geyserR', 'frontbg', 'FG_fire_L', 'FG_fire_R', 'FG_glow'];
+        sinkables = ['bg', 'lavaflowL', 'lavaflowR', 'geyserM', 'geyserL', 'geyserR', 'frontbgLava', 'FG_fire_L', 'FG_fire_R', 'FG_glow'];
         eruptionSprites = ['lavarock_L', 'lavarock_M', 'lavarock_R', 'lavabubbles', 'frontbgLava'];
+
+        // SOLUÇÃO: Inicializar o mapa de sprites
+        spriteMap = new haxe.ds.StringMap();
+
+        if (hasCreatedStage) return;
 
         // Background
         bg = FunkinSprite.create(0, -1100);
         bg.loadTexture('Phase3/bg');
         bg.scrollFactor.set(0.1, 0.8);
         bg.scale.set(0.8, 0.8);
+        bg.antialiasing = false;
         bg.updateHitbox();
         bg.screenCenter('X');
         bg.x += -50;
         PlayState.instance.add(bg, 'bg');
+        spriteMap.set('bg', bg);
 
         // Lava flows
         lavaflowL = FunkinSprite.create(50, 75);
@@ -135,9 +152,11 @@ class WrathPhase3 extends Stage
         lavaflowL.animation.addByPrefix('anim', 'lavaflow_L', 24, true);
         lavaflowL.animation.play('anim');
         lavaflowL.scale.set(0.9, 0.9);
+        lavaflowL.antialiasing = false;
         lavaflowL.updateHitbox();
         lavaflowL.scrollFactor.set(0.2, 0.9);
         PlayState.instance.add(lavaflowL, 'lavaflowL');
+        spriteMap.set('lavaflowL', lavaflowL);
 
         lavaflowR = FunkinSprite.create(1200, 75);
         lavaflowR.loadSparrow('Phase3/lavaflow_R');
@@ -146,13 +165,15 @@ class WrathPhase3 extends Stage
         lavaflowR.scale.set(0.9, 0.9);
         lavaflowR.updateHitbox();
         lavaflowR.scrollFactor.set(0.2, 0.9);
+        lavaflowR.antialiasing = false;
         PlayState.instance.add(lavaflowR, 'lavaflowR');
+        spriteMap.set('lavaflowR', lavaflowR);
 
         // Debris 1
         debris1 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread), FlxG.random.float(-1000, -1200));
         debris1.loadSparrow('Phase3/debris1');
         debris1.animation.addByPrefix('debris', 'debris', 24, true);
-        debris1.animation.play('debris');
+        //debris1.animation.play('debris');
         debris1.velocity.y = 400;
         debris1.scrollFactor.set(0.2, 0.9);
         debris1.scale.set(0.8, 0.8);
@@ -174,7 +195,9 @@ class WrathPhase3 extends Stage
         geyserL.scale.set(0.9, 0.9);
         geyserL.updateHitbox();
         geyserL.visible = false;
+        geyserL.antialiasing = false;
         PlayState.instance.add(geyserL, 'geyserL');
+        spriteMap.set('geyserL', geyserL);
 
         geyserM = FunkinSprite.create(geyserX + 300, geyserY - 20);
         geyserM.loadSparrow('Phase3/geyserM');
@@ -185,7 +208,9 @@ class WrathPhase3 extends Stage
         geyserM.scale.set(0.9, 0.9);
         geyserM.updateHitbox();
         geyserM.visible = false;
+        geyserM.antialiasing = false;
         PlayState.instance.add(geyserM, 'geyserM');
+        spriteMap.set('geyserM', geyserM);
 
         geyserR = FunkinSprite.create(geyserX + 600, geyserY + 180);
         geyserR.loadSparrow('Phase3/geyserR');
@@ -196,14 +221,16 @@ class WrathPhase3 extends Stage
         geyserR.scale.set(0.9, 0.9);
         geyserR.updateHitbox();
         geyserR.visible = false;
+        geyserR.antialiasing = false;
         PlayState.instance.add(geyserR, 'geyserR');
+        spriteMap.set('geyserR', geyserR);
 
         // Debris 2 e 3
         debris2 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread),
                                 FlxG.random.float(-1800, -2000));
         debris2.loadSparrow('Phase3/debris2');
         debris2.animation.addByPrefix('debris', 'debris', 24, true);
-        debris2.animation.play('debris');
+        //debris2.animation.play('debris');
         debris2.velocity.y = 450;
         debris2.scrollFactor.set(0.28, 0.9);
         debris2.scale.set(0.8, 0.8);
@@ -216,7 +243,7 @@ class WrathPhase3 extends Stage
                                 FlxG.random.float(-2600, -2800));
         debris3.loadSparrow('Phase3/debris2');
         debris3.animation.addByPrefix('debris', 'debris', 24, true);
-        debris3.animation.play('debris');
+        //debris3.animation.play('debris');
         debris3.velocity.y = 450;
         debris3.scrollFactor.set(0.28, 0.9);
         debris3.scale.set(0.8, 0.8);
@@ -233,7 +260,9 @@ class WrathPhase3 extends Stage
         frontbg.updateHitbox();
         frontbg.screenCenter('X');
         frontbg.x -= 60;
+        frontbg.antialiasing = false;
         PlayState.instance.add(frontbg, 'frontbg');
+        spriteMap.set('frontbg', frontbg);
 
         // Front background lava
         frontbgLava = FunkinSprite.create(frontbg.x, -1350 + 2634 * frontbg.scale.y);
@@ -241,7 +270,9 @@ class WrathPhase3 extends Stage
         frontbgLava.scrollFactor.set(0.3, 0.9);
         frontbgLava.scale.set(0.8, 0.8);
         frontbgLava.updateHitbox();
+        frontbgLava.antialiasing = false;
         PlayState.instance.add(frontbgLava, 'frontbgLava');
+        spriteMap.set('frontbgLava', frontbgLava);
 
         // Criar as rochas do chão
         createRocks();
@@ -257,6 +288,7 @@ class WrathPhase3 extends Stage
         lavabubbles.updateHitbox();
         lavabubbles.scrollFactor.set(1.2, 1.05);
         PlayState.instance.add(lavabubbles, 'lavabubbles');
+        spriteMap.set('lavabubbles', lavabubbles);
 
         // Background light
         bglight = FunkinSprite.create(frontbg.x - 100, frontbg.y + frontbg.height);
@@ -282,7 +314,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lava_FG, 'lava_FG');
 
         // Foreground fires
-        FG_fire_L = FunkinSprite.create(70, 488);
+        FG_fire_L = FunkinSprite.create(-180, 488);
         FG_fire_L.loadSparrow('Phase3/FG_fire');
         FG_fire_L.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_L.animation.play('anim');
@@ -291,6 +323,7 @@ class WrathPhase3 extends Stage
         FG_fire_L.zIndex = frontZIndex;
         FG_fire_L.updateHitbox();
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
+        spriteMap.set('FG_fire_L', FG_fire_L);
 
         FG_fire_R = FunkinSprite.create(1440, 488);
         FG_fire_R.loadSparrow('Phase3/FG_fire');
@@ -302,6 +335,7 @@ class WrathPhase3 extends Stage
         FG_fire_R.updateHitbox();
         FG_fire_R.flipX = true;
         PlayState.instance.add(FG_fire_R, 'FG_fire_R');
+        spriteMap.set('FG_fire_R', FG_fire_R);
 
         // Foreground glow
         FG_glow = FunkinSprite.create(-210, 170);
@@ -313,15 +347,16 @@ class WrathPhase3 extends Stage
         FG_glow.zIndex = frontZIndex + 1;
         FG_glow.updateHitbox();
         PlayState.instance.add(FG_glow, 'FG_glow');
+        spriteMap.set('FG_glow', FG_glow);
 
         defaultCamZoom = 1.0; // Ajustar conforme necessário
+        hasCreatedStage = true;
     }
 
     override public function onSongLoaded(event:ScriptEvent):Void
     {
         super.onSongLoaded(event);
-        loadDebugElements();
-
+        //loadDebugElements();
         // Salvar posições iniciais
         saveInitialPositions();
 
@@ -375,6 +410,7 @@ class WrathPhase3 extends Stage
         lavarock_M.updateHitbox();
         lavarock_M.scrollFactor.set(0.9, 0.95);
         PlayState.instance.add(lavarock_M, 'lavarock_M');
+        spriteMap.set('lavarock_M', lavarock_M);
 
         ground_L = FunkinSprite.create(dadRockX, frontRockY);
         ground_L.loadTexture('Phase3/ground_L');
@@ -391,6 +427,7 @@ class WrathPhase3 extends Stage
         lavarock_L.zIndex = 201; // ficar acima do dad
         lavarock_L.updateHitbox();
         PlayState.instance.add(lavarock_L, 'lavarock_L');
+        spriteMap.set('lavarock_L', lavarock_L);
 
         ground_R = FunkinSprite.create(bfRockX, frontRockY + 30);
         ground_R.loadTexture('Phase3/ground_R');
@@ -406,6 +443,7 @@ class WrathPhase3 extends Stage
         lavarock_R.scale.set(0.75, 0.75);
         lavarock_R.updateHitbox();
         PlayState.instance.add(lavarock_R, 'lavarock_R');
+        spriteMap.set('lavarock_R', lavarock_R);
 
         // Lava background fix
         lavabgfix = FunkinSprite.create(lavarock_L.x, lavarock_L.y + 84);
@@ -478,7 +516,7 @@ class WrathPhase3 extends Stage
             debris3.velocity.y = 500 + (scale - 0.8) * 50;
         }
 
-        // Sink logic
+        // Sink logic - SOLUÇÃO: usar spriteMap ao invés de getNamedProp
         if (sinkValue > 0)
         {
             var elapsed = Conductor.instance.stepLengthMs;
@@ -493,18 +531,10 @@ class WrathPhase3 extends Stage
 
             for (sprName in sinkables)
             {
-                var spr = getNamedProp(sprName);
+                var spr = spriteMap.get(sprName);
                 if (spr != null)
                 {
-                    if (stagePositions.exists(sprName))
-                    {
-                        var pos = stagePositions.get(sprName);
-                        pos.y += sinkv;
-                    }
-                    else
-                    {
-                        spr.y += sinkv;
-                    }
+                    spr.y += sinkv;
                 }
             }
         }
@@ -512,7 +542,6 @@ class WrathPhase3 extends Stage
 
     function sinkUpdate(elapsed:Float):Void
     {
-
         sineValue += elapsed;
 
         var lavaFGOff = (lava_FG.y - lava_FG_Y) * 0.75;
@@ -540,11 +569,6 @@ class WrathPhase3 extends Stage
                 charGroupPos = stagePositions.get('gf');
             }
 
-            /*if (debugText != null) {
-                debugText.text = 'sineValue: ' + sineValue +
-                '\nelapsed: ' + elapsed +
-                '\ncharGroupPos ' + charGroupPos;
-            }*/
             if (char == null || charGroupPos == null) continue;
             var groundName = 'ground_' + (i == 0 ? 'L' : (i == 1 ? 'R' : 'M'));
             var pos = stagePositions.get(groundName);
@@ -563,21 +587,24 @@ class WrathPhase3 extends Stage
             char.y = charGroupPos.y + offY + lavaFGOff;
         }
 
-        // Update eruption sprites
+        // SOLUÇÃO: Update eruption sprites usando spriteMap
         for (sprName in eruptionSprites)
         {
-            var spr:StageProp = getNamedProp(sprName);
+            var spr:StageProp = spriteMap.get(sprName);
             var pos = stagePositions.get(sprName);
+
             if (debugText != null) {
                 debugText.text = 'spr: ' + spr +
-                '\nsprName ' + sprName +
-                '\npos ' + pos;
+                '\nsprName: ' + sprName +
+                '\npos: ' + pos +
+                '\nlavaFGOff: ' + lavaFGOff;
             }
+
             if (spr != null && pos != null)
             {
                 var mult = 1.0;
-                if (sprName == 'frontbg') mult = 0.6;
-                else if (sprName == 'bg') mult = 0.3;
+                if (sprName == 'frontbgLava') mult = 0.6;
+                else if (sprName == 'lavabubbles') mult = 1.0;
                 spr.y = pos.y + lavaFGOff * mult;
             }
         }
@@ -595,6 +622,7 @@ class WrathPhase3 extends Stage
 
     function loadDebugElements()
     {
+      if (debugText) return;
       var scoreTxt = PlayState.instance.scoreText;
 
       debugText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
@@ -617,10 +645,13 @@ class WrathPhase3 extends Stage
         {
             debris1.visible = true;
             debris1.active = true;
+            debris1.animation.play('debris');
             debris2.visible = true;
             debris2.active = true;
+            debris2.animation.play('debris');
             debris3.visible = true;
             debris3.active = true;
+            debris3.animation.play('debris');
             debrisFlag = true;
         }
     }
@@ -644,12 +675,17 @@ class WrathPhase3 extends Stage
 
             case 1:
                 inEruption = !inEruption;
-                var duration:Float = 20;
+                var duration:Float = 25;
                 if (Math.isNaN(duration)) duration = 20;
-                var targetY = inEruption ? (lava_FG_Y - 1000) : lava_FG_Y;
-                FlxTween.tween(lava_FG, {y: targetY}, duration, {ease: FlxEase.linear});
+                // var targetY = inEruption ? (lava_FG_Y - 1000) : lava_FG_Y;
+                // FlxTween.tween(lava_FG, {y: targetY}, duration, {ease: FlxEase.linear});
+                var targetY = 790; // baixar o y
+                var objects = [bg, frontbg, FG_fire_L, FG_fire_R, geyserL, geyserM, geyserR, debris1, debris2, debris3, lavaflowL, lavaflowR];
+                for (obj in objects) {
+                  tweens.push(FlxTween.tween(obj, {y: obj.y + targetY}, duration, {ease: FlxEase.outQuad}));
+                }
                 sinkValue = 700;
-                sinkMult = 2;
+                sinkMult = 0;
 
             case 2:
                 if (getBoyfriend() == null) return;
@@ -661,16 +697,61 @@ class WrathPhase3 extends Stage
 
                 if (getDad() != null)
                 {
-                    FlxTween.tween(getDad(), {y: getDad().y + 700}, duration, {ease: FlxEase.cubeIn});
+                    tweens.push(FlxTween.tween(getDad(), {y: getDad().y + 700}, duration, {ease: FlxEase.cubeIn}));
                 }
-                FlxTween.tween(ground_L, {y: ground_L.y + 700}, duration, {
+                tweens.push(FlxTween.tween(ground_L, {y: ground_L.y + 700}, duration, {
                     ease: FlxEase.cubeIn,
                     onComplete: function(twn:FlxTween) {
                         lavarock_L.visible = false;
                     }
-                });
+                }));
             }
         }
     }
+
+    override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+        hasCreatedStage = false;
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
 
 }

@@ -6,15 +6,20 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.play.song.Song;
 import funkin.save.Save;
+import funkin.Conductor;
 import funkin.play.PlayState;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
+import funkin.play.GameOverSubState;
+import funkin.util.ReflectUtil;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.FullScreenScaleMode;
 
 class ApocalyptroSong extends Song
 {
   var hasPlayedCutscene:Bool;
+  var tweens = [];
+  var pausedTweens = [];
 
   public function new()
   {
@@ -31,46 +36,82 @@ class ApocalyptroSong extends Song
 
     if (!hasPlayedCutscene)
     {
-      trace('Pausing countdown to play a video cutscene');
-
       hasPlayedCutscene = true;
-
       event.cancel(); // CANCEL THE COUNTDOWN!
 
       VideoCutscene.play(Paths.videos('Apocalyptro_Intro'));
     }
   }
 
-  // --- MOVIDO PARA A MUSICA FINAL --- 
-  /* function startFinale()
+  public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
-    if (FlxG.onMobile)
-    {
-      FlxTween.tween(PlayState.instance.pauseButton,
-        {x: (FlxG.width - PlayState.instance.pauseButton.width) - (40 + (FullScreenScaleMode.gameCutoutSize.x / 2))}, 1.0, {ease: FlxEase.quintOut});
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+
+    var curBeat = event.beat;
+    if (curBeat == 796) {
+      playStage.getBoyfriend().playAnimation('brow', true);
+    } else if (curBeat == 800) {
+      playStage.getBoyfriend().playAnimation('sex', true);
     }
-    FullScreenScaleMode.addCutouts(1.0, FlxEase.quintOut);
+  }
 
-    VideoCutscene.onVideoEnded.addOnce(function() {
-      if (FlxG.onMobile)
-      {
-        PlayState.instance.pauseButton.x = (FlxG.width - PlayState.instance.pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x);
-      }
-      FullScreenScaleMode.removeCutouts();
-    });
+  public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
 
-    PlayState.instance.camHUD.visible = false;
+    if (event.step == 1723) {
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
+    }
+    if (event.step == 1732) {
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 3)  / 1000, {ease: FlxEase.linear}));
+    }
+  }
 
-    PlayState.instance.isInCutscene = true;
-    hasPlayedEndCutscene = true;
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
 
-    PlayState.instance.currentStage.getBoyfriend().danceEvery = 0;
-    PlayState.instance.currentStage.getDad().danceEvery = 0;
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
 
-    new FlxTimer().start(2, function(tmr) {
-      VideoCutscene.play(Paths.videos('Phase4'), CutsceneType.ENDING);
-    });
-  } */ 
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
 
   /**
    * Don't replay the cutscene between restarts.
@@ -79,16 +120,16 @@ class ApocalyptroSong extends Song
   {
     super.onSongRetry(event);
 
+    playState.mayPauseGame = true;
     hasPlayedCutscene = true;
   }
 
-  /**
-   * Replay the cutscene after leaving the song.
-   */
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
 
     hasPlayedCutscene = false;
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
   }
 }

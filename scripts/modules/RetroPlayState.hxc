@@ -5,6 +5,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
 import funkin.play.GameOverSubState;
+import funkin.FunkinMemory;
 import funkin.Preferences;
 import funkin.Conductor;
 import funkin.Highscore;
@@ -26,6 +27,7 @@ class RetroPlayState extends Module {
 
   var tweens = [];
   var pausedTweens = [];
+  var hasCachedTextures:Bool = false;
 
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
@@ -86,6 +88,12 @@ class RetroPlayState extends Module {
     var k = event.note.noteData.kind;
 
     if (k == 'poison') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
       poisonAmount++;
       updatePoisonText();
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
@@ -97,6 +105,12 @@ class RetroPlayState extends Module {
     }
 
     if (k == 'izzyNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
@@ -130,11 +144,6 @@ class RetroPlayState extends Module {
     }
 
     super('onNoteHit');
-  }
-
-  function onNoteMiss(event) {
-    super('onNoteMiss');
-
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -373,5 +382,30 @@ class RetroPlayState extends Module {
     super.onCreate(event);
     poisonAmount = 0;
     isDrugged = false;
+
+    if (!hasCachedTextures) {
+			FunkinMemory.permanentCacheTexture(Paths.image('hollowNotes'));
+			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_down'));
+			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_up'));
+			FunkinMemory.permanentCacheTexture(Paths.image('Pride_Note_Assets'));
+			FunkinMemory.permanentCacheTexture(Paths.image('PoisonArrowHit'));
+
+      // Phase 3 - Apocalyptro
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_L'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_R'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris1'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserL'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserM'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserR'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris2'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavabubbles'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lava_FG'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/FG_fire'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_M'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_L'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_R'));
+			hasCachedTextures = true;
+    }
   }
 }

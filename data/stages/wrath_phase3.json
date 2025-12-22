@@ -1,25 +1,5 @@
 {
-  "props": [
-    {
-      "alpha": 0,
-      "angle": 0,
-      "animType": "sparrow",
-      "animations": [],
-      "assetPath": "Phase3/bg",
-      "blend": "",
-      "color": "#FFFFFF",
-      "danceEvery": 0,
-      "flipX": false,
-      "flipY": false,
-      "isPixel": false,
-      "name": "bg",
-      "position": [0, 0],
-      "scale": 0.8,
-      "scroll": [0.1, 0.8],
-      "startingAnimation": null,
-      "zIndex": 0
-    }
-  ],
+  "props": [],
   "cameraZoom": 0.95,
   "version": "1.0.0",
   "characters": {

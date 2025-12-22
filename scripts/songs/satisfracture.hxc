@@ -7,6 +7,8 @@ import flixel.util.FlxTimer;
 import funkin.Conductor;
 import funkin.play.song.Song;
 import funkin.save.Save;
+import funkin.play.GameOverSubState;
+import funkin.util.ReflectUtil;
 import funkin.play.PlayState;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
@@ -25,6 +27,8 @@ class SatisfractureSong extends Song
 
   var hasPlayedInGameCutscene:Bool;
   var hasPlayedEndCutscene:Bool;
+  var isDoingEnough:Bool = false;
+  var ghostTap = Constants.GHOST_TAPPING;
 
   var beepSound: FunkinSound;
   var micSound: FunkinSound;
@@ -144,6 +148,7 @@ class SatisfractureSong extends Song
   public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
     super.onStepHit(event);
     if (PlayState.instance == null) return;
+    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
 
     // ENOUGH
     // As animações alt ativam no script do personagem
@@ -151,6 +156,7 @@ class SatisfractureSong extends Song
       tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
     }
     if (event.step == 188) { //enough
+      isDoingEnough = true;
       playState.mayPauseGame = false;
       var retro = playStage.getDad();
       var retroPos:Array<Float> = [
@@ -158,7 +164,8 @@ class SatisfractureSong extends Song
         retro.cameraFocusPoint.y
       ];
       // desativar controles para nao perder vida sem querer
-      PlayState.instance.disableKeys = true;
+      // movido pro onghostnotemiss para ter ghost tapping no lugar
+      //PlayState.instance.disableKeys = true;
       playState.tweenCameraToPosition(retroPos[0] - 50, retroPos[1] - 50, 0.1, FlxEase.quadInOut);
 
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 0.5)  / 1000, {ease: FlxEase.linear}));
@@ -168,7 +175,8 @@ class SatisfractureSong extends Song
     }
     if (event.step == 192) {
       playState.mayPauseGame = true;
-      PlayState.instance.disableKeys = false;
+      isDoingEnough = false;
+      //PlayState.instance.disableKeys = false;
       PlayState.instance.opponentStrumline.alpha = 1;
       FlxG.camera.flash(0xFFFFFFFF, 0.3);
     }
@@ -222,6 +230,30 @@ class SatisfractureSong extends Song
       PlayState.instance.currentStage.getBoyfriend().dance(true);
     }
   }
+
+  override function onNoteGhostMiss(event)
+  {
+    super.onNoteGhostMiss(event);
+    if (isDoingEnough && PlayState.instance != null) {
+      event.cancel();
+      event.stopPropagation();
+    }
+  }
+
+  override private function onStateChangeEnd(event)
+	{
+    if (isDoingEnough) {
+		  Constants.GHOST_TAPPING = true;
+    } else {
+      #if FEATURE_GHOST_TAPPING
+		  Constants.GHOST_TAPPING = true;
+      #else
+      Constants.GHOST_TAPPING = false;
+      #end
+    }
+
+		super.onStateChangeEnd(event);
+	}
 
   override function onDestroy(event)
 	{
@@ -277,12 +309,13 @@ class SatisfractureSong extends Song
     playState.mayPauseGame = true;
     hasPlayedInGameCutscene = true;
     hasPlayedEndCutscene = false;
+    isDoingEnough = false;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-    playState.mayPauseGame = true;
+    isDoingEnough = false;
   }
 
   function onCreate(event:ScriptEvent):Void
@@ -291,6 +324,7 @@ class SatisfractureSong extends Song
 
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
+    isDoingEnough = false;
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
   }
