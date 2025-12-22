@@ -1297,7 +1297,7 @@
     "bf": {
       "alpha": 1,
       "angle": 0,
-      "cameraOffsets": [-200, -370],
+      "cameraOffsets": [-230, -347],
       "position": [1155.4, 925.6],
       "scale": 0.8,
       "scroll": [1, 1],
@@ -1306,7 +1306,7 @@
     "dad": {
       "alpha": 1,
       "angle": 0,
-      "cameraOffsets": [250, -75],
+      "cameraOffsets": [305, -75],
       "position": [70.5, 925],
       "scale": 1,
       "scroll": [1, 1],
@@ -1322,6 +1322,6 @@
       "zIndex": 100
     }
   },
-  "cameraZoom": 0.55,
+  "cameraZoom": 0.6,
   "directory": "shared"
 }
