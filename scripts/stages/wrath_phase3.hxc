@@ -133,7 +133,7 @@ class WrathPhase3 extends Stage
         spriteMap = new haxe.ds.StringMap();
 
         if (hasCreatedStage) return;
-        var bgoffset = 35;
+        var bgoffset = 45;
 
         // Background
         bg = FunkinSprite.create(0, -1100);
@@ -260,7 +260,7 @@ class WrathPhase3 extends Stage
         frontbg.scale.set(0.8, 0.8);
         frontbg.updateHitbox();
         frontbg.screenCenter('X');
-        frontbg.x += bg.x - 25; //-60
+        frontbg.x += bg.x - 10; //-60 (-25)
         frontbg.antialiasing = false;
         PlayState.instance.add(frontbg, 'frontbg');
         spriteMap.set('frontbg', frontbg);
@@ -326,7 +326,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
         spriteMap.set('FG_fire_L', FG_fire_L);
 
-        FG_fire_R = FunkinSprite.create(1265, 488);
+        FG_fire_R = FunkinSprite.create(1335, 488); //1295, 488
         FG_fire_R.loadSparrow('Phase3/FG_fire');
         FG_fire_R.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_R.animation.play('anim');
@@ -718,7 +718,7 @@ class WrathPhase3 extends Stage
 				case 0:
 	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.15}, 1, {ease: FlxEase.quadOut});
 				case 1:
-	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 1, {ease: FlxEase.quadOut});
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 1.03, {ease: FlxEase.quadOut});
 				default:
 
 			}
