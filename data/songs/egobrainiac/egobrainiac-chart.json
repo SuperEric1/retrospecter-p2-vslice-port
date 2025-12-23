@@ -199,63 +199,72 @@
       "t": 192176.470588235,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singRIGHTmiss",
-        "target": "bf"
+        "force": true
+      }
+    },
+    {
+      "t": 193764.705882353,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "boyfriend",
+        "anim": "bruh",
+        "force": true
       }
     },
     {
       "t": 197823.529411764,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singUPmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {
       "t": 201705.882352941,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singDOWNmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {
       "t": 205411.764705882,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singRIGHTmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {
       "t": 208941.176470588,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singLEFTmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {
       "t": 211764.705882353,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singUPmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {
       "t": 214588.235294117,
       "e": "PlayAnimation",
       "v": {
-        "force": true,
+        "target": "bf",
         "anim": "singRIGHTmiss",
-        "target": "bf"
+        "force": true
       }
     },
     {

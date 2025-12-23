@@ -120,7 +120,16 @@
     {
       "name": "boo",
       "prefix": "BF scare",
+      "assetPath": "characters/bf-pussy",
       "offsets": [-139, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "bruh",
+      "prefix": "BF bruh instance 1",
+      "assetPath": "characters/BF-confused",
+      "offsets": [-140, -8],
       "frameRate": 24,
       "frameIndices": []
     },

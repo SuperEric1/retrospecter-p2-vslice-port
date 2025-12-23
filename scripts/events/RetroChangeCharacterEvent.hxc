@@ -1,0 +1,48 @@
+// Coded by NebulaStellaNova
+
+import funkin.play.PlayState;
+import funkin.play.event.SongEvent;
+
+import funkin.modding.module.Module;
+import funkin.modding.module.ModuleHandler;
+
+import funkin.play.character.CharacterDataParser;
+import funkin.play.character.CharacterType;
+import funkin.play.components.HealthIcon;
+
+class RetroChangeCharacterEvent extends SongEvent {
+
+    public override function handleEvent(data) {
+        // Function here so it doesn't crash I think
+    }
+
+    public function getEventSchema() {
+        return [
+            {
+                name: "character",
+                title: "Old Character",
+                defaultValue: "bf",
+                type: "enum",
+                keys: [
+                    "boyfriend" => "bf",
+                    "girlfriend" => "gf",
+                    "dad" => "dad"
+                ]
+            },
+            {
+                name: "newchar",
+                title: "New Character (JSON/ID)",
+                defaultValue: "bf",
+                type: "string",
+            }
+        ];
+    }
+
+    public function getTitle() {
+        return "Change Character";
+    }
+
+    public function new() {
+        super('RetroChangeCharacter');
+    }
+}

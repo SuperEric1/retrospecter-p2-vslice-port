@@ -85,6 +85,14 @@ class EgobrainiacSong extends Song
     final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
     final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
 
+    if (event.step == 2178) {
+      playStage.getBoyfriend().danceEvery = 0;
+    }
+    if (event.step == 2242) {
+      playStage.getBoyfriend().idleSuffix = '-alt';
+      playStage.getBoyfriend().danceEvery = 1;
+    }
+
     // ultimo
     if (event.step == 2432) {
       if (playState == null || playState.playerStrumline == null) return;

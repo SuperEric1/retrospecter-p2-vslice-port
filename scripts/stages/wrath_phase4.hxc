@@ -1,0 +1,59 @@
+package stages;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import funkin.Conductor;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.Bopper;
+import funkin.play.stage.StageProp;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.ScriptEvent;
+import flixel.text.FlxText;
+import funkin.Paths;
+import Std;
+
+class WrathPhase4 extends Stage
+{
+  public function new()
+  {
+    super('wrath_phase4');
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+    switch (charType)
+    {
+      case CharacterType.BF:
+        character.antialiasing = false;
+      case CharacterType.GF:
+        character.antialiasing = false;
+      default:
+    }
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+    {
+      super.onSongEvent(event);
+
+      if (event.eventData.eventKind == "FocusCamera")
+      {
+          //if (Conductor.instance.currentStep >= 1722 && Conductor.instance.currentStep <= 1735) return; // bf toca uma animação nesse tempo, a câmera tem um zoom customizado. não queremos que esse zoom conflite com os de baixo
+        var value = event.eventData.value;
+        switch (Std.parseInt(value.char)) {
+          case 0:
+                FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.27}, 1, {ease: FlxEase.quadOut});
+          case 1:
+                FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.21}, 1, {ease: FlxEase.quadOut});
+          default:
+
+        }
+      }
+    }
+}

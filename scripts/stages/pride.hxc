@@ -14,7 +14,7 @@ class prideStage extends Stage
   var godraysShader:FlxRuntimeShader;
   var lightPosX:Float = 0.5;
   var lightPosY:Float = 0.3;
-  var shaderColor = 0xFFf5f5f5; // #f5f5f5ff
+  var shaderColor = 0xFFaad2ff; // #f5f5f5ff #aad2ffff
 
   var shadersInit:Bool = false;
 
@@ -46,6 +46,7 @@ class prideStage extends Stage
     stichShader.angle = 120;
     stichShader.distance = 15;
     getNamedProp('stich').shader = stichShader;
+    getNamedProp('stich').antialiasing = true;
     stichShader.attachedSprite = getNamedProp('stich');
     getNamedProp('stich').animation.onFrameChange.add(function() {
       if (getNamedProp('stich') != null)
@@ -54,7 +55,8 @@ class prideStage extends Stage
       }
     });
 
-    for (obj in objectsRight) {
+    //desativado por questoes de otimizacao
+    /*for (obj in objectsRight) {
       // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
       var rim = new DropShadowShader();
       rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
@@ -74,7 +76,7 @@ class prideStage extends Stage
 
       getNamedProp(obj).shader = rim;
       rim.attachedSprite = getNamedProp(obj);
-    }
+    }*/
   }
 
   override public function onSongLoaded(event:ScriptEvent)
@@ -117,7 +119,9 @@ class prideStage extends Stage
       case CharacterType.BF:
         rim.angle = 140;
         //rim.threshold = 0.3;
-        character.idleSuffix = '-alt';
+        if (getBoyfriend().characterId == 'bf-retrospecter') {
+          character.idleSuffix = '-alt';
+        }
         character.danceEvery = 1;
 
         character.animation.onFrameChange.add(function() {
@@ -130,6 +134,7 @@ class prideStage extends Stage
       case CharacterType.GF:
         rim.angle = 90;
         rim.distance = 20;
+        character.antialiasing = false;
 
         character.animation.onFrameChange.add(function() {
           rim.updateFrameInfo(getGirlfriend().frame);
@@ -178,7 +183,7 @@ class prideStage extends Stage
 
   function onDestroy(event:Dynamic)
   {
-      super.onDestroy(e);
+      super.onDestroy(event);
       if (PlayState.instance == null) return;
       if (!shadersInit) return;
       shadersInit = false;
