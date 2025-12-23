@@ -326,7 +326,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
         spriteMap.set('FG_fire_L', FG_fire_L);
 
-        FG_fire_R = FunkinSprite.create(1255, 488);
+        FG_fire_R = FunkinSprite.create(1265, 488);
         FG_fire_R.loadSparrow('Phase3/FG_fire');
         FG_fire_R.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_R.animation.play('anim');
@@ -708,7 +708,7 @@ class WrathPhase3 extends Stage
                 }));
             }
         }
-        
+
         if (event.eventData.eventKind == "FocusCamera")
 
 		{
