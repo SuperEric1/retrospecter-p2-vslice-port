@@ -27,6 +27,10 @@ class BFWindCharacter extends MultiSparrowCharacter
           return;
         case "izzyNote":
           return;
+        case "chain":
+          return;
+        case "autochain":
+          return;
         case "No Animation":
           return;
         case "Fake Note":

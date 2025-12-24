@@ -22,13 +22,13 @@ class poisonNote extends Module {
 		if (PlayState.instance == null) return;
 	}
 
-	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
 		super.onNoteHit(ev);
 
 		if (PlayState.instance == null) return;
 		if (!ev.note.noteData.getMustHitNote()) return;
 		if (ev.note.noteData.kind != "poison") return;
-	}
+	}*/
 
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
@@ -43,16 +43,16 @@ class poisonNote extends Module {
 
       if (downscroll) {
         event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_down' );
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left' );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down' );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up' );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right' );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right', 24, false );
       } else {
         event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_up' );
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left' );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down' );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up' );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right' );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right', 24, false );
       }
 
 			var poisonNote:String;

@@ -1,0 +1,271 @@
+import funkin.modding.module.Module;
+import funkin.ui.credits.CreditsState;
+import funkin.ui.credits.CreditsDataHandler;
+
+class RetroCredits extends Module {
+	public function new() {
+		super("RetroCredits");
+	}
+
+	public function onCreate(event:ScriptEvent) {
+		super.onCreate(event);
+
+		// these need to be in reverse here because of unshift()
+
+		// Port Credits
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "V-Slice Mod Fan Port By",
+			body: [
+				{line: "SuperEric"}
+			]
+		});
+
+		// Playtesters
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Playtesters",
+			body: [
+				{line: "Chubby"},
+				{line: "Kamex"},
+				{line: "AurumArt"},
+				{line: "Opsiian"},
+				{line: "King Mel"},
+				{line: "Trevor"},
+				{line: "Corrun"},
+				{line: "Jaeg"},
+				{line: "Kinix"},
+				{line: "Mkv8"},
+				{line: "Frosty"},
+				{line: "Lawaow"},
+				{line: "Soulegal"},
+				{line: "Sir Wizard"},
+				{line: "Vultra"},
+				{line: "Star"},
+				{line: "BerryVee"},
+				{line: "WulvsAround"}
+			]
+		});
+
+		// Patreon Backers & Supporters
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Patreon Backers & Supporters",
+			body: [
+				{line: "Romalac"},
+				{line: "Dark Tarkin"},
+				{line: "SomaBranford"},
+				{line: "Lead Deamons"},
+				{line: "NinjaMaster909"},
+				{line: "Proskull"},
+				{line: "DOOM Man9012"},
+				{line: "Toreiner"},
+				{line: "FrogOnTheFritz"},
+				{line: "GrayFeather234"},
+				{line: "JGNetwork64"},
+				{line: "Deminos Skullwolf"},
+				{line: "Jparaujo127"},
+				{line: "Vexirion"},
+				{line: "ArthurCortes"},
+				{line: "AnotherAnon"}
+			]
+		});
+
+		// Character Designers & Adopters
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Character Designers",
+			body: [
+				{line: "TeoLikesTea - Reference Sheets"},
+				{line: "RobynTheDragon - Mixter Design"},
+				{line: "NotecardPasta - Nightflaid"},
+				{line: "ViperCrown - Velasma"},
+				{line: "Aephalen - Serpenscheme"},
+				{line: "ProudDelle - Stitchriol"},
+				{line: "Dak0 - Lust Sentinels"},
+				{line: "Sw_Artss - Ai.No 13"},
+				{line: "Igrecheniy - Mercerrus"},
+				{line: "Tasira - Crimstalker Species"},
+				{line: "Sr Nuvem - Rogato"},
+				{line: "Vlxen - Lunacent"},
+				{line: "Hurman - Supreme Infernalord"},
+				{line: "Surkefish - Pestilence"},
+				{line: "ProtoHeex - Famine"},
+				{line: "Cyber - Insatian Design"},
+				{line: "Deekay - Atrocean Design"},
+				{line: "Opsiian - Hivemine Design"}
+			]
+		});
+
+		// IPU Cameos
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "IPU Cameo Contributors",
+			body: [
+				{line: "iGenesisX"},
+				{line: "Littlebox Goi"},
+				{line: "ZiZiDoodles"},
+				{line: "King Mel"},
+				{line: "NiSoSiam"},
+				{line: "FireFoxArtz"},
+				{line: "Trevor"},
+				{line: "SBA2468"},
+				{line: "DoradoHedgehog"},
+				{line: "DracRio"},
+				{line: "NeoArtsyObsidian"}
+			]
+		});
+
+		// Original Composers (Cover Songs)
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Original Composers",
+			body: [
+				{line: "Sock.Clip - Lo-Fight, Ballistic, Boogieman"},
+				{line: "Sarvéproductions - Boogieman (Vocals)"},
+				{line: "FluffyHairs & SimplyCrispy - Chiller"},
+				{line: "Punkett - Triple Trouble, Frostbite, Death Toll"},
+				{line: "Rozebud - Improbable Outset, Madness, Hellclown, Foolhardy"},
+				{line: "JADS - Expurgation"},
+				{line: "Banbuds - Improbable Outset, Madness, Hellclown, Expurgation (Vocals)"},
+				{line: "YingYang48 - R.A.M., Glitcher"},
+				{line: "SrPerez - God Eater"},
+				{line: "Mike Geno - Gospel, Zavodila"},
+				{line: "EZHalt - Athazagoraphobia"},
+				{line: "Atsuover - Nerves, Release, Fading"},
+				{line: "Saruky - Thunderstorm, Smokebomb"},
+				{line: "MarStarBro & Uptaunt - Triple Trouble"},
+				{line: "Dazuko Kazuya & LiterallyNoOne - CHKDSK"},
+				{line: "BBPanzu - Manifest, Heartbass"},
+				{line: "AngelGutz - Headspace"},
+				{line: "FriedFrick & RedTV53 - Unbeatable (Level 4)"},
+				{line: "Churgney Gurgney, Ironik, Duccly, Spacenautics, Honkish - Silly Billy"},
+				{line: "AGOTI - A.G.O.T.I."},
+				{line: "SleepyOreo & Case - Scary Night, Think"},
+				{line: "RixFX - Mico Chromatic"},
+				{line: "Anjer - Ectospasm Metal Cover"}
+			]
+		});
+
+		// Special Thanks
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Special Thanks",
+			body: [
+				{line: "KadeDev - Kade Engine (Part 1/1.5)"},
+				{line: "IagoAnimator - Original RetroSpecter V1 Sprites & FNF Minus Creator"},
+				{line: "AshDash - FNF Minus Co-Creator"},
+				{line: "Phantom Fear & PincerProd - FNF Corruption Creators"}
+			]
+		});
+
+		// Charters
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Charters",
+			body: [
+				{line: "Chubby - Normal & Half Hard Charts"},
+				{line: "Lily-Clipee-Chan - Hard & Hell Charts"},
+				{line: "SnowTheFox - Part 1 Modcharts"},
+				{line: "Ferzy - Part 2 Modcharts & Events"}
+			]
+		});
+
+		// Voice Actors
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Voice Actors",
+			body: [
+				{line: "RetroSpecter - Retro/Metro"},
+				{line: "Kamex - Ace, Iceolation, Mace"},
+				{line: "Ninfia Camozzi - All Female Characters"},
+				{line: "Nathaniel Gordon - Most Male Characters"}
+			]
+		});
+
+		// Programmers
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Programmers",
+			body: [
+				{line: "Ars Machina - Achievements, Free Play, Bug Fixes"},
+				{line: "Malicious Bunny - Part 2 Programming"},
+				{line: "Shadow Mario - Psych Engine Creator"},
+				{line: "AnAwkwardArcanine - Part 1 & 1.5 Main Programmer"},
+				{line: "Ne_Eo - Kade to Psych Port, Shaders"},
+				{line: "Ferzy - Events, Modcharts, Lua Maintenance"},
+				{line: "Zenokwei / ILuvGemz - Stage Programming"},
+				{line: "TechCoyote - Psych Port Help"},
+				{line: "Tantalun - Code Cleanup"},
+				{line: "MAJigsaw - Game Jolt, Discord RPC"},
+				{line: "FeuryDonald - 1.5 Tasks & Dialogue"},
+				{line: "RapperGF - Metadata Credits"},
+				{line: "Winn / Whatify - Backend Utilities"},
+				{line: "BRN101 - IPU Programming"},
+				{line: "Shadowfi - Kade to Psych Transition"},
+				{line: "AyeTSG - Part 1 Programming & Dialogue"}
+			]
+		});
+
+		// Animators
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Animators",
+			body: [
+				{line: "AurumArt - Character Sprites & Icons"},
+				{line: "Terrawr_Bytes - Cutscenes, Transformations, Stage Assets"},
+				{line: "WolfWrathKnight - Wrath Phase Sprites & Cutscenes"},
+				{line: "Shiba Chichi - Opponent Sprites, Zerktro Transform"},
+				{line: "MORØ - Phase 3 Retro Cutscene"},
+				{line: "PyxlBird - Fun-Sized Skins"},
+				{line: "Specksumie - Sakuroma V1 Sprites"},
+				{line: "SirDusterBuster - Playable Zerktro Sprites"},
+				{line: "AndrewMJArt - Wrath Cutscene Storyboards"},
+				{line: "KittenSneeze - Phase 3 Cutscene Storyboard"}
+			]
+		});
+
+		// Artists
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Artists",
+			body: [
+				{line: "BonesTheSkelebunny - Character Designs, Poses, Icons"},
+				{line: "Dax - Stage Backgrounds, Character Portraits"},
+				{line: "Grassjeak - Main Menu, Character Select, Options Art"},
+				{line: "Elemenopii - Part 2 Stage Backgrounds"},
+				{line: "Razur - Wrath Week Backgrounds"},
+				{line: "KevBFNF - Nameplates, Health Bars"},
+				{line: "TiredPinkPanda - 1.5/1.75 Menu Art, Cutscenes"},
+				{line: "Sugarratio - Portraits, Achievement Icons"},
+				{line: "D6 - Phase 2 RetroSpecter Sprites"},
+				{line: "Juno Songs - Pose Concepts"},
+				{line: "Cordialcrow - Pride Stage Background"},
+				{line: "RavioliBox - Retro V1 & Phase 2 Concepts"},
+				{line: "LectroArt - Mizzy, Playable Maku, Kamex Remix"},
+				{line: "Axel - IPU Stadium Lights"},
+				{line: "Crudaka - Part 1 Loading Screen"},
+				{line: "ClacyYe - Metro Week End Screen"},
+				{line: "KavDragun - Izzurius Poses"}
+			]
+		});
+
+		// Musicians
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Musicians",
+			body: [
+				{line: "RetroSpecter - Part 1 & 1.75 Music"},
+				{line: "Kamex - Part 2 Music, Sound FX, Chromatics"},
+				{line: "Tenzalt - Extra Bonus Songs"}
+			]
+		});
+
+		// Main Team
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Main Team",
+			body: [
+				{line: "RetroSpecter - Director, Creator, Musician, Writer"},
+				{line: "Kamex - Musician, Sound Designer"},
+				{line: "BonesTheSkelebunny - Concept Artist"},
+				{line: "AurumArt - Lead Sprite Artist & Animator"},
+				{line: "Dax - Lead Background Artist"}
+			]
+		});
+
+		// Header
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Vs. RetroSpecter - Part Two: Infernadise",
+			body: [
+				{line: "Original Mod Credits:"}
+			]
+		});
+	}
+}

@@ -1,0 +1,127 @@
+import flixel.FlxG;
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+import funkin.audio.FunkinSound;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.util.FlxStringUtil;
+import flixel.math.FlxRect;
+import flixel.ui.FlxBar;
+import flixel.ui.FlxBarFillDirection;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.NoteSprite;
+import funkin.play.GameOverSubState;
+import funkin.play.character.CharacterType;
+import funkin.FunkinMemory;
+import funkin.Preferences;
+import funkin.Conductor;
+import funkin.Highscore;
+import funkin.Paths;
+import funkin.graphics.FunkinSprite;
+import funkin.util.ReflectUtil;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+import funkin.effects.IntervalShake;
+
+class RetroGameUI extends Module {
+  public function new() {
+    super('RetroGameUI');
+  }
+
+  var isRetro:Bool = false;
+  var downscroll = false;
+
+  var retroHealthBar:FlxBar;
+  var retroHealthBarBG:FunkinSprite;
+  var retroHealthBarFill:FunkinSprite;
+  var p1BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_GREEN; // bf
+  var p2BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_RED; // dad
+
+  var hasBeenCreated = false;
+
+  public function onSongLoaded(event) {
+      super.onSongLoaded(event);
+      isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
+      if (!isRetro) return;
+
+      var playState = PlayState.instance;
+      var playStage = PlayState.instance.currentStage;
+      var songId = playState.currentSong.id.toLowerCase();
+
+      // HEALTH BARS
+      var defaultScale:Array<Float, Float> = [0.5, 0.5];
+      var bgYOffset = 0;
+      var barYOffset = 0;
+      var fillDirection:Array<Float, Float> = [1500, 80];
+      playState.healthBar.visible = false;
+      playState.healthBarBG.visible = false;
+      switch (playStage.getDad().characterId.toLowerCase()) {
+        case 'phase1':
+          bgYOffset = -105;
+          retroHealthBarBG = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP1/overlay');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar');
+
+        default:
+          playState.healthBar.visible = true;
+          playState.healthBarBG.visible = true;
+      }
+      if (retroHealthBarBG != null) {
+        retroHealthBarBG.y += bgYOffset; // aplicar offset
+        retroHealthBarBG.camera = playState.camHUD;
+        retroHealthBarBG.zIndex = 803;
+        //retroHealthBarBG.visible = false;
+        retroHealthBarBG.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBarBG.screenCenter(0x01);
+
+        retroHealthBarFill.zIndex = retroHealthBarBG - 2;
+        //retroHealthBarFill.blend = 3;
+        retroHealthBarFill.camera = playState.camHUD;
+        retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBarFill.screenCenter(0x01);
+
+        retroHealthBar = new FlxBar(0, playState.healthBarBG.y, FlxBarFillDirection.RIGHT_TO_LEFT, fillDirection[0], fillDirection[1], playState, 'healthLerp', 0, 2);
+        retroHealthBar.createFilledBar(p2BarColor, p1BarColor);
+        retroHealthBar.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBar.blend = 1;
+        //retroHealthBar.y = bgYOffset + barYOffset;
+        retroHealthBar.camera = playState.camHUD;
+        retroHealthBar.zIndex = retroHealthBarBG.zIndex + 1;
+        retroHealthBar.screenCenter(0x01);
+
+        playState.iconP1.size.x = 0.5;
+
+        playState.add(retroHealthBar);
+        playState.add(retroHealthBarFill);
+        playState.add(retroHealthBarBG);
+      }
+
+      // Outros
+      playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
+
+      playState.refresh();
+
+      hasBeenCreated = true;
+  }
+
+  function getCombo() {
+    var combo:String = Std.string(Highscore.tallies.combo);
+    var comboString:String = '';
+    comboString += combo;
+    return comboString;
+  }
+
+  public function onDestroy(event) {
+    super.onDestroy(event);
+    hasBeenCreated = false;
+  }
+
+  public function onCreate(event) {
+    super.onCreate(event);
+
+  }
+}

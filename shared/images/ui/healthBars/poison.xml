@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="poison.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="P2_0000" x="160" y="0" width="121" height="131" frameX="-19" frameY="-10" frameWidth="150" frameHeight="145"/>
+	<SubTexture name="P3_0000" x="0" y="0" width="150" height="142" frameX="0" frameY="-3" frameWidth="150" frameHeight="145"/>
+	<SubTexture name="P4_0000" x="291" y="0" width="112" height="136" frameX="-21" frameY="0" frameWidth="150" frameHeight="145"/>
+</TextureAtlas>

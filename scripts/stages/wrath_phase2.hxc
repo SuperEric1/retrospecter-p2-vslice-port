@@ -53,6 +53,7 @@ class wrathPhaseTwoStage extends Stage
 
       case CharacterType.GF:
         rim.angle = 90;
+        rim.threshold = -1;
 
         character.animation.onFrameChange.add(function() {
           rim.updateFrameInfo(getGirlfriend().frame);

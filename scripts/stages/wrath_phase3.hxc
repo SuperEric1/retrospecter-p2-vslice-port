@@ -710,7 +710,6 @@ class WrathPhase3 extends Stage
         }
 
         if (event.eventData.eventKind == "FocusCamera")
-
 		{
 		    if (Conductor.instance.currentStep >= 1722 && Conductor.instance.currentStep <= 1735) return; // bf toca uma animação nesse tempo, a câmera tem um zoom customizado. não queremos que esse zoom conflite com os de baixo
 			var value = event.eventData.value;

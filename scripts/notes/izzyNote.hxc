@@ -21,23 +21,13 @@ class izzyNote extends Module {
 		if (PlayState.instance == null) return;
 	}
 
-	var noteVibrationPreset:VibrationPreset =
-    {
-      period: 0.1,
-      duration: 0.1,
-      amplitude: 1,
-      sharpness: 1
-    };
-
-	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
 		super.onNoteHit(ev);
 
 		if (PlayState.instance == null) return;
 		if (!ev.note.noteData.getMustHitNote()) return;
 		if (ev.note.noteData.kind != "izzyNote") return;
-
-		HapticUtil.vibrateByPreset(noteVibrationPreset);
-	}
+	}*/
 
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
@@ -48,10 +38,10 @@ class izzyNote extends Module {
 			event.note.yOffset += -65;
 
 			event.note.frames = Paths.getSparrowAtlas( 'Pride_Note_Assets' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left' );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down' );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up' );
-			event.note.animation.addByPrefix( 'redScroll', 'Right' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, false );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, false );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, false );
+			event.note.animation.addByPrefix( 'redScroll', 'Right', 24, false );
 
 			var izzyNote:String;
 			switch ( event.note.noteData.data % 4 )

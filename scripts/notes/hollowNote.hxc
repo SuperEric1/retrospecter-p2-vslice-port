@@ -48,7 +48,7 @@ class hollowNote extends Module {
 	}
 
 
-	public override function onNoteMiss( event:NoteScriptEvent )
+	/*public override function onNoteMiss( event:NoteScriptEvent )
 	{
 		super.onNoteMiss( event );
 
@@ -59,5 +59,5 @@ class hollowNote extends Module {
 
 			}
 		}
-	}
+	}*/
 }

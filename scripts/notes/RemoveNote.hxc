@@ -18,12 +18,13 @@ class RemoveNote extends Module {
 		if (PlayState.instance == null) return;
 	}
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
+	// a logica dessa funcao ta no retroplaystate
+	/*public override function onNoteIncoming( event:NoteScriptEvent )
 	{
 		super.onNoteIncoming( event );
 		if (PlayState.instance == null) return;
 		if (event.note.noteData.kind != "none") return;
-	}
+	}*/
 
 	public override function onNoteMiss( event:NoteScriptEvent )
 	{

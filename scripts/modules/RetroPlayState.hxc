@@ -1,29 +1,38 @@
+import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.modding.module.Module;
+import funkin.audio.FunkinSound;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.NoteSprite;
 import funkin.play.GameOverSubState;
+import funkin.play.character.CharacterType;
 import funkin.FunkinMemory;
 import funkin.Preferences;
 import funkin.Conductor;
 import funkin.Highscore;
-import flixel.FlxG;
 import funkin.Paths;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
+import funkin.util.TouchUtil;
+import haxe.ds.IntMap;
 
 class RetroPlayState extends Module {
   public function new() {
     super('RetroPlayState');
   }
+
+  var isRetro:Bool = false;
 
   var tweens = [];
   var pausedTweens = [];
@@ -42,10 +51,17 @@ class RetroPlayState extends Module {
 
   var solidCameraSprite:FunkinSprite;
 
+  // Chain Notes - Sistema de bloqueio de strums
+  var chainLockSprites:Array<FunkinSprite> = [];
+  var chainLockStates:IntMap<Int> = new IntMap(); // 0 = desbloqueado, 1-3 = numero de cliques
+  var chainLockInputs:IntMap<Int> = new IntMap();
+  var isStrumLocked:IntMap<Bool> = new IntMap();
+  var chainText:FlxText;
+
   var hurtNoteVibration:VibrationPreset =
   {
-    period: 0.1,
-    duration: 0.1,
+    period: 0.2,
+    duration: 0.2,
     amplitude: 1,
     sharpness: 1
   };
@@ -53,12 +69,23 @@ class RetroPlayState extends Module {
   override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
+    if (!isRetro) return;
     poisonAmount = 0;
     isDrugged = false;
     izzyMechanicTimer = null;
+
+    // Inicializar sistema de chain notes
+    for (i in 0...4) {
+      isStrumLocked.set(i, false);
+      chainLockStates.set(i, 0);
+      chainLockInputs.set(i, 0);
+    }
   }
 
   function onNoteIncoming(event) {
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+
     if (izzyMechanicTimer != null) {
       event.note.angle = 0;
     }
@@ -75,7 +102,8 @@ class RetroPlayState extends Module {
     }
 
     // Notas que não contam pro score
-    if (k == 'Fake Note' || k == 'poison' || k == 'izzyNote') {
+    if (k == 'Fake Note' || k == 'poison' || k == 'izzyNote' ||
+        k =='chain' || k == 'autoChain') {
       if (event.note.noteData.getMustHitNote()) {
         Highscore.tallies.totalNotes--;
       }
@@ -84,8 +112,39 @@ class RetroPlayState extends Module {
     super('onNoteIncoming');
   }
 
-  function onNoteHit(event) {
+  function onNoteHit(event:HitNoteScriptEvent):Void {
+  if (PlayState.instance == null) return;
+  if (!isRetro) return;
+  if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
     var k = event.note.noteData.kind;
+    var noteDir = event.note.noteData.getDirection();
+
+    // Prevenir que notas sejam acertadas em strums bloqueados
+    if (isStrumLocked.get(noteDir)) {
+      handleChainUnlockInput(noteDir);
+      event.cancel();
+      event.stopPropagation();
+      return;
+    }
+
+    if (k == 'chain' || k == 'autoChain') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      lockStrum(noteDir);
+      if (k == 'autoChain') chainText.visible = true;
+
+      PlayState.instance.health -= event.healthChange;
+      event.doesNotesplash = false;
+      #if mobile
+      HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #else
+      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #end
+    }
 
     if (k == 'poison') {
       if (PlayState.instance.isBotPlayMode) {
@@ -95,12 +154,14 @@ class RetroPlayState extends Module {
       }
 
       poisonAmount++;
-      updatePoisonText();
+      updatePoisonSprite();
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
       #if mobile
       HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #else
+      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
       #end
     }
 
@@ -140,16 +201,56 @@ class RetroPlayState extends Module {
 
       #if mobile
       HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #else
+      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
       #end
     }
+  } // fim do if de checagem que é nota do player
 
     super('onNoteHit');
   }
 
+  public override function onNoteMiss( event:NoteScriptEvent )
+	{
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+
+    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+      var k = event.note.noteData.kind;
+      var noteDir = event.note.noteData.getDirection();
+      if (k == "autoChain") {
+        lockStrum(noteDir);
+        if (k == 'autoChain') chainText.visible = true;
+
+        event.note.kill();
+        event.cancel();
+        event.stopPropagation();
+      }
+    } //fim do if que checa se a nota é do jogador
+
+    super.onNoteMiss(event);
+	}
+  function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
+    super('onNoteGhostMiss');
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+
+    // Prevenir ghost miss em strums bloqueados
+    var direction = event.dir;
+    if (isStrumLocked.get(direction)) {
+      handleChainUnlockInput(direction);
+
+      event.cancel();
+      event.stopPropagation();
+      return;
+    }
+  }
+
   public override function onSongLoaded(event:ScriptEvent):Void
   {
-		super.onSongLoaded(event);
-		if (PlayState.instance == null) return;
+    super.onSongLoaded(event);
+    isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
+    if (!isRetro) return;
 
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
@@ -158,6 +259,7 @@ class RetroPlayState extends Module {
     }
 
     loadUIElements();
+    loadChainLockSprites();
   }
 
   public override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -165,11 +267,11 @@ class RetroPlayState extends Module {
     super.onBeatHit(event);
   }
 
-  function updatePoisonText():Void
+  function updatePoisonSprite():Void
   {
     if (poisonText == null) return;
     var commaSeparated:Bool = true;
-    poisonText.text = 'POISON: ' + FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
+    poisonText.text = FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
     poisonText.visible = true;
   }
 
@@ -254,24 +356,99 @@ class RetroPlayState extends Module {
     }
   }
 
-  function loadUIElements()
-  {
-    var scoreTxt = PlayState.instance.scoreText;
+  function lockStrum(direction:Int):Void {
+    if (isStrumLocked.get(direction)) return; // Já está bloqueado
 
-    poisonText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
-    poisonText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
-    poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
-    poisonText.y = PlayState.instance.healthBar.y - 5;
-    poisonText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
-    poisonText.zIndex = 901;
-    poisonText.cameras = [PlayState.instance.camHUD];
-    PlayState.instance.add(poisonText);
+    isStrumLocked.set(direction, true);
+    chainLockStates.set(direction, 3); // Precisa de 3 cliques para desbloquear
+    chainLockInputs.set(direction, 0); // Reseta o contador de cliques
+
+    FlxG.sound.play(Paths.sound('noteSounds/ChainLock'));
+
+    var lockSprite = chainLockSprites[direction];
+    if (lockSprite != null) {
+      lockSprite.visible = true;
+      var dirName = getDirectionName(direction);
+      lockSprite.animation.play('startLocked' + dirName, true);
+    }
+  }
+
+  function handleChainUnlockInput(direction:Int):Void {
+    if (!isStrumLocked.get(direction)) return; // Não está bloqueado
+
+    var currentClicks = chainLockInputs.get(direction);
+    currentClicks++;
+    chainLockInputs.set(direction, currentClicks);
+
+    var lockSprite = chainLockSprites[direction];
+    var dirName = getDirectionName(direction);
+
+    FunkinSound.playOnce(Paths.soundRandom('noteSounds/ChainHit', 1, 3), FlxG.random.float(0.1, 0.2));
+    if (currentClicks == 1) {
+      if (lockSprite != null) lockSprite.animation.play('1hitLocked' + dirName, false);
+    } else if (currentClicks == 2) {
+      if (lockSprite != null) lockSprite.animation.play('2hitLocked' + dirName, false);
+    } else if (currentClicks >= 3) {
+      // Desbloqueia o strum
+      FlxG.sound.play(Paths.sound('noteSounds/ChainBreak'));
+
+      if (lockSprite != null) {
+        lockSprite.animation.play('unlocked' + dirName, false);
+        // Esconde o sprite após a animação terminar
+        new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+          if (lockSprite != null) lockSprite.visible = false;
+        });
+      }
+      chainText.visible = false;
+      isStrumLocked.set(direction, false);
+      chainLockStates.set(direction, 0);
+      chainLockInputs.set(direction, 0);
+    }
+  }
+
+  function getDirectionName(direction:Int):String {
+    switch (direction) {
+      case 0: return 'Left';
+      case 1: return 'Down';
+      case 2: return 'Up';
+      case 3: return 'Right';
+      default: return 'Down';
+    }
+  }
+
+  function loadChainLockSprites():Void {
+    for (i in 0...4) {
+      var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+      var lockSprite = new FunkinSprite(strum.x, strum.y);
+      lockSprite.frames = Paths.getSparrowAtlas('strumChains');
+
+      var dirName = getDirectionName(i);
+      lockSprite.animation.addByPrefix('startLocked' + dirName, 'startLocked' + dirName, 24, false);
+      lockSprite.animation.addByPrefix('1hitLocked' + dirName, '1hitLocked' + dirName, 24, false);
+      lockSprite.animation.addByPrefix('2hitLocked' + dirName, '2hitLocked' + dirName, 24, false);
+      lockSprite.animation.addByPrefix('3hitLocked' + dirName, '3hitLocked' + dirName, 24, false);
+      lockSprite.animation.addByPrefix('unlocked' + dirName, 'unlocked' + dirName, 24, false);
+
+      // O offset é calculado lá no onUpdate!!
+      lockSprite.setGraphicSize(Std.int(strum.width) * 1.5, Std.int(strum.height) * 1.5);
+      lockSprite.updateHitbox();
+      lockSprite.cameras = [PlayState.instance.camHUD];
+      lockSprite.visible = false;
+      lockSprite.zIndex = 1500; //sjdsajsadkjjdajwdjh
+      lockSprite.antialiasing = false;
+
+      PlayState.instance.add(lockSprite);
+      chainLockSprites.push(lockSprite);
+    }
+
     PlayState.instance.refresh();
   }
 
   public function onUpdate(event):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
+    if (!isRetro) return;
     if (PlayState.instance.isGamePaused) return;
     if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
 
@@ -285,12 +462,68 @@ class RetroPlayState extends Module {
         note.x = note.x + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0 + i) * 0.4;
       }
     }
+
+    // Atualizar posição dos sprites de lock para seguir os strums
+    var lockSpriteOffset:Array<Float, Float> = [ -30, -35 ];
+    for (i in 0...4) {
+      if (chainLockSprites[i] != null) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        chainLockSprites[i].x = strum.x + lockSpriteOffset[0];
+        chainLockSprites[i].y = strum.y + lockSpriteOffset[1];
+      }
+    }
+
+    // Mobile: usar TouchUtil para detectar toques nos sprites de lock (PRECISA DE TESTES!!!!!!)
+    if (FlxG.onMobile) {
+      for (i in 0...4) {
+        if (chainLockSprites[i] != null && chainLockSprites[i].visible && isStrumLocked.get(i)) {
+          var sprite = chainLockSprites[i];
+
+          if (TouchUtil.justPressed && TouchUtil.overlapsComplex(sprite)) {
+            handleChainUnlockInput(i);
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  function loadUIElements()
+  {
+    var scoreTxt = PlayState.instance.scoreText;
+    var strum = PlayState.instance.playerStrumline;
+
+    chainText = new FlxText(0, 0, 0, '', 60);
+    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), chainText.width, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    chainText.borderSize = 1.5;
+    chainText.fieldWidth = strum.width;
+    chainText.x = strum.strumlineNotes.x; //strum.x + (strum.width / 2)
+    chainText.y = strum.strumlineNotes.members[0].y - 10;
+    chainText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
+    chainText.zIndex = strum.strumlineNotes.members[3] + 1;
+    chainText.cameras = [PlayState.instance.camHUD];
+    chainText.text = 'MASH TO BREAK FREE';
+    chainText.visible = false;
+    PlayState.instance.add(chainText);
+    PlayState.instance.refresh();
+
+    poisonText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
+    poisonText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
+    poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
+    poisonText.y = PlayState.instance.healthBar.y - 5;
+    poisonText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
+    poisonText.zIndex = 901;
+    poisonText.cameras = [PlayState.instance.camHUD];
+    PlayState.instance.add(poisonText);
+    PlayState.instance.refresh();
   }
 
   function onSongRetry(event:ScriptEvent)
 	{
 	  super.onSongRetry(event);
     if (PlayState.instance == null) return;
+    if (!isRetro) return;
 
     poisonAmount = 0;
     if (poisonText != null) {
@@ -303,6 +536,16 @@ class RetroPlayState extends Module {
       unscrambleStrumline(true);
       izzyMechanicTimer = null;
     }
+
+    // Resetar chain locks
+    for (i in 0...4) {
+      isStrumLocked.set(i, false);
+      chainLockStates.set(i, 0);
+      chainLockInputs.set(i, 0);
+      if (chainLockSprites[i] != null) {
+        chainLockSprites[i].visible = false;
+      }
+    }
   }
 
   function onGameOver(event:ScriptEvent)
@@ -314,11 +557,23 @@ class RetroPlayState extends Module {
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
+    if (!isRetro) return;
+
     poisonAmount = 0;
     isDrugged = false;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
       izzyMechanicTimer = null;
+    }
+
+    // Resetar chain locks
+    for (i in 0...4) {
+      isStrumLocked.set(i, false);
+      chainLockStates.set(i, 0);
+      chainLockInputs.set(i, 0);
+      if (chainLockSprites[i] != null) {
+        chainLockSprites[i].visible = false;
+      }
     }
   }
 
@@ -389,6 +644,8 @@ class RetroPlayState extends Module {
 			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_up'));
 			FunkinMemory.permanentCacheTexture(Paths.image('Pride_Note_Assets'));
 			FunkinMemory.permanentCacheTexture(Paths.image('PoisonArrowHit'));
+			FunkinMemory.permanentCacheTexture(Paths.image('ChainNotes'));
+			FunkinMemory.permanentCacheTexture(Paths.image('strumChains'));
 
       // Phase 3 - Apocalyptro
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));

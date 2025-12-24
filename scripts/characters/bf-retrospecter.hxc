@@ -30,6 +30,10 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "No Animation":
           return;
+        case "chain":
+          return;
+        case "autochain":
+          return;
         case "Fake Note":
           return;
       }
