@@ -8,7 +8,6 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
   function new()
   {
     super('phase4');
-
   }
   
   // Map para armazenar offsets de cada animação
@@ -21,9 +20,9 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
   {
     // Define os offsets para cada animação
     animOffsets.set('idle', [0, 0]);
-    animOffsets.set('singLEFT', [-650, 0]);
+    animOffsets.set('singLEFT', [-640, 0]);
     animOffsets.set('singDOWN', [0, 450]);
-    animOffsets.set('singUP', [-20, -250]);
+    animOffsets.set('singUP', [-60, -250]);
     animOffsets.set('singRIGHT', [450, 0]);
 
     // Offsets para animações de cutscene (se precisar ajustar)
