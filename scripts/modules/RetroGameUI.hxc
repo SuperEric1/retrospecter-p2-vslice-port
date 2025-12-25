@@ -183,7 +183,7 @@ class RetroGameUI extends Module {
     if (isOppIconAnimated) {
       if (playState.health < 0.4) {
         playState.iconP2.animation.play('win', false, false);
-      } else if (playState.health < 0.6) {
+      } else if (playState.health < 0.7) {
         playState.iconP2.animation.play('neutral', false, false);
       } else {
         playState.iconP2.animation.play('lose', false, false);
