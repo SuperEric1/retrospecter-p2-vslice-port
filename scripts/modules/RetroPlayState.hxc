@@ -532,13 +532,16 @@ class RetroPlayState extends Module {
   {
     var scoreTxt = PlayState.instance.scoreText;
     var strum = PlayState.instance.playerStrumline;
+    var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     chainText = new FlxText(0, 0, 0, '', 60);
-    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), isMobile ? 35 : strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     chainText.borderSize = 1.5;
-    chainText.fieldWidth = strum.width;
-    chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
-    chainText.y = strum.strumlineNotes.members[0].y - 10;
+    chainText.fieldWidth = isMobile ? FlxG.width : strum.width;
+    if (!isMobile) {
+      chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
+    }
+    chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
     chainText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
     chainText.zIndex = strum.strumlineNotes.members[3] + 1;
     chainText.cameras = [PlayState.instance.camHUD];
