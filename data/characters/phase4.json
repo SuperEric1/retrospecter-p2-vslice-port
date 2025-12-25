@@ -3,7 +3,7 @@
   "name": "Phase4",
   "renderType": "animateatlas",
   "assetPath": "shared:characters/atlases/Phase4",
-  "singTime": 8,
+  "singTime": 4,
   "isPixel": false,
   "scale": 1,
   "healthIcon": {
