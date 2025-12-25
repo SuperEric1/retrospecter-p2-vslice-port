@@ -6,6 +6,7 @@ import funkin.util.Constants;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
+import funkin.util.HapticUtil;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.NoteSprite;
 import funkin.play.GameOverSubState;
