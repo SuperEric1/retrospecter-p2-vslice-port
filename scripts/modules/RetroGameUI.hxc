@@ -180,18 +180,10 @@ class RetroGameUI extends Module {
     retroHealthBarOverlay.alpha = playState.healthBar.alpha;
     retroHealthBarFill.alpha = playState.healthBar.alpha;
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
-    if (isOppIconAnimated) {
-      if (playState.health < 0.4) {
-        playState.iconP2.animation.play('win', false, false);
-      } else if (playState.health < 0.7) {
-        playState.iconP2.animation.play('neutral', false, false);
-      } else {
-        playState.iconP2.animation.play('lose', false, false);
-      }
-    }
   }
 
   public function getIconColor(characterId:String) {
+    isOppIconAnimated = false;
     switch (characterId) {
       case 'bf-retrospecter':
         return 0xFF31b0d1;
@@ -208,11 +200,10 @@ class RetroGameUI extends Module {
         return 0xFF17d7e3;
       case 'phase4':
         isOppIconAnimated = true;
-        PlayState.instance.iconP2.autoUpdate = false; // prevenir o icone de usar animacoes padroes que o jogo faz
-        PlayState.instance.iconP2.animation.addByPrefix("neutral", "neutral", 24, false);
-        PlayState.instance.iconP2.animation.addByPrefix("win", "win", 24, false);
-        PlayState.instance.iconP2.animation.addByPrefix("lose", "lose", 24, false);
-        PlayState.instance.iconP2.animation.play('neutral', false, false);
+        PlayState.instance.iconP2.animation.addByPrefix("idle", "neutral", 24, false);
+        PlayState.instance.iconP2.animation.addByPrefix("winning", "win", 24, false);
+        PlayState.instance.iconP2.animation.addByPrefix("losing", "lose", 24, false);
+        PlayState.instance.iconP2.animation.play('idle', false, false);
 
         return 0xFF17d7e3;
       case 'izzy':

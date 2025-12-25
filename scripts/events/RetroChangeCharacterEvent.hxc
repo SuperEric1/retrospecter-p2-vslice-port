@@ -39,7 +39,7 @@ class RetroChangeCharacterEvent extends SongEvent {
     }
 
     public function getTitle() {
-        return "Change Character";
+        return "RetroChangeCharacter";
     }
 
     public function new() {
