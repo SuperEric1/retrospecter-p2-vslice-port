@@ -42,11 +42,12 @@ class prideStage extends Stage
 
     var stichShader = new DropShadowShader();
     stichShader.setAdjustColor(-8, 0, -4, 0); // brilho, hue, contraste e saturação
-    stichShader.color = shaderColor;
+    stichShader.color = 0xFFf5f5f5;
     stichShader.angle = 120;
     stichShader.distance = 15;
+    stichShader.threshold = -1;
     getNamedProp('stich').shader = stichShader;
-    getNamedProp('stich').antialiasing = true;
+    getNamedProp('stich').antialiasing = false;
     stichShader.attachedSprite = getNamedProp('stich');
     getNamedProp('stich').animation.onFrameChange.add(function() {
       if (getNamedProp('stich') != null)
@@ -133,7 +134,9 @@ class prideStage extends Stage
 
       case CharacterType.GF:
         rim.angle = 90;
+        rim.color = 0xFFf5f5f5;
         rim.distance = 20;
+        rim.threshold = -1;
         character.antialiasing = false;
 
         character.animation.onFrameChange.add(function() {

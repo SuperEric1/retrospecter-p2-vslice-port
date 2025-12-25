@@ -37,6 +37,7 @@ class RetroPlayState extends Module {
   var tweens = [];
   var pausedTweens = [];
   var hasCachedTextures:Bool = false;
+  var hasLoadedUIElements:Bool = false;
 
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
@@ -180,21 +181,20 @@ class RetroPlayState extends Module {
         solidCameraSprite.makeSolidColor(2000, 2500, 0xFF66FFF7);
         solidCameraSprite.cameras = [PlayState.instance.camCutscene];
         solidCameraSprite.zIndex = 100000;
-        solidCameraSprite.alpha = 0;
-        solidCameraSprite.visible = true;
         PlayState.instance.add(solidCameraSprite);
         PlayState.instance.refresh();
-        if (Preferences.flashingLights) {
-          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
-            tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.2}, 0.3, {ease: FlxEase.quadOut}));
-          }}));
-        }
-      } else {
-        if (Preferences.flashingLights) {
-          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
-            tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.2}, 0.3, {ease: FlxEase.quadOut}));
-          }}));
-        }
+      }
+
+      FlxTween.cancelTweensOf(solidCameraSprite);
+      solidCameraSprite.visible = true;
+
+      if (Preferences.flashingLights && solidCameraSprite.alpha == 0) {
+        //FlxTween.cancelTweensOf(solidCameraSprite);
+        tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.2}, 0.3, {ease: FlxEase.quadOut}));
+        }}));
+      } else if (izzyMechanicEndTween == null) {
+        solidCameraSprite.alpha = 0.2;
       }
 
       scrambleStrumline();
@@ -230,7 +230,7 @@ class RetroPlayState extends Module {
 
     super.onNoteMiss(event);
 	}
-  function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
+  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
     super('onNoteGhostMiss');
     if (PlayState.instance == null) return;
     if (!isRetro) return;
@@ -258,8 +258,12 @@ class RetroPlayState extends Module {
       ogStrumsY.push(strum.y);
     }
 
-    loadUIElements();
-    loadChainLockSprites();
+    //loadChainLockSprites();
+    if (!hasLoadedUIElements) {
+      loadUIElements();
+      loadChainLockSprites();
+      hasLoadedUIElements = true;
+    }
   }
 
   public override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -304,7 +308,7 @@ class RetroPlayState extends Module {
       obj.angle = angle;
       var y = (FlxG.random.bool() ? 1 : -1) * FlxG.random.float(5, 15);
       obj.y += y;
-      IntervalShake.shake(obj, 0.4, 0.010, 0.010, 0.010, FlxEase.ease);
+      IntervalShake.shake(obj, 0.3, 0.010, 0.010, 0.010, FlxEase.quadOut);
     }
 
     isDrugged = true;
@@ -323,10 +327,33 @@ class RetroPlayState extends Module {
     izzyMechanicTimer = null;
     isDrugged = false;
 
+    // Se for instantâneo, aplicamos o valor direto e limpamos os tweens ativos das notas
+    if (instant) {
+        for (i in 0...4) {
+            var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+            // Cancela tweens anteriores nessa nota para evitar conflito
+            FlxTween.cancelTweensOf(note);
+            note.x = ogStrumsX[i];
+            note.y = ogStrumsY[i];
+            note.angle = 0;
+        }
+
+        PlayState.instance.camHUD.angle = 0;
+        if (solidCameraSprite != null) {
+             solidCameraSprite.alpha = 0;
+             solidCameraSprite.visible = false;
+        }
+        return; // Sai da função, não precisa criar tweens
+    }
+
+    // Lógica normal
     for (i in 0...4) {
-      var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-      tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, instant ? 0 : 1.5, {ease: FlxEase.quadOut}));
-      tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, instant ? 0 : 1.5, {ease: FlxEase.quadOut}));
+        var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        // Importante: cancelar tweens velhos antes de começar novos no mesmo objeto
+        FlxTween.cancelTweensOf(note);
+
+        tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, 1.5, {ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, 1.5, {ease: FlxEase.quadOut}));
     }
 
     var objects = [
@@ -417,6 +444,17 @@ class RetroPlayState extends Module {
   }
 
   function loadChainLockSprites():Void {
+    // Se já tivermos sprites carregados (e válidos), não fazemos nada.
+    // Mas se o array tiver lixo de uma sessão anterior, limpamos.
+    if (chainLockSprites.length > 0) {
+        // Verifica se o primeiro sprite ainda está vivo e pertence a este PlayState
+        if (chainLockSprites[0] != null && chainLockSprites[0].exists) {
+            return;
+        } else {
+            chainLockSprites = []; // Limpa referências mortas
+        }
+    }
+
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
 
@@ -473,8 +511,8 @@ class RetroPlayState extends Module {
       }
     }
 
-    // Mobile: usar TouchUtil para detectar toques nos sprites de lock (PRECISA DE TESTES!!!!!!)
-    if (FlxG.onMobile) {
+    // Mobile: usar TouchUtil para detectar toques nos sprites de lock quando o ghost tap está ativado.
+    if (FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
       for (i in 0...4) {
         if (chainLockSprites[i] != null && chainLockSprites[i].visible && isStrumLocked.get(i)) {
           var sprite = chainLockSprites[i];
@@ -495,10 +533,10 @@ class RetroPlayState extends Module {
     var strum = PlayState.instance.playerStrumline;
 
     chainText = new FlxText(0, 0, 0, '', 60);
-    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), chainText.width, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     chainText.borderSize = 1.5;
     chainText.fieldWidth = strum.width;
-    chainText.x = strum.strumlineNotes.x; //strum.x + (strum.width / 2)
+    chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
     chainText.y = strum.strumlineNotes.members[0].y - 10;
     chainText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
     chainText.zIndex = strum.strumlineNotes.members[3] + 1;
@@ -516,6 +554,7 @@ class RetroPlayState extends Module {
     poisonText.zIndex = 901;
     poisonText.cameras = [PlayState.instance.camHUD];
     PlayState.instance.add(poisonText);
+
     PlayState.instance.refresh();
   }
 
@@ -535,6 +574,19 @@ class RetroPlayState extends Module {
       izzyMechanicTimer.cancel();
       unscrambleStrumline(true);
       izzyMechanicTimer = null;
+    }
+
+    if (solidCameraSprite != null) {
+      // Se ainda estiver na tela, removemos
+      if(PlayState.instance.members.contains(solidCameraSprite)) {
+          PlayState.instance.remove(solidCameraSprite);
+      }
+      solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
+      solidCameraSprite = null;    // Anula a referência
+    }
+
+    if (chainText != null) {
+      chainText.visible = false;
     }
 
     // Resetar chain locks
@@ -558,12 +610,22 @@ class RetroPlayState extends Module {
   {
     super.onSongEnd(event);
     if (!isRetro) return;
+    hasLoadedUIElements = false;
 
     poisonAmount = 0;
     isDrugged = false;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
       izzyMechanicTimer = null;
+    }
+
+    if (solidCameraSprite != null) {
+      // Se ainda estiver na tela, removemos
+      if(PlayState.instance.members.contains(solidCameraSprite)) {
+          PlayState.instance.remove(solidCameraSprite);
+      }
+      solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
+      solidCameraSprite = null;    // Anula a referência
     }
 
     // Resetar chain locks
@@ -580,6 +642,7 @@ class RetroPlayState extends Module {
   override function onDestroy(event)
 	{
 		super.onDestroy(event);
+    hasLoadedUIElements = false;
 		resetTweens();
 	}
 

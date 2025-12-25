@@ -12,7 +12,7 @@
     "id": "bf_default",
     "isPixel": false,
     "flipX": false,
-    "scale": 1
+    "scale": 0.75
   },
   "animations": [
     {

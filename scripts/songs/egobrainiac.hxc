@@ -39,7 +39,7 @@ class EgobrainiacSong extends Song
 
   // Beats para interrupções
   var interruptionBeatsStart:Array<Int> = [544, 560, 570, 581, 591, 599];
-  var interruptionBeatsRetry:Array<Int> = [551, 567, 577, 588, 598, 607];
+  var interruptionBeatsRetry:Array<Int> = [551, 567, 577, 588, 596, 605];
 
   public function new()
   {

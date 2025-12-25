@@ -180,6 +180,11 @@ class SatisfractureSong extends Song
       PlayState.instance.opponentStrumline.alpha = 1;
       FlxG.camera.flash(0xFFFFFFFF, 0.3);
     }
+    if (event.step >= 193 && event.step < 260) { // caso o jogador lague
+      playState.mayPauseGame = true;
+      isDoingEnough = false;
+      PlayState.instance.opponentStrumline.alpha = 1;
+    }
 
     var healthBar = [
 			playState.healthBar,
@@ -189,33 +194,35 @@ class SatisfractureSong extends Song
 			playState.iconP1
 		];
 
-    // Eventos perto do fim
-    if (event.step == 1120) { // fade notas do oponente
-      tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
-    };
+    if (PlayStatePlaylist.isStoryMode) {
+      // Eventos perto do fim
+      if (event.step == 1120) { // fade notas do oponente
+        tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
+      };
 
-    var noteFadeDuration = 2;
-    var heightOffset = FlxG.height + 50;
+      var noteFadeDuration = 2;
+      var heightOffset = FlxG.height + 50;
 
-    if (event.step == 1146) {
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[1], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadInOut}));
-    }
-    if (event.step == 1148) {
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[2], {y: heightOffset}, noteFadeDuration + 1, {ease: FlxEase.quadInOut}));
-    }
-    if (event.step == 1150) {
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {x: playState.playerStrumline.width + playState.playerStrumline.x + 10}, noteFadeDuration * 1.5, {ease: FlxEase.easeOutCirc}));
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadInOut}));
-    }
-
-    if (event.step == 1153) { // fade final no hud
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.linear}));
-
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[0], {x: playState.playerStrumline.x - 40}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.quadInOut}));
-      for (bar in healthBar) {
-        tweens.push(FlxTween.tween(bar, {alpha: 0}, (Conductor.instance.stepLengthMs * 18)  / 1000, {ease: FlxEase.linear}));
+      if (event.step == 1146) {
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[1], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
       }
-    };
+      if (event.step == 1148) {
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[2], {y: heightOffset}, noteFadeDuration + 1, {ease: FlxEase.quadOut}));
+      }
+      if (event.step == 1150) {
+        //tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {x: playState.playerStrumline.strumlineNotes.members[3].x + 10}, noteFadeDuration * 1.5, {ease: FlxEase.quadInOut}));
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
+      }
+
+      if (event.step == 1153) { // fade final no hud
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.linear}));
+
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[0], {x: PlayState.instance.playerStrumline.strumlineNotes.members[0].x - 40}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.quadInOut}));
+        for (bar in healthBar) {
+          tweens.push(FlxTween.tween(bar, {alpha: 0}, (Conductor.instance.stepLengthMs * 18)  / 1000, {ease: FlxEase.linear}));
+        }
+      };
+    }
   }
 
   function onCutsceneBeatHit()
@@ -310,6 +317,11 @@ class SatisfractureSong extends Song
     hasPlayedInGameCutscene = true;
     hasPlayedEndCutscene = false;
     isDoingEnough = false;
+
+    PlayState.instance.playerStrumline.alpha = 1;
+    PlayState.instance.opponentStrumline.alpha = 1;
+
+    for (bar in healthBar) bar.alpha = 1;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void

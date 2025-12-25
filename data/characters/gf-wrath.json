@@ -40,7 +40,14 @@
       "prefix": "cheer",
       "offsets": [0, 0],
       "frameRate": 24,
-      "frameIndices": []
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14]
+    },
+    {
+      "name": "combo200",
+      "prefix": "cheer",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14]
     },
     {
       "name": "drop70",

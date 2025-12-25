@@ -18,6 +18,7 @@ import funkin.ui.FullScreenScaleMode;
 class ApocalyptroSong extends Song
 {
   var hasPlayedCutscene:Bool;
+  var hasFadedUi:Bool = false;
   var tweens = [];
   var pausedTweens = [];
 
@@ -67,7 +68,11 @@ class ApocalyptroSong extends Song
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
     }
     if (event.step == 1732) {
+      hasFadedUi = true;
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 3)  / 1000, {ease: FlxEase.linear}));
+    }
+    if (event.step >= 1744 && event.step <= 2100) { // caso o jogador lague
+      PlayState.instance.playerStrumline.alpha = 1;
     }
   }
 
@@ -124,6 +129,7 @@ class ApocalyptroSong extends Song
 
     playState.mayPauseGame = true;
     hasPlayedCutscene = true;
+    hasFadedUi = false;
   }
 
   function onCreate(event:ScriptEvent):Void

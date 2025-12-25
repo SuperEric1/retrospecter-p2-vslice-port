@@ -39,7 +39,7 @@ class autoChainNote extends Module {
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
 			event.note.x += -55;
-			event.note.yOffset += -57;
+			event.note.yOffset += -137;
 
 			event.note.frames = Paths.getSparrowAtlas( 'chainNotes' );
       if (downscroll) {

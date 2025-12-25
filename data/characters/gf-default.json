@@ -1,90 +1,68 @@
 {
-    "version": "1.0.0",
-    "name": "Gf Default",
-    "assetPath": "girlfriends/gfs/default",
-    "singTime": 4,
+  "version": "1.0.0",
+  "name": "Gf Default",
+  "assetPath": "girlfriends/gfs/default",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "id": "gf_default",
     "isPixel": false,
-    "scale": 1,
-    "healthIcon": {
-        "id": "gf_default",
-        "isPixel": false,
-        "flipX": false,
-        "scale": 1
+    "flipX": false,
+    "scale": 1
+  },
+  "animations": [
+    {
+      "name": "danceLeft",
+      "prefix": "idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
     },
-    "animations": [
-        {
-            "name": "danceLeft",
-            "prefix": "idle",
-            "offsets": [
-                0,
-                0
-            ],
-            "frameRate": 24,
-            "frameIndices": [
-                30,
-                0,
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11,
-                12,
-                13,
-                14
-            ]
-        },
-        {
-            "name": "danceRight",
-            "prefix": "idle",
-            "offsets": [
-                0,
-                0
-            ],
-            "frameRate": 24,
-            "frameIndices": [
-                15,
-                16,
-                17,
-                18,
-                19,
-                20,
-                21,
-                22,
-                23,
-                24,
-                25,
-                26,
-                27,
-                28,
-                29
-            ]
-        },
-        {
-            "name": "cheer",
-            "prefix": "cheer",
-            "offsets": [
-                0,
-                0
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "cry",
-            "prefix": "cry",
-            "offsets": [
-                0,
-                0
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        }
-    ],
-    "flipX": false
+    {
+      "name": "danceRight",
+      "prefix": "idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [
+        15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
+      ]
+    },
+    {
+      "name": "cheer",
+      "prefix": "cheer",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "combo50",
+      "prefix": "cheer",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14]
+    },
+    {
+      "name": "combo200",
+      "prefix": "cheer",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 14, 14, 14]
+    },
+    {
+      "name": "drop70",
+      "prefix": "cry",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    },
+    {
+      "name": "cry",
+      "prefix": "cry",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
 }

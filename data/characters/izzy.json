@@ -9,7 +9,7 @@
         "id": "izzy",
         "isPixel": false,
         "flipX": false,
-        "scale": 1
+        "scale": 0.75
     },
     "animations": [
         {

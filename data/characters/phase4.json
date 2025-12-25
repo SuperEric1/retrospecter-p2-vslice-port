@@ -7,8 +7,8 @@
   "isPixel": false,
   "scale": 1,
   "healthIcon": {
-    "id": "hydra",
-    "scale": 1
+    "id": "catastro",
+    "scale": 0.75
   },
   "offsets": [-1090, -1590],
   "cameraOffsets": [0, 0],

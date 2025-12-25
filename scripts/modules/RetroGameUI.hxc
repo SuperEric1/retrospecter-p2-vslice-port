@@ -37,17 +37,24 @@ class RetroGameUI extends Module {
   var downscroll = false;
 
   var retroHealthBar:FlxBar;
-  var retroHealthBarBG:FunkinSprite;
+  var retroHealthBarOverlay:FunkinSprite;
   var retroHealthBarFill:FunkinSprite;
+  var retroHealthBarFillBG:FunkinSprite; // Fundo da barra (cor do oponente)
   var p1BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_GREEN; // bf
   var p2BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_RED; // dad
+  var isOppIconAnimated:Bool = false;
+  var isPlayerIconAnimated:Bool = false;
 
+  var fillOriginalWidth:Float = 0; // Largura original da barra
   var hasBeenCreated = false;
 
   public function onSongLoaded(event) {
       super.onSongLoaded(event);
       isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
       if (!isRetro) return;
+      if (hasBeenCreated) return;
+      var downscroll = Preferences.downscroll;
+      if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -55,50 +62,78 @@ class RetroGameUI extends Module {
 
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
-      var bgYOffset = 0;
-      var barYOffset = 0;
+      var bgYOffset:Float = 0;
       var fillDirection:Array<Float, Float> = [1500, 80];
+
+      playState.healthBar.y += downscroll ? -17 : 17;
       playState.healthBar.visible = false;
+      playState.healthBarBG.y = downscroll ? -17 : 17;
       playState.healthBarBG.visible = false;
+
       switch (playStage.getDad().characterId.toLowerCase()) {
         case 'phase1':
-          bgYOffset = -105;
-          retroHealthBarBG = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP1/overlay');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar');
+          defaultScale = [0.45, 0.45];
+          bgYOffset = -115;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP1/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar'); // opp
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar'); // player
+        case 'phase2':
+          bgYOffset = -80;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP2/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP2/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP2/bar');
+        case 'phase3':
+          defaultScale = [0.48, 0.48];
+          bgYOffset = -80;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP3/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP3/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP3/bar');
+        case 'phase4':
+          defaultScale = [0.4, 0.4];
+          bgYOffset = -100;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP4/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP4/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP4/bar');
+        case 'izzy':
+          defaultScale = [0.4, 0.4];
+          bgYOffset = -100;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/izzy/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/izzy/bar');
 
         default:
           playState.healthBar.visible = true;
           playState.healthBarBG.visible = true;
+          return; // nao criar health bar custom
       }
-      if (retroHealthBarBG != null) {
-        retroHealthBarBG.y += bgYOffset; // aplicar offset
-        retroHealthBarBG.camera = playState.camHUD;
-        retroHealthBarBG.zIndex = 803;
-        //retroHealthBarBG.visible = false;
-        retroHealthBarBG.scale.set(defaultScale[0], defaultScale[1]);
-        retroHealthBarBG.screenCenter(0x01);
 
-        retroHealthBarFill.zIndex = retroHealthBarBG - 2;
-        //retroHealthBarFill.blend = 3;
-        retroHealthBarFill.camera = playState.camHUD;
-        retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
-        retroHealthBarFill.screenCenter(0x01);
+      retroHealthBarOverlay.y += bgYOffset; // aplicar offset
+      retroHealthBarOverlay.camera = playState.camHUD;
+      retroHealthBarOverlay.zIndex = 803; //803
+      retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
+      retroHealthBarOverlay.screenCenter(0x01);
 
-        retroHealthBar = new FlxBar(0, playState.healthBarBG.y, FlxBarFillDirection.RIGHT_TO_LEFT, fillDirection[0], fillDirection[1], playState, 'healthLerp', 0, 2);
-        retroHealthBar.createFilledBar(p2BarColor, p1BarColor);
-        retroHealthBar.scale.set(defaultScale[0], defaultScale[1]);
-        retroHealthBar.blend = 1;
-        //retroHealthBar.y = bgYOffset + barYOffset;
-        retroHealthBar.camera = playState.camHUD;
-        retroHealthBar.zIndex = retroHealthBarBG.zIndex + 1;
-        retroHealthBar.screenCenter(0x01);
+      // Configurar o fundo da barra (cor do oponente)
+      retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 2;
+      retroHealthBarFillBG.camera = playState.camHUD;
+      retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
+      retroHealthBarFillBG.screenCenter(0x01);
+      retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase()); // Cor do oponente
 
-        playState.iconP1.size.x = 0.5;
+      // Configurar o preenchimento da barra (cor do jogador)
+      retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
+      retroHealthBarFill.camera = playState.camHUD;
+      retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
+      retroHealthBarFill.screenCenter(0x01);
+      retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase()); // Cor do jogador
 
-        playState.add(retroHealthBar);
-        playState.add(retroHealthBarFill);
-        playState.add(retroHealthBarBG);
-      }
+      // Guardar a largura original
+      fillOriginalWidth = retroHealthBarFill.frameWidth;
+
+      // Adicionar na ordem correta: fundo -> preenchimento -> overlay
+      playState.add(retroHealthBarFillBG);
+      playState.add(retroHealthBarFill);
+      playState.add(retroHealthBarOverlay);
 
       // Outros
       playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
@@ -122,6 +157,68 @@ class RetroGameUI extends Module {
 
   public function onCreate(event) {
     super.onCreate(event);
+  }
 
+  public function onUpdate(event) {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (!isRetro || !hasBeenCreated || retroHealthBarFill == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+
+    var playState = PlayState.instance;
+
+
+    // ---- health bars ----
+    var healthPercent:Float = playState.healthLerp / 2.0;
+    var newWidth:Float = fillOriginalWidth * healthPercent;
+
+    var clipX:Float = fillOriginalWidth - newWidth; // Cortar barras
+
+    retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
+
+    retroHealthBarOverlay.alpha = playState.healthBar.alpha;
+    retroHealthBarFill.alpha = playState.healthBar.alpha;
+    retroHealthBarFillBG.alpha = playState.healthBar.alpha;
+    if (isOppIconAnimated) {
+      if (playState.health < 0.4) {
+        playState.iconP2.animation.play('win', false, false);
+      } else if (playState.health < 0.6) {
+        playState.iconP2.animation.play('neutral', false, false);
+      } else {
+        playState.iconP2.animation.play('lose', false, false);
+      }
+    }
+  }
+
+  public function getIconColor(characterId:String) {
+    switch (characterId) {
+      case 'bf-retrospecter':
+        return 0xFF31b0d1;
+      case 'bf-wind':
+        return 0xFF31b0d1;
+      case 'bf-pride':
+        return 0xFF80f5e0;
+
+      case 'phase1':
+        return 0xFF17d7e3;
+      case 'phase2':
+        return 0xFF4cff94;
+      case 'phase3':
+        return 0xFF17d7e3;
+      case 'phase4':
+        isOppIconAnimated = true;
+        PlayState.instance.iconP2.autoUpdate = false; // prevenir o icone de usar animacoes padroes que o jogo faz
+        PlayState.instance.iconP2.animation.addByPrefix("neutral", "neutral", 24, false);
+        PlayState.instance.iconP2.animation.addByPrefix("win", "win", 24, false);
+        PlayState.instance.iconP2.animation.addByPrefix("lose", "lose", 24, false);
+        PlayState.instance.iconP2.animation.play('neutral', false, false);
+
+        return 0xFF17d7e3;
+      case 'izzy':
+        return 0xFF78fff8;
+      default:
+        return p1BarColor;
+    }
   }
 }
