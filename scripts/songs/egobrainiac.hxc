@@ -32,6 +32,7 @@ class EgobrainiacSong extends Song
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
   var ogOppStrumsY:Array<Float> = [];
+  var ogLaneX:Float;
   var ogOppLaneX:Float;
   var ogOppLaneY:Float;
   
@@ -59,7 +60,7 @@ class EgobrainiacSong extends Song
 
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
     super('onNoteGhostMiss');
-    if (izzyPercent > 15) {
+    if (izzyPercent > 15 || didLastThing) {
       event.cancel();
       event.stopPropagation();
       return;
@@ -127,12 +128,13 @@ class EgobrainiacSong extends Song
       var izzy = izzyPercent / 100;
       if (isMobile) {
         tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 256 * izzy}, 2, {ease: FlxEase.backOut}));
+        tweens.push(FlxTween.tween(playState.playerStrumline, {x: ogLaneX + (150 + FlxG.random.int(-50,50))}, 0.75, {ease: FlxEase.cubeOut}));
       }
       for (i in 0...4) {
         var note = playState.playerStrumline.strumlineNotes.members[i];
         if (note == null) continue;
 
-        tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (200 + FlxG.random.int(10,50))}, 0.75, {ease: FlxEase.cubeOut}));
+        if (!isMobile) tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (200 + FlxG.random.int(10,50))}, 0.75, {ease: FlxEase.cubeOut}));
         tweens.push(FlxTween.tween(note, {y: ogStrumsY[i] + 72 + FlxG.random.int(-80,80)}, 0.75, {ease: FlxEase.cubeOut}));
         tweens.push(FlxTween.tween(note, {alpha: 0}, 0.6, {ease: FlxEase.quadOut}));
         tweens.push(FlxTween.tween(note, {angle: FlxG.random.int(-180,180)}, 0.9, {ease: FlxEase.cubeOut}));
@@ -212,6 +214,7 @@ class EgobrainiacSong extends Song
 	{
 		super.onDestroy(event);
 		resetTweens();
+		didLastThing = false;
 	}
 
 	private function resetTweens()
@@ -272,15 +275,19 @@ class EgobrainiacSong extends Song
     super.onSongRetry(event);
     resetTweens();
     izzyPercent = 14;
+    
+    if (didLastThing == true) FlxG.resetState(); // resetar tudo de uma vez caso num tenha mais oq fazer pra resetar 
 
-    playStage.getBoyfriend().idleSuffix = '';
-    playState.playerStrumline.alpha = 1;
+    //playState.playerStrumline.x = ogLaneX;
+    //playStage.getBoyfriend().idleSuffix = '-alt';
+    //playStage.getBoyfriend().danceEvery = 1;
+    //playState.playerStrumline.alpha = 1;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-
+    didLastThing = false;
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -298,6 +305,7 @@ class EgobrainiacSong extends Song
       }
 
       strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      ogLaneX = PlayState.instance.playerStrumline.x;
       ogOppLaneX = PlayState.instance.opponentStrumline.x;
       ogOppLaneY = PlayState.instance.opponentStrumline.y;
       if (ogOppStrumsX[i] == null && ogOppStrumsY[i] == null) {
