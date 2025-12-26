@@ -9,7 +9,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
   {
     super('phase4');
   }
-  
+
   // Map para armazenar offsets de cada animação
   var animOffsets:haxe.ds.StringMap<String, Array<Float>> = new haxe.ds.StringMap();
 
@@ -23,12 +23,12 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     animOffsets.set('singLEFT', [-640, 0]);
     animOffsets.set('singDOWN', [0, 450]);
     animOffsets.set('singUP', [-60, -250]);
-    animOffsets.set('singRIGHT', [450, 0]);
+    animOffsets.set('singRIGHT', [500, 0]);
 
     // Offsets para animações de cutscene (se precisar ajustar)
     animOffsets.set('bigDisgrace', [0, 0]);
     animOffsets.set('tryYourBones', [0, 0]);
-    animOffsets.set('leaveNow', [0, 0]);
+    animOffsets.set('leaveNow', [500, 100]);
     animOffsets.set('passDeez', [0, 0]);
     animOffsets.set('thisMeansWar', [0, 0]);
     animOffsets.set('mudaChild', [0, 0]);
@@ -48,6 +48,21 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     this.updateHitbox();
   }
 
+  function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			if (event.note.isHoldNote) {
+				var durationInSeconds:Float = event.note.length / 1000;
+				PlayState?.instance?.camHUD?.shake(0.002, durationInSeconds + 0.1);
+				PlayState?.instance?.camGame?.shake(0.002, durationInSeconds + 0.1);
+			} else {
+				PlayState?.instance?.camHUD?.shake(0.0013, 0.1);
+				PlayState?.instance?.camGame?.shake(0.0013, 0.1);
+			}
+		}
+		super.onNoteHit(event);
+	}
 
   override function onSongRetry()
   {

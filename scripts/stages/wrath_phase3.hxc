@@ -23,6 +23,7 @@ class WrathPhase3 extends Stage
     // Configurações
     var tweens = [];
     var pausedTweens = [];
+    var hasErupted:Bool = false;
     var debrisSpread:Float = 600;
     var debrisResetY:Float = 800;
     var debrisXCenter:Float = 600;
@@ -174,13 +175,13 @@ class WrathPhase3 extends Stage
         debris1 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread), FlxG.random.float(-1000, -1200));
         debris1.loadSparrow('Phase3/debris1');
         debris1.animation.addByPrefix('debris', 'debris', 24, true);
-        //debris1.animation.play('debris');
+        debris1.animation.play('debris');
         debris1.velocity.y = 400;
         debris1.scrollFactor.set(0.2, 0.9);
         debris1.scale.set(0.8, 0.8);
         debris1.updateHitbox();
-        debris1.active = false;
         debris1.visible = false;
+        debris1.antialiasing = false;
         PlayState.instance.add(debris1, 'debris1');
 
         // Geysers
@@ -227,30 +228,28 @@ class WrathPhase3 extends Stage
         spriteMap.set('geyserR', geyserR);
 
         // Debris 2 e 3
-        debris2 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread),
-                                FlxG.random.float(-1800, -2000));
+        debris2 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread), FlxG.random.float(-1800, -2000));
         debris2.loadSparrow('Phase3/debris2');
         debris2.animation.addByPrefix('debris', 'debris', 24, true);
-        //debris2.animation.play('debris');
+        debris2.animation.play('debris');
         debris2.velocity.y = 450;
         debris2.scrollFactor.set(0.28, 0.9);
         debris2.scale.set(0.8, 0.8);
         debris2.updateHitbox();
-        debris2.active = false;
         debris2.visible = false;
+        debris2.antialiasing = false;
         PlayState.instance.add(debris2, 'debris2');
 
-        debris3 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread),
-                                FlxG.random.float(-2600, -2800));
+        debris3 = FunkinSprite.create(FlxG.random.float(debrisXCenter - debrisSpread, debrisXCenter + debrisSpread), FlxG.random.float(-2600, -2800));
         debris3.loadSparrow('Phase3/debris2');
         debris3.animation.addByPrefix('debris', 'debris', 24, true);
-        //debris3.animation.play('debris');
+        debris3.animation.play('debris');
         debris3.velocity.y = 450;
         debris3.scrollFactor.set(0.28, 0.9);
         debris3.scale.set(0.8, 0.8);
         debris3.updateHitbox();
-        debris3.active = false;
         debris3.visible = false;
+        debris3.antialiasing = false;
         PlayState.instance.add(debris3, 'debris3');
 
         // Front background walls
@@ -371,12 +370,12 @@ class WrathPhase3 extends Stage
         stagePositions.set('ground_M', {x: ground_M.x, y: ground_M.y});
         stagePositions.set('ground_R', {x: ground_R.x, y: ground_R.y});
         stagePositions.set('lavarock_L', {x: lavarock_L.x, y: lavarock_L.y});
-        stagePositions.set('lavarock_M', {x: 0, y: lavarock_M.y});
-        stagePositions.set('lavarock_R', {x: 0, y: lavarock_R.y});
-        stagePositions.set('lavabubbles', {x: 0, y: lavabubbles.y});
-        stagePositions.set('frontbgLava', {x: 0, y: frontbgLava.y});
-        stagePositions.set('bg', {x: 0, y: bg.y});
-        stagePositions.set('frontbg', {x: 0, y: frontbg.y});
+        stagePositions.set('lavarock_M', {x: lavarock_M.x, y: lavarock_M.y});
+        stagePositions.set('lavarock_R', {x: lavarock_R.x, y: lavarock_R.y});
+        stagePositions.set('lavabubbles', {x: lavabubbles.x, y: lavabubbles.y});
+        stagePositions.set('frontbgLava', {x: frontbgLava.x, y: frontbgLava.y});
+        stagePositions.set('bg', {x: bg.x, y: bg.y});
+        stagePositions.set('frontbg', {x: frontbg.x, y: frontbg.y});
 
         if (getBoyfriend() != null)
             stagePositions.set('boyfriend', {x: getBoyfriend().x, y: getBoyfriend().y});
@@ -611,6 +610,15 @@ class WrathPhase3 extends Stage
         }
     }
 
+    function onSongRetry(event:ScriptEvent):Void
+    {
+        super.onSongRetry(event);
+        /*if (hasErupted) {
+            FlxG.resetState(); // resetar tudo pra corrigir o stage
+            ^ talvez nao seja uma boa ideia
+        }*/
+    }
+
     override public function onBeatHit(event:SongTimeScriptEvent):Void
     {
         super.onBeatHit(event);
@@ -644,15 +652,12 @@ class WrathPhase3 extends Stage
 
         if (event.curStep >= 2624 && !debrisFlag)
         {
-            debris1.visible = true;
-            debris1.active = true;
             debris1.animation.play('debris');
-            debris2.visible = true;
-            debris2.active = true;
+            debris1.visible = true;
             debris2.animation.play('debris');
-            debris3.visible = true;
-            debris3.active = true;
+            debris2.visible = true;
             debris3.animation.play('debris');
+            debris3.visible = true;
             debrisFlag = true;
         }
     }
@@ -667,26 +672,28 @@ class WrathPhase3 extends Stage
         switch (Std.int(value.eventType))
         {
             case 0:
-                geyserL.visible = true;
-                geyserM.visible = true;
-                geyserR.visible = true;
                 geyserL.animation.play('spout', true);
                 geyserM.animation.play('spout', true);
                 geyserR.animation.play('spout', true);
+                geyserL.visible = true;
+                geyserM.visible = true;
+                geyserR.visible = true;
 
             case 1:
+                if (hasErupted) return; // pra nao subir de novo se o jogador reiniciar a musica ou morrer
                 inEruption = !inEruption;
                 var duration:Float = 25;
                 if (Math.isNaN(duration)) duration = 20;
                 // var targetY = inEruption ? (lava_FG_Y - 1000) : lava_FG_Y;
                 // FlxTween.tween(lava_FG, {y: targetY}, duration, {ease: FlxEase.linear});
                 var targetY = 790; // baixar o y
-                var objects = [bg, frontbg, FG_fire_L, FG_fire_R, geyserL, geyserM, geyserR, debris1, debris2, debris3, lavaflowL, lavaflowR];
+                var objects = [bg, frontbg, FG_fire_L, FG_fire_R, geyserL, geyserM, geyserR, lavaflowL, lavaflowR];
                 for (obj in objects) {
                   tweens.push(FlxTween.tween(obj, {y: obj.y + targetY}, duration, {ease: FlxEase.outQuad}));
                 }
                 sinkValue = 700;
                 sinkMult = 0;
+                hasErupted = true;
 
             case 2:
                 if (getBoyfriend() == null) return;

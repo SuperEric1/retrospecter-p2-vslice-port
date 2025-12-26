@@ -34,6 +34,8 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "autochain":
           return;
+        case "Hydra":
+          return;
         case "Fake Note":
           return;
       }

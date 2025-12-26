@@ -3,7 +3,7 @@
   "name": "Bf Wind",
   "assetPath": "characters/BfSkins/default_wind",
   "renderType": "multisparrow",
-  "singTime": 8,
+  "singTime": 4,
   "isPixel": false,
   "scale": 1,
   "healthIcon": {

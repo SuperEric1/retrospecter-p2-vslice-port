@@ -1,0 +1,55 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+import funkin.effects.IntervalShake;
+
+class PhaseThreeCharacter extends SparrowCharacter {
+
+	function new() {
+		super('phase3');
+	}
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			if (event.note.isHoldNote) {
+				var durationInSeconds:Float = event.note.length / 1000;
+				PlayState?.instance?.camHUD?.shake(0.002, durationInSeconds + 0.1);
+				PlayState?.instance?.camGame?.shake(0.002, durationInSeconds + 0.1);
+			} else {
+				PlayState?.instance?.camHUD?.shake(0.0013, 0.1);
+				PlayState?.instance?.camGame?.shake(0.0013, 0.1);
+			}
+		}
+		super.onNoteHit(event);
+	}
+
+	override public function onUpdate(event):Void {
+    super.onUpdate(event);
+	}
+
+  public function onSongRetry(event):Void {
+    super.onSongRetry(event);
+  }
+
+  function onCreate(event) {
+		super.onCreate(event);
+	}
+
+	public function onDestroy(event):Void {
+		super.onDestroy(event);
+	}
+
+	public function onPause(event) {
+		super.onPause(event);
+	}
+
+	public function onResume(event) {
+		super.onResume(event);
+	}
+}

@@ -33,6 +33,8 @@ class BFWindCharacter extends MultiSparrowCharacter
           return;
         case "No Animation":
           return;
+        case "Hydra":
+          return;
         case "Fake Note":
           return;
       }

@@ -12,7 +12,8 @@
     "id": "retro",
     "isPixel": false,
     "flipX": false,
-    "scale": 0.75
+    "scale": 0.75,
+    "offsets": [-5, 0]
   },
   "animations": [
     {

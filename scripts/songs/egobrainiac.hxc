@@ -27,13 +27,16 @@ class EgobrainiacSong extends Song
   var tweens = [];
   var pausedTweens = [];
 
+  var isMobile:Bool;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
-  var ogNoteScale:Float;
   var ogOppStrumsX:Array<Float> = [];
   var ogOppStrumsY:Array<Float> = [];
-
+  var ogOppLaneX:Float;
+  var ogOppLaneY:Float;
+  
   var izzyPercent = 14;
+  var didLastThing:Bool = false;
 
   var transformationSprite:FunkinSprite;
 
@@ -50,7 +53,17 @@ class EgobrainiacSong extends Song
   {
     super.onCountdownStart(event);
     izzyPercent = 14;
+    didLastThing = false;
 
+  }
+
+  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
+    super('onNoteGhostMiss');
+    if (izzyPercent > 15) {
+      event.cancel();
+      event.stopPropagation();
+      return;
+    }
   }
 
   public override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -80,7 +93,7 @@ class EgobrainiacSong extends Song
     super.onStepHit(event);
     if (PlayState.instance == null) return;
     var downscroll = Preferences.downscroll;
-    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if(isMobile) downscroll = true;
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
     final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
     final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
@@ -94,9 +107,8 @@ class EgobrainiacSong extends Song
     }
 
     // ultimo
-    if (event.step == 2432) {
-      if (playState == null || playState.playerStrumline == null) return;
-
+    if (event.step >= 2432 && didLastThing == false) {
+      didLastThing = true;
       izzyPercent = 101;
       doThing();
 
@@ -111,7 +123,11 @@ class EgobrainiacSong extends Song
         tweens.push(FlxTween.tween(playState.playerStrumline, {y: playState.playerStrumline.y - 100}, 1.5, {ease: FlxEase.quadInOut}));
       }
 
-      // explodir
+      // notas
+      var izzy = izzyPercent / 100;
+      if (isMobile) {
+        tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 216 * izzy}, 0.5 * izzyPercent, {ease: FlxEase.backOut}));
+      }
       for (i in 0...4) {
         var note = playState.playerStrumline.strumlineNotes.members[i];
         if (note == null) continue;
@@ -129,27 +145,36 @@ class EgobrainiacSong extends Song
     if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
 
     var izzy = izzyPercent / 100;
-    for (i in 0...4) {
+    tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
+
+    if (isMobile) {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 416 * izzy}, 0.5, {ease: FlxEase.backOut}));
+    } else {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
+    }
+    izzyPercent += 16;
+
+    // ---- ANTIGO ----
+    /*for (i in 0...4) {
       // jogador
       if (izzyPercent != 101) {
-        tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
+        tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0.1}, 0.7, {ease: FlxEase.backOut}));
 
-        // removido pq tava dando problema, mas funciona igual o mod original
-        /* var note = playState.playerStrumline.strumlineNotes.members[i];
+        // Removido pq tava dando problema, mas funciona praticamente igual o mod original
+        var note = playState.playerStrumline.strumlineNotes.members[i];
         if (note == null) continue;
 
         tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (180 + i * -30) * izzy}, 0.5, {ease: FlxEase.backOut}));
         tweens.push(FlxTween.tween(note, {y: ogStrumsY[i] + 64 * izzy}, 0.5, {ease: FlxEase.backOut}));
         tweens.push(FlxTween.tween(note, {alpha: 0}, 0.5, {ease: FlxEase.backOut}));
-        tweens.push(FlxTween.tween(note.scale, {x: 0.7 - 0.2 * izzy, y: 0.7 - 0.2 * izzy}, 0.5, {ease: FlxEase.backOut})); */
+        tweens.push(FlxTween.tween(note.scale, {x: 0.7 - 0.2 * izzy, y: 0.7 - 0.2 * izzy}, 0.5, {ease: FlxEase.backOut}));
       }
       // oponente
       var oppNote = playState.opponentStrumline.strumlineNotes.members[i];
       if (oppNote == null) continue;
 
       tweens.push(FlxTween.tween(oppNote, {x: ogOppStrumsX[i] + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
-    }
-    izzyPercent += 16;
+    }*/
   }
 
   function undoThing() {
@@ -158,9 +183,14 @@ class EgobrainiacSong extends Song
     var izzy = izzyPercent / 50;
 
     tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
+    if (isMobile) {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY}, 0.5, {ease: FlxEase.quadOut}));
+    } else {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX}, 0.5, {ease: FlxEase.quadOut}));
+    }
 
-    for (i in 0...4) {
-      /* removido pq tava dando problema, mas funciona igual o mod original
+    // Removido pq tava dando problema, mas funciona igual o mod original
+    /*for (i in 0...4) {
       // Jogador - volta para posições originais
       var note = playState.playerStrumline.strumlineNotes.members[i];
       if (note == null) continue;
@@ -169,14 +199,13 @@ class EgobrainiacSong extends Song
       tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
       tweens.push(FlxTween.tween(note, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
       tweens.push(FlxTween.tween(note.scale, {x: 0.7, y: 0.7}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-      */
 
       // Oponente - volta para posições originais
       var oppNote = playState.opponentStrumline.strumlineNotes.members[i];
       if (oppNote == null) continue;
 
       tweens.push(FlxTween.tween(oppNote, {x: ogOppStrumsX[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-    }
+    }*/
   }
 
   override function onDestroy(event)
@@ -246,23 +275,6 @@ class EgobrainiacSong extends Song
 
     playStage.getBoyfriend().idleSuffix = '';
     playState.playerStrumline.alpha = 1;
-
-    playState.opponentStrumline.setNoteSpacing(Strumline.noteSpacingScale);
-
-    for (i in 0...4) {
-      var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-      note.x = ogStrumsX[i];
-      note.y = ogStrumsY[i];
-      note.scale.x = ogNoteScale;
-      note.scale.y = ogNoteScale;
-      note.angle = 0;
-      note.alpha = 1;
-    }
-    for (i in 0...4) {
-      var note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
-      note.x = ogOppStrumsX[i];
-      note.y = ogOppStrumsY[i];
-    }
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
@@ -275,17 +287,23 @@ class EgobrainiacSong extends Song
   {
     super.onSongLoaded(event);
     if (PlayState.instance == null) return;
-    ogNoteScale = PlayState.instance.playerStrumline.strumlineNotes.members[0].scale;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
+    // salvar posicao real dos strums para os efeitos.
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-      ogStrumsX.push(strum.x);
-      ogStrumsY.push(strum.y);
-    }
-    for (i in 0...4) {
-      var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
-      ogOppStrumsX.push(strum.x);
-      ogOppStrumsY.push(strum.y);
+      if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
+        ogStrumsX.push(strum.x);
+        ogStrumsY.push(strum.y);
+      }
+
+      strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      ogOppLaneX = PlayState.instance.opponentStrumline.x;
+      ogOppLaneY = PlayState.instance.opponentStrumline.y;
+      if (ogOppStrumsX[i] == null && ogOppStrumsY[i] == null) {
+        ogOppStrumsX.push(strum.x);
+        ogOppStrumsY.push(strum.y);
+      }
     }
   }
 

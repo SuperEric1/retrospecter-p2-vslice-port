@@ -67,6 +67,22 @@ class CatastrofiendSong extends Song
   public function onStepHit(event) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
+    var dad = PlayState.instance.currentStage.getDad();
+
+    // Voicelines
+    if (event.step == 512) {
+      dad.playAnimation('leaveNow', false);
+    } else if (event.step == 545) dad.playAnimation('idle', false);
+    if (event.step == 576) {
+      dad.playAnimation('passDeez', false);
+    } else if (event.step == 611) dad.playAnimation('idle', false);
+    if (event.step == 638) {
+      dad.playAnimation('tryYourBones', false);
+    } else if (event.step == 672) dad.playAnimation('idle', false);
+    if (event.step == 705) {
+      dad.playAnimation('thisMeansWar', false);
+    } else if (event.step == 767) dad.playAnimation('idle', false);
+
     var elements = [
 			PlayState.instance.healthBar,
 			PlayState.instance.healthBarBG,
@@ -77,7 +93,7 @@ class CatastrofiendSong extends Song
 		];
 
     // I WILL BE YOUR END!!!
-    if (event.step == 2515) {
+    if (event.step >= 2515 && event.step < 2560) {
       for (element in elements)
         element.visible = false;
     };

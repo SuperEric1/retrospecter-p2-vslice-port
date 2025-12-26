@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Bf",
+  "name": "Bf Pride",
   "assetPath": "characters/BfSkins/bf_pride",
   "renderType": "multisparrow",
   "startingAnimation": "idle",
@@ -74,13 +74,6 @@
     {
       "name": "singRIGHTmiss",
       "prefix": "BF NOTE RIGHT MISS",
-      "offsets": [0, 0],
-      "frameRate": 24,
-      "frameIndices": []
-    },
-    {
-      "name": "hey",
-      "prefix": "BF HEY",
       "offsets": [0, 0],
       "frameRate": 24,
       "frameIndices": []

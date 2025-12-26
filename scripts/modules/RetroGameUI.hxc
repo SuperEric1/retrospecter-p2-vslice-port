@@ -44,6 +44,8 @@ class RetroGameUI extends Module {
   var p2BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_RED; // dad
   var isOppIconAnimated:Bool = false;
   var isPlayerIconAnimated:Bool = false;
+  var ogBfId:String;
+  var ogDadId:String;
 
   var fillOriginalWidth:Float = 0; // Largura original da barra
   var hasBeenCreated = false;
@@ -59,6 +61,8 @@ class RetroGameUI extends Module {
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
       var songId = playState.currentSong.id.toLowerCase();
+      ogBfId = playStage.getBoyfriend().characterId.toLowerCase();
+      ogDadId = playStage.getDad().characterId.toLowerCase();
 
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
@@ -182,6 +186,15 @@ class RetroGameUI extends Module {
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
   }
 
+  public function onSongRetry(event) {
+    super.onSongRetry(event);
+    if (!hasBeenCreated) return;
+    isOppIconAnimated = false;
+    isPlayerIconAnimated = false;
+    retroHealthBarFill.color = getIconColor(ogBfId);
+    retroHealthBarFillBG.color = getIconColor(ogDadId);
+  }
+
   public function getIconColor(characterId:String) {
     isOppIconAnimated = false;
     switch (characterId) {
@@ -191,6 +204,15 @@ class RetroGameUI extends Module {
         return 0xFF31b0d1;
       case 'bf-pride':
         return 0xFF80f5e0;
+      case 'bf-wrath':
+        if (!isPlayerIconAnimated) {
+          isPlayerIconAnimated = true;
+          PlayState.instance.iconP1.animation.addByPrefix("idle", "neutral", 24, false);
+          PlayState.instance.iconP1.animation.addByPrefix("winning", "win", 24, false);
+          PlayState.instance.iconP1.animation.addByPrefix("losing", "lose", 24, false);
+          PlayState.instance.iconP1.playAnimation('idle', false, false, 0);
+        }
+        return 0xFF282d4e;
 
       case 'phase1':
         return 0xFF17d7e3;
@@ -199,17 +221,34 @@ class RetroGameUI extends Module {
       case 'phase3':
         return 0xFF17d7e3;
       case 'phase4':
-        isOppIconAnimated = true;
-        PlayState.instance.iconP2.animation.addByPrefix("idle", "neutral", 24, false);
-        PlayState.instance.iconP2.animation.addByPrefix("winning", "win", 24, false);
-        PlayState.instance.iconP2.animation.addByPrefix("losing", "lose", 24, false);
-        PlayState.instance.iconP2.animation.play('idle', false, false);
-
+        if (!isOppIconAnimated) {
+          isOppIconAnimated = true;
+          PlayState.instance.iconP2.animation.addByPrefix("idle", "neutral", 24, false);
+          PlayState.instance.iconP2.animation.addByPrefix("winning", "win", 24, false);
+          PlayState.instance.iconP2.animation.addByPrefix("losing", "lose", 24, false);
+          PlayState.instance.iconP2.playAnimation('idle', false, false, 0);
+        }
         return 0xFF17d7e3;
       case 'izzy':
         return 0xFF78fff8;
       default:
         return p1BarColor;
+    }
+  }
+
+  override function onSongEvent(event) {
+		super.onSongEvent(event);
+    // Atualizar cor do icone se o personagem mudar.
+		if (event.eventData.eventKind == "RetroChangeCharacter") {
+      var target = event.eventData.value.character;
+      var characterId = event.eventData.value.newchar.toLowerCase();
+
+      if (target == "bf") {
+			  retroHealthBarFill.color = getIconColor(characterId);
+      }
+      if (target == "dad") {
+			  retroHealthBarFillBG.color = getIconColor(characterId);
+      }
     }
   }
 }

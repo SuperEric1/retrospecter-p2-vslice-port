@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="geyserR.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="geyserR0000" x="2415" y="0" width="436" height="858" frameX="-278" frameY="-140" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0001" x="2415" y="0" width="436" height="858" frameX="-278" frameY="-140" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0002" x="2415" y="863" width="437" height="847" frameX="-276" frameY="-145" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0003" x="2415" y="863" width="437" height="847" frameX="-276" frameY="-145" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0004" x="2296" y="1977" width="419" height="841" frameX="-295" frameY="-149" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0005" x="2296" y="1977" width="419" height="841" frameX="-295" frameY="-149" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0006" x="975" y="2032" width="436" height="870" frameX="-274" frameY="-126" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0007" x="975" y="2032" width="436" height="870" frameX="-274" frameY="-126" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0008" x="0" y="2098" width="484" height="840" frameX="-255" frameY="-151" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0009" x="0" y="2098" width="484" height="840" frameX="-255" frameY="-151" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0010" x="489" y="2098" width="481" height="844" frameX="-239" frameY="-147" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0011" x="489" y="2098" width="481" height="844" frameX="-239" frameY="-147" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0012" x="975" y="2032" width="436" height="870" frameX="-274" frameY="-126" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0013" x="975" y="2032" width="436" height="870" frameX="-274" frameY="-126" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0014" x="1672" y="0" width="738" height="980" frameX="-141" frameY="-70" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0015" x="1672" y="0" width="738" height="980" frameX="-141" frameY="-70" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0016" x="850" y="0" width="817" height="974" frameX="-80" frameY="-64" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0017" x="850" y="0" width="817" height="974" frameX="-80" frameY="-64" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0018" x="1689" y="1977" width="602" height="976" frameX="-196" frameY="-63" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0019" x="1689" y="1977" width="602" height="976" frameX="-196" frameY="-63" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0020" x="0" y="1062" width="831" height="1031" frameX="-1" frameY="-9" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0021" x="0" y="1062" width="831" height="1031" frameX="-1" frameY="-9" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0022" x="0" y="0" width="845" height="1057" frameX="0" frameY="0" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0023" x="0" y="0" width="845" height="1057" frameX="0" frameY="0" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0024" x="836" y="1062" width="848" height="965" frameX="-145" frameY="-58" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0025" x="836" y="1062" width="848" height="965" frameX="-145" frameY="-58" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0026" x="1689" y="985" width="603" height="987" frameX="-210" frameY="-37" frameWidth="993" frameHeight="1057"/>
+	<SubTexture name="geyserR0027" x="1689" y="985" width="603" height="987" frameX="-210" frameY="-37" frameWidth="993" frameHeight="1057"/>
+</TextureAtlas>
