@@ -126,7 +126,7 @@ class EgobrainiacSong extends Song
       // notas
       var izzy = izzyPercent / 100;
       if (isMobile) {
-        tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 216 * izzy}, 0.5 * izzyPercent, {ease: FlxEase.backOut}));
+        tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 256 * izzy}, 2, {ease: FlxEase.backOut}));
       }
       for (i in 0...4) {
         var note = playState.playerStrumline.strumlineNotes.members[i];
@@ -148,7 +148,7 @@ class EgobrainiacSong extends Song
     tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
 
     if (isMobile) {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 416 * izzy}, 0.5, {ease: FlxEase.backOut}));
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 326 * izzy}, 0.5, {ease: FlxEase.backOut}));
     } else {
       tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
     }
