@@ -43,10 +43,8 @@
       "e": "FocusCamera",
       "v": {
 	"x": 0,
-	"duration": 4,
-	"y": 0,
-	"char": 1,
-	"ease": "linear"
+	"y": 20,
+	"char": 1
 }
     },
     {
