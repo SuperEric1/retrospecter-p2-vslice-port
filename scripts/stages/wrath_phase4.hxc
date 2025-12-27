@@ -19,7 +19,7 @@ import flixel.text.FlxText;
 import funkin.Paths;
 import Std;
 
-class WrathPhase4 extends Stage
+class WrathPhase4Stage extends Stage
 {
   var prefix:String = 'Phase4/';
   var defaultCamZoom:Float = 1.0;
@@ -75,6 +75,7 @@ class WrathPhase4 extends Stage
   var toGo:Float = 0;
   var bfZIndex = 200;
   var ogCamFollowPos:Array<Float, Float> = [];
+  var healthBarOgPos:Array<Float, Float> = [];
 
   // State flags
   var didDaShit:Bool = false;
@@ -258,7 +259,7 @@ class WrathPhase4 extends Stage
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    loadDebugElements();
+    //loadDebugElements();
 
     // Position grounds and geysers relative to GF and BF
     var gf = getGirlfriend();
@@ -284,6 +285,8 @@ class WrathPhase4 extends Stage
 
     downscroll = Preferences.downscroll;
     if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    
+    healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
 
     // Check if checkpoint was pressed
     if (PlayState.instance.isPracticeMode) {
@@ -408,7 +411,10 @@ class WrathPhase4 extends Stage
         overlay.alpha = 0;
         fire.animation.play('d');
         black.alpha = 0;
-
+        FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+          if (healthBarOgPos != null && healthBarOgPos.length > 0) {
+            FlxTween.tween(PlayState.instance.healthBar, {y: healthBarOgPos[1]}, 1, {ease: FlxEase.quadOut});
+          }
       } else if (curStep > 1794) {
         if (!bleh) {
           bleh = true;
@@ -416,8 +422,8 @@ class WrathPhase4 extends Stage
           geyserM.animation.play('loop');
           bfPositionX -= 150; //250
           //bfPositionY -= 90;
-          //PlayState.instance.tweenCameraZoom(1.1, 1, false, FlxEase.quadOut);
-          //PlayState.instance.tweenCameraToPosition(getBoyfriend().x - 100, getBoyfriend().y, 1, FlxEase.quadOut);
+          PlayState.instance.tweenCameraZoom(1.1, 1, false, FlxEase.quadOut);
+          //PlayState.instance.tweenCameraToPosition(getBoyfriend().x - 150, getBoyfriend().y, 1, FlxEase.quadOut);
           FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
           FlxTween.tween(symbol, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
         }
@@ -495,19 +501,11 @@ class WrathPhase4 extends Stage
     adjustPositions();
 
     // Camera positions
-    var lerpSpeed = 0.05;
+    var lerpSpeed = 0;
     if (currentCameraTarget == 'dad') {
-      PlayState.instance.cameraFollowPoint.y = FlxMath.lerp(
-          PlayState.instance.cameraFollowPoint.y,
-          bfPositionY,
-          lerpSpeed
-      );
+      PlayState.instance.cameraFollowPoint.y = bfPositionY;
     } else if (currentCameraTarget == 'bf') {
-      PlayState.instance.cameraFollowPoint.y = FlxMath.lerp(
-          PlayState.instance.cameraFollowPoint.y,
-          bfPositionY + 80,
-          lerpSpeed
-      );
+      PlayState.instance.cameraFollowPoint.y = bfPositionY + 80;
     }
 
     if (debugText != null) {
@@ -636,7 +634,7 @@ class WrathPhase4 extends Stage
       var step = Conductor.instance.currentStep;
       switch (Std.parseInt(value.char)) {
         case 0:
-          if (step >= 1535 && step <= 1540) return; // começo da custscene de transformação, zoom la nos ifs
+          if ((step >= 1535 && step <= 1540)) return; // custscenes de transformação, zoom la nos ifs
           FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.36}, 0.4, {ease: FlxEase.quadOut}); // 0.36
           currentCameraTarget = 'bf';
         case 1:
@@ -671,6 +669,7 @@ class WrathPhase4 extends Stage
     bfPositionY = 8220;
     bfPositionX = 4270;
 
+    symbol.alpha = 0;
     didDaShit = false;
     ssj = false;
     goBackToMyShit = false;
