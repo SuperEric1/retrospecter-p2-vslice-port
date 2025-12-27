@@ -38,12 +38,15 @@ class RetroPlayState extends Module {
   }
 
   var isRetro:Bool = false;
+  var isDoingVocalThing:Bool = false;
 
   var tweens = [];
   var pausedTweens = [];
   var hasCachedTextures:Bool = false;
   var hasLoadedUIElements:Bool = false;
 
+  var healthBarOgPos:Array<Float, Float> = [];
+  var healthBarBgOgPos:Array<Float, Float> = [];
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
@@ -274,6 +277,8 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
 
     // salvar posicao real dos strums
+    healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
+    healthBarBgOgPos = [PlayState.instance.healthBarBG.x, PlayState.instance.healthBarBG.y];
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
@@ -633,19 +638,24 @@ class RetroPlayState extends Module {
 
   function doVocalThing()
   {
-    var delay = 0.4;
+    if (isDoingVocalThing == true) return;
+    var delay = 0.25;
     if(PlayState.instance.vocals.opponentVoices.members.length != 0) {
 		  PlayState.instance.vocals.opponentVolume = 0;
+      isDoingVocalThing = true;
       new FlxTimer().start(delay, function(tmr) {
         if (PlayState.instance == null) return;
         PlayState.instance.vocals.opponentVolume = 1;
+        isDoingVocalThing = false;
       });
 		}
     if(PlayState.instance.vocals.playerVoices.members.length != 0) {
 		  PlayState.instance.vocals.playerVolume = 0;
+      isDoingVocalThing = true;
       new FlxTimer().start(delay, function(tmr) {
         if (PlayState.instance == null) return;
         PlayState.instance.vocals.playerVolume = 1;
+        isDoingVocalThing = false;
       });
 		}
   }
@@ -656,6 +666,11 @@ class RetroPlayState extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     PlayState.instance.camHUD.alpha = 1;
+    PlayState.instance.camHUD.angle = 0;
+    if (healthBarOgPos != null && healthBarOgPos.length > 0) {
+      PlayState.instance.healthBar.x = healthBarOgPos[0];
+      PlayState.instance.healthBar.y = healthBarOgPos[1];
+    }
 
     poisonAmount = 0;
     if (poisonText != null) {

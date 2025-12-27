@@ -1,5 +1,6 @@
 import flixel.FlxG;
 import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
 import funkin.play.character.AnimateAtlasCharacter;
 import StringTools;
 
@@ -22,7 +23,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     animOffsets.set('idle', [0, 0]);
     animOffsets.set('singLEFT', [-640, 0]);
     animOffsets.set('singDOWN', [0, 450]);
-    animOffsets.set('singUP', [-60, -250]);
+    animOffsets.set('singUP', [-80, -250]);
     animOffsets.set('singRIGHT', [500, 0]);
 
     // Offsets para animações de cutscene (se precisar ajustar)

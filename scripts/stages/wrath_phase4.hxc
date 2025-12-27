@@ -7,6 +7,8 @@ import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.Conductor;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
@@ -19,9 +21,12 @@ import Std;
 
 class WrathPhase4 extends Stage
 {
-  // Variables from Lua
   var prefix:String = 'Phase4/';
   var defaultCamZoom:Float = 1.0;
+  var debugText:FlxText;
+  var hasCreatedStage:Bool = false;
+  var currentCameraTarget:String = 'dad';
+  var downscroll = false;
 
   // Stage sprites
   var blue:StageProp;
@@ -63,9 +68,12 @@ class WrathPhase4 extends Stage
   var white:StageProp;
 
   // Position variables
+  // if you change something here you need to also change it in songRetry and onDestroy
   var bfPositionY:Float = 8220;
   var bfPositionX:Float = 4270;
   var toGo:Float = 0;
+  var bfZIndex = 200;
+  var ogCamFollowPos:Array<Float, Float> = [];
 
   // State flags
   var didDaShit:Bool = false;
@@ -102,18 +110,19 @@ class WrathPhase4 extends Stage
   override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+    if (hasCreatedStage) return;
 
     // Create background blue
-    blue = FunkinSprite.create(-1500, -8600);
-    blue.makeGraphic(4200, 3000, 0xFF00D4FF);
+    /* = FunkinSprite.create(-1500, -8600);
+    blue.makeGraphic(4200, 3000, 0xFF00D4FF); //#0x00D4FF
     blue.scrollFactor.set(0, 0);
-    PlayState.instance.add(blue, 'blue');
+    PlayState.instance.add(blue, 'blue');*/
 
     // Create vortex animation
-    vortex = FunkinSprite.create(-2000, -8600);
+    vortex = FunkinSprite.create(600, -7850);
     vortex.loadSparrow('wrath/Vortex');
-    vortex.animation.addByPrefix('speeen', 'Vortex', 24, true);
-    vortex.animation.play('speeen');
+    vortex.animation.addByPrefix('spin', 'Vortex0', 24, true);
+    vortex.animation.play('spin');
     vortex.scale.set(8, 4);
     vortex.scrollFactor.set(0.1, 0.1);
     PlayState.instance.add(vortex, 'vortex');
@@ -166,10 +175,10 @@ class WrathPhase4 extends Stage
     windowsFront = makeSprite('windowsFront', cityX + 690, cityY + 980, 1.12, 0.5, 0.33);
 
     // Create smoke
-    //smoke = makeSprite('smoke', -560, 600, 2, 0.5, 0.33, 'smoke');
+    smoke = makeSprite('smoke', -560, 600, 2, 0.5, 0.33);
 
     // Create close buildings
-    /*buildingsClose = makeSprite('buildingsClose', -560, 900, 1.25, 0.6, 0.45);
+    buildingsClose = makeSprite('buildingsClose', -560, 900, 1.25, 0.6, 0.45);
     dows = makeSprite('dows', -560, 900, 1.25, 0.6, 0.45);
 
     // Create city gates
@@ -179,11 +188,13 @@ class WrathPhase4 extends Stage
     prefix = 'Phase3/';
     ground_M = makeSprite('ground_M', 0, 0, 0.6, 0.95, 0.95);
     ground_R = makeSprite('ground_R', 0, 0, 0.559440, 1, 1);
-
+    // Create geysers
     prefix = 'Phase4/';
+    geyserM = makeGeyser('geyserM', 0, 0, 0.7, 0.9, 0.95, 0.95);
+    geyserR = makeGeyser('geyserR', 0, 0, 0.7, 0.7, 1, 1);
 
     defaultCamZoom = PlayState.instance.currentCameraZoom;
-    updateWindowsAlpha();*/
+    updateWindowsAlpha();
 
     // Create black overlay
     black = FunkinSprite.create(-1000, -500);
@@ -202,34 +213,44 @@ class WrathPhase4 extends Stage
     FlxTween.tween(overlay.scale, {x: 1, y: 1}, 1, {type: 4, ease: FlxEase.quadOut});
 
     // Create fire animation
-    fire = FunkinSprite.create(4200, 8100);
+    fire = FunkinSprite.create(4160, 8100); //4200, 8100
     fire.loadSparrow('Phase4/dragonball');
     fire.animation.addByPrefix('an', 'f', 39, false);
     fire.animation.addByPrefix('nothing', 'nothing', 24, false);
     fire.animation.addByPrefix('d', 'd', 39, true);
     fire.animation.play('nothing');
+    fire.zIndex = bfZIndex + 1;
     PlayState.instance.add(fire, 'fire');
 
     // Create white flash
     white = FunkinSprite.create(-2000, -1000);
-    white.makeGraphic(5000, 3000, 0xFF04FE83);
+    white.makeGraphic(5000, 3000, 0xFF04FE83); // #04FE83
     white.scrollFactor.set(0, 0);
     white.alpha = 0;
+    white.zIndex = bfZIndex + 2;
     PlayState.instance.add(white, 'white');
+
+    // Create gate front
+    gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
+    gateFront.zIndex = 1000;
+
+    hasCreatedStage = true;
+    // Refresh stage
+    PlayState.instance.refresh();
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-
-    // Create geysers
-    prefix = 'Phase4/';
-    geyserM = makeGeyser('geyserM', 0, 0, 0.7, 0.9, 0.95, 0.95);
-    geyserR = makeGeyser('geyserR', 0, 0, 0.7, 0.7, 1, 1);
+    loadDebugElements();
 
     // Position grounds and geysers relative to GF and BF
     var gf = getGirlfriend();
     var bf = getBoyfriend();
+
+    if (ogCamFollowPos == null) {
+      ogCamFollowPos = [bf.cameraFollowPoint.y, bf.cameraFollowPoint.x];
+    }
 
     if (gf != null) {
       ground_M.x = gf.x + gf.width/2 - ground_M.width/2 + 380;
@@ -239,14 +260,14 @@ class WrathPhase4 extends Stage
     }
 
     if (bf != null) {
-      ground_R.x = bf.x + bf.width/2 - ground_R.width/2;
-      ground_R.y = bf.y + bf.height/2 + 25;
+      ground_R.x = bf.x + bf.width/2 - ground_R.width/2 - 270;
+      ground_R.y = bf.y + bf.height/2 + 25; //25
       geyserR.x = ground_R.x - 150;
       geyserR.y = ground_R.y + 3710;
     }
 
-    // Create gate front
-    gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
+    downscroll = Preferences.downscroll;
+    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
     // Check if checkpoint was pressed
     if (PlayState.instance.isPracticeMode) {
@@ -258,10 +279,9 @@ class WrathPhase4 extends Stage
       FlxTween.tween(checkPointShit, {alpha: 0}, 0.6, {ease: FlxEase.quadOut, startDelay: 0.2, onComplete: function(twn:FlxTween) {
         focusInDad = false;
       }});
+      // Refresh stage
+      PlayState.instance.refresh();
     }
-
-    // Refresh stage
-    PlayState.instance.refresh();
   }
 
   function makeSprite(name:String, x:Float, y:Float, scale:Float = 1.0, scrollX:Float = 1.0, scrollY:Float = 1.0, animation:String = null, imageName:String = null):StageProp
@@ -293,8 +313,7 @@ class WrathPhase4 extends Stage
 
     // Spout animation (frames 0-13)
     var spoutIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13];
-    sprite.animation.addByIndices('spout', name, spoutIndices, '', 24, false);
-
+    sprite.animation.addByIndices('spout', name, spoutIndices, '', 12, true);
     // Loop animation (frames 14-27)
     var loopIndices = [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27];
     sprite.animation.addByIndices('loop', name, loopIndices, '', 24, true);
@@ -302,6 +321,7 @@ class WrathPhase4 extends Stage
     sprite.animation.play('spout');
     sprite.scrollFactor.set(scrollX, scrollY);
     sprite.scale.set(scaleX * 2, scaleY * 2);
+    if (name = 'geyserR') sprite.zIndex = 201;
     sprite.updateHitbox();
     PlayState.instance.add(sprite, name);
     return sprite;
@@ -310,9 +330,11 @@ class WrathPhase4 extends Stage
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (!hasCreatedStage) return;
 
     var v = 0.023;
-    var curStep = Conductor.instance.currentStep;
+    var curStep = Conductor.instance.currentStepTime;
 
     // Update position based on step
     if (curStep > 2560) {
@@ -327,9 +349,9 @@ class WrathPhase4 extends Stage
 
         if (curStep >= 1536 && !didDaShit) {
           didDaShit = true;
-          PlayState.instance.currentCameraZoom = 1.4;
-          black.alpha = 1;
-          FlxTween.tween(black, {alpha: 0}, 2, {ease: FlxEase.quadOut});
+          //PlayState.instance.currentCameraZoom = 1.4;
+          black.alpha = 0;
+          FlxTween.tween(black, {alpha: 1}, 2, {ease: FlxEase.quadOut});
         }
 
         if (curStep >= 1784) {
@@ -339,14 +361,22 @@ class WrathPhase4 extends Stage
         if (curStep >= 1760 && !ssj) {
           FlxG.sound.play(Paths.sound('catastroSFX'));
           ssj = true;
+          fire.visible = true;
           fire.animation.play('an');
         }
 
         if (curStep >= 1536) {
-          // Move UI offscreen
+          // Move UI offscreen and zoom
+
+          var durSeconds = 10;
+          PlayState.instance.tweenCameraToPosition(getBoyfriend().x + 150, getBoyfriend().y + 100, 1, FlxEase.quadOut);
+          PlayState.instance.tweenCameraZoom(3.55, durSeconds, false, FlxEase.quadOut);
+
+          var mult = downscroll ? -1 : 1;
+          PlayState?.instance?.healthBar.y += 80 * v * mult;
           if (!bloh) {
             bloh = true;
-            // Hide opponent strums
+            FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 1, {ease: FlxEase.quadOut});
           }
 
           if (getDad() != null && getDad().y > 3200) {
@@ -368,8 +398,10 @@ class WrathPhase4 extends Stage
           bleh = true;
           geyserR.animation.play('loop');
           geyserM.animation.play('loop');
-          bfPositionX -= 250;
-          bfPositionY -= 90;
+          bfPositionX -= 150; //250
+          //bfPositionY -= 90;
+          //PlayState.instance.tweenCameraZoom(1.1, 1, false, FlxEase.quadOut);
+          //PlayState.instance.tweenCameraToPosition(getBoyfriend().x - 100, getBoyfriend().y, 1, FlxEase.quadOut);
           FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
         }
 
@@ -410,15 +442,8 @@ class WrathPhase4 extends Stage
       }
     }
 
-    updatePositions(event.elapsed);
+    updatePositions();
     updateWindowsAlpha();
-
-    // Animate hivemine
-    hiveTime += event.elapsed;
-    hivemine.offset.y = Math.sin(hiveTime * Math.PI / 6) * 30;
-
-    // Window alpha fade
-    windowAlpha = Math.max(0, windowAlpha - event.elapsed/1.5);
 
     // Update geyser physics
     var last_t = gaysar_t;
@@ -442,13 +467,41 @@ class WrathPhase4 extends Stage
       }
     }
 
+    // Animate hivemine
+    hiveTime += 0.012; //event.elapsed
+    hivemine.offset.y = Math.sin(hiveTime * Math.PI / 6) * 30;
+
+    // Window alpha fade
+    windowAlpha = Math.max(0, windowAlpha - 0.0125/1.5); //Math.max(0, windowAlpha - event.elapsed/1.5)
+
     // Adjust positions based on step
     adjustPositions();
+
+    // Camera positions
+    var lerpSpeed = 0.05;
+    if (currentCameraTarget == 'dad') {
+      PlayState.instance.cameraFollowPoint.y = FlxMath.lerp(
+          PlayState.instance.cameraFollowPoint.y,
+          bfPositionY,
+          lerpSpeed
+      );
+    } else if (currentCameraTarget == 'bf') {
+      PlayState.instance.cameraFollowPoint.y = FlxMath.lerp(
+          PlayState.instance.cameraFollowPoint.y,
+          bfPositionY + 80,
+          lerpSpeed
+      );
+    }
+
+    if (debugText != null) {
+      debugText.visible = true;
+      debugText.text = '\nStep: ' + curStep;
+    }
   }
 
   function adjustPositions():Void
   {
-    var actualStep = Conductor.instance.currentStepFloat;
+    var actualStep = Conductor.instance.currentStepTime;
     if (actualStep <= 0) actualStep = 0;
 
     if (actualStep <= 1792) {
@@ -467,8 +520,9 @@ class WrathPhase4 extends Stage
     setPosition(bfPositionY);
   }
 
-  function updatePositions(elapsed:Float):Void
+  function updatePositions():Void
   {
+    if (PlayState.instance == null) return;
     offM = -gay_height_M * Math.cos(gaysar_t * Math.PI) + gay_height_M;
     offR = -gay_height_R * Math.cos(gaysar_t2 * Math.PI) + gay_height_R;
 
@@ -483,21 +537,26 @@ class WrathPhase4 extends Stage
 
     var bf = getBoyfriend();
     if (bf != null) {
-      bf.y = (bfPositionY - 90) - offR;
-      bf.x = bfPositionX;
+      var isTransformed = getBoyfriend()?.characterId?.toLowerCase() == 'bf-wrath';
+      bf.y = (bfPositionY + 150) - offR; // (bfPositionY - 90) - offR
+      if (isTransformed) bf.y -= 90; // offset shit
+      bf.x = bfPositionX + 75;
     }
 
-    fire.y = (bfPositionY - offR) - 120;
-    ground_R.y = bfPositionY + 250;
+    fire.y = (bfPositionY - offR) - 70; // 160
+    ground_R.y = bfPositionY + 300;
     geyserR.y = bfPositionY + 280;
 
-    var gfAdjust = 300;
+    ground_M.y = ((bfPositionY - 300) * 0.95) + 300;
+    geyserM.y = ((bfPositionY - 330) * 0.95) + 300;
+
+    var gfAdjust = 450;
+    var gfAdjustX = 3150; // center gf to the middle of the platform
     var gf = getGirlfriend();
     if (gf != null) {
-      gf.y = (((bfPositionY - 700) - offM) * 0.95) + gfAdjust;
+      gf.y = (((bfPositionY - 700) - offM) * 1) + gfAdjust; //(((bfPositionY - 700) - offM) * 0.95) + gfAdjust
+      gf.x = gfAdjustX;
     }
-    ground_M.y = ((bfPositionY - 300) * 0.95) + gfAdjust;
-    geyserM.y = ((bfPositionY - 330) * 0.95) + gfAdjust;
   }
 
   function setPosition(a:Float):Void
@@ -505,7 +564,8 @@ class WrathPhase4 extends Stage
     bfPositionY = a;
     var dad = getDad();
     if (dad != null) {
-      dad.y = bfPositionY + 900;
+      dad.y = bfPositionY - 2200; // + 900
+      dad.cameraFocusPoint.y = bfPositionY;
     }
   }
 
@@ -556,13 +616,72 @@ class WrathPhase4 extends Stage
     if (event.eventData.eventKind == "FocusCamera")
     {
       var value = event.eventData.value;
+      var step = Conductor.instance.currentStep;
       switch (Std.parseInt(value.char)) {
         case 0:
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.27}, 1, {ease: FlxEase.quadOut});
+          if (step >= 1535 && step <= 1540) return; // começo da custscene de transformação, zoom la nos ifs
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.36}, 0.4, {ease: FlxEase.quadOut}); // 0.36
+          currentCameraTarget = 'bf';
         case 1:
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.21}, 1, {ease: FlxEase.quadOut});
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.265}, 0.4, {ease: FlxEase.quadOut}); // 0.265
+          currentCameraTarget = 'dad';
         default:
       }
     }
   }
+
+  function loadDebugElements()
+  {
+    if (debugText != null) return;
+    var scoreTxt = PlayState.instance.scoreText;
+
+    debugText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
+    debugText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
+    debugText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width / 2;
+    debugText.y = PlayState.instance.healthBar.y + 20;
+    debugText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
+    debugText.zIndex = 1001;
+    debugText.cameras = [PlayState.instance.camHUD];
+    debugText.visible = true;
+    PlayState.instance.add(debugText);
+    PlayState.instance.refresh();
+  }
+
+  function onSongRetry(event:ScriptEvent)
+	{
+	  super.onSongRetry(event);
+    if (PlayState.instance == null) return;
+    bfPositionY = 8220;
+    bfPositionX = 4270;
+
+    didDaShit = false;
+    ssj = false;
+    goBackToMyShit = false;
+    bleh = false;
+    hideIt = false;
+    donthideIt = false;
+    bloh = false;
+    showingPlayerStrums = false;
+    focusInDad = false;
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		//resetTweens();
+    bfPositionY = 8220;
+    bfPositionX = 4270;
+
+    didDaShit = false;
+    ssj = false;
+    goBackToMyShit = false;
+    bleh = false;
+    hideIt = false;
+    donthideIt = false;
+    bloh = false;
+    showingPlayerStrums = false;
+    focusInDad = false;
+
+    hasCreatedStage = false;
+	}
 }

@@ -1,45 +1,24 @@
 {
-  "props": [
-    {
-      "zIndex": -1,
-      "position": [-2000.0, -9320.0],
-      "scale": [8.0, 4.0],
-      "animType": "sparrow",
-      "name": "vortex",
-      "isPixel": false,
-      "startingAnimation": "Idle",
-      "assetPath": "wrath/Vortex",
-      "scroll": [0.1, 0.1],
-      "animations": [
-        {
-          "offsets": [0, 0],
-          "flipY": false,
-          "frameRate": 24,
-          "prefix": "Vortex",
-          "looped": true,
-          "flipX": false,
-          "name": "speeen"
-        }
-      ]
-    }
-  ],
-  "cameraZoom": 0.27,
+  "props": [],
+  "cameraZoom": 0.3,
   "version": "1.0.0",
   "characters": {
-    "bf": {
-      "zIndex": 300,
-      "position": [4400, 200],
-      "cameraOffsets": [-100, -100]
-    },
     "dad": {
+      "zIndex": 301,
+      "position": [2000, 9000],
+      "cameraOffsets": [1550, 6670]
+    },
+    "bf": {
       "zIndex": 200,
-      "position": [2200, 2150],
-      "cameraOffsets": [1000, -2100]
+      "position": [4800, 0],
+      "cameraOffsets": [-450, 0],
+      "scale": 0.6
     },
     "gf": {
       "zIndex": 100,
       "cameraOffsets": [0, 50],
-      "position": [2600, -180]
+      "position": [2800, -180],
+      "scale": 0.6
     }
   },
   "name": "Wrath_phase4"

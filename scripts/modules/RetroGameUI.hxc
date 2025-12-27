@@ -35,6 +35,7 @@ class RetroGameUI extends Module {
 
   var isRetro:Bool = false;
   var downscroll = false;
+  var healthBgYOffset:Float = 0;
 
   var retroHealthBar:FlxBar;
   var retroHealthBarOverlay:FunkinSprite;
@@ -55,7 +56,7 @@ class RetroGameUI extends Module {
       isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
       if (!isRetro) return;
       if (hasBeenCreated) return;
-      var downscroll = Preferences.downscroll;
+      downscroll = Preferences.downscroll;
       if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
       var playState = PlayState.instance;
@@ -66,7 +67,6 @@ class RetroGameUI extends Module {
 
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
-      var bgYOffset:Float = 0;
       var fillDirection:Array<Float, Float> = [1500, 80];
 
       playState.healthBar.y += downscroll ? -17 : 17;
@@ -74,36 +74,37 @@ class RetroGameUI extends Module {
       playState.healthBarBG.y = downscroll ? -17 : 17;
       playState.healthBarBG.visible = false;
 
+
       switch (playStage.getDad().characterId.toLowerCase()) {
         case 'phase1':
           defaultScale = [0.45, 0.45];
-          bgYOffset = -115;
+          healthBgYOffset = -115;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP1/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar'); // opp
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP1/bar'); // player
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP1/bar'); // opp
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP1/bar'); // player
         case 'phase2':
-          bgYOffset = -80;
+          healthBgYOffset = -80;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP2/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP2/bar');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP2/bar');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP2/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP2/bar');
         case 'phase3':
           defaultScale = [0.48, 0.48];
-          bgYOffset = -80;
+          healthBgYOffset = -80;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP3/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP3/bar');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP3/bar');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
         case 'phase4':
           defaultScale = [0.4, 0.4];
-          bgYOffset = -100;
+          healthBgYOffset = -100;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP4/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP4/bar');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/retroP4/bar');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP4/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP4/bar');
         case 'izzy':
           defaultScale = [0.4, 0.4];
-          bgYOffset = -100;
+          healthBgYOffset = -100;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/izzy/bar');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + bgYOffset, 'ui/healthBars/izzy/bar');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
 
         default:
           playState.healthBar.visible = true;
@@ -111,7 +112,7 @@ class RetroGameUI extends Module {
           return; // nao criar health bar custom
       }
 
-      retroHealthBarOverlay.y += bgYOffset; // aplicar offset
+      //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
       retroHealthBarOverlay.camera = playState.camHUD;
       retroHealthBarOverlay.zIndex = 803; //803
       retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
@@ -181,8 +182,11 @@ class RetroGameUI extends Module {
 
     retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
 
+    retroHealthBarOverlay.y = playState.healthBar.y + healthBgYOffset;
     retroHealthBarOverlay.alpha = playState.healthBar.alpha;
+    retroHealthBarFill.y = playState.healthBar.y + healthBgYOffset;
     retroHealthBarFill.alpha = playState.healthBar.alpha;
+    retroHealthBarFillBG.y = playState.healthBar.y + healthBgYOffset;
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
   }
 
@@ -210,7 +214,7 @@ class RetroGameUI extends Module {
           PlayState.instance.iconP1.animation.addByPrefix("idle", "neutral", 24, false);
           PlayState.instance.iconP1.animation.addByPrefix("winning", "win", 24, false);
           PlayState.instance.iconP1.animation.addByPrefix("losing", "lose", 24, false);
-          PlayState.instance.iconP1.playAnimation('idle', false, false, 0);
+          //PlayState.instance.iconP1.playAnimation('idle', false, false, 0);
         }
         return 0xFF282d4e;
 
@@ -226,7 +230,7 @@ class RetroGameUI extends Module {
           PlayState.instance.iconP2.animation.addByPrefix("idle", "neutral", 24, false);
           PlayState.instance.iconP2.animation.addByPrefix("winning", "win", 24, false);
           PlayState.instance.iconP2.animation.addByPrefix("losing", "lose", 24, false);
-          PlayState.instance.iconP2.playAnimation('idle', false, false, 0);
+          //PlayState.instance.iconP2.playAnimation('idle', false, false, 0);
         }
         return 0xFF17d7e3;
       case 'izzy':
