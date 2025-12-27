@@ -66,6 +66,7 @@ class WrathPhase4 extends Stage
   var overlay:StageProp;
   var fire:StageProp;
   var white:StageProp;
+  var symbol:StageProp;
 
   // Position variables
   // if you change something here you need to also change it in songRetry and onDestroy
@@ -208,6 +209,9 @@ class WrathPhase4 extends Stage
     overlay.loadTexture('Phase4/overlay');
     overlay.cameras = [PlayState.instance.camHUD];
     overlay.scale.set(2, 2);
+    overlay.screenCenter();
+    overlay.width = FlxG.width;
+    overlay.height = FlxG.height;
     overlay.alpha = 0.0001;
     PlayState.instance.add(overlay, 'overlay');
     FlxTween.tween(overlay.scale, {x: 1, y: 1}, 1, {type: 4, ease: FlxEase.quadOut});
@@ -229,7 +233,19 @@ class WrathPhase4 extends Stage
     white.alpha = 0;
     white.zIndex = bfZIndex + 2;
     PlayState.instance.add(white, 'white');
-
+    
+    // Create symbol
+    symbol = FunkinSprite.create();
+    symbol.loadSparrow('Phase4/nftf');
+    symbol.cameras = [PlayState.instance.camHUD];
+    symbol.animation.addByPrefix('nothing', 'nothing', 24, false);
+    symbol.animation.addByPrefix('show', 'EXPORTTHISanim', 69, false);
+    symbol.animation.play('nothing');
+    symbol.scale.set(1, 1);
+    symbol.zIndex = 801;
+    symbol.screenCenter();
+    PlayState.instance.add(symbol, 'symbol');
+    
     // Create gate front
     gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
     gateFront.zIndex = 1000;
@@ -356,6 +372,7 @@ class WrathPhase4 extends Stage
 
         if (curStep >= 1784) {
           white.alpha += v * 1;
+          if (white.alpha >= 0.7 && white.alpha < 0.75) symbol.animation.play('show');
         }
 
         if (curStep >= 1760 && !ssj) {
@@ -367,7 +384,6 @@ class WrathPhase4 extends Stage
 
         if (curStep >= 1536) {
           // Move UI offscreen and zoom
-
           var durSeconds = 10;
           PlayState.instance.tweenCameraToPosition(getBoyfriend().x + 150, getBoyfriend().y + 100, 1, FlxEase.quadOut);
           PlayState.instance.tweenCameraZoom(3.55, durSeconds, false, FlxEase.quadOut);
@@ -403,6 +419,7 @@ class WrathPhase4 extends Stage
           //PlayState.instance.tweenCameraZoom(1.1, 1, false, FlxEase.quadOut);
           //PlayState.instance.tweenCameraToPosition(getBoyfriend().x - 100, getBoyfriend().y, 1, FlxEase.quadOut);
           FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+          FlxTween.tween(symbol, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
         }
 
         if (getDad() != null && getDad().y > 1000) {
@@ -537,7 +554,7 @@ class WrathPhase4 extends Stage
 
     var bf = getBoyfriend();
     if (bf != null) {
-      var isTransformed = getBoyfriend()?.characterId?.toLowerCase() == 'bf-wrath';
+      var isTransformed = bf?.characterId?.toLowerCase() == 'bf-wrath';
       bf.y = (bfPositionY + 150) - offR; // (bfPositionY - 90) - offR
       if (isTransformed) bf.y -= 90; // offset shit
       bf.x = bfPositionX + 75;
@@ -623,7 +640,7 @@ class WrathPhase4 extends Stage
           FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.36}, 0.4, {ease: FlxEase.quadOut}); // 0.36
           currentCameraTarget = 'bf';
         case 1:
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.265}, 0.4, {ease: FlxEase.quadOut}); // 0.265
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.265}, 0.6, {ease: FlxEase.quadOut}); // 0.265
           currentCameraTarget = 'dad';
         default:
       }
