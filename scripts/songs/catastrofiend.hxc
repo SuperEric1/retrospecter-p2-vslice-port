@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.play.PlayState;
