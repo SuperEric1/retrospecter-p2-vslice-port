@@ -4,6 +4,10 @@ import flixel.math.FlxBasePoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.math.FlxMath;
+import funkin.Conductor;
+import funkin.Preferences;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.play.PlayState;
@@ -12,6 +16,7 @@ import funkin.play.cutscene.VideoCutscene;
 import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
+import haxe.ds.IntMap;
 
 class CatastrofiendSong extends Song
 {
@@ -20,6 +25,36 @@ class CatastrofiendSong extends Song
   var hasPlayedCutscene:Bool;
   var hasPlayedEndCutscene:Bool;
   var bgSprite:FunkinSprite;
+  var didHide:Bool = false;
+  var didShowStrum:Bool = false;
+
+  // Sistema para rastrear voicelines já tocadas
+  var playedVoicelines:IntMap<Int, Bool>;
+  var voicelineData:Array<VoicelineInfo>;
+
+  // Modchart variables
+  var beatLength:Float = 0;
+  var isDownScroll:Bool = false;
+  var modcharts:Bool = true;
+  var flashingLights:Bool = true;
+  var screenShake:Bool = true;
+  var enabledUnderlay:Bool = false; // Set to true if you have underlay sprites
+
+  // Beat timing arrays
+  var introBeatTime:Int = 11;
+  var smallFlashTime:Array<Int> = [32, 192];
+  var strumPatternTime:Array<StrumPattern> = [
+    {start: 15, stop: 384, finished: false},
+    {start: 448, stop: 832, finished: false}
+  ];
+  var bfFocusTime:Array<FocusTime> = [{start: 384, stop: 448}];
+  var greenPulseTime:Array<PulseTime> = [{start: 440, stop: 832}];
+  var greenIntensity:Float = 0.0;
+  var roarTime:Array<Int> = [32, 704];
+
+  // Store default strum positions
+  var defaultPlayerStrumX:Array<Float> = [];
+  var defaultPlayerStrumY:Array<Float> = [];
 
   public function new()
   {
@@ -27,6 +62,23 @@ class CatastrofiendSong extends Song
 
     hasPlayedCutscene = false;
     hasPlayedEndCutscene = false;
+
+    // Inicializar o sistema de voicelines
+    playedVoicelines = new IntMap();
+
+    // Definir todas as voicelines com suas steps e animações
+    voicelineData = [
+      // Primeira seção
+      {step: 512, animation: 'leaveNow', endStep: 545},
+      {step: 576, animation: 'passDeez', endStep: 611},
+      {step: 638, animation: 'tryYourBones', endStep: 672},
+      {step: 706, animation: 'thisMeansWar', endStep: 767},
+
+      // Segunda seção
+      {step: 2304, animation: 'mudaChild', endStep: 2336},
+      {step: 2368, animation: 'bigDisgrace', endStep: 2401},
+      {step: 2432, animation: 'mudaChild', endStep: 2464}
+    ];
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -51,17 +103,277 @@ class CatastrofiendSong extends Song
           FlxTween.tween(bgSprite, {alpha: 0}, 1.5, null, function() {
             bgSprite.visible = false;
           });
-
-          // Antigo
-          //bgSprite.alpha = 1;
-          //FlxTween.tween(bgSprite, {alpha: 0}, 2, null);
       });
 
       event.cancel(); // CANCEL THE COUNTDOWN!
 
       VideoCutscene.play(Paths.videos('Phase4'));
     }
+  }
 
+  public override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+
+    /*var notes = PlayState.instance.playerStrumline.strumlineNotes.members;
+    for (i in 0...4)
+    {
+      var strum = notes[i];
+      if (modcharts)
+      {
+        strum.alpha = 0;
+      }
+    }*/
+  }
+
+  public override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+
+    // Store default strum positions
+    /*var playerStrums = PlayState.instance.playerStrumline;
+    for (i in 0...4)
+    {
+      var strum = playerStrums.strumlineNotes.members[i];
+      defaultPlayerStrumX.push(strum.x);
+      defaultPlayerStrumY.push(strum.y);
+      // Move strums down if modcharts enabled
+      if (modcharts)
+      {
+        strum.y += 800;
+        strum.alpha = 1;
+      }
+    }*/
+
+    // Setup modchart
+    setupModchart();
+  }
+
+  function setupModchart():Void
+  {
+    if (PlayState.instance == null) return;
+
+    // Get beat length
+    var conductor = Conductor.instance;
+    beatLength = conductor.stepCrochet / 1000; // Step length in seconds
+
+    // Check if downscroll
+    isDownscroll = Preferences.downscroll;
+    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
+  }
+
+  public override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (modcharts)
+    {
+      //strumMovePattern();
+      updateGreenColor();
+    }
+  }
+
+  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    if (modcharts)
+    {
+      //introEvent(event.beat);
+      greenPulseEvent(event.beat);
+    }
+
+    if (flashingLights)
+    {
+      smallFlashEvent(event.beat);
+    }
+
+    if (screenShake)
+    {
+      roarEvent(event.beat);
+    }
+  }
+
+  function strumMovePattern():Void
+  {
+    if (PlayState.instance == null) return;
+
+    var conductor = Conductor.instance;
+    var currentBeat = conductor.currentBeat;
+    var songPosition = conductor.songPosition;
+    var crochet = conductor.crochet;
+
+    for (pattern in strumPatternTime)
+    {
+      if (!pattern.finished)
+      {
+        if (currentBeat >= pattern.start && currentBeat < pattern.stop)
+        {
+          var beat = songPosition / crochet;
+          var offset = Math.cos(beat * Math.PI / 2);
+
+          var playerStrums = PlayState.instance.playerStrumline;
+          if (playerStrums != null)
+          {
+            for (i in 0...4)
+            {
+              var strum = playerStrums.strumlineNotes.members[i];
+              strum.y = defaultPlayerStrumY[i] + (5 * offset);
+            }
+          }
+        }
+
+        else if (currentBeat > pattern.stop)
+        {
+          pattern.finished = true;
+        }
+      }
+    }
+  }
+
+  function introEvent(beat:Int):Void
+  {
+    if (beat == introBeatTime)
+    {
+      var playerStrums = PlayState.instance.playerStrumline;
+      if (playerStrums != null)
+      {
+        for (i in 0...4)
+        {
+          var strum = playerStrums.strumlineNotes.members[i];
+          strum.alpha = 1;
+          var tween = FlxTween.tween(strum, {y: defaultPlayerStrumY[i]}, beatLength * 4, {ease: FlxEase.backOut});
+          tweens.push(tween);
+        }
+      }
+    }
+  }
+
+  function smallFlashEvent(beat:Int):Void
+  {
+    for (flashBeat in smallFlashTime)
+    {
+      if (beat == flashBeat)
+      {
+        darkFlash();
+      }
+    }
+  }
+
+  function greenPulseEvent(beat:Int):Void
+  {
+    for (pulse in greenPulseTime)
+    {
+      if (beat >= pulse.start && beat <= pulse.stop)
+      {
+        if (beat % 4 == 0)
+        {
+          greenIntensity = 1.0;
+        }
+      }
+    }
+  }
+
+  function roarEvent(beat:Int):Void
+  {
+    for (roarBeat in roarTime)
+    {
+      if (beat == roarBeat)
+      {
+        // Apply camera shake
+        var conductor = Conductor.instance;
+        var crochet = conductor.crochet / 1000;
+
+        //FlxG.camera.shake(0.015, crochet * 16);
+        PlayState.instance.camHUD.shake(0.015, crochet * 16);
+        PlayState.instance.camGame.shake(0.015, crochet * 16);
+      }
+    }
+  }
+
+  function darkFlash():Void
+  {
+    // Camera zoom
+    PlayState.instance.camGame.zoom += 0.02;
+    PlayState.instance.camHUD.zoom += 0.035;
+
+    // Create flash effects
+    var flashMultiply = FunkinSprite.create();
+    flashMultiply.makeGraphic(5000, 3000, FlxColor.fromRGB(4, 254, 131));
+    flashMultiply.scrollFactor.set(0, 0);
+    flashMultiply.screenCenter();
+    flashMultiply.cameras = [PlayState.instance.camGame];
+    flashMultiply.alpha = 0.6;
+    flashMultiply.blend = 9; //multiply
+    PlayState.instance.add(flashMultiply);
+
+    FlxTween.tween(flashMultiply, {alpha: 0}, 0.35, {
+      ease: FlxEase.circOut,
+      onComplete: function(t) {
+        if (PlayState.instance == null) return;
+        flashMultiply.destroy();
+      }
+    });
+
+    if (flashingLights)
+    {
+      var flashAdd = FunkinSprite.create();
+      flashAdd.makeGraphic(5000, 3000, FlxColor.fromRGB(4, 254, 131));
+      flashAdd.scrollFactor.set(0, 0);
+      flashAdd.screenCenter();
+      flashAdd.cameras = [PlayState.instance.camGame];
+      flashAdd.alpha = 0.25;
+      flashAdd.blend = 0;
+      PlayState.instance.add(flashAdd);
+
+      FlxTween.tween(flashAdd, {alpha: 0}, 0.5, {
+        ease: FlxEase.quadIn,
+        onComplete: function(t) {
+          if (PlayState.instance == null) return;
+          flashAdd.destroy();
+        }
+      });
+    }
+  }
+
+  function updateGreenColor():Void
+  {
+    // Se a intensidade for maior que 0, precisamos atualizar a cor
+    // Usamos 0.001 para evitar cálculos desnecessários quando já está "invisível"
+    if (greenIntensity > 0.001)
+    {
+      // DECAIMENTO:
+      // O valor 2.0 define a velocidade do fade.
+      // Quanto maior o número, mais rápido volta ao normal.
+      // Tente valores entre 1.5 (lento/onírico) e 4.0 (rápido/snappy).
+      var decaySpeed:Float = 3.0;
+
+      // Essa fórmula faz o valor deslizar suavemente de onde está para 0
+      greenIntensity = FlxMath.lerp(greenIntensity, 0, FlxG.elapsed * decaySpeed);
+
+      // APLICAÇÃO DA COR:
+      var playerStrums = PlayState.instance.playerStrumline;
+      if (playerStrums != null)
+      {
+        for (i in 0...4)
+        {
+          var strum = playerStrums.strumlineNotes.members[i];
+          if (strum != null && strum.colorTransform != null)
+          {
+             // Mistura a cor normal (1.0) com a cor alien (0.6, 1.39, 1.13)
+             // baseada na greenIntensity atual.
+             strum.colorTransform.redMultiplier = FlxMath.lerp(1.0, 0.6, greenIntensity);
+             strum.colorTransform.greenMultiplier = FlxMath.lerp(1.0, 1.39, greenIntensity);
+             strum.colorTransform.blueMultiplier = FlxMath.lerp(1.0, 1.13, greenIntensity);
+          }
+        }
+      }
+    }
+    else
+    {
+      // Opcional: Força o valor exato de 0 quando estiver muito baixo para garantir a cor original perfeita
+      greenIntensity = 0;
+    }
   }
 
   public function onStepHit(event) {
@@ -69,38 +381,23 @@ class CatastrofiendSong extends Song
     if (PlayState.instance == null) return;
     var dad = PlayState.instance.currentStage.getDad();
 
-    // Voicelines
-    if (event.step == 512) {
-      dad.playAnimation('leaveNow', false);
-    } else if (event.step == 545) dad.playAnimation('idle', false);
-    if (event.step == 576) {
-      dad.playAnimation('passDeez', false);
-    } else if (event.step == 611) dad.playAnimation('idle', false);
-    if (event.step == 638) {
-      dad.playAnimation('tryYourBones', false);
-    } else if (event.step == 672) dad.playAnimation('idle', false);
-    if (event.step == 705) {
-      dad.playAnimation('thisMeansWar', false);
-    } else if (event.step == 767) dad.playAnimation('idle', false);
+    var currentStep = event.step;
 
-    var elements = [
-			PlayState.instance.healthBar,
-			PlayState.instance.healthBarBG,
-			PlayState.instance.scoreText,
-      PlayState.instance.opponentStrumline,
-			PlayState.instance.iconP2,
-			PlayState.instance.iconP1
-		];
-
-    // I WILL BE YOUR END!!!
-    if (event.step >= 2515 && event.step < 2560) {
-      for (element in elements)
-        element.visible = false;
-    };
-    if (event.step == 2560) { // a vida a as notas do oponente so vao aparecer quando a cutscene acabar por completo
-      for (element in elements)
-        element.visible = true;
-    };
+    // Processar cada voiceline
+    for (voiceline in voicelineData) {
+      // Verificar se a step atual está no range da voiceline e se ainda não foi tocada
+      if (currentStep >= voiceline.step && currentStep < voiceline.endStep) {
+        // Verificar se esta voiceline ainda não foi tocada
+        if (!playedVoicelines.exists(voiceline.step)) {
+          dad.playAnimation(voiceline.animation, true);
+          playedVoicelines.set(voiceline.step, true);
+        }
+      }
+      // Voltar para idle quando passar do endStep
+      else if (currentStep == voiceline.endStep) {
+        dad.playAnimation('idle', false);
+      }
+    }
   }
 
    public override function onSongEnd(event:ScriptEvent):Void
@@ -208,6 +505,17 @@ class CatastrofiendSong extends Song
     super.onSongRetry(event);
 
     hasPlayedEndCutscene = true;
+    didHide = false;
+    didShowStrum = false;
+
+    // Resetar o sistema de voicelines
+    playedVoicelines = new IntMap();
+
+    // Reset modchart state
+    for (pattern in strumPatternTime)
+    {
+      pattern.finished = false;
+    }
   }
 
   /**
@@ -218,5 +526,40 @@ class CatastrofiendSong extends Song
     super.onCreate(event);
 
     hasPlayedEndCutscene = false;
+    didHide = false;
+    didShowStrum = false;
+
+    // Resetar o sistema de voicelines
+    playedVoicelines = new IntMap();
+
+    // Reset modchart state
+    for (pattern in strumPatternTime)
+    {
+      pattern.finished = false;
+    }
   }
+}
+
+// Typedef para armazenar informações de voiceline
+typedef VoicelineInfo = {
+  var step:Int;           // Step onde a voiceline começa
+  var animation:String;   // Nome da animação
+  var endStep:Int;        // Step onde volta para idle
+}
+
+// Typedefs para o modchart
+typedef StrumPattern = {
+  var start:Int;
+  var stop:Int;
+  var finished:Bool;
+}
+
+typedef FocusTime = {
+  var start:Int;
+  var stop:Int;
+}
+
+typedef PulseTime = {
+  var start:Int;
+  var stop:Int;
 }

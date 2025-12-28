@@ -380,25 +380,15 @@
       }
     },
     {
-      "t": 283409.090909091,
-      "e": "FadeHUDEvent",
-      "v": {
-        "fadeInSteps": 4,
-        "duration": 2,
-        "mode": "out",
-        "fadeOutSteps": 2
-      }
-    },
-    {
       "t": 283522.727272727,
       "e": "PlayVideo",
       "v": {
+        "duration": 0,
+        "zIndex": 500,
         "isCutscene": 1,
-        "zIndex": 300,
-        "duration": 0.1,
-        "disableControl": true,
-        "mute": false,
         "path": "yourend-low",
+        "mute": false,
+        "disableControl": false,
         "resync": true
       }
     },
@@ -407,16 +397,6 @@
       "e": "FocusCamera",
       "v": {
         "char": "1"
-      }
-    },
-    {
-      "t": 290113.636363636,
-      "e": "FadeHUDEvent",
-      "v": {
-        "fadeInSteps": 5,
-        "duration": 2,
-        "mode": "in",
-        "fadeOutSteps": 2
       }
     },
     {

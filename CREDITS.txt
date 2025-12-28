@@ -1,5 +1,7 @@
 This FAN port is not associated with Team Respec. All credits goes to the original mod's dev team.
 Check the in-game credits to see the credits of the original mod.
 
+This port also contains code from the original mod but converted into Haxe
+
 You can download the original mod (for PC) here:
 https://gamebanana.com/mods/317366

@@ -460,6 +460,7 @@ class RetroPlayState extends Module {
         lockSprite.animation.play('unlocked' + dirName, false);
         // Esconde o sprite após a animação terminar
         new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+          if (PlayState.instance == null) return;
           if (lockSprite != null) lockSprite.visible = false;
         });
       }
@@ -568,7 +569,7 @@ class RetroPlayState extends Module {
       }
     }
 
-    // Atualizar posição dos sprites de lock para seguir os strums
+    // Atualizar sprites de lock para seguir os strums
     var lockSpriteOffset:Array<Float, Float> = [ -30, -35 ];
     for (i in 0...4) {
       if (chainLockSprites[i] != null) {
@@ -576,6 +577,7 @@ class RetroPlayState extends Module {
         chainLockSprites[i].x = strum.x + lockSpriteOffset[0];
         chainLockSprites[i].y = strum.y + lockSpriteOffset[1];
         chainLockSprites[i].angle = strum.angle;
+        chainLockSprites[i].alpha = strum.alpha;
       }
     }
 

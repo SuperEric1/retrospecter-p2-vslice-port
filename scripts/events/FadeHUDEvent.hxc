@@ -117,6 +117,7 @@ class FadeHUDEvent extends ScriptedSongEvent
 		// FADE OUT após o tempo
 		new FlxTimer().start(stayTime, (tmr) ->
 		{
+			if (PlayState.instance == null) return;
 			for (element in elements)
 				tweens.push(FlxTween.tween(element, {alpha: 0}, fadeOutTime, {ease: FlxEase.quadInOut}));
 		});

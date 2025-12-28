@@ -724,7 +724,7 @@ class WrathPhase3 extends Stage
 				case 0:
 	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.15}, 1, {ease: FlxEase.quadOut});
 				case 1:
-	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 1.03, {ease: FlxEase.quadOut});
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 0.9, {ease: FlxEase.quadOut});
 				default:
 
 			}

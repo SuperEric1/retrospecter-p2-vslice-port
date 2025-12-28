@@ -9,6 +9,7 @@ import flixel.util.FlxStringUtil;
 import flixel.math.FlxRect;
 import flixel.ui.FlxBar;
 import flixel.ui.FlxBarFillDirection;
+import funkin.play.components.HealthIcon;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.NoteSprite;
 import funkin.play.GameOverSubState;
@@ -173,8 +174,7 @@ class RetroGameUI extends Module {
 
     var playState = PlayState.instance;
 
-
-    // ---- health bars ----
+    // ---- Health Bars ----
     var healthPercent:Float = playState.healthLerp / 2.0;
     var newWidth:Float = fillOriginalWidth * healthPercent;
 
@@ -201,6 +201,8 @@ class RetroGameUI extends Module {
 
   public function getIconColor(characterId:String) {
     isOppIconAnimated = false;
+    playerIcon = PlayState.instance.iconP1;
+    oppIcon = PlayState.instance.iconP2;
     switch (characterId) {
       case 'bf-retrospecter':
         return 0xFF31b0d1;
@@ -211,10 +213,10 @@ class RetroGameUI extends Module {
       case 'bf-wrath':
         if (!isPlayerIconAnimated) {
           isPlayerIconAnimated = true;
-          PlayState.instance.iconP1.animation.addByPrefix("idle", "neutral", 24, false);
-          PlayState.instance.iconP1.animation.addByPrefix("winning", "win", 24, false);
-          PlayState.instance.iconP1.animation.addByPrefix("losing", "lose", 24, false);
-          //PlayState.instance.iconP1.playAnimation('idle', false, false, 0);
+          playerIcon.animation.addByPrefix("idle", "neutral", 24, false);
+          playerIcon.animation.addByPrefix("winning", "win", 24, false);
+          playerIcon.animation.addByPrefix("losing", "lose", 24, false);
+          syncIconAnim(playerIcon, false);
         }
         return 0xFF282d4e;
 
@@ -227,16 +229,39 @@ class RetroGameUI extends Module {
       case 'phase4':
         if (!isOppIconAnimated) {
           isOppIconAnimated = true;
-          PlayState.instance.iconP2.animation.addByPrefix("idle", "neutral", 24, false);
-          PlayState.instance.iconP2.animation.addByPrefix("winning", "win", 24, false);
-          PlayState.instance.iconP2.animation.addByPrefix("losing", "lose", 24, false);
-          //PlayState.instance.iconP2.playAnimation('idle', false, false, 0);
+          oppIcon.animation.addByPrefix("idle", "neutral", 24, false);
+          oppIcon.animation.addByPrefix("winning", "win", 24, false);
+          oppIcon.animation.addByPrefix("losing", "lose", 24, false);
+          syncIconAnim(oppIcon, true);
         }
         return 0xFF17d7e3;
       case 'izzy':
         return 0xFF78fff8;
       default:
         return p1BarColor;
+    }
+  }
+
+  function syncIconAnim(icon, opp:Bool = false) {
+    win = HealthIcon.WINNING_THRESHOLD;
+    lose = HealthIcon.LOSING_THRESHOLD;
+    health = PlayState.instance.health;
+    if (!opp) { // player
+      if (health > win) {
+        icon.playAnimation('winning', false, false, 0);
+      } else if (health < lose) {
+        icon.playAnimation('losing', false, false, 0);
+      } else {
+        icon.playAnimation('idle', false, false, 0);
+      }
+    } else { // opp
+      if (health > win) {
+        icon.playAnimation('losing', false, false, 0);
+      } else if (health < lose) {
+        icon.playAnimation('winning', false, false, 0);
+      } else {
+        icon.playAnimation('idle', false, false, 0);
+      }
     }
   }
 

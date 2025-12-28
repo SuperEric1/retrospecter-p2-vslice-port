@@ -232,7 +232,7 @@ class WrathPhase4Stage extends Stage
     white.alpha = 0;
     white.zIndex = bfZIndex + 2;
     PlayState.instance.add(white, 'white');
-    
+
     // Create symbol
     symbol = FunkinSprite.create();
     symbol.loadSparrow('Phase4/nftf');
@@ -244,7 +244,7 @@ class WrathPhase4Stage extends Stage
     symbol.zIndex = 801;
     symbol.screenCenter();
     PlayState.instance.add(symbol, 'symbol');
-    
+
     // Create gate front
     gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
     gateFront.zIndex = 1000;
@@ -280,7 +280,7 @@ class WrathPhase4Stage extends Stage
 
     downscroll = Preferences.downscroll;
     if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
-    
+
     healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
 
     // Inicializa a posição da câmera
@@ -365,11 +365,14 @@ class WrathPhase4Stage extends Stage
           didDaShit = true;
           black.alpha = 0;
           FlxTween.tween(black, {alpha: 1}, 2, {ease: FlxEase.quadOut});
+          FlxTween.tween(getGirlfriend(), {alpha: 0}, 1.5, {ease: FlxEase.quadOut});
+          // geyserR zIndex is messed up for some reason so we need to hide it too
+          FlxTween.tween(geyserR, {alpha: 0}, 1.5, {ease: FlxEase.quadOut});
         }
 
         if (curStep >= 1784) {
           white.alpha += v * 1;
-          if (white.alpha >= 0.7 && white.alpha < 0.75) symbol.animation.play('show');
+          if (white.alpha >= 0.7 && white.alpha < 0.73) symbol.animation.play('show');
         }
 
         if (curStep >= 1760 && !ssj) {
@@ -388,7 +391,7 @@ class WrathPhase4Stage extends Stage
           PlayState?.instance?.healthBar.y += 80 * v * mult;
           if (!bloh) {
             bloh = true;
-            FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 1, {ease: FlxEase.quadOut});
+            FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 1, {ease: FlxEase.quadInOut});
           }
 
           if (getDad() != null && getDad().y > 3200) {
@@ -404,10 +407,14 @@ class WrathPhase4Stage extends Stage
         overlay.alpha = 0;
         fire.animation.play('d');
         black.alpha = 0;
-        FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+        geyserR.alpha = 1;
+        getGirlfriend().alpha = 1;
+
+        //FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 1, {ease: FlxEase.quadOut});
         if (healthBarOgPos.length > 0) {
-          FlxTween.tween(PlayState.instance.healthBar, {y: healthBarOgPos[1]}, 1, {ease: FlxEase.quadOut});
+          FlxTween.tween(PlayState.instance.healthBar, {y: healthBarOgPos[1]}, 1, {ease: FlxEase.quadInOut});
         }
+
       } else if (curStep > 1794) {
         if (!bleh) {
           bleh = true;
@@ -438,17 +445,44 @@ class WrathPhase4Stage extends Stage
         izzyCloud.y += 0.05;
         izzyTower.y += 0.05;
       }
-
+      // I WILL BE YOUR END!!
       if (curStep >= 2496 && !hideIt) {
         hideIt = true;
+          var elements = [
+          PlayState.instance.healthBar,
+          PlayState.instance.opponentStrumline,
+          PlayState.instance.playerStrumline,
+          PlayState.instance.iconP2,
+          PlayState.instance.iconP1
+        ];
+        for (element in elements) {
+          FlxTween.tween(element, {alpha: 0}, 0.1, {ease: FlxEase.quadOut});
+        }
+        var mult = downscroll ? -2 : 2;
+        PlayState.instance.healthBar.y += 100 * mult;
+        PlayState.instance.camCutscene.flash(0xFFFFFFFF, 1.3);
       }
 
       if (curStep >= 2546 && !showingPlayerStrums) {
         showingPlayerStrums = true;
+        FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, 0.2, {ease: FlxEase.quadOut});
       }
 
       if (curStep >= 2556 && !donthideIt) {
         donthideIt = true;
+        var elements = [
+          PlayState.instance.healthBar,
+          PlayState.instance.opponentStrumline,
+          PlayState.instance.iconP2,
+          PlayState.instance.iconP1
+        ];
+        for (element in elements) {
+          FlxTween.tween(element, {alpha: 1}, 0.2, {ease: FlxEase.quadOut});
+        }
+        if (healthBarOgPos.length > 0) {
+          FlxTween.tween(PlayState.instance.healthBar, {y: healthBarOgPos[1]}, 1, {ease: FlxEase.quadOut});
+        }
+        FlxG.camera.flash(0xFFFFFFFF, 1.5);
       }
     }
 
@@ -483,7 +517,7 @@ class WrathPhase4Stage extends Stage
     windowAlpha = Math.max(0, windowAlpha - 0.0125/1.5);
 
     adjustPositions();
-    updateCameraSmooth(event.elapsed);
+    updateCameraSmooth();
 
     if (debugText != null) {
       debugText.visible = true;
@@ -508,28 +542,38 @@ class WrathPhase4Stage extends Stage
     if (actualStep <= 3328 && actualStep >= 2560) {
       bfPositionY = FlxMath.remapToRange(actualStep, 2560, 3328, -5703.23798043777, -68148.9101742824);
     }
-    
-    // Define a posição target da câmera (não aplica diretamente)
+
+    // Tareget camera position
     if (currentCameraTarget == 'dad') {
-      targetCameraY = bfPositionY;
+      if (actualStep >= 2559) {
+        // ascending part, final. pos needs to be a little higher
+        targetCameraY = bfPositionY - 130;
+      } else {
+        targetCameraY = bfPositionY;
+      }
     } else if (currentCameraTarget == 'bf') {
-      targetCameraY = bfPositionY + 200;
+      if (actualStep >= 2559) {
+        // ascending part, final. pos needs to be a little higher
+        targetCameraY = bfPositionY - 100;
+      } else {
+        targetCameraY = bfPositionY + 200;
+      }
     }
 
     setPosition(bfPositionY);
   }
 
-  function updateCameraSmooth(elapsed:Float):Void
+  function updateCameraSmooth():Void
   {
     if (PlayState.instance == null || PlayState.instance.cameraFollowPoint == null) return;
-    
+
     // Calcula a distância entre a câmera atual e o target
     var distance = Math.abs(targetCameraY - currentCameraY);
-    
+
     // Ajusta a velocidade do lerp baseado na distância
     // Quanto maior a distância, mais rápido o lerp (para acompanhar movimentos rápidos)
     var dynamicLerpSpeed = cameraLerpSpeed;
-    
+
     if (distance > 10) {
       // Movimento muito rápido: aumenta o lerp speed
       dynamicLerpSpeed = FlxMath.bound(cameraLerpSpeed + (distance / 5000), cameraLerpSpeed, 0.25);
@@ -537,10 +581,10 @@ class WrathPhase4Stage extends Stage
       // Movimento médio
       dynamicLerpSpeed = FlxMath.bound(cameraLerpSpeed + (distance / 8000), cameraLerpSpeed, 0.18);
     }
-    
+
     // Interpola suavemente a posição da câmera
     currentCameraY = FlxMath.lerp(currentCameraY, targetCameraY, dynamicLerpSpeed);
-    
+
     // Aplica a posição interpolada na câmera
     PlayState.instance.cameraFollowPoint.y = currentCameraY;
   }
@@ -645,10 +689,10 @@ class WrathPhase4Stage extends Stage
       switch (Std.parseInt(value.char)) {
         case 0:
           if ((step >= 1535 && step <= 1540)) return;
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.38}, 0.4, {ease: FlxEase.quadOut});
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.39}, 0.4, {ease: FlxEase.quadOut});
           currentCameraTarget = 'bf';
         case 1:
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.34}, 0.6, {ease: FlxEase.quadOut});
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.3}, 0.6, {ease: FlxEase.quadOut});
           currentCameraTarget = 'dad';
         default:
       }
@@ -676,7 +720,7 @@ class WrathPhase4Stage extends Stage
   {
     super.onSongRetry(event);
     if (PlayState.instance == null) return;
-    
+
     bfPositionY = 8220;
     bfPositionX = 4270;
     currentCameraY = 8220;
@@ -697,7 +741,7 @@ class WrathPhase4Stage extends Stage
   override function onDestroy(event)
   {
     super.onDestroy(event);
-    
+
     bfPositionY = 8220;
     bfPositionX = 4270;
     currentCameraY = 8220;
