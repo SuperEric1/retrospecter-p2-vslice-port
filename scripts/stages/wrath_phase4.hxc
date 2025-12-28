@@ -692,7 +692,7 @@ class WrathPhase4Stage extends Stage
           FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.39}, 0.4, {ease: FlxEase.quadOut});
           currentCameraTarget = 'bf';
         case 1:
-          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.3}, 0.6, {ease: FlxEase.quadOut});
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: 0.315}, 0.6, {ease: FlxEase.quadOut});
           currentCameraTarget = 'dad';
         default:
       }
