@@ -13,7 +13,7 @@
       "zIndex": 100,
       "cameraOffsets": [200, 900],
       "scale": 0.2,
-      "position": [1020, 750]
+      "position": [850, 750]
     },
     "dad": {
       "zIndex": 200,

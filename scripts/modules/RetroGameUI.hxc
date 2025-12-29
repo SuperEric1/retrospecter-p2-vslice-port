@@ -49,10 +49,18 @@ class RetroGameUI extends Module {
   var ogBfId:String;
   var ogDadId:String;
 
-  var fillOriginalWidth:Float = 0; // Largura original da barra
-  var hasBeenCreated = false;
+  var judgement:FlxText;
+  var comboText:FlxText;
+  var score:FlxText;
+  // Tweens para controlar as animações
+  var judgementTweens:Array<FlxTween> = [];
+  var comboTweens:Array<FlxTween> = [];
+  var scoreTweens:Array<FlxTween> = [];
 
-  public function onSongLoaded(event) {
+  var fillOriginalWidth:Float = 0; // Largura original da barra
+  var hasBeenCreated:Bool = false;
+
+  override public function onSongLoaded(event) {
       super.onSongLoaded(event);
       isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
       if (!isRetro) return;
@@ -65,6 +73,8 @@ class RetroGameUI extends Module {
       var songId = playState.currentSong.id.toLowerCase();
       ogBfId = playStage.getBoyfriend().characterId.toLowerCase();
       ogDadId = playStage.getDad().characterId.toLowerCase();
+
+      loadTextElements();
 
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
@@ -90,7 +100,7 @@ class RetroGameUI extends Module {
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP2/bar');
         case 'phase3':
           defaultScale = [0.48, 0.48];
-          healthBgYOffset = -80;
+          healthBgYOffset = -83;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP3/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
@@ -149,19 +159,134 @@ class RetroGameUI extends Module {
       hasBeenCreated = true;
   }
 
+  function loadTextElements() {
+    var camera = PlayState.instance.camHUD;
+    var yPos = PlayState.instance.playerStrumline.strumlineNotes.members[0].y;
+    var zIndex = 9999;
+
+    judgement = new FlxText(0, yPos, 0, '', 20);
+    judgement.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    judgement.cameras = [camera];
+    judgement.zIndex = zIndex;
+    judgement.visible = false;
+    PlayState.instance.add(judgement);
+
+    comboText = new FlxText(0, yPos, 0, '', 20);
+    comboText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    comboText.cameras = [camera];
+    comboText.zIndex = zIndex;
+    comboText.visible = false;
+    PlayState.instance.add(comboText);
+
+    score = new FlxText(0, 0, 0, '', 20);
+    score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    score.fieldWidth = FlxG.width;
+    score.screenCenter(0x01);
+    score.cameras = [camera];
+    score.zIndex = zIndex;
+    score.y = yPos + judgement.frameHeight;
+    score.visible = false;
+    PlayState.instance.add(score);
+
+    PlayState.instance.scoreText.alpha = 0;
+    PlayState.instance.scoreText.visible = false;
+  }
+
+  public function onNoteHit(event:HitNoteScriptEvent):Void {
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+      if (!event.note.isHoldNote) {
+        updateJudgement(event.judgement, event.score, event.isComboBreak, true);
+      } else {
+				var stayDuration:Float = event.note.length / 1000;
+        updateJudgement(event.judgement, event.score, event.isComboBreak, true, stayDuration);
+      }
+    }
+  }
+
+  public function onNoteMiss( event:NoteScriptEvent )
+	{
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+      var k = event.note.noteData.kind;
+      var hurtNotes:Array<String> = ['poison', 'izzyNote', 'chain', 'autoChain', 'Hydra', 'Fake Note'];
+      if (hurtNotes.contains[k] || !event.note.alive || k == 'autoChain') return; // por algum motivo o autoChain ainda passa nesse evento, então precisamos especificar ele
+      updateJudgement('miss', event.score, event.isComboBreak);
+    }
+  }
+
+  public function onNoteHoldDrop(event:HoldNoteScriptEvent) {
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+    if (event.holdNote.noteData.getMustHitNote()) { // Só pro jogador!
+      updateJudgement('miss', event.score, event.isComboBreak, false);
+    }
+  }
+
+  function updateJudgement(judgementName:String, noteScore:Float, isComboBreak = false, doesPopup:Bool = true, stayDuration:Float = 0):Void {
+    var judgementData = getJudgement(judgementName);
+    cancelTweens();
+
+    // Atualizar o texto e cor do julgamento
+    judgement.text = judgementData.text;
+    judgement.color = judgementData.color;
+    if (!isComboBreak) {
+      comboText.text = getCombo();
+    } else {
+      comboText.text = '0';
+    }
+    //comboText.color = 0xFFFFFF;
+
+    var totalWidth = judgement.width + comboText.width;
+    judgement.x = (FlxG.width - totalWidth) / 2;
+    comboText.x = judgement.x + judgement.width;
+
+    if (noteScore) {
+      score.text = PlayState.instance.songScore + noteScore;
+    } else score.text = PlayState.instance.songScore;
+
+    judgement.visible = true;
+    judgement.alpha = 1;
+    comboText.visible = true;
+    comboText.alpha = 1;
+    score.visible = true;
+    score.alpha = 1;
+
+    animateTexts(doesPopup, stayDuration);
+  }
+
   function getCombo() {
-    var combo:String = Std.string(Highscore.tallies.combo);
+    var combo:String = Std.string(Highscore.tallies.combo + 1);
     var comboString:String = '';
     comboString += combo;
     return comboString;
   }
-
-  public function onDestroy(event) {
-    super.onDestroy(event);
-    hasBeenCreated = false;
+  function getJudgement(judgement:String):{text:String, color:FlxColor} {
+    switch (judgement) {
+      case 'sick':
+        return {text: 'SICK!! ', color: 0xFFffec44}; // #ffec44ff
+      case 'good':
+        return {text: 'GOOD! ', color: 0xFF2457ff}; // #2457ffff
+      case 'bad':
+        return {text: 'BAD ', color: 0xFFff4949}; // #ff4949ff
+      case 'shit':
+        return {text: 'SHIT ', color: 0xFFafaeae}; // #afaeaeff
+      case 'miss':
+        return {text: 'MISS ', color: 0xFFe90606}; // #e90606ff
+      default:
+        return {text: '', color: 0xFFFFFF};
+    }
   }
 
-  public function onCreate(event) {
+  override public function onDestroy(event) {
+    super.onDestroy(event);
+    hasBeenCreated = false;
+    cancelTweens();
+  }
+
+  override public function onCreate(event) {
     super.onCreate(event);
   }
 
@@ -188,6 +313,22 @@ class RetroGameUI extends Module {
     retroHealthBarFill.alpha = playState.healthBar.alpha;
     retroHealthBarFillBG.y = playState.healthBar.y + healthBgYOffset;
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
+
+    // ---- Texts ----
+    // Process hold notes on the player's side.
+    for (holdNote in playState.playerStrumline.holdNotes.members)
+    {
+      if (holdNote == null || !holdNote.alive) continue;
+      // While the hold note is being hit, and there is length on the hold note...
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      {
+        // Update score text.
+        if (!playState.isBotPlayMode)
+        {
+          score.text = PlayState.instance.songScore; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
+        }
+      }
+    }
   }
 
   public function onSongRetry(event) {
@@ -197,6 +338,9 @@ class RetroGameUI extends Module {
     isPlayerIconAnimated = false;
     retroHealthBarFill.color = getIconColor(ogBfId);
     retroHealthBarFillBG.color = getIconColor(ogDadId);
+    judgement.alpha = 0;
+    comboText.alpha = 0;
+    score.alpha = 0;
   }
 
   public function getIconColor(characterId:String) {
@@ -263,6 +407,108 @@ class RetroGameUI extends Module {
         icon.playAnimation('idle', false, false, 0);
       }
     }
+  }
+  function cancelTweens():Void {
+    for (tween in judgementTweens) {
+      if (tween != null) tween.cancel();
+    }
+    judgementTweens = [];
+
+    for (tween in comboTweens) {
+      if (tween != null) tween.cancel();
+    }
+    comboTweens = [];
+
+    for (tween in scoreTweens) {
+      if (tween != null) tween.cancel();
+    }
+    scoreTweens = [];
+  }
+
+  function animateTexts(doesPulse:Bool = true, stayDuration:Float = 0):Void {
+    var pulseDuration:Float = 0.1;
+    var pulseScale:Float = 1.05;
+    judgement.scale.x = 1;
+    judgement.scale.y = 1;
+    comboText.scale.x = 1;
+    comboText.scale.y = 1;
+    score.scale.x = 1;
+    score.scale.y = 1;
+
+    if (doesPulse) {
+      judgementTweens.push(
+        FlxTween.tween(judgement.scale, {x: pulseScale, y: pulseScale}, pulseDuration, {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn:FlxTween) {
+            judgementTweens.push(
+              FlxTween.tween(judgement.scale, {x: 1, y: 1}, pulseDuration, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
+
+      comboTweens.push(
+        FlxTween.tween(comboText.scale, {x: pulseScale, y: pulseScale}, pulseDuration, {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn:FlxTween) {
+            comboTweens.push(
+              FlxTween.tween(comboText.scale, {x: 1, y: 1}, pulseDuration, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
+
+      scoreTweens.push(
+        FlxTween.tween(score.scale, {x: pulseScale, y: pulseScale}, pulseDuration, {
+          ease: FlxEase.expoOut,
+          onComplete: function(twn:FlxTween) {
+            scoreTweens.push(
+              FlxTween.tween(score.scale, {x: 1, y: 1}, pulseDuration, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
+    }
+
+    var fadeDelay:Float = 3.0; // Tempo antes de começar a desaparecer
+    if (stayDuration > 0) fadeDelay += stayDuration;
+    var fadeDuration:Float = 0.3;
+
+    judgementTweens.push(
+      FlxTween.tween(judgement, {alpha: 0}, fadeDuration, {
+        startDelay: fadeDelay,
+        ease: FlxEase.quadOut,
+        onComplete: function(twn:FlxTween) {
+          judgement.visible = false;
+        }
+      })
+    );
+
+    comboTweens.push(
+      FlxTween.tween(comboText, {alpha: 0}, fadeDuration, {
+        startDelay: fadeDelay,
+        ease: FlxEase.quadOut,
+        onComplete: function(twn:FlxTween) {
+          comboText.visible = false;
+        }
+      })
+    );
+
+    scoreTweens.push(
+      FlxTween.tween(score, {alpha: 0}, fadeDuration, {
+        startDelay: fadeDelay,
+        ease: FlxEase.quadOut,
+        onComplete: function(twn:FlxTween) {
+          score.visible = false;
+        }
+      })
+    );
   }
 
   override function onSongEvent(event) {

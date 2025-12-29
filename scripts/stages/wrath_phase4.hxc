@@ -10,6 +10,7 @@ import funkin.Conductor;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.PlayState;
+import funkin.play.GameOverSubState;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
@@ -676,6 +677,13 @@ class WrathPhase4Stage extends Stage
         character.antialiasing = false;
       default:
     }
+  }
+
+  public function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    //FlxG.camera.snapToTarget();
+    //GameOverSubState.targetCameraZoom = PlayState.instance.stageZoom * 1.2;
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void

@@ -456,25 +456,6 @@
       "startingAnimation": "idle",
       "zIndex": 7
     },
-    {
-      "alpha": 1,
-      "angle": 0,
-      "animType": "sparrow",
-      "animations": [],
-      "assetPath": "wrath/optimized/wrath_overlay",
-      "blend": "screen",
-      "color": "#FFFFFF",
-      "danceEvery": 0,
-      "flipX": false,
-      "flipY": false,
-      "isPixel": false,
-      "name": "overlay",
-      "position": [-885, -853],
-      "scale": 2,
-      "scroll": [0.5, 0.5],
-      "startingAnimation": null,
-      "zIndex": 1000
-    },
 
 
     {
@@ -944,7 +925,7 @@
       "alpha": 1,
       "angle": 0,
       "cameraOffsets": [-302, -230],
-      "position": [1155.4, 925.6],
+      "position": [1155.4, 925.5],
       "scale": 0.8,
       "scroll": [1, 1],
       "zIndex": 300
@@ -962,7 +943,7 @@
       "alpha": 1,
       "angle": 0,
       "cameraOffsets": [-99, -27],
-      "position": [707.2, 785.4],
+      "position": [770, 700],
       "scale": 0.8,
       "scroll": [1, 1],
       "zIndex": 100

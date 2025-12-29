@@ -333,7 +333,7 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.add(ground);
 
       // Crack
-      var crackOffset = 35;
+      var crackOffset = 50;
       crack = FunkinSprite.create(0, 0);
       crack.loadSparrow('wrath/HellCrack');
       crack.animation.addByPrefix('appear', 'HellcrackAppear', 24, false);
@@ -342,7 +342,6 @@ class WrathPhase2Stage extends Stage
       crack.active = false;
       crack.x += 45;
       crack.y += 405 - 15 + crackOffset;
-      crack.zIndex = 100; // Aproximadamente dadGroup order
 
       if (!(PlayState.instance.isStoryMode && !hasPlayedInGameCutscene)) {
         crack.animation.play('bop');
@@ -356,11 +355,11 @@ class WrathPhase2Stage extends Stage
         crack_2 = FunkinSprite.create(0, 0);
         crack_2.loadSparrow('wrath/HellCrack_2');
         crack_2.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
+        crack_2 = getNamedProp('HellCrack_2');
         crack_2.screenCenter();
         crack_2.active = false;
         crack_2.x += -100;
         crack_2.y += 600 + crackOffset;
-        crack_2.zIndex = 50; // Aproximadamente gfGroup order
         crack_2.alpha = 0;
         PlayState.instance.add(crack_2);
       }
@@ -454,6 +453,12 @@ class WrathPhase2Stage extends Stage
     }
   }
 
+  public function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    getBoyfriend().shader = null;
+  }
+
   public override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
@@ -476,7 +481,7 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.add(overlay);
     }
 
-    //if (!PlayState.instance.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
+    if (!PlayState.instance.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
 
     if (!hasPlayedInGameCutscene && isSpectral) {
       hasPlayedInGameCutscene = true;
@@ -563,14 +568,14 @@ class WrathPhase2Stage extends Stage
         didSakuFadeIn = true;
       }
 
-      // Flash effects
-      for (i in 0...flashySteps.length) {
+      // Flash effects (removed)
+      /*for (i in 0...flashySteps.length) {
         if (curStep >= flashySteps[i]) {
           PlayState.instance.camHUD.flash(0xFFFFFFFF, 0.25);
           flashySteps.splice(i, 1);
           break;
         }
-      }
+      }*/
     }
   }
 
@@ -618,7 +623,8 @@ class WrathPhase2Stage extends Stage
     isModcharting = false;
     PlayState.instance.camHUD.angle = 0;
     PlayState.instance.playerStrumline.y = ogStrumY;
-    //fixRetroPos();
+    // there's a glitch after restating the song which makes the stage props flicker rapidly when the camera changes, being really dangerous to photosensitive people. we need to reset the state so this goes away and no one gets harmed.
+    FlxG.resetState();
   }
 
   function buildProps(hide:Bool = false):Void

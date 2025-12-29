@@ -256,23 +256,30 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
 
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+      var doesVocalThing = true;
       var k = event.note.noteData.kind;
       var noteDir = event.note.noteData.getDirection();
       if (k == "autoChain") {
         lockStrum(noteDir);
         if (k == 'autoChain') chainText.visible = true;
+        doesVocalThing = false;
 
         event.note.kill();
         event.cancel();
         event.stopPropagation();
-        return;
+        // don't RETURN or else the custom UI will display as a miss
       }
+      if (doesVocalThing) doVocalThing(); // efeito de miss nas vocais (caso seja uma nota normal)
     } //fim do if que checa se a nota é do jogador
-
-    doVocalThing(); // efeito de miss nas vocais (caso seja uma nota normal)
-
     super.onNoteMiss(event);
 	}
+  public override function onNoteHoldDrop(event:HoldNoteScriptEvent) {
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+    if (event.holdNote.noteData.getMustHitNote()) { // Só pro jogador!
+      doVocalThing(1.3); // efeito de miss nas vocais (caso seja uma nota normal)
+    }
+  }
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
     super('onNoteGhostMiss');
     if (PlayState.instance == null) return;
@@ -790,10 +797,10 @@ class RetroPlayState extends Module {
     PlayState.instance.refresh();
   }
 
-  function doVocalThing()
+  function doVocalThing(mult:Float = 1.2)
   {
     if (isDoingVocalThing == true) return;
-    var delay = 0.25;
+    var delay = 0.25 * mult;
     if(PlayState.instance.vocals.opponentVoices.members.length != 0) {
 		  PlayState.instance.vocals.opponentVolume = 0;
       isDoingVocalThing = true;

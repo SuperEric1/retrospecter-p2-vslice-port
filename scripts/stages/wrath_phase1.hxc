@@ -2,10 +2,12 @@ import flixel.FlxG;
 import flixel.math.FlxAngle;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
 import funkin.graphics.shaders.DropShadowShader;
 import funkin.play.character.CharacterType;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+import funkin.graphics.FunkinSprite;
 
 class wrathPhaseOneStage extends Stage
 {
@@ -13,6 +15,8 @@ class wrathPhaseOneStage extends Stage
   {
     super('wrath_phase1');
   }
+
+  var overlay:StageProp;
 
   function onCreate(event:ScriptEvent):Void
   {
@@ -39,6 +43,24 @@ class wrathPhaseOneStage extends Stage
           rim.updateFrameInfo(getNamedProp(obj).frame);
         }
       });
+    }
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (overlay == null) {
+      // Overlay
+      overlay = FunkinSprite.create(0, 0);
+      overlay.loadTexture('wrath/wrath_overlay');
+      overlay.screenCenter();
+      overlay.scrollFactor.set(0.6, 0.6);
+      overlay.blend = 'screen';
+      overlay.y += -128;
+      overlay.x += 40;
+      overlay.cameras = [PlayState.instance.camGame];
+      PlayState.instance.add(overlay);
     }
   }
 

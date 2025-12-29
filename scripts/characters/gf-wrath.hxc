@@ -1,7 +1,15 @@
 import funkin.play.character.SparrowCharacter;
 import funkin.play.character.CharacterType;
 import funkin.play.PlayState;
-import flixel.addons.effects.FlxTrail;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.play.stage.Bopper;
+import flixel.group.FlxTypedSpriteGroup;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.modding.base.ScriptedFlxSprite;
+import funkin.modding.base.ScriptedFlxSpriteGroup;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class GirlfriendWrathCharacter extends SparrowCharacter
 {
@@ -10,13 +18,81 @@ class GirlfriendWrathCharacter extends SparrowCharacter
     super('gf-wrath');
   }
 
+  var speaker:StageProp;
+  var refreshed:Bool = false;
+
+  var songOffsets:haxe.ds.StringMap<String, Array<Float>> = [
+    "satisfracture" => [-330, -45],
+    "spectral" => [-330, -45],
+    "apocalyptro" => [-440, -230],
+    "catastrofiend" => [-365, -100],
+  ];
+  var defaultOffset:Array<Float> = [0, 0]; // Fallback
+
+  function onCreate(event:ScriptEvent)
+  {
+    super.onCreate(event);
+
+    speaker = FunkinSprite.create(0, 0);
+    speaker.loadSparrow('girlfriends/speaker/wrath');
+    speaker.animation.addByIndices('idle', 'GF Dancing Beat', [0, 1, 2, 3, 4, 5, 6, 7, 8], '', 29, false);
+    speaker.scrollFactor = this.scrollFactor;
+    speaker.scale = this.scale;
+    speaker.antialiasing = this.antialiasing;
+    speaker.x = this.x;
+    speaker.y = this.y;
+    speaker.updateHitbox();
+  }
+
+  function onUpdate(event:UpdateScriptEvent)
+  {
+    super.onUpdate(event);
+    //synchronizeShader();
+
+    speaker.visible = this.visible;
+    speaker.alpha = this.alpha;
+    var currentSong:String = PlayState.instance.currentSong.id.toLowerCase();
+    var offset:Array<Float> = songOffsets.exists(currentSong) ? songOffsets.get(currentSong) : defaultOffset;
+
+    speaker.x = this.x + offset[0];
+    speaker.y = this.y + offset[1];
+
+    if (!refreshed) {
+      speaker.zIndex = this.zIndex - 5;
+      PlayState.instance.currentStage.add(speaker);
+
+      PlayState.instance.currentStage.refresh();
+      refreshed = true;
+    }
+  }
+
+  function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    if (event.beat % 1 == 0)
+    {
+        if (speaker != null) speaker.animation.play('idle', false);
+    }
+  }
+
   override function dance(force:Bool):Void
   {
-    // Wait for 'hairBlow' to play, preventing dancing from interrupting it.
-    //if (!force && ['hairBlow'].contains(getCurrentAnimation())) return;
+    // Wait for 'hair' to play, preventing dancing from interrupting it.
     // Wait to finish, preventing dancing from interrupting it.
     if (!force && ['hair'].contains(getCurrentAnimation()) && !isAnimationFinished()) return;
 
     super.dance(force);
+  }
+
+  var currentShader = null;
+  function synchronizeShader():Void
+  {
+    if (currentShader == this.shader) return;
+    currentShader = this.shader;
+    speaker.shader = currentShader;
+    /*speaker.animation.onFrameChange.add(function() {
+      currentShader.updateFrameInfo(speaker.frame);
+    });*/
   }
 }

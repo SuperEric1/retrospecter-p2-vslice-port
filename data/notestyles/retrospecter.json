@@ -134,72 +134,72 @@
       "isPixel": false
     },
     "judgementSick": {
-      "assetPath": "default:ui/popup/funkin/sick",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "scale": 0.65,
       "isPixel": false
     },
     "judgementGood": {
-      "assetPath": "default:ui/popup/funkin/good",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "scale": 0.65,
       "isPixel": false
     },
     "judgementBad": {
-      "assetPath": "default:ui/popup/funkin/bad",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "scale": 0.65,
       "isPixel": false
     },
     "judgementShit": {
-      "assetPath": "default:ui/popup/funkin/shit",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "scale": 0.65,
       "isPixel": false
     },
     "comboNumber0": {
-      "assetPath": "default:ui/popup/funkin/num0",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber1": {
-      "assetPath": "default:ui/popup/funkin/num1",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber2": {
-      "assetPath": "default:ui/popup/funkin/num2",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber3": {
-      "assetPath": "default:ui/popup/funkin/num3",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber4": {
-      "assetPath": "default:ui/popup/funkin/num4",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber5": {
-      "assetPath": "default:ui/popup/funkin/num5",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber6": {
-      "assetPath": "default:ui/popup/funkin/num6",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber7": {
-      "assetPath": "default:ui/popup/funkin/num7",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber8": {
-      "assetPath": "default:ui/popup/funkin/num8",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     },
     "comboNumber9": {
-      "assetPath": "default:ui/popup/funkin/num9",
+      "assetPath": "shared:ui/countdown/retrospecter/nothing",
       "isPixel": false,
       "scale": 0.45
     }

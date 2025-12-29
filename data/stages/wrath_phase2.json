@@ -5,20 +5,20 @@
   "characters": {
     "bf": {
       "zIndex": 300,
-      "position": [1255.5, 925.5],
+      "position": [1105.5, 925.5],
       "scale": 0.8,
-      "cameraOffsets": [-230, -347]
+      "cameraOffsets": [-230, -330]
     },
     "dad": {
-      "zIndex": 200,
-      "position": [25, 920],
-      "cameraOffsets": [425, -40]
+      "zIndex": 301,
+      "position": [-20, 920],
+      "cameraOffsets": [435, -40]
     },
     "gf": {
       "zIndex": 100,
       "cameraOffsets": [0, -183],
       "scale": 0.8,
-      "position": [707.2, 785.4]
+      "position": [770, 700]
     }
   },
   "name": "Wrath_phase2"

@@ -321,7 +321,7 @@ class SatisfractureSong extends Song
     PlayState.instance.playerStrumline.alpha = 1;
     PlayState.instance.opponentStrumline.alpha = 1;
 
-    for (bar in healthBar) bar.alpha = 1;
+    for (bar in PlayState.instance.healthBar) bar.alpha = 1;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
