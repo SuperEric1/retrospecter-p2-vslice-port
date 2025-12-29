@@ -738,6 +738,12 @@ class WrathPhase2Stage extends Stage
     });
   }
 
+  public function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    getBoyfriend().shader = null;
+  }
+
   private function resetTweens():Void
   {
     for (tween in tweens)
