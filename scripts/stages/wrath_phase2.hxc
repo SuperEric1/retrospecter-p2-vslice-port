@@ -471,6 +471,7 @@ class WrathPhase2Stage extends Stage
       overlay.scrollFactor.set(0.6, 0.6);
       overlay.blend = 'screen';
       overlay.y += -128;
+      overlay.x += 40;
       overlay.cameras = [PlayState.instance.camGame];
       PlayState.instance.add(overlay);
     }
@@ -683,14 +684,14 @@ class WrathPhase2Stage extends Stage
     retro.playAnimation('transformation', true);
     growlSound.play();
     groundShakeSound.play();
-    PlayState.instance.tweenCameraZoom(0.8, 0, true, FlxEase.quadInOut);
-    PlayState.instance.tweenCameraZoom(0.7, 1, true, FlxEase.quadInOut);
-    PlayState.instance.tweenCameraToPosition(retroPos[0] + 70, retroPos[1] - 10, 0, FlxEase.quadInOut);
+    PlayState.instance.tweenCameraZoom(0.85, 0, true, FlxEase.quadInOut);
+    PlayState.instance.tweenCameraZoom(0.75, 1, true, FlxEase.quadInOut);
+    PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, 0, FlxEase.quadInOut);
 
     // smash ground + unzoom
     new FlxTimer().start(2, function(tmr) {
       firstSlam.play();
-      PlayState.instance.tweenCameraZoom(0.6, 0.5, true, FlxEase.quadInOut);
+      PlayState.instance.tweenCameraZoom(0.7, 0.5, true, FlxEase.quadInOut);
     });
 
     new FlxTimer().start(2.3, function(tmr) {
@@ -736,12 +737,6 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.togglePauseButton(true);
       PlayState.instance.mayPauseGame = true;
     });
-  }
-
-  public function onGameOver(event:ScriptEvent)
-  {
-    super.onGameOver(event);
-    getBoyfriend().shader = null;
   }
 
   private function resetTweens():Void
