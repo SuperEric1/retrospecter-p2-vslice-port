@@ -39,6 +39,7 @@ class RetroPlayState extends Module {
 
   var isRetro:Bool = false;
   var isDoingVocalThing:Bool = false;
+  var isDownscroll:Bool = false;
 
   var tweens = [];
   var pausedTweens = [];
@@ -70,6 +71,11 @@ class RetroPlayState extends Module {
   var isStrumLocked:IntMap<Bool> = new IntMap();
   var chainText:FlxText;
 
+  // Hydra Notes - Sistema de beam que cobre os strums
+  var hydraBeamSprites:Array<FunkinSprite> = [];
+  var hydraBeamTimers:Array<FlxTimer> = [];
+  var hydraBeamStates:IntMap<Int> = new IntMap(); // 0 = inativo, 1 = start, 2 = loop, 3 = end
+
   var hurtNoteVibration:VibrationPreset =
   {
     period: 0.2,
@@ -91,6 +97,15 @@ class RetroPlayState extends Module {
       isStrumLocked.set(i, false);
       chainLockStates.set(i, 0);
       chainLockInputs.set(i, 0);
+    }
+
+    // Inicializar sistema de hydra beams
+    for (i in 0...4) {
+      hydraBeamStates.set(i, 0);
+      if (hydraBeamTimers[i] != null) {
+        hydraBeamTimers[i].cancel();
+        hydraBeamTimers[i] = null;
+      }
     }
   }
 
@@ -115,7 +130,7 @@ class RetroPlayState extends Module {
 
     // Notas que não contam pro score
     if (k == 'Fake Note' || k == 'poison' || k == 'izzyNote' ||
-        k =='chain' || k == 'autoChain') {
+        k =='chain' || k == 'autoChain' || k == 'Hydra') {
       if (event.note.noteData.getMustHitNote()) {
         Highscore.tallies.totalNotes--;
       }
@@ -150,6 +165,25 @@ class RetroPlayState extends Module {
       if (k == 'autoChain') chainText.visible = true;
 
       PlayState.instance.health -= event.healthChange;
+      event.doesNotesplash = false;
+      #if mobile
+      HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #else
+      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      #end
+    }
+
+    if (k == 'Hydra') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      playBeamAnimation(noteDir);
+      FlxG.sound.play(Paths.sound('noteSounds/hydra'));
+
+      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
       #if mobile
       HapticUtil.vibrateByPreset(hurtNoteVibration);
@@ -263,10 +297,14 @@ class RetroPlayState extends Module {
     isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
     if (!isRetro) return;
 
+    isDownscroll = Preferences.downscroll;
+    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
+
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
       loadUIElements();
       loadChainLockSprites();
+      loadHydraBeamSprites();
       hasLoadedUIElements = true;
     }
   }
@@ -429,10 +467,15 @@ class RetroPlayState extends Module {
     FlxG.sound.play(Paths.sound('noteSounds/ChainLock'));
 
     var lockSprite = chainLockSprites[direction];
+    var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
+    var darkness = 0.3;
     if (lockSprite != null) {
       lockSprite.visible = true;
       var dirName = getDirectionName(direction);
       lockSprite.animation.play('startLocked' + dirName, true);
+      strum.colorTransform.redMultiplier = darkness;
+      strum.colorTransform.greenMultiplier = darkness;
+      strum.colorTransform.blueMultiplier = darkness;
     }
   }
 
@@ -445,8 +488,9 @@ class RetroPlayState extends Module {
 
     var lockSprite = chainLockSprites[direction];
     var dirName = getDirectionName(direction);
+    var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
 
-    FunkinSound.playOnce(Paths.soundRandom('noteSounds/ChainHit', 1, 3), FlxG.random.float(0.1, 0.2));
+    if (currentClicks < 3) FunkinSound.playOnce(Paths.soundRandom('noteSounds/ChainHit', 1, 3));
 
     if (currentClicks == 1) {
       if (lockSprite != null) lockSprite.animation.play('1hitLocked' + dirName, false);
@@ -455,7 +499,6 @@ class RetroPlayState extends Module {
     } else if (currentClicks >= 3) {
       // Desbloqueia o strum
       FlxG.sound.play(Paths.sound('noteSounds/ChainBreak'));
-
       if (lockSprite != null) {
         lockSprite.animation.play('unlocked' + dirName, false);
         // Esconde o sprite após a animação terminar
@@ -464,6 +507,11 @@ class RetroPlayState extends Module {
           if (lockSprite != null) lockSprite.visible = false;
         });
       }
+      // retornar cores ao normal
+      strum.colorTransform.redMultiplier = 1;
+      strum.colorTransform.greenMultiplier = 1;
+      strum.colorTransform.blueMultiplier = 1;
+
       chainText.visible = false;
       isStrumLocked.set(direction, false);
       chainLockStates.set(direction, 0);
@@ -475,9 +523,10 @@ class RetroPlayState extends Module {
 
     FlxTween.cancelTweensOf(strum);
 
-    var angleOffset = (FlxG.random.bool() ? 1 : -1) * 5;
-    var xOffset = (FlxG.random.bool() ? 1 : -1) * 10;
-    var yOffset = -10;
+    var mult = (FlxG.random.bool() ? 1 : -1);
+    var angleOffset = FlxG.random.int(5, 17) * mult;
+    var xOffset = FlxG.random.int(5, 17) * mult;
+    var yOffset = FlxG.random.int(-20, -5);
     var dirIdx:Int = direction;
     var targetX:Float = ogStrumsX[dirIdx];
     var targetY:Float = ogStrumsY[dirIdx];
@@ -486,14 +535,14 @@ class RetroPlayState extends Module {
       angle: angleOffset,
       x: targetX + xOffset,
       y: targetY + yOffset
-    }, 0.05, {
+    }, 0.1, {
       ease: FlxEase.expoIn,
       onComplete: function(t:FlxTween) {
         tweens.push(FlxTween.tween(strum, {
             angle: 0,
             x: targetX,
             y: targetY
-        }, 0.1, {
+        }, 0.3, {
             ease: FlxEase.expoOut
         }));
       }
@@ -536,7 +585,7 @@ class RetroPlayState extends Module {
       lockSprite.animation.addByPrefix('unlocked' + dirName, 'unlocked' + dirName, 24, false);
 
       // O offset é calculado lá no onUpdate!!
-      lockSprite.setGraphicSize(Std.int(strum.width) * 1.5, Std.int(strum.height) * 1.5);
+      lockSprite.setGraphicSize(Std.int(strum.width) * 1.35, Std.int(strum.height) * 1.35);
       lockSprite.updateHitbox();
       lockSprite.cameras = [PlayState.instance.camHUD];
       lockSprite.visible = false;
@@ -548,6 +597,95 @@ class RetroPlayState extends Module {
     }
 
     PlayState.instance.refresh();
+  }
+
+  function loadHydraBeamSprites():Void {
+    // Se já tivermos sprites carregados (e válidos), não fazemos nada.
+    if (hydraBeamSprites.length > 0) {
+        if (hydraBeamSprites[0] != null && hydraBeamSprites[0].exists) {
+            return;
+        } else {
+            hydraBeamSprites = [];
+            hydraBeamTimers = [];
+        }
+    }
+
+    for (i in 0...4) {
+      var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+      var beamSprite = new FunkinSprite(strum.x, strum.y);
+      beamSprite.frames = Paths.getSparrowAtlas('HydraNoteBeam');
+
+      // Adicionar animações do beam
+      beamSprite.animation.addByPrefix('start', 'Hydra Column Hit_start', 24, false);
+      beamSprite.animation.addByPrefix('loop', 'Hydra Column Hit_Loop', 24, true);
+      beamSprite.animation.addByPrefix('end', 'Hydra Column Hit_End', 24, false);
+
+      beamSprite.setGraphicSize(Std.int(strum.width * 1.4), FlxG.height + (FlxG.height / 3)); // Std.int(beamSprite.width * 0.5)
+      beamSprite.updateHitbox();
+      beamSprite.flipY = isDownscroll;
+      beamSprite.scrollFactor.set(0, 0);
+      beamSprite.cameras = [PlayState.instance.camHUD];
+      beamSprite.visible = false;
+      beamSprite.zIndex = 9000;
+      //beamSprite.antialiasing = true;
+
+      PlayState.instance.add(beamSprite);
+      hydraBeamSprites.push(beamSprite);
+      hydraBeamTimers.push(null);
+    }
+
+    PlayState.instance.refresh();
+  }
+
+  function playBeamAnimation(direction:Int):Void {
+    if (hydraBeamSprites.length == 0) return;
+
+    // Capturar o valor localmente para uso nas closures
+    final dir:Int = direction;
+
+    var beamSprite = hydraBeamSprites[dir];
+    if (beamSprite == null) return;
+
+    // Cancelar timer anterior se existir
+    if (hydraBeamTimers[dir] != null) {
+      hydraBeamTimers[dir].cancel();
+      hydraBeamTimers[dir] = null;
+    }
+
+    // Tocar animação de start
+    beamSprite.visible = true;
+    beamSprite.animation.play('start', true);
+    hydraBeamStates.set(dir, 1);
+
+    // Após a animação de start, começar o loop
+    hydraBeamTimers[dir] = new FlxTimer().start(0.125, function(tmr:FlxTimer) { // 3 frames a 24fps = ~0.125s
+      if (PlayState.instance == null) return;
+      if (beamSprite == null || !beamSprite.exists) return;
+
+      beamSprite.animation.play('loop', true);
+      hydraBeamStates.set(dir, 2);
+
+      // Manter o loop por alguns segundos
+      hydraBeamTimers[dir] = new FlxTimer().start(6.3, function(tmr2:FlxTimer) {
+        if (PlayState.instance == null) return;
+        if (beamSprite == null || !beamSprite.exists) return;
+
+        // Tocar animação de end
+        beamSprite.animation.play('end', true);
+        hydraBeamStates.set(dir, 3);
+
+        // Esconder após a animação de end
+        hydraBeamTimers[dir] = new FlxTimer().start(0.25, function(tmr3:FlxTimer) { // 6 frames a 24fps = ~0.25s
+          if (PlayState.instance == null) return;
+          if (beamSprite == null) return;
+
+          beamSprite.visible = false;
+          hydraBeamStates.set(dir, 0);
+          hydraBeamTimers[dir] = null;
+        });
+      });
+    });
   }
 
   public function onUpdate(event):Void {
@@ -570,7 +708,7 @@ class RetroPlayState extends Module {
     }
 
     // Atualizar sprites de lock para seguir os strums
-    var lockSpriteOffset:Array<Float, Float> = [ -30, -35 ];
+    var lockSpriteOffset:Array<Float, Float> = [ -20, -25 ];
     for (i in 0...4) {
       if (chainLockSprites[i] != null) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
@@ -578,6 +716,20 @@ class RetroPlayState extends Module {
         chainLockSprites[i].y = strum.y + lockSpriteOffset[1];
         chainLockSprites[i].angle = strum.angle;
         chainLockSprites[i].alpha = strum.alpha;
+      }
+    }
+
+    // Atualizar sprites de hydra beam para seguir os strums
+    var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)]; // Ajustar conforme necessário
+    for (i in 0...4) {
+      if (hydraBeamSprites[i] != null && hydraBeamSprites[i].visible) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        var beam = hydraBeamSprites[i];
+        beam.x = strum.x + (strum.width / 2) - (beam.width / 2) + beamOffset[0];
+        beam.y = 0 - beamOffset[1];
+        beam.alpha = strum.alpha;
+        //hydraBeamSprites[i].x = strum.x + beamOffset[0];
+        //hydraBeamSprites[i].y = strum.y + beamOffset[1];
       }
     }
 
@@ -706,6 +858,9 @@ class RetroPlayState extends Module {
         note.y = ogStrumsY[i];
         note.angle = 0;
         note.alpha = 1;
+        note.colorTransform.redMultiplier = 1;
+        note.colorTransform.greenMultiplier = 1;
+        note.colorTransform.blueMultiplier = 1;
       }
       note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (ogOppStrumsX[i] != null && ogOppStrumsY[i] != null) {
@@ -723,6 +878,18 @@ class RetroPlayState extends Module {
       chainLockInputs.set(i, 0);
       if (chainLockSprites[i] != null) {
         chainLockSprites[i].visible = false;
+      }
+    }
+
+    // Resetar hydra beams
+    for (i in 0...4) {
+      hydraBeamStates.set(i, 0);
+      if (hydraBeamTimers[i] != null) {
+        hydraBeamTimers[i].cancel();
+        hydraBeamTimers[i] = null;
+      }
+      if (hydraBeamSprites[i] != null) {
+        hydraBeamSprites[i].visible = false;
       }
     }
   }
@@ -768,6 +935,22 @@ class RetroPlayState extends Module {
         chainLockSprites[i] = null;
       }
     }
+
+    // Resetar hydra beams
+    for (i in 0...4) {
+      hydraBeamStates.set(i, 0);
+      if (hydraBeamTimers[i] != null) {
+        hydraBeamTimers[i].cancel();
+        hydraBeamTimers[i] = null;
+      }
+      if (hydraBeamSprites[i] != null) {
+        if(PlayState.instance.members.contains(hydraBeamSprites[i])) {
+            PlayState.instance.remove(hydraBeamSprites[i]);
+        }
+        hydraBeamSprites[i].destroy();
+        hydraBeamSprites[i] = null;
+      }
+    }
   }
 
   override function onDestroy(event)
@@ -783,6 +966,23 @@ class RetroPlayState extends Module {
       solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
       solidCameraSprite = null;    // Anula a referência
     }
+
+    // Limpar hydra beams no destroy
+    for (i in 0...4) {
+      if (hydraBeamTimers[i] != null) {
+        hydraBeamTimers[i].cancel();
+        hydraBeamTimers[i] = null;
+      }
+      if (hydraBeamSprites[i] != null) {
+        if(PlayState.instance != null && PlayState.instance.members.contains(hydraBeamSprites[i])) {
+            PlayState.instance.remove(hydraBeamSprites[i]);
+        }
+        hydraBeamSprites[i].destroy();
+        hydraBeamSprites[i] = null;
+      }
+    }
+    hydraBeamSprites = [];
+    hydraBeamTimers = [];
 
 		resetTweens();
 	}
@@ -850,6 +1050,8 @@ class RetroPlayState extends Module {
 			FunkinMemory.permanentCacheTexture(Paths.image('PoisonArrowHit'));
 			FunkinMemory.permanentCacheTexture(Paths.image('ChainNotes'));
 			FunkinMemory.permanentCacheTexture(Paths.image('strumChains'));
+			FunkinMemory.permanentCacheTexture(Paths.image('HydraNotes'));
+			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam'));
 
       // Phase 3 - Apocalyptro
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));

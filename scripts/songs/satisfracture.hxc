@@ -340,4 +340,9 @@ class SatisfractureSong extends Song
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
   }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
 }

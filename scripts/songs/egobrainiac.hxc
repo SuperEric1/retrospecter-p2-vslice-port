@@ -35,7 +35,7 @@ class EgobrainiacSong extends Song
   var ogLaneX:Float;
   var ogOppLaneX:Float;
   var ogOppLaneY:Float;
-  
+
   var izzyPercent = 14;
   var didLastThing:Bool = false;
 
@@ -275,8 +275,8 @@ class EgobrainiacSong extends Song
     super.onSongRetry(event);
     resetTweens();
     izzyPercent = 14;
-    
-    if (didLastThing == true) FlxG.resetState(); // resetar tudo de uma vez caso num tenha mais oq fazer pra resetar 
+
+    if (didLastThing == true) FlxG.resetState(); // resetar tudo de uma vez caso num tenha mais oq fazer pra resetar
 
     //playState.playerStrumline.x = ogLaneX;
     //playStage.getBoyfriend().idleSuffix = '-alt';
@@ -321,5 +321,10 @@ class EgobrainiacSong extends Song
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
   }
 }

@@ -63,7 +63,7 @@ class SpectralSong extends Song
 
       playState.camHUD.visible = false;
 
-      buildProps(true); // preparar props para a cutscene
+      //buildProps(true); // preparar props para a cutscene
       loadSounds();
       introCutscene();
     }
@@ -139,14 +139,14 @@ class SpectralSong extends Song
     });
     new FlxTimer().start(2.3, function(tmr) {
       FlxG.camera.flash(0xFFFFFFFF, 0.4);
-      buildProps();
+      //buildProps();
       FlxG.camera.shake(0.075, 0.5);
       FlxG.camera.shake(0.025, 0.35);
     });
 
     // roar
     new FlxTimer().start(3.25, function(tmr) {
-      FlxTween.tween(bgFlames, {y: bgFlamesY}, 1.4, {ease: FlxEase.backOut});
+      //FlxTween.tween(bgFlames, {y: bgFlamesY}, 1.4, {ease: FlxEase.backOut});
       retro.playAnimation('roar', true);
       roarSound.play();
       FlxG.camera.shake(0.025, 0.35);
@@ -296,5 +296,10 @@ class SpectralSong extends Song
     playStage = PlayState.instance.currentStage;
     ogStrumY = playState.playerStrumline.y;
     fixRetroPos();
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
   }
 }

@@ -1,0 +1,27 @@
+import funkin.ui.story.Level;
+import funkin.save.Save;
+
+class PrideLevel extends Level
+{
+  function new()
+  {
+    super('3-pride');
+  }
+
+  override function isUnlocked():Bool
+  {
+    return Save.instance.hasBeatenLevel('1-wrath');
+  }
+
+  override function getSongDisplayNames(difficultyId:String):Array<String>
+  {
+    if (Save.instance.hasBeatenLevel('3-pride'))
+    {
+      return ["Egobrainiac", "Superbio"];
+    }
+    else
+    {
+      return ["?"];
+    }
+  }
+}

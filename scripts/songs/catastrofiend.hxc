@@ -85,6 +85,7 @@ class CatastrofiendSong extends Song
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
+    hasPlayedEndCutscene = false;
 
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedCutscene = true;
 
@@ -92,7 +93,7 @@ class CatastrofiendSong extends Song
     {
       bgSprite = new FunkinSprite(-100, -100);
       bgSprite.makeSolidColor(2000, 2500, 0xFFFFFFFF);
-      bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+      bgSprite.cameras = [PlayState.instance.camHUD];
       bgSprite.zIndex = 1000000;
       bgSprite.alpha = 1;
       PlayState.instance.add(bgSprite);
@@ -192,6 +193,22 @@ class CatastrofiendSong extends Song
     if (screenShake)
     {
       roarEvent(event.beat);
+    }
+
+    if (event.beat >= 832 && !hasPlayedEndCutscene) {
+      if (!PlayStatePlaylist.isStoryMode) hasPlayedEndCutscene = true;
+
+      if (!hasPlayedEndCutscene)
+      {
+        hasPlayedEndCutscene = true;
+        PlayState.instance.isInCutscene = true;
+        PlayState.instance.mayPauseGame = false;
+
+        event.cancel();
+
+        // start the video cutscene
+        startFinale();
+      }
     }
   }
 
@@ -404,27 +421,6 @@ class CatastrofiendSong extends Song
    public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndCutscene = true;
-
-    if (!hasPlayedEndCutscene)
-    {
-      PlayState.instance.isInCutscene = true;
-      PlayState.instance.mayPauseGame = false;
-      hasPlayedEndCutscene = true;
-
-      event.cancel();
-
-      // start the video cutscene
-      startFinale();
-    }
-    else
-    {
-      // Make sure the cutscene can play again next time!
-      hasPlayedEndCutscene = false;
-      PlayState.instance.isInCutscene = false;
-      PlayState.instance.mayPauseGame = true;
-      // DO NOT CANCEL THE EVENT!
-    }
   }
 
   function startFinale()
@@ -436,6 +432,10 @@ class CatastrofiendSong extends Song
     }
 
     VideoCutscene.onVideoEnded.addOnce(function() {
+      // Make sure the cutscene can play again next time!
+      hasPlayedEndCutscene = false;
+      PlayState.instance.isInCutscene = false;
+      PlayState.instance.mayPauseGame = true;
       if (FlxG.onMobile)
       {
         PlayState.instance.pauseButton.x = (FlxG.width - PlayState.instance.pauseButton.width) - Math.max(40, FullScreenScaleMode.gameNotchSize.x);
@@ -446,10 +446,18 @@ class CatastrofiendSong extends Song
     PlayState.instance.camHUD.visible = false;
 
     PlayState.instance.isInCutscene = true;
-    hasPlayedEndCutscene = true;
+    //hasPlayedEndCutscene = true;
 
     PlayState.instance.currentStage.getBoyfriend().danceEvery = 0;
-    PlayState.instance.currentStage.getDad().danceEvery = 0;
+    PlayState.instance.currentStage.getGirlfriend().danceEvery = 0;
+
+    // Add a black background behind the cutscene to fix a transition bug!
+    var bgSprite = new FunkinSprite(-100, -100);
+    bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
+    bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+    bgSprite.zIndex = 1000000;
+    PlayState.instance.add(bgSprite);
+    PlayState.instance.refresh();
 
     VideoCutscene.play(Paths.videos('Phase4_OUTRO'), CutsceneType.ENDING);
   }
@@ -538,6 +546,11 @@ class CatastrofiendSong extends Song
     {
       pattern.finished = false;
     }
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
   }
 }
 

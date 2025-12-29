@@ -410,7 +410,7 @@ class WrathPhase4Stage extends Stage
         geyserR.alpha = 1;
         getGirlfriend().alpha = 1;
 
-        //FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 1, {ease: FlxEase.quadOut});
+        FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 1, {ease: FlxEase.quadOut});
         if (healthBarOgPos.length > 0) {
           FlxTween.tween(PlayState.instance.healthBar, {y: healthBarOgPos[1]}, 1, {ease: FlxEase.quadInOut});
         }

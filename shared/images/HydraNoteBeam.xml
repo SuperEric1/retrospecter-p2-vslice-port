@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="HydraNoteBeam.png" width="4354" height="1567">
+	<SubTexture name="Hydra Column Hit_start0000" x="2300" y="0" width="235" height="1536" frameX="-100" frameY="-13" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_start0001" x="2861" y="0" width="413" height="1540" frameX="-1" frameY="-4" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_start0002" x="3932" y="0" width="422" height="1567" frameX="-0" frameY="-0" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0000" x="1945" y="0" width="355" height="1536" frameX="-56" frameY="-13" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0001" x="2535" y="0" width="326" height="1540" frameX="-50" frameY="-4" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0002" x="3581" y="0" width="351" height="1567" frameX="-39" frameY="-0" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0003" x="3274" y="0" width="307" height="1548" frameX="-56" frameY="-2" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0004" x="1286" y="0" width="339" height="1528" frameX="-54" frameY="-33" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_Loop0005" x="1625" y="0" width="320" height="1531" frameX="-55" frameY="-24" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0000" x="992" y="0" width="294" height="1510" frameX="-79" frameY="-47" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0001" x="723" y="0" width="269" height="1398" frameX="-82" frameY="-5" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0002" x="465" y="0" width="258" height="1314" frameX="-98" frameY="-24" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0003" x="227" y="0" width="238" height="1206" frameX="-107" frameY="-39" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0004" x="1" y="0" width="226" height="1162" frameX="-129" frameY="-6" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="Hydra Column Hit_End0005" x="0" y="0" width="1" height="1" frameX="-8" frameY="-0" frameWidth="428" frameHeight="1571"/>
+	<SubTexture name="nothing0000" x="0" y="0" width="1" height="1" frameX="-0" frameY="-0" frameWidth="428" frameHeight="1571"/>
+</TextureAtlas>

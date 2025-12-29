@@ -1,0 +1,87 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class HydraNote extends Module {
+	public function new() {
+		super("Hydra");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
+		super.onNoteHit(ev);
+
+		if (PlayState.instance == null) return;
+		if (!ev.note.noteData.getMustHitNote()) return;
+		if (ev.note.noteData.kind != "Hydra") return;
+	}*/
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "Hydra" )
+		{
+      var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			event.note.x += -45;
+			event.note.yOffset += -265;
+
+			event.note.frames = Paths.getSparrowAtlas( 'HydraNotes' );
+      if (downscroll) {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)', 24, false );
+      } else {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+      }
+
+			var hydraNote:String;
+			switch ( event.note.noteData.data % 4 )
+			{
+				case 0:
+					hydraNote = "purpleScroll";
+				case 1:
+					hydraNote = "blueScroll";
+				case 2:
+					hydraNote = "greenScroll";
+				case 3:
+					hydraNote = "redScroll";
+			}
+
+			event.note.animation.play( hydraNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		for ( HydraNote in PlayState.instance.playerStrumline.notes.members )
+		{
+			if ( event.note.kind == "Hydra" )
+			{
+        event.cancel();
+        event.stopPropagation();
+			}
+		}
+	}
+}
