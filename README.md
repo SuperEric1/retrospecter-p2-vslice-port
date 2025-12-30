@@ -8,4 +8,5 @@ TODO:
 [ ] Poison note notesplashes
 [ ] Encode textures to ASTC
 [ ] Custom main menu and settings menu
+[ ] Crash in wrath_phase2 after restarting
 [X] Girlfriend's speakers and position adjustments in the stages
