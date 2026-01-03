@@ -30,10 +30,8 @@ import funkin.Conductor;
 import funkin.util.Constants;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.save.Save;
-#if mobile
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
-#end
 
 class RetroTitleState extends MusicBeatState
 {
@@ -104,13 +102,13 @@ class RetroTitleState extends MusicBeatState
     logoRetro.visible = false;
     add(logoRetro);
 
-    #if mobile
+    if (FlxG.onMobile) {
     titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
-    #else
+    } else {
     titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter');
-    #end
+    }
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
     titleText.animation.play('idle');
@@ -224,7 +222,11 @@ class RetroTitleState extends MusicBeatState
     if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
 
     // do controls.PAUSE | controls.ACCEPT instead?
-    var pressedEnter:Bool = FlxG.keys.justPressed.ENTER #if mobile || (TouchUtil.justReleased && !SwipeUtil.justSwipedAny) #end;
+    var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+
+    if (FlxG.onMobile) {
+      if (TouchUtil.justReleased && !SwipeUtil.justSwipedAny) pressedEnter = true;
+    }
 
     var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 
