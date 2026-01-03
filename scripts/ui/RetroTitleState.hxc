@@ -91,7 +91,7 @@ class RetroTitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    var logoYOff = -10;
+    var logoYOff = -30;
     logoRetro = new FlxSprite(0, 0);
     logoRetro.frames = Paths.getSparrowAtlas('ui/logo');
     logoRetro.animation.addByPrefix('loop', 'logo0', 24);
@@ -403,8 +403,8 @@ class RetroTitleState extends MusicBeatState
       var backDelay = transitioning ? 0.35 : 0;
       cancelTweens();
       var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
-      var baseScale:Float = 0.95;
-      var bumpScale:Float = 1;
+      var baseScale:Float = 0.85;
+      var bumpScale:Float = 0.9;
       for (obj in objects) {
       obj.scale.x = baseScale;
       obj.scale.y = baseScale;
@@ -452,6 +452,7 @@ class RetroTitleState extends MusicBeatState
       titleText.visible = true;
 
       FlxG.camera.flash(FlxColor.WHITE, 3);
+      bumpLogo();
       skippedIntro = true;
     }
   }
