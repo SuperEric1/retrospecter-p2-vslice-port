@@ -72,10 +72,9 @@ class RetroTitleState extends MusicBeatState
   var upFire:FlxSprite;
   var backFire:FlxSprite;
   var glow:FlxSprite;
+  var hasShownShadow:Bool = false;
   var outlineShaderShit:TitleOutline;
 
-  var gfDance:FlxSpriteOverlay;
-  var danceLeft:Bool = false;
   var titleText:FlxSprite;
   var maskShader = new LeftMaskShader();
 
@@ -96,31 +95,37 @@ class RetroTitleState extends MusicBeatState
     logoRetro.frames = Paths.getSparrowAtlas('ui/logo');
     logoRetro.animation.addByPrefix('loop', 'logo0', 24);
     logoRetro.animation.play('loop');
-    //logoRetro.setGraphicSize(Std.int(logoRetro.width * 0.9));
     logoRetro.screenCenter();
     logoRetro.y += logoYOff;
     logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
     logoRetro.updateHitbox();
     logoRetro.visible = false;
-    
-    upFire = logoRetro.clone();
+    // "make the entire logo purple lmao" - amanzala
+    // logoRetro.color = FlxColor.fromRGB(108, 28, 255);
+
+    var color = FlxColor.fromRGB(68, 255, 146); // rgba(97, 255, 163, 1)
+
+    upFire = new FlxSprite(0, 0);
+    upFire.frames = Paths.getSparrowAtlas('ui/flames');
     upFire.animation.addByPrefix('loop', 'upFire0', 24);
     upFire.animation.play('loop');
     upFire.screenCenter();
     upFire.y += logoYOff;
     upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
     upFire.updateHitbox();
+    upFire.color = color;
     upFire.visible = false;
-    
-    backFire = logoRetro.clone();
+
+    backFire = upFire.clone();
     backFire.animation.addByPrefix('loop', 'backFire0', 24);
     backFire.animation.play('loop');
     backFire.screenCenter();
     backFire.y += logoYOff;
     backFire.x = (FlxG.width / 2) - (logoRetro.width / 2);
     backFire.updateHitbox();
+    backFire.color = color;
     backFire.visible = false;
-    
+
     glow = logoRetro.clone();
     glow.animation.addByPrefix('loop', 'glow0', 1);
     glow.animation.play('loop');
@@ -130,7 +135,7 @@ class RetroTitleState extends MusicBeatState
     glow.updateHitbox();
     glow.alpha = 0;
     glow.visible = false;
-    
+
     // add logo
     add(backFire);
     add(logoRetro);
@@ -271,7 +276,7 @@ class RetroTitleState extends MusicBeatState
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
-      FlxG.camera.flash(FlxColor.WHITE, 1);
+      FlxG.camera.flash(FlxColor.WHITE, 1.8);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
       bumpLogo();
@@ -357,11 +362,11 @@ class RetroTitleState extends MusicBeatState
             case 1:
               //createCoolText(['The', 'Funkin Crew Inc']);
               createCoolText(['Vs. RetroSpecter', 'Part 2: Infernadise']);
-            case 3:
+            case 2:
               addMoreText('V-Slice Port');
-            case 4:
+            case 3:
               deleteCoolText();
-            case 5:
+            case 4:
               createCoolText(['Not associated', 'with']);
               if (team != null) {
                 team.angle = 180;
@@ -376,21 +381,25 @@ class RetroTitleState extends MusicBeatState
                   FlxTween.tween(team, {angle: 0}, 0.8, { ease: FlxEase.quintOut })
                 );
               }
-            case 8:
+            case 7:
               deleteCoolText();
               if (team != null) team.visible = false;
-            case 9:
+            case 8:
               createCoolText([curWacky[0]]);
-            case 12:
+            case 9:
               addMoreText(curWacky[1]);
-            case 15:
+            case 12:
+              // show logo in shadows
+              deleteCoolText();
+              shadowLogo();
+            case 16:
               skipIntro();
           }
         }
       }
       lastBeat = Conductor.instance.currentBeat;
     }
-    if (skippedIntro && !transitioning)
+    if ((skippedIntro && !transitioning) || hasShownShadow)
     {
       // logo anims here
       bumpLogo();
@@ -398,43 +407,58 @@ class RetroTitleState extends MusicBeatState
 
     return true;
   }
-  
-  function bumpLogo() {
-      var backDelay = transitioning ? 0.35 : 0;
-      cancelTweens();
-      var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
-      var baseScale:Float = 0.85;
-      var bumpScale:Float = 0.9;
-      for (obj in objects) {
-      obj.scale.x = baseScale;
-      obj.scale.y = baseScale;
-      logoTweens.push(
-        FlxTween.tween(obj.scale, {x: bumpScale, y: bumpScale}, 0.05, {
-          ease: FlxEase.quartOut,
-          onComplete: function(twn:FlxTween) {
-            logoTweens.push(
-              FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, 0.3 + backDelay, {
-                ease: FlxEase.quadOut
-              })
-            );
-          }
-        })
-      );
-    }
-    // glow (precisa de ajustes pra ficar mais parecido com o original
+
+  function bumpLogo():Void {
+    var backDelay = transitioning ? 0.35 : 0;
+    cancelTweens();
+    var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
+    var baseScale:Float = 0.85;
+    var bumpScale:Float = 0.88;
+    for (obj in objects) {
+    obj.scale.x = baseScale;
+    obj.scale.y = baseScale;
     logoTweens.push(
-        FlxTween.tween(glow, {alpha: 1}, 0.03, {
-          ease: FlxEase.quartOut,
-          onComplete: function(twn:FlxTween) {
-            if (transitioning) return;
-            logoTweens.push(
-              FlxTween.tween(glow, {alpha: 0}, 0.6 + backDelay, {
-                ease: FlxEase.quadOut
-              })
-            );
-          }
-        })
-      );
+      FlxTween.tween(obj.scale, {x: bumpScale, y: bumpScale}, 0.05, {
+        ease: FlxEase.quartOut,
+        onComplete: function(twn:FlxTween) {
+          logoTweens.push(
+            FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, 0.3 + backDelay, {
+              ease: FlxEase.quadInOut
+            })
+          );
+        }
+      })
+    );
+  }
+  // glow (precisa de ajustes pra ficar mais parecido com o original
+  if (hasShownShadow) return; // retornar se estiver mostrando a sombra
+  logoTweens.push(
+      FlxTween.tween(glow, {alpha: 1}, 0.03, {
+        ease: FlxEase.quartOut,
+        onComplete: function(twn:FlxTween) {
+          if (transitioning) return;
+          logoTweens.push(
+            FlxTween.tween(glow, {alpha: 0}, 0.6 + backDelay, {
+              ease: FlxEase.quadOut
+            })
+          );
+        }
+      })
+    );
+  }
+
+  function shadowLogo(hide = false):Void {
+    if (!hide) {
+      hasShownShadow = true;
+      glow.alpha = 1;
+      glow.visible = true;
+      upFire.visible = true;
+    } else {
+      hasShownShadow = false;
+      glow.alpha = 0;
+      glow.visible = false;
+      upFire.visible = false;
+    }
   }
 
   function skipIntro():Void
@@ -443,6 +467,7 @@ class RetroTitleState extends MusicBeatState
     {
       deleteCoolText();
       cancelTweens();
+      shadowLogo(true);
       remove(team);
       team.visible = false;
       logoRetro.visible = true;

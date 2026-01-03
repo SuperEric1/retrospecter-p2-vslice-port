@@ -704,12 +704,14 @@ class RetroPlayState extends Module {
     }
 
     if (poisonSprite?.active && poisonSprite?.visible && poisonSprite != null && poisonText != null && PlayState.instance.iconP1 != null) {
-      poisonSprite.x = PlayState.instance.iconP1.x + 10;
-      poisonSprite.y = (PlayState.instance.healthBarBG.y - PlayState.instance.healthBarBG.height) + poisonSpriteYOffset;
+      poisonSprite.x = PlayState.instance.iconP1.x + 15;
+      poisonSprite.y = (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset;
       poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
+      poisonSprite.alpha = PlayState.instance.healthBar.alpha;
       poisonText.size = PlayState.instance.iconP1.height / 2.3;
       poisonText.x = poisonSprite.x + (poisonSprite.width / 2) - (poisonText.width / 2);
       poisonText.y = poisonSprite.y + (poisonSprite.height / 2) - (poisonText.height / 2) + poisonTextYOffset;
+      poisonText.alpha = PlayState.instance.healthBar.alpha;
     }
 
     if (isDrugged) {

@@ -14,7 +14,7 @@ import funkin.modding.module.ModuleHandler;
 
 class RetroSplashText extends Module
 {
-  public var retroV:String = '1.0.0';
+  public var retroV:String = '1.0';
 
   public function new()
   {

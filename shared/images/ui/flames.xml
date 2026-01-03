@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="flames.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="upFire0000" x="1519" y="861" width="591" height="116" frameX="-88" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0001" x="1519" y="861" width="591" height="116" frameX="-88" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0002" x="1519" y="1091" width="595" height="111" frameX="-86" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0003" x="1519" y="1091" width="595" height="111" frameX="-86" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0004" x="767" y="626" width="591" height="111" frameX="-88" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0005" x="767" y="626" width="591" height="111" frameX="-88" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0006" x="767" y="737" width="584" height="111" frameX="-92" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0007" x="767" y="737" width="584" height="111" frameX="-92" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0008" x="1519" y="743" width="583" height="118" frameX="-92" frameY="0" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0009" x="1519" y="743" width="583" height="118" frameX="-92" frameY="0" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0010" x="1519" y="623" width="585" height="120" frameX="-91" frameY="2" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0011" x="1519" y="623" width="585" height="120" frameX="-91" frameY="2" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0012" x="1519" y="977" width="587" height="114" frameX="-90" frameY="-5" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0013" x="1519" y="977" width="587" height="114" frameX="-90" frameY="-5" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0014" x="1519" y="861" width="591" height="116" frameX="-88" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0015" x="1519" y="861" width="591" height="116" frameX="-88" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0016" x="1519" y="1091" width="595" height="111" frameX="-86" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0017" x="1519" y="1091" width="595" height="111" frameX="-86" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0018" x="767" y="626" width="591" height="111" frameX="-88" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0019" x="767" y="626" width="591" height="111" frameX="-88" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0020" x="767" y="737" width="584" height="111" frameX="-92" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0021" x="767" y="737" width="584" height="111" frameX="-92" frameY="-7" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0022" x="1519" y="743" width="583" height="118" frameX="-92" frameY="0" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0023" x="1519" y="743" width="583" height="118" frameX="-92" frameY="0" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0024" x="1519" y="623" width="585" height="120" frameX="-91" frameY="2" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0025" x="1519" y="623" width="585" height="120" frameX="-91" frameY="2" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0026" x="1519" y="977" width="587" height="114" frameX="-90" frameY="-5" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="upFire0027" x="1519" y="977" width="587" height="114" frameX="-90" frameY="-5" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0000" x="767" y="0" width="752" height="626" frameX="-5" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0001" x="767" y="0" width="752" height="626" frameX="-5" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0002" x="1519" y="0" width="750" height="623" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0003" x="1519" y="0" width="750" height="623" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0004" x="1505" y="1239" width="750" height="618" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0005" x="1505" y="1239" width="750" height="618" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0006" x="0" y="1239" width="753" height="620" frameX="-5" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0007" x="0" y="1239" width="753" height="620" frameX="-5" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0008" x="0" y="0" width="767" height="618" frameX="2" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0009" x="0" y="0" width="767" height="618" frameX="2" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0010" x="0" y="618" width="761" height="621" frameX="-1" frameY="-1" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0011" x="0" y="618" width="761" height="621" frameX="-1" frameY="-1" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0012" x="753" y="1239" width="752" height="618" frameX="-5" frameY="-6" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0013" x="753" y="1239" width="752" height="618" frameX="-5" frameY="-6" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0014" x="767" y="0" width="752" height="626" frameX="-5" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0015" x="767" y="0" width="752" height="626" frameX="-5" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0016" x="1519" y="0" width="750" height="623" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0017" x="1519" y="0" width="750" height="623" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0018" x="1505" y="1239" width="750" height="618" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0019" x="1505" y="1239" width="750" height="618" frameX="-6" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0020" x="0" y="1239" width="753" height="620" frameX="-5" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0021" x="0" y="1239" width="753" height="620" frameX="-5" frameY="-3" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0022" x="0" y="0" width="767" height="618" frameX="2" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0023" x="0" y="0" width="767" height="618" frameX="2" frameY="-4" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0024" x="0" y="618" width="761" height="621" frameX="-1" frameY="-1" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0025" x="0" y="618" width="761" height="621" frameX="-1" frameY="-1" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0026" x="753" y="1239" width="752" height="618" frameX="-5" frameY="-6" frameWidth="763" frameHeight="666"/>
+	<SubTexture name="backFire0027" x="753" y="1239" width="752" height="618" frameX="-5" frameY="-6" frameWidth="763" frameHeight="666"/>
+</TextureAtlas>
