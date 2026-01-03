@@ -53,9 +53,12 @@ class RetroPlayState extends Module {
   var ogOppStrumsX:Array<Float> = [];
   var ogOppStrumsY:Array<Float> = [];
 
+  var poisonSprite:FunkinSprite;
   var poisonText:FlxText;
   var hasAddedPoisonTxt:Bool = false;
   var poisonAmount:Int = 0;
+  var poisonSpriteYOffset:Float = 0;
+  var poisonTextYOffset:Float = 0;
 
   var izzyMechanicTimer:FlxTimer;
   var izzyMechanicEndTween:FlxTween;
@@ -200,7 +203,7 @@ class RetroPlayState extends Module {
       }
 
       poisonAmount++;
-      updatePoisonSprite();
+      updatePoisonCounter();
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
@@ -309,9 +312,11 @@ class RetroPlayState extends Module {
 
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
+      poisonAmount = 0;
       loadUIElements();
       loadChainLockSprites();
       loadHydraBeamSprites();
+      updatePoisonCounter();
       hasLoadedUIElements = true;
     }
   }
@@ -341,14 +346,6 @@ class RetroPlayState extends Module {
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
-  }
-
-  function updatePoisonSprite():Void
-  {
-    if (poisonText == null) return;
-    var commaSeparated:Bool = true;
-    poisonText.text = FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
-    poisonText.visible = true;
   }
 
   function scrambleStrumline() {
@@ -706,6 +703,15 @@ class RetroPlayState extends Module {
       PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
     }
 
+    if (poisonSprite?.active && poisonSprite?.visible && poisonSprite != null && poisonText != null && PlayState.instance.iconP1 != null) {
+      poisonSprite.x = PlayState.instance.iconP1.x + 10;
+      poisonSprite.y = (PlayState.instance.healthBarBG.y - PlayState.instance.healthBarBG.height) + poisonSpriteYOffset;
+      poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
+      poisonText.size = PlayState.instance.iconP1.height / 2.3;
+      poisonText.x = poisonSprite.x + (poisonSprite.width / 2) - (poisonText.width / 2);
+      poisonText.y = poisonSprite.y + (poisonSprite.height / 2) - (poisonText.height / 2) + poisonTextYOffset;
+    }
+
     if (isDrugged) {
       if (wiggleShader != null) wiggleShader.update(event.elapsed);
       for (i in 0...4) {
@@ -776,15 +782,28 @@ class RetroPlayState extends Module {
     chainText.text = 'MASH TO BREAK FREE';
     chainText.visible = false;
     PlayState.instance.add(chainText);
-    PlayState.instance.refresh();
 
-    poisonText = new FlxText(0, 0, 0, '', scoreTxt.size + 5);
-    poisonText.setFormat(Paths.font('Inconsolata-Bold.ttf'), scoreTxt.size + 5, 0xFF09ce3b, 'center', scoreTxt.borderStyle, scoreTxt.borderColor);
-    poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
-    poisonText.y = PlayState.instance.healthBar.y - 5;
-    poisonText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
-    poisonText.zIndex = 901;
+    poisonSprite = new FunkinSprite(0, 0);
+    poisonSprite.loadSparrow('ui/healthBars/poison');
+    poisonSprite.animation.addByPrefix('P2', 'P2_0', 1, true);
+    poisonSprite.animation.addByPrefix('P3', 'P3_0', 1, true);
+    poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
+    poisonSprite.animation.play('P2', true);
+    poisonSprite.cameras = [PlayState.instance.camHUD];
+    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2;
+    poisonSprite.updateHitbox();
+    poisonSprite.visible = false;
+    poisonSprite.active = false;
+    PlayState.instance.add(poisonSprite);
+
+    // se for editar propriedades, estao no onupdate
+    poisonText = new FlxText(0, 0, 0, '0', 1);
+    poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
     poisonText.cameras = [PlayState.instance.camHUD];
+    poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
+    poisonText.visible = false;
+    //poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
+    //poisonText.y = PlayState.instance.healthBar.y - 5;
     PlayState.instance.add(poisonText);
 
     solidCameraSprite = new FunkinSprite(0, 0);
@@ -795,6 +814,33 @@ class RetroPlayState extends Module {
     PlayState.instance.add(solidCameraSprite);
 
     PlayState.instance.refresh();
+  }
+
+  function updatePoisonCounter() {
+    var songName:String = PlayState.instance?.currentChart?.songName?.toLowerCase();
+    if (poisonSprite != null) {
+      poisonSprite.visible = true;
+      poisonSprite.active = true;
+      switch (songName) {
+        case "spectral":
+          poisonSprite.animation.play('P2', true);
+        case "apocalyptro":
+          poisonSprite.animation.play('P3', true);
+          poisonTextYOffset = 4;
+        case "catastrofiend":
+          poisonSprite.animation.play('P4', true);
+          poisonSpriteYOffset = -7;
+          poisonTextYOffset = 8;
+        default:
+          poisonSprite.visible = false;
+          poisonSprite.active = false;
+      }
+    }
+    if (poisonText != null && poisonSprite.active) {
+      var commaSeparated:Bool = true;
+      poisonText.text = FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
+      poisonText.visible = true;
+    }
   }
 
   function doVocalThing(mult:Float = 1.2)
@@ -834,9 +880,9 @@ class RetroPlayState extends Module {
     }
 
     poisonAmount = 0;
-    if (poisonText != null) {
+    /*if (poisonText != null) {
       poisonText.visible = false;
-    }
+    }*/
 
     isDrugged = false;
     if (izzyMechanicTimer != null) {
@@ -848,7 +894,7 @@ class RetroPlayState extends Module {
     if (solidCameraSprite != null) {
       // Se ainda estiver na tela, removemos
       if(PlayState.instance.members.contains(solidCameraSprite)) {
-          PlayState.instance.remove(solidCameraSprite);
+        PlayState.instance.remove(solidCameraSprite);
       }
       solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
       solidCameraSprite = null;    // Anula a referência
@@ -914,19 +960,12 @@ class RetroPlayState extends Module {
     hasLoadedUIElements = false;
 
     poisonAmount = 0;
+    poisonSpriteYOffset = 0;
+    poisonTextYOffset = 0;
     isDrugged = false;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
       izzyMechanicTimer = null;
-    }
-
-    if (solidCameraSprite != null) {
-      // Se ainda estiver na tela, removemos
-      if(PlayState.instance.members.contains(solidCameraSprite)) {
-          PlayState.instance.remove(solidCameraSprite);
-      }
-      solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
-      solidCameraSprite = null;    // Anula a referência
     }
 
     // Resetar chain locks
@@ -964,14 +1003,20 @@ class RetroPlayState extends Module {
 	{
 		super.onDestroy(event);
     hasLoadedUIElements = false;
+    poisonSpriteYOffset = 0;
+    poisonTextYOffset = 0;
 
-    if (solidCameraSprite != null) {
-      // Se ainda estiver na tela, removemos
-      if(PlayState.instance.members.contains(solidCameraSprite)) {
-        PlayState.instance.remove(solidCameraSprite);
+    var destroySprites = [solidCameraSprite, poisonSprite];
+    for (i in 0...2) {
+      var sprite = destroySprites[i];
+      if (sprite != null) {
+        // Se ainda estiver na tela, removemos
+        if(PlayState.instance.members.contains(sprite)) {
+            PlayState.instance.remove(sprite);
+        }
+        sprite.destroy(); // Garante a limpeza da memória gráfica
+        sprite = null;    // Anula a referência
       }
-      solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
-      solidCameraSprite = null;    // Anula a referência
     }
 
     // Limpar hydra beams no destroy

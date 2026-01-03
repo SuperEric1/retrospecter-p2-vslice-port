@@ -204,7 +204,7 @@ class SpectralSong extends Song
     // chacoalhar strums
     if (event.step >= 128 && event.step < 1536) {
       for (obj in objectsToShake) {
-        IntervalShake.shake(obj, 0.7, 0.010, 0.010, 0.010, FlxEase.ease);
+        IntervalShake.shake(obj, Conductor.instance.stepLengthMs / 1000 + 0.1, 0.010, 0.010, 0.010, FlxEase.ease);
       }
     }
     // fade nas notas do oponente

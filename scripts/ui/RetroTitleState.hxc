@@ -1,0 +1,401 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.input.gamepad.FlxGamepad;
+import funkin.ui.FullScreenScaleMode;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import funkin.util.HapticUtil;
+import funkin.audio.visualize.SpectogramSprite;
+import funkin.graphics.shaders.ColorSwap;
+import funkin.graphics.shaders.LeftMaskShader;
+import funkin.graphics.FunkinSprite;
+import funkin.ui.MusicBeatState;
+import funkin.graphics.shaders.TitleOutline;
+import funkin.audio.FunkinSound;
+import funkin.ui.AtlasText;
+import funkin.FunkinMemory;
+import openfl.Assets;
+import openfl.display.Sprite;
+import openfl.events.AsyncErrorEvent;
+import funkin.ui.mainmenu.MainMenuState;
+import openfl.events.MouseEvent;
+import openfl.events.NetStatusEvent;
+import openfl.media.Video;
+import openfl.net.NetStream;
+import funkin.Conductor;
+import funkin.util.Constants;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.save.Save;
+#if mobile
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+#end
+
+class RetroTitleState extends MusicBeatState
+{
+  /**
+   * Only play the credits once per session.
+   */
+  public static var initialized:Bool = false;
+
+  var blackScreen:FlxSprite;
+  var credGroup:Array<AtlasText>;
+  var textGroup:Array<AtlasText>;
+  var team:FlxSprite;
+
+  var textSprites:Array<AtlasText> = [];
+  var curWacky:Array<String> = [];
+  var lastBeat:Int = 0;
+  var swagShader:ColorSwap;
+
+  // Tweens para controlar as animações
+  var logoTweens:Array<FlxTween> = [];
+  var teamLogoTweens:Array<FlxTween> = [];
+
+  override public function create():Void
+  {
+    super.create();
+
+    var texts = getIntroTextShit();
+    curWacky = texts[FlxG.random.int(0, texts.length - 1)];
+    //funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+    Conductor.instance.update(0);
+
+    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
+      startIntro();
+    });
+    else
+      startIntro();
+  }
+
+  var logoRetro:FlxSprite;
+  var outlineShaderShit:TitleOutline;
+
+  var gfDance:FlxSpriteOverlay;
+  var danceLeft:Bool = false;
+  var titleText:FlxSprite;
+  var maskShader = new LeftMaskShader();
+
+  var attractTimer:FlxTimer;
+
+  function startIntro():Void
+  {
+    if (!initialized || FlxG.sound.music == null) playMenuMusic();
+
+    persistentUpdate = true;
+
+    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
+    bg.screenCenter();
+    add(bg);
+
+    logoRetro = new FlxSprite(0, 0);
+    logoRetro.frames = Paths.getSparrowAtlas('ui/logo');
+    logoRetro.animation.addByPrefix('loop', 'logo0', 24);
+    logoRetro.animation.play('loop');
+    logoRetro.setGraphicSize(Std.int(logoRetro.width * 0.9));
+    logoRetro.screenCenter();
+    logoRetro.y -= 10;
+    logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
+    logoRetro.updateHitbox();
+    logoRetro.visible = false;
+    add(logoRetro);
+
+    #if mobile
+    titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
+    #else
+    titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText.frames = Paths.getSparrowAtlas('titleEnter');
+    #end
+    titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
+    titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+    titleText.animation.play('idle');
+    titleText.updateHitbox();
+    titleText.visible = false;
+    // titleText.screenCenter(X);
+    add(titleText);
+
+    textGroup = [];
+
+    blackScreen = bg.clone();
+
+    team = new FlxSprite(0, FlxG.height * 0.3);
+    team.loadGraphic(Paths.image('ui/team'));
+    //team.setGraphicSize(Std.int(team.width * 0.4));
+    team.scale.x = 0.2;
+    team.scale.y = 0.2;
+    team.alpha = 0;
+    team.visible = false;
+    team.screenCenter(0x01);
+    add(team);
+
+    FlxG.mouse.visible = false;
+
+    if (initialized) skipIntro();
+    else
+      initialized = true;
+  }
+
+  function playMenuMusic():Void
+  {
+    var shouldFadeIn:Bool = (FlxG.sound.music == null);
+    // Load music. Includes logic to handle BPM changes.
+    FunkinSound.playMusic('freakyMenu',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: false,
+        // Continue playing this music between states, until a different music track gets played.
+        persist: true
+      });
+    // Fade from 0.0 to 1 over 4 seconds
+    if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+  }
+
+  function getIntroTextShit():Array<Array<String>>
+  {
+    var fullText:String = Assets.getText(Paths.txt('introText'));
+
+    // Split into lines and remove empty lines
+    var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
+    var swagGoodArray:Array<Array<String>> = [];
+
+    for (i in firstArray)
+    {
+      swagGoodArray.push(i.split('--'));
+    }
+
+    return swagGoodArray;
+  }
+
+  var transitioning:Bool = false;
+
+  override function update(elapsed:Float):Void
+  {
+    FlxG.bitmapLog.add(FlxG.camera.buffer);
+
+    #if (desktop || android)
+    // Pressing BACK on the title screen should close the game.
+    // This lets you exit without leaving fullscreen mode.
+    // Only applicable on desktop and Android.
+    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK)
+    {
+      openfl.Lib.application.window.close();
+    }
+    #end
+
+    Conductor.instance.update();
+
+    /* if (FlxG.onMobile)
+          {
+      if (gfDance != null)
+      {
+        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
+        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
+      }
+          }
+     */
+    if (outlineShaderShit != null)
+    {
+      if (FlxG.keys.justPressed.I)
+      {
+        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
+      }
+
+      if (FlxG.keys.pressed.D)
+      {
+        outlineShaderShit.funnyX += 1;
+      }
+
+      // outlineShaderShit.xPos.value[0] += 1;
+    }
+
+    if (FlxG.keys.justPressed.Y)
+    {
+      FlxTween.cancelTweensOf(FlxG.stage.window, ['x', 'y']);
+      FlxTween.tween(FlxG.stage.window, {x: FlxG.stage.window.x + 300}, 1.4, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.35});
+      FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
+    }
+
+    if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
+
+    // do controls.PAUSE | controls.ACCEPT instead?
+    var pressedEnter:Bool = FlxG.keys.justPressed.ENTER #if mobile || (TouchUtil.justReleased && !SwipeUtil.justSwipedAny) #end;
+
+    var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
+
+    if (gamepad != null)
+    {
+      if (gamepad.justPressed.START || gamepad.justPressed.ACCEPT) pressedEnter = true;
+    }
+
+    // If you spam Enter, we should skip the transition.
+    if (pressedEnter && transitioning && skippedIntro)
+    {
+      moveToMainMenu();
+    }
+
+    if (pressedEnter && !transitioning && skippedIntro)
+    {
+      if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
+      titleText.animation.play('press');
+      FlxG.camera.flash(FlxColor.WHITE, 1);
+      FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
+      transitioning = true;
+
+      new FlxTimer().start(2, function(tmr:FlxTimer) {
+        moveToMainMenu();
+      });
+    }
+    if (pressedEnter && !skippedIntro && initialized) skipIntro();
+
+    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized)
+    {
+      FlxG.sound.music.volume += 0.5 * elapsed;
+    }
+
+    super.update(elapsed);
+  }
+
+  function moveToMainMenu():Void
+  {
+    if (attractTimer != null)
+    {
+      attractTimer.cancel();
+      attractTimer = null;
+    }
+
+    FunkinMemory.purgeCache();
+    FlxG.switchState(() -> new MainMenuState());
+  }
+
+  override function draw()
+  {
+    super.draw();
+  }
+
+  function createCoolText(textArray:Array<String>):Void
+  {
+    for (i in 0...textArray.length)
+    {
+      var t:FlxText = new FlxText(0,0,0, textArray[i]);
+      t.setFormat(Paths.font('Bebas-Regular.ttf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
+      t.screenCenter(0x01);
+      t.y += (textSprites.length*60)+200;
+      add(t);
+      textSprites.push(t);
+    }
+  }
+
+  function addMoreText(text:String):Void
+  {
+    var t:FlxText = new FlxText(0,0,0, text);
+    t.setFormat(Paths.font('Bebas-Regular.ttf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
+    t.screenCenter(0x01);
+    t.y += (textSprites.length*60)+200;
+    add(t);
+    textSprites.push(t);
+  }
+
+  function deleteCoolText():Void
+  {
+    for (t in textSprites) remove(t);
+    textSprites = [];
+  }
+
+  var isRainbow:Bool = false;
+  var skippedIntro:Bool = false;
+
+  override function beatHit():Bool
+  {
+    // super.beatHit() returns false if a module cancelled the event.
+    if (!super.beatHit()) return false;
+
+    if (!skippedIntro)
+    {
+      // if the user is draggin the window some beats will
+      // be missed so this is just to compensate
+      if (Conductor.instance.currentBeat > lastBeat)
+      {
+        for (i in lastBeat...Conductor.instance.currentBeat)
+        {
+          switch (i + 1)
+          {
+            case 1:
+              //createCoolText(['The', 'Funkin Crew Inc']);
+              createCoolText(['Vs. RetroSpecter', 'Part 2: Infernadise']);
+            case 3:
+              addMoreText('V-Slice Port');
+            case 4:
+              deleteCoolText();
+            case 5:
+              createCoolText(['Not associated', 'with']);
+              if (team != null) {
+                team.angle = 180;
+                team.visible = true;
+                teamLogoTweens.push(
+                  FlxTween.tween(team, {alpha: 1}, 0.4, { ease: FlxEase.quintOut })
+                );
+                teamLogoTweens.push(
+                  FlxTween.tween(team.scale, {x: 0.7, y: 0.7}, 1.2, { ease: FlxEase.backOut })
+                );
+                teamLogoTweens.push(
+                  FlxTween.tween(team, {angle: 0}, 0.8, { ease: FlxEase.quintOut })
+                );
+              }
+            case 8:
+              deleteCoolText();
+              if (team != null) team.visible = false;
+            case 9:
+              createCoolText([curWacky[0]]);
+            case 12:
+              addMoreText(curWacky[1]);
+            case 15:
+              skipIntro();
+          }
+        }
+      }
+      lastBeat = Conductor.instance.currentBeat;
+    }
+    if (skippedIntro)
+    {
+      // logo anims here
+    }
+
+    return true;
+  }
+
+  function skipIntro():Void
+  {
+    if (!skippedIntro)
+    {
+      deleteCoolText();
+      cancelTweens();
+      remove(team);
+      team.visible = false;
+      logoRetro.visible = true;
+      titleText.visible = true;
+
+      FlxG.camera.flash(FlxColor.WHITE, 3);
+
+      if (credGroup != null) remove(credGroup);
+      skippedIntro = true;
+    }
+  }
+
+  function cancelTweens():Void {
+    for (tween in logoTweens) {
+      if (tween != null) tween.cancel();
+    }
+    logoTweens = [];
+
+    for (tween in teamLogoTweens) {
+      if (tween != null) tween.cancel();
+    }
+    teamLogoTweens = [];
+  }
+}

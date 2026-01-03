@@ -213,7 +213,7 @@ class RetroGameUI extends Module {
       var k = event.note.noteData.kind;
       var hurtNotes:Array<String> = ['poison', 'izzyNote', 'chain', 'autoChain', 'Hydra', 'Fake Note'];
       if (hurtNotes.contains[k] || !event.note.alive || k == 'autoChain') return; // por algum motivo o autoChain ainda passa nesse evento, então precisamos especificar ele
-      updateJudgement('miss', event.score, event.isComboBreak);
+      updateJudgement('miss', event.score, true);
     }
   }
 

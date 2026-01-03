@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="apps.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="atrocean0000" x="0" y="276" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mouseatrocean0001" x="0" y="0" width="64" height="64"/>
+	<SubTexture name="pressatrocean0002" x="69" y="0" width="64" height="64"/>
+
+	<SubTexture name="config0000" x="201" y="343" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mouseconfig0001" x="138" y="207" width="64" height="64"/>
+	<SubTexture name="pressconfig0002" x="207" y="207" width="64" height="64"/>
+
+	<SubTexture name="dozirc0000" x="67" y="276" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mousedozirc0001" x="138" y="0" width="64" height="64"/>
+	<SubTexture name="pressdozirc0002" x="207" y="0" width="64" height="64"/>
+
+	<SubTexture name="hivemine0000" x="134" y="276" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mousehivemine0001" x="0" y="69" width="64" height="64"/>
+	<SubTexture name="presshivemine0002" x="69" y="69" width="64" height="64"/>
+
+	<SubTexture name="insatian0000" x="201" y="276" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mouseinsatian0001" x="138" y="69" width="64" height="64"/>
+	<SubTexture name="pressinsatian0002" x="207" y="69" width="64" height="64"/>
+
+	<SubTexture name="izzy0000" x="0" y="343" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mouseizzy0001" x="0" y="138" width="64" height="64"/>
+	<SubTexture name="pressizzy0002" x="69" y="138" width="64" height="64"/>
+
+	<SubTexture name="retro0000" x="67" y="343" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mouseretro0001" x="138" y="138" width="64" height="64"/>
+	<SubTexture name="pressretro0002" x="207" y="138" width="64" height="64"/>
+
+	<SubTexture name="saku0000" x="134" y="343" width="62" height="62" frameX="-1" frameY="-1" frameWidth="64" frameHeight="64"/>
+	<SubTexture name="mousesaku0001" x="0" y="207" width="64" height="64"/>
+	<SubTexture name="presssaku0002" x="69" y="207" width="64" height="64"/>
+</TextureAtlas>

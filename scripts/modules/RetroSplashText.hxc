@@ -1,8 +1,3 @@
-/**
- * I found this script on this mod: https://gamebanana.com/mods/511838
- * Credits to them
- */
-
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -19,7 +14,7 @@ import funkin.modding.module.ModuleHandler;
 
 class RetroSplashText extends Module
 {
-  public var retroVNUM:String = '1.0.0';
+  public var retroV:String = '1.0.0';
 
   public function new()
   {
@@ -32,8 +27,10 @@ class RetroSplashText extends Module
 
       if (ReflectUtil.getClassNameOf(FlxG.state) == "funkin.ui.mainmenu.MainMenuState")
       {
-          FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port - v" + retroVNUM;
-          FlxG.state.leftWatermarkText.y = FlxG.height - 35;
+          FlxG.state.leftWatermarkText.font = Paths.font('Bebas-Regular.ttf');
+          FlxG.state.leftWatermarkText.size = 20;
+          FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port - v" + retroV;
+          FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight;
       }
   }
 }

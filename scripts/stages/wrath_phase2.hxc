@@ -27,6 +27,7 @@ class WrathPhase2Stage extends Stage
 
   // Variables
   var hasCreatedStage:Bool = false;
+  var hasRefreshedProps:Bool = false;
   var isSpectral:Bool = false;
   var isEctospasm:Bool = false;
   var optimize:Bool = false; // Lógica de otimização (false = criar todos os props)
@@ -348,7 +349,7 @@ class WrathPhase2Stage extends Stage
         crack.active = true;
       }
 
-      PlayState.instance.add(crack);
+      //PlayState.instance.add(crack); don't add yet cuz zindex, we do it on onUpdate
 
       // Crack 2 (only for Spectral in story mode)
       if (isSpectral && PlayState.instance.isStoryMode) {
@@ -361,7 +362,7 @@ class WrathPhase2Stage extends Stage
         crack_2.x += -100;
         crack_2.y += 600 + crackOffset;
         crack_2.alpha = 0;
-        PlayState.instance.add(crack_2);
+        //PlayState.instance.add(crack_2); don't add yet cuz zindex, we do it on onUpdate
       }
 
       // Front Rocks
@@ -500,6 +501,17 @@ class WrathPhase2Stage extends Stage
     if (PlayState.instance == null) return;
     var songPos = Conductor.instance.songPosition / 1000;
 
+    //zindex here is still broken idk how to fix it
+    if (!hasRefreshedProps) {
+      hasRefreshedProps = true;
+
+      crack.zIndex = getDad().zIndex - 1;
+      PlayState.instance.add(crack);
+      if (isSpectral && PlayState.instance.isStoryMode) crack_2.zIndex = getDad().zIndex - 1;
+      if (isSpectral && PlayState.instance.isStoryMode) PlayState.instance.add(crack_2);
+      PlayState.instance.refresh();
+    }
+
     // Crystal floating animation
     for (i in 0...crystals.length) {
       if (crystals[i] == null || !hasPlayedInGameCutscene) continue;
@@ -623,8 +635,7 @@ class WrathPhase2Stage extends Stage
     isModcharting = false;
     PlayState.instance.camHUD.angle = 0;
     PlayState.instance.playerStrumline.y = ogStrumY;
-    // there's a glitch after restating the song which makes the stage props flicker rapidly when the camera changes, being really dangerous to photosensitive people. we need to reset the state so this goes away and no one gets harmed.
-    FlxG.resetState();
+    //FlxG.resetState(); // ummm no
   }
 
   function buildProps(hide:Bool = false):Void

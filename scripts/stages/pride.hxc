@@ -1,8 +1,11 @@
 import flixel.FlxG;
 import flixel.math.FlxAngle;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import flixel.addons.display.FlxRuntimeShader;
 import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
 import funkin.graphics.shaders.DropShadowShader;
 import openfl.filters.ShaderFilter;
 import funkin.play.character.CharacterType;
@@ -17,6 +20,7 @@ class prideStage extends Stage
   var shaderColor = 0xFFaad2ff; // #f5f5f5ff #aad2ffff
 
   var shadersInit:Bool = false;
+  var overlay:StageProp;
 
   function new()
   {
@@ -83,6 +87,17 @@ class prideStage extends Stage
   override public function onSongLoaded(event:ScriptEvent)
   {
     super.onSongLoaded(event);
+    if (overlay == null) {
+      // Overlay
+      overlay = FunkinSprite.create(0, 0);
+      overlay.loadTexture('pride/dust_fuck');
+      //overlay.screenCenter();
+      overlay.scrollFactor.set(0.15, 0);
+      overlay.blend = 12; //screen
+      overlay.cameras = [PlayState.instance.camGame];
+      PlayState.instance.add(overlay);
+    }
+
     //godraysShader = new FlxRuntimeShader(Paths.frag('godrays-screen'));
 
     // Define a posição inicial da luz
