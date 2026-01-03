@@ -41,8 +41,6 @@ class RetroTitleState extends MusicBeatState
   public static var initialized:Bool = false;
 
   var blackScreen:FlxSprite;
-  var credGroup:Array<AtlasText>;
-  var textGroup:Array<AtlasText>;
   var team:FlxSprite;
 
   var textSprites:Array<AtlasText> = [];
@@ -71,6 +69,9 @@ class RetroTitleState extends MusicBeatState
   }
 
   var logoRetro:FlxSprite;
+  var upFire:FlxSprite;
+  var backFire:FlxSprite;
+  var glow:FlxSprite;
   var outlineShaderShit:TitleOutline;
 
   var gfDance:FlxSpriteOverlay;
@@ -90,17 +91,51 @@ class RetroTitleState extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
+    var logoYOff = -10;
     logoRetro = new FlxSprite(0, 0);
     logoRetro.frames = Paths.getSparrowAtlas('ui/logo');
     logoRetro.animation.addByPrefix('loop', 'logo0', 24);
     logoRetro.animation.play('loop');
-    logoRetro.setGraphicSize(Std.int(logoRetro.width * 0.9));
+    //logoRetro.setGraphicSize(Std.int(logoRetro.width * 0.9));
     logoRetro.screenCenter();
-    logoRetro.y -= 10;
+    logoRetro.y += logoYOff;
     logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
     logoRetro.updateHitbox();
     logoRetro.visible = false;
+    
+    upFire = logoRetro.clone();
+    upFire.animation.addByPrefix('loop', 'upFire0', 24);
+    upFire.animation.play('loop');
+    upFire.screenCenter();
+    upFire.y += logoYOff;
+    upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
+    upFire.updateHitbox();
+    upFire.visible = false;
+    
+    backFire = logoRetro.clone();
+    backFire.animation.addByPrefix('loop', 'backFire0', 24);
+    backFire.animation.play('loop');
+    backFire.screenCenter();
+    backFire.y += logoYOff;
+    backFire.x = (FlxG.width / 2) - (logoRetro.width / 2);
+    backFire.updateHitbox();
+    backFire.visible = false;
+    
+    glow = logoRetro.clone();
+    glow.animation.addByPrefix('loop', 'glow0', 1);
+    glow.animation.play('loop');
+    glow.screenCenter();
+    glow.y += logoYOff;
+    glow.x = (FlxG.width / 2) - (logoRetro.width / 2);
+    glow.updateHitbox();
+    glow.alpha = 0;
+    glow.visible = false;
+    
+    // add logo
+    add(backFire);
     add(logoRetro);
+    add(upFire);
+    add(glow);
 
     if (FlxG.onMobile) {
     titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
@@ -117,7 +152,7 @@ class RetroTitleState extends MusicBeatState
     // titleText.screenCenter(X);
     add(titleText);
 
-    textGroup = [];
+    //textGroup = [];
 
     blackScreen = bg.clone();
 
@@ -188,15 +223,6 @@ class RetroTitleState extends MusicBeatState
 
     Conductor.instance.update();
 
-    /* if (FlxG.onMobile)
-          {
-      if (gfDance != null)
-      {
-        gfDance.x = (FlxG.width / 2) + (FlxG.accelerometer.x * (FlxG.width / 2));
-        // gfDance.y = (FlxG.height / 2) + (FlxG.accelerometer.y * (FlxG.height / 2));
-      }
-          }
-     */
     if (outlineShaderShit != null)
     {
       if (FlxG.keys.justPressed.I)
@@ -248,6 +274,7 @@ class RetroTitleState extends MusicBeatState
       FlxG.camera.flash(FlxColor.WHITE, 1);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
+      bumpLogo();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
         moveToMainMenu();
@@ -363,12 +390,51 @@ class RetroTitleState extends MusicBeatState
       }
       lastBeat = Conductor.instance.currentBeat;
     }
-    if (skippedIntro)
+    if (skippedIntro && !transitioning)
     {
       // logo anims here
+      bumpLogo();
     }
 
     return true;
+  }
+  
+  function bumpLogo() {
+      var backDelay = transitioning ? 0.35 : 0;
+      cancelTweens();
+      var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
+      var baseScale:Float = 0.95;
+      var bumpScale:Float = 1;
+      for (obj in objects) {
+      obj.scale.x = baseScale;
+      obj.scale.y = baseScale;
+      logoTweens.push(
+        FlxTween.tween(obj.scale, {x: bumpScale, y: bumpScale}, 0.05, {
+          ease: FlxEase.quartOut,
+          onComplete: function(twn:FlxTween) {
+            logoTweens.push(
+              FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, 0.3 + backDelay, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
+    }
+    // glow (precisa de ajustes pra ficar mais parecido com o original
+    logoTweens.push(
+        FlxTween.tween(glow, {alpha: 1}, 0.03, {
+          ease: FlxEase.quartOut,
+          onComplete: function(twn:FlxTween) {
+            if (transitioning) return;
+            logoTweens.push(
+              FlxTween.tween(glow, {alpha: 0}, 0.6 + backDelay, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
   }
 
   function skipIntro():Void
@@ -380,11 +446,12 @@ class RetroTitleState extends MusicBeatState
       remove(team);
       team.visible = false;
       logoRetro.visible = true;
+      upFire.visible = true;
+      backFire.visible = true;
+      glow.visible = true;
       titleText.visible = true;
 
       FlxG.camera.flash(FlxColor.WHITE, 3);
-
-      if (credGroup != null) remove(credGroup);
       skippedIntro = true;
     }
   }
