@@ -12,75 +12,61 @@
   },
   "offsets": [-1090, -1590],
   "cameraOffsets": [0, 0],
-  "atlasSettings": {
-    "applyStageMatrix": true
-  },
   "animations": [
     {
       "looped": true,
       "name": "idle",
       "prefix": "!Anims/!Phase 4 Anims Together/Phase 4 Idle",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "singLEFT",
       "prefix": "!Anims/!Phase 4 Anims Together/Phase 4 Left",
-      "animType": "symbol",
       "offsets": [-640, 0]
     },
     {
       "name": "singRIGHT",
       "prefix": "!Anims/!Phase 4 Anims Together/Phase 4 Right",
-      "animType": "symbol",
       "offsets": [500, 0]
     },
     {
       "name": "singDOWN",
       "prefix": "!Anims/!Phase 4 Anims Together/Phase 4 Down",
-      "animType": "symbol",
       "offsets": [0, 450]
     },
     {
       "name": "singUP",
       "prefix": "!Anims/!Phase 4 Anims Together/Phase 4 Up",
-      "animType": "symbol",
       "offsets": [-80, -250]
     },
     {
       "name": "bigDisgrace",
       "prefix": "Speaking/BigDisgrace/BigDisgrace",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "tryYourBones",
       "prefix": "Speaking/Bones/TryYourBones",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "leaveNow",
       "prefix": "Speaking/LEAVE NOW/Catastro_LeaveNow",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "passDeez",
       "prefix": "Speaking/PassThese/PassDeeznuts",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "thisMeansWar",
       "prefix": "Speaking/ThisMeansWar/ThisMeansWar",
-      "animType": "symbol",
       "offsets": [0, 0]
     },
     {
       "name": "mudaChild",
       "prefix": "Speaking/Useless Child/Useless Child",
-      "animType": "symbol",
       "offsets": [0, 0]
     }
   ],

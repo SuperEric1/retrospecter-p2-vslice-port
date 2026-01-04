@@ -2,9 +2,12 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Preferences;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
 import funkin.ui.options.OptionsState;
 import funkin.modding.module.Module;
 import funkin.modding.events.ScriptEvent;
@@ -17,10 +20,12 @@ class RetroOptionsState extends Module
 {
   var bgPath:String = "ui/menu/options/WinDOZ";
   var imagePath:String = "ui/menu/options/";
-  var curAnim:String = 'PREFERENCES';
+  var curAnim:String = 'anims/default';
   var curPage:String = 'options';
   var buttonPosX:Float = 45;
 
+  var backBgAlpha:Float = 0.4;
+  var backBg:FlxSprite;
   var dozirc:FlxAtlasSprite;
   var dozircShadow:FlxAtlasSprite;
   var overlay:FlxSprite;
@@ -38,8 +43,15 @@ class RetroOptionsState extends Module
 
   public function buildSprites():Void
   {
+    backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+    backBg.screenCenter();
+    backBg.alpha = backBgAlpha;
+    backBg.scrollFactor.set(0, 0);
+    backBg.visible = false;
+
     dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozirc.setGraphicSize(Std.int(dozirc.width * 0.9));
+    dozirc.animation.play('anims/default', false, false, true);
     dozirc.scrollFactor.set(0, 0);
     dozirc.visible = true;
     dozirc.x += (FlxG.width / 2) - 180;
@@ -58,18 +70,18 @@ class RetroOptionsState extends Module
     if (dozircShadow != null) dozircShadow.alpha = 0;
     dozircShadow.updateHitbox();
 
-    overlay = new FlxSprite(0, 0);
-    overlay.loadGraphic(Paths.image(imagePath + "overlay"));
-    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.07));
-    overlay.scrollFactor.set(0, 0);
-    overlay.visible = true;
-    overlay.screenCenter();
-
     windozText = new FlxText(0, 0, 0, 'WinDOZ', 55);
     windozText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 55, 0xFFFFFFFF, 'center');
     windozText.fieldWidth = FlxG.width;
     windozText.screenCenter(0x01);
     windozText.y = 565;
+    
+    overlay = new FlxSprite(0, 0).loadGraphic(Paths.image(imagePath + "overlay"));
+    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.07));
+    overlay.scrollFactor.set(0, 0);
+    overlay.visible = true;
+    overlay.screenCenter();
+
   }
 
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void
@@ -78,16 +90,34 @@ class RetroOptionsState extends Module
     {
       if (!event.targetState.members.contains(dozirc))
       {
-        loadDebugElements();
+        //loadDebugElements();
         buildSprites();
         event.targetState.insert(1, windozText);
-        event.targetState.insert(2, dozirc);
-        event.targetState.insert(3, dozircShadow);
+        event.targetState.insert(2, backBg);
+        event.targetState.insert(3, dozirc);
+        event.targetState.insert(4, dozircShadow);
         event.targetState.add(overlay);
-        event.targetState.add(debugText);
+        if (debugText != null) event.targetState.add(debugText);
         hasBuilt = true;
+        playMenuMusic();
       }
     }
+  }
+
+  function playMenuMusic():Void
+  {
+    var shouldFadeIn:Bool = (FlxG.sound.music == null);
+    // Load music. Includes logic to handle BPM changes.
+    FunkinSound.playMusic('optionsMenu',
+      {
+        startingVolume: 0.0,
+        overrideExisting: true,
+        restartTrack: false,
+        // Continue playing this music between states, until a different music track gets played.
+        persist: false
+      });
+    // Fade from 0.0 to 1 over 4 seconds
+    if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
 
   override function onUpdate(event:ScriptEvent):Void
@@ -127,12 +157,14 @@ class RetroOptionsState extends Module
             curAnim = '';
           }
 
-          if (currentPageName == 'options') handleOptionsPage(optionsState);
-          else if (currentPageName == 'preferences') handlePreferencesPage(optionsState);
-          else if (currentPageName == 'controls') handleControlsPage(optionsState);
-          else
-          {
-            if (dozirc != null && curAnim != 'default') playMenuAnim('default');
+          if (currentPageName == 'options') {
+            handleOptionsPage(optionsState);
+          } else if (currentPageName == 'preferences') {
+            handlePreferencesPage(optionsState);
+          } else if (currentPageName == 'controls') {
+            handleControlsPage(optionsState);
+          } else {
+            if (dozirc != null) playMenuAnim('default');
           }
         }
         catch (e:Dynamic)
@@ -147,6 +179,7 @@ class RetroOptionsState extends Module
   {
     // Usamos @:privateAccess novamente para garantir acesso aos internos
     @:privateAccess {
+      if (backBg != null) { backBg.visible = false; backBg.alpha = backBgAlpha; }
       var codex = optionsState.optionsCodex;
       var pages = codex.pages;
 
@@ -164,11 +197,11 @@ class RetroOptionsState extends Module
 
       if (debugText != null) debugText.text = 'OPTIONS: ' + itemName;
 
-      if (itemName != curAnim)
-      {
-        if (dozircShadow != null) dozircShadow.alpha = 0;
-        playMenuAnim(itemName);
-      }
+      //if (itemName != curAnim)
+      //{
+      if (dozircShadow != null) dozircShadow.alpha = 0;
+      playMenuAnim(itemName);
+      //}
 
       // Ajusta posição dos itens
       var members:Array<Dynamic> = items.members;
@@ -192,6 +225,7 @@ class RetroOptionsState extends Module
   function handlePreferencesPage(optionsState:OptionsState):Void
   {
     @:privateAccess {
+      if (backBg != null) { backBg.visible = true; backBg.alpha = backBgAlpha; }
       var codex = optionsState.optionsCodex;
       var pages = codex.pages;
       var preferencesPage = pages.get('preferences');
@@ -218,22 +252,19 @@ class RetroOptionsState extends Module
 
   function handleControlsPage(optionsState:OptionsState):Void
   {
-      if (debugText != null) debugText.text = 'CONTROLS PAGE';
-      if (dozirc != null && curAnim != 'controls-page')
-      {
-        if (dozircShadow != null) dozircShadow.alpha = 0;
-        curAnim = 'controls-page';
-        dozirc.animation.play('anims/controls', false, false, true);
-      }
+    if (backBg != null) { backBg.visible = true; backBg.alpha = backBgAlpha + 0.3; }
+    if (dozirc != null && curAnim != 'controls-page')
+    {
+      if (dozircShadow != null) dozircShadow.alpha = 0;
+      curAnim = 'controls-page';
+      dozirc.animation.play('anims/controls', false, false, true);
+    }
+    if (debugText != null) debugText.text = 'CONTROLS PAGE';
   }
 
   function playMenuAnim(name:String):Void
   {
     if (dozirc == null) return;
-    var nameLower:String = name.toLowerCase();
-    var curAnimLower:String = curAnim.toLowerCase();
-
-    if (nameLower != curAnimLower) tweenDozirc();
 
     var nameUpper:String = name.toUpperCase();
     var animName:String = 'anims/default';
@@ -243,18 +274,12 @@ class RetroOptionsState extends Module
       case 'LAG ADJUSTMENT': animName = 'anims/confused';
     }
 
-    curAnim = name;
-    dozirc.animation.play(animName, false, false, true);
+    playAnimIfDifferent(animName);
   }
 
   function playPreferencesAnim(itemName:String):Void
   {
-    if (dozirc == null) return;
-    var nameLower:String = itemName.toLowerCase();
-    var curAnimLower:String = curAnim.toLowerCase();
-
-    if (nameLower != curAnimLower) tweenDozirc();
-
+    if (dozirc == null || dozircShadow == null) return;
     var nameUpper:String = itemName.toUpperCase();
     var animName:String = 'anims/default';
 
@@ -268,8 +293,20 @@ class RetroOptionsState extends Module
     //else if (nameUpper == 'SONG LENGTH') animName = Preferences.songLength ? 'anims/booba' : 'anims/clock';
     //else if (nameUpper == 'MECHANICS') animName = 'anims/online';
 
-    curAnim = itemName;
-    dozirc.animation.play(animName, false, false, true);
+    playAnimIfDifferent(animName);
+  }
+
+  function playAnimIfDifferent(animName:String):Void
+  {
+    if (dozirc == null) return;
+
+    if (animName != curAnim)
+    {
+      if (dozircShadow != null) dozircShadow.alpha = 0;
+      tweenDozirc();
+      curAnim = animName;
+      dozirc.animation.play(animName, false, false, true);
+    }
   }
 
   function tweenDozirc():Void

@@ -11,39 +11,21 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     super('phase4');
   }
 
-  // Map para armazenar offsets de cada animação
-  //var animOffsets:haxe.ds.StringMap<String, Array<Float>> = new haxe.ds.StringMap();
-
-  // Offset atual sendo aplicado
-  var currentOffset:Array<Float> = [0, 0];
-
-  function setupAnimationOffsets():Void
-  {
-    // Define os offsets para cada animação
+  /*
     animOffsets.set('idle', [0, 0]);
     animOffsets.set('singLEFT', [-640, 0]);
     animOffsets.set('singDOWN', [0, 450]);
     animOffsets.set('singUP', [-80, -250]);
     animOffsets.set('singRIGHT', [500, 0]);
 
-    // Offsets para animações de cutscene (se precisar ajustar)
-    //animOffsets.set('bigDisgrace', [0, 0]);
-    //animOffsets.set('tryYourBones', [0, 0]);
     animOffsets.set('leaveNow', [500, 100]);
-    //animOffsets.set('passDeez', [0, 0]);
-    //animOffsets.set('thisMeansWar', [0, 0]);
-    //animOffsets.set('mudaChild', [0, 0]);
-  }
+  */
 
   function onCreate(event:ScriptEvent)
   {
     super.onCreate(event);
-
     this.danceEvery = 0;
     this.antialiasing = true;
-
-    // Define os offsets de cada animação
-    //setupAnimationOffsets();
 
     this.playAnimation('idle', true, false);
     this.updateHitbox();
@@ -65,7 +47,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
 		super.onNoteHit(event);
 	}
 
-  override function onSongRetry()
+  /*override function onSongRetry()
   {
     super.onSongRetry();
     playIdleAnim();
@@ -76,65 +58,14 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     super.onAnimationFinished(name);
   }
 
-  // SOBRESCREVE playAnimation para aplicar offsets no mainSprite
   override public function playAnimation(name:String, restart:Bool = false, ignoreOther:Bool = false, reverse:Bool = false):Void
   {
     super.playAnimation(name, restart, ignoreOther, reverse);
 
-    // Aplica o offset correto
-    //applyOffset(name);
-  }
-
-  // Aplica o offset movendo APENAS o mainSprite
-  function applyOffset(animName:String):Void
-  {
-    // Pega o offset desta animação
-    if (animOffsets.exists(animName))
-    {
-      currentOffset = animOffsets.get(animName);
-    }
-    else
-    {
-      currentOffset = [0, 0];
-    }
-
-    // Move APENAS o mainSprite, não o BaseCharacter inteiro
-    if (this.mainSprite != null)
-    {
-      this.mainSprite.x = this.x + currentOffset[0];
-      this.mainSprite.y = this.y + currentOffset[1];
-    }
-  }
-
-  // Quando o BaseCharacter move (ex: pelo stage), o mainSprite acompanha
-  override function set_x(value:Float):Float
-  {
-    var result = super.set_x(value);
-
-    // Sincroniza o mainSprite mantendo o offset
-    if (this.mainSprite != null)
-    {
-      this.mainSprite.x = value + currentOffset[0];
-    }
-
-    return result;
-  }
-
-  override function set_y(value:Float):Float
-  {
-    var result = super.set_y(value);
-
-    // Sincroniza o mainSprite mantendo o offset
-    if (this.mainSprite != null)
-    {
-      this.mainSprite.y = value + currentOffset[1];
-    }
-
-    return result;
   }
 
   function playIdleAnim()
   {
     this.playAnimation('idle', false, false);
-  }
+  }*/
 }
