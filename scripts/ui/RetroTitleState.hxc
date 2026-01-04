@@ -214,7 +214,7 @@ class RetroTitleState extends MusicBeatState
 
   override function update(elapsed:Float):Void
   {
-    FlxG.bitmapLog.add(FlxG.camera.buffer);
+    //FlxG.bitmapLog.add(FlxG.camera.buffer);
 
     #if (desktop || android)
     // Pressing BACK on the title screen should close the game.
@@ -430,7 +430,7 @@ class RetroTitleState extends MusicBeatState
       })
     );
   }
-  // glow (precisa de ajustes pra ficar mais parecido com o original
+  // glow
   if (hasShownShadow) return; // retornar se estiver mostrando a sombra
   logoTweens.push(
       FlxTween.tween(glow, {alpha: 1}, 0.03, {

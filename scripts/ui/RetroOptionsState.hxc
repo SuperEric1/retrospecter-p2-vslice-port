@@ -1,0 +1,323 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Preferences;
+import funkin.ui.options.OptionsState;
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.Paths;
+import Std;
+
+class RetroOptionsState extends Module
+{
+  var bgPath:String = "ui/menu/options/WinDOZ";
+  var imagePath:String = "ui/menu/options/";
+  var curAnim:String = 'PREFERENCES';
+  var curPage:String = 'options';
+  var buttonPosX:Float = 45;
+
+  var dozirc:FlxAtlasSprite;
+  var dozircShadow:FlxAtlasSprite;
+  var overlay:FlxSprite;
+  var windozText:FlxText;
+  var debugText:FlxText;
+  var hasBuilt:Bool = false;
+
+  var dozircTweens:Array<FlxTween> = [];
+  var dozircY:Float = 0;
+
+  public function new()
+  {
+    super("RetroOptionsState");
+  }
+
+  public function buildSprites():Void
+  {
+    dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
+    dozirc.setGraphicSize(Std.int(dozirc.width * 0.9));
+    dozirc.scrollFactor.set(0, 0);
+    dozirc.visible = true;
+    dozirc.x += (FlxG.width / 2) - 180;
+    dozirc.y += FlxG.height / 2 - 150;
+    dozircY = dozirc.y;
+    dozirc.updateHitbox();
+    playMenuAnim('default');
+
+    dozircShadow = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
+    dozircShadow.setGraphicSize(Std.int(dozircShadow.width * 0.9));
+    dozircShadow.animation.play('anims/black', false, false, true);
+    dozircShadow.scrollFactor.set(0, 0);
+    dozircShadow.visible = true;
+    dozircShadow.x = dozirc.x;
+    dozircShadow.y = dozirc.y;
+    if (dozircShadow != null) dozircShadow.alpha = 0;
+    dozircShadow.updateHitbox();
+
+    overlay = new FlxSprite(0, 0);
+    overlay.loadGraphic(Paths.image(imagePath + "overlay"));
+    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.07));
+    overlay.scrollFactor.set(0, 0);
+    overlay.visible = true;
+    overlay.screenCenter();
+
+    windozText = new FlxText(0, 0, 0, 'WinDOZ', 55);
+    windozText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 55, 0xFFFFFFFF, 'center');
+    windozText.fieldWidth = FlxG.width;
+    windozText.screenCenter(0x01);
+    windozText.y = 565;
+  }
+
+  public function onStateChangeEnd(event:StateChangeScriptEvent):Void
+  {
+    if (Std.isOfType(event.targetState, OptionsState))
+    {
+      if (!event.targetState.members.contains(dozirc))
+      {
+        loadDebugElements();
+        buildSprites();
+        event.targetState.insert(1, windozText);
+        event.targetState.insert(2, dozirc);
+        event.targetState.insert(3, dozircShadow);
+        event.targetState.add(overlay);
+        event.targetState.add(debugText);
+        hasBuilt = true;
+      }
+    }
+  }
+
+  override function onUpdate(event:ScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (FlxG.state == null) return;
+
+    if (Std.isOfType(FlxG.state, OptionsState))
+    {
+      var optionsState:OptionsState = FlxG.state;
+
+      // Isso permite acessar tudo dentro de OptionsState mesmo sendo privado
+      @:privateAccess {
+        var bg = optionsState.members[0];
+        if (bg != null && Std.isOfType(bg, FlxSprite)) {
+           var bgSprite:FlxSprite = bg;
+           if (bgSprite.graphic != null && bgSprite.graphic.key != Paths.image(bgPath))
+           {
+             bgSprite.loadGraphic(Paths.image(bgPath));
+             bgSprite.setGraphicSize(Std.int(FlxG.width * 1));
+             bgSprite.shader = null;
+           }
+        }
+
+        if (dozirc != null) dozirc.zIndex = 0;
+
+        try
+        {
+          var codex = optionsState.optionsCodex;
+          var currentPageName:String = codex.currentName;
+
+          if (currentPageName != curPage)
+          {
+            trace('Mudou para página: ' + currentPageName);
+            curPage = currentPageName;
+            curAnim = '';
+          }
+
+          if (currentPageName == 'options') handleOptionsPage(optionsState);
+          else if (currentPageName == 'preferences') handlePreferencesPage(optionsState);
+          else if (currentPageName == 'controls') handleControlsPage(optionsState);
+          else
+          {
+            if (dozirc != null && curAnim != 'default') playMenuAnim('default');
+          }
+        }
+        catch (e:Dynamic)
+        {
+          throw('Erro ao processar pagina: ' + e);
+        }
+      }
+    }
+  }
+
+  function handleOptionsPage(optionsState:OptionsState):Void
+  {
+    // Usamos @:privateAccess novamente para garantir acesso aos internos
+    @:privateAccess {
+      var codex = optionsState.optionsCodex;
+      var pages = codex.pages;
+
+      var optionsPage = pages.get('options');
+
+      if (optionsPage == null) return;
+
+      var items = optionsPage.items;
+      if (items == null) return;
+
+      var selectedItem = items.selectedItem;
+      if (selectedItem == null) return;
+
+      var itemName:String = selectedItem.name;
+
+      if (debugText != null) debugText.text = 'OPTIONS: ' + itemName;
+
+      if (itemName != curAnim)
+      {
+        if (dozircShadow != null) dozircShadow.alpha = 0;
+        playMenuAnim(itemName);
+      }
+
+      // Ajusta posição dos itens
+      var members:Array<Dynamic> = items.members;
+      if (members != null)
+      {
+        for (item in members)
+        {
+          if (item != null)
+          {
+            item.x = buttonPosX;
+            if (item.label != null)
+            {
+              item.label.x = buttonPosX;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  function handlePreferencesPage(optionsState:OptionsState):Void
+  {
+    @:privateAccess {
+      var codex = optionsState.optionsCodex;
+      var pages = codex.pages;
+      var preferencesPage = pages.get('preferences');
+
+      if (preferencesPage == null) return;
+
+      var prefItems = preferencesPage.items;
+      if (prefItems == null) return;
+
+      var selectedItem = prefItems.selectedItem;
+      if (selectedItem == null) return;
+
+      var itemName:String = selectedItem.name;
+
+      if (debugText != null) debugText.text = 'PREFS: ' + itemName;
+
+      if (itemName != curAnim)
+      {
+        if (dozircShadow != null) dozircShadow.alpha = 0;
+        playPreferencesAnim(itemName);
+      }
+    }
+  }
+
+  function handleControlsPage(optionsState:OptionsState):Void
+  {
+      if (debugText != null) debugText.text = 'CONTROLS PAGE';
+      if (dozirc != null && curAnim != 'controls-page')
+      {
+        if (dozircShadow != null) dozircShadow.alpha = 0;
+        curAnim = 'controls-page';
+        dozirc.animation.play('anims/controls', false, false, true);
+      }
+  }
+
+  function playMenuAnim(name:String):Void
+  {
+    if (dozirc == null) return;
+    var nameLower:String = name.toLowerCase();
+    var curAnimLower:String = curAnim.toLowerCase();
+
+    if (nameLower != curAnimLower) tweenDozirc();
+
+    var nameUpper:String = name.toUpperCase();
+    var animName:String = 'anims/default';
+
+    switch(nameUpper) {
+      case 'CONTROLS': animName = 'anims/controls';
+      case 'LAG ADJUSTMENT': animName = 'anims/confused';
+    }
+
+    curAnim = name;
+    dozirc.animation.play(animName, false, false, true);
+  }
+
+  function playPreferencesAnim(itemName:String):Void
+  {
+    if (dozirc == null) return;
+    var nameLower:String = itemName.toLowerCase();
+    var curAnimLower:String = curAnim.toLowerCase();
+
+    if (nameLower != curAnimLower) tweenDozirc();
+
+    var nameUpper:String = itemName.toUpperCase();
+    var animName:String = 'anims/default';
+
+    if (nameUpper == 'DOWNSCROLL') animName = Preferences.downscroll ? 'anims/down' : 'anims/up';
+    else if (nameUpper == 'NAUGHTYNESS' && Preferences.naughtyness) animName = 'anims/evil';
+    else if (nameUpper == 'STRUMLINE BACKGROUND') dozircShadow.alpha = Preferences.strumlineBackgroundOpacity / 100;
+    else if (nameUpper == 'FPS') animName = 'anims/signAlone'; // TODO: adicionar texto de FPS na placa
+    else if (nameUpper == 'FLASHING LIGHTS' && Preferences.flashingLights) animName = 'anims/glasses';
+    else if (nameUpper == 'LAUNCH IN FULLSCREEN') animName = Preferences.autoFullscreen ? 'anims/signAlone' : 'anims/signSmol';
+    //else if (nameUpper == 'SUGGESTIVE CONTENT') animName = 'anims/oops';
+    //else if (nameUpper == 'SONG LENGTH') animName = Preferences.songLength ? 'anims/booba' : 'anims/clock';
+    //else if (nameUpper == 'MECHANICS') animName = 'anims/online';
+
+    curAnim = itemName;
+    dozirc.animation.play(animName, false, false, true);
+  }
+
+  function tweenDozirc():Void
+  {
+    if (dozirc == null || dozircShadow == null) return;
+    cancelTweens();
+
+    var targetY:Float = 10;
+    var time:Float = 0.05;
+    dozirc.y = dozircY;
+    dozircShadow.y = dozircY;
+    var objects = [dozirc, dozircShadow];
+    for (obj in objects) {
+      dozircTweens.push(
+        FlxTween.tween(obj, {y: dozircY + targetY}, time, {
+          ease: FlxEase.quartOut,
+          onComplete: function(twn:FlxTween) {
+            dozircTweens.push(
+              FlxTween.tween(obj, {y: dozircY}, time, {
+                ease: FlxEase.quadOut
+              })
+            );
+          }
+        })
+      );
+    }
+  }
+
+  function cancelTweens():Void
+  {
+    for (tween in dozircTweens)
+    {
+      if (tween != null) tween.cancel();
+    }
+    dozircTweens = [];
+  }
+
+  function loadDebugElements():Void
+  {
+    if (debugText != null) return;
+
+    debugText = new FlxText(0, 0, 0, '', 30);
+    debugText.setFormat(Paths.font('vcr.ttf'), 30, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    debugText.borderSize = 3;
+    debugText.fieldWidth = FlxG.width;
+    debugText.screenCenter(0x01);
+    debugText.y = 670;
+    debugText.scrollFactor.set(0, 0);
+    debugText.visible = true;
+  }
+}

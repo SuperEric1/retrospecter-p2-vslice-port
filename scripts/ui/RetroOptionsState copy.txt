@@ -1,0 +1,179 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.ui.options.OptionsState;
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.Paths;
+import Std;
+
+class RetroOptionsState extends Module
+{
+  var bgPath:String = "ui/menu/options/WinDOZ";
+  var imagePath:String = "ui/menu/options/";
+  var curAnim:String = 'PREFERENCES';
+  var buttonPosX:Float = 45;
+
+  var dozirc:FlxAtlasSprite;
+  var overlay:FlxSprite;
+  var windozText:FlxText;
+  var debugText:FlxText;
+
+  var dozircTweens:Array<FlxTween> = [];
+  var dozircY:Float = 0;
+
+  public function new()
+  {
+    super("RetroOptionsState");
+  }
+
+  public function buildSprites():Void
+  {
+    dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
+    dozirc.setGraphicSize(Std.int(dozirc.width * 0.9));
+    dozirc.scrollFactor.set(0, 0);
+    dozirc.visible = true;
+    dozirc.x += (FlxG.width / 2) + 100; // qq ta acontecendo
+    dozirc.y += FlxG.height / 2 - 150;
+    dozircY = dozirc.y;
+    dozirc.updateHitbox();
+    playMenuAnim('default');
+
+    overlay = new FlxSprite(0, 0);
+    overlay.loadGraphic(Paths.image(imagePath + "overlay"));
+    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.07));
+    overlay.scrollFactor.set(0, 0);
+    overlay.visible = true;
+    overlay.screenCenter();
+
+    windozText = new FlxText(0, 0, 0, 'WinDOZ', 55);
+    windozText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 55, 0xFFFFFFFF, 'center');
+    windozText.fieldWidth = FlxG.width;
+    windozText.screenCenter(0x01);
+    windozText.y = 565;
+  }
+
+  public function onStateChangeEnd(event:StateChangeScriptEvent):Void
+  {
+    if (Std.isOfType(event.targetState, OptionsState))
+    {
+      if (!event.targetState.members.contains(dozirc))
+      {
+        //loadDebugElements();
+        buildSprites();
+        event.targetState.insert(1, windozText);
+        event.targetState.insert(2, dozirc);
+        event.targetState.add(overlay);
+        event.targetState.add(debugText);
+      }
+    }
+  }
+
+  override function onUpdate(event:ScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (FlxG.state == null) return;
+
+    if (Std.isOfType(FlxG.state, OptionsState))
+    {
+      var optionsState:OptionsState = FlxG.state;
+
+      var bg = optionsState.members[0];
+      if (bg != null && bg?.graphic.key != Paths.image(bgPath))
+      {
+        bg.loadGraphic(Paths.image(bgPath));
+        bg.setGraphicSize(Std.int(FlxG.width * 1));
+        bg.shader = null;
+      }
+
+      if (dozirc != null)
+      {
+        dozirc.zIndex = 0;
+      }
+
+      var optionsPage = optionsState.optionsCodex.pages.get("options");
+      if (optionsPage != null && optionsPage.items != null)
+      {
+        var selectedItem = optionsPage.items.selectedItem;
+        if (selectedItem != null && selectedItem.name != null)
+        {
+          if (debugText != null) debugText.text = selectedItem.name;
+          if (selectedItem.name != curAnim)
+          {
+            if (dozirc != null) playMenuAnim(selectedItem.name);
+          }
+        }
+
+        for (i in 0...optionsPage.items.members.length)
+        {
+          var item = optionsPage.items.members[i];
+          if (item != null && item.label != null)
+          {
+            item.x = buttonPosX;
+            item.label.x = buttonPosX;
+          }
+        }
+      }
+    }
+  }
+
+  function playMenuAnim(name:String):Void {
+    if (dozirc == null) return;
+    if (name.toLowerCase() != curAnim.toLowerCase()) tweenDozirc();
+    switch (name.toLowerCase()) {
+      case 'controls':
+        curAnim = name;
+        dozirc.playAnimation('anims/controls', false, false, true);
+      default:
+        curAnim = 'DEFAULT';
+        dozirc.playAnimation('anims/default', false, false, true);
+    }
+  }
+
+  function tweenDozirc():Void {
+    if (dozirc == null) return;
+    cancelTweens();
+    var targetY:Float = 10;
+    var time:Float = 0.05;
+    dozirc.y = dozircY;
+    dozircTweens.push(
+      FlxTween.tween(dozirc, {y: dozircY + targetY}, time, {
+        ease: FlxEase.quartOut,
+        onComplete: function(twn:FlxTween) {
+          dozircTweens.push(
+            FlxTween.tween(dozirc, {y: dozircY}, time, {
+              ease: FlxEase.quadOut
+            })
+          );
+        }
+      })
+    );
+  }
+
+  function cancelTweens():Void {
+    for (tween in dozircTweens) {
+      if (tween != null) tween.cancel();
+    }
+    dozircTweens = [];
+  }
+
+  function loadDebugElements()
+  {
+    if (debugText) return;
+
+    debugText = new FlxText(0, 0, 0, '', 50);
+    debugText.setFormat(Paths.font('vcr.ttf'), 50, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    debugText.borderSize = 3;
+    debugText.fieldWidth = FlxG.width;
+    debugText.screenCenter(0x01);
+    debugText.y = 630;
+    debugText.scrollFactor.set(0, 0);
+    debugText.visible = true;
+  }
+}

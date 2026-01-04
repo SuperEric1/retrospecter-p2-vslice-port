@@ -22,7 +22,6 @@ import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
 import funkin.util.TouchUtil;

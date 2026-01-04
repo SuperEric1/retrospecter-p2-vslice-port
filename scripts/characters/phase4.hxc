@@ -12,7 +12,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
   }
 
   // Map para armazenar offsets de cada animação
-  var animOffsets:haxe.ds.StringMap<String, Array<Float>> = new haxe.ds.StringMap();
+  //var animOffsets:haxe.ds.StringMap<String, Array<Float>> = new haxe.ds.StringMap();
 
   // Offset atual sendo aplicado
   var currentOffset:Array<Float> = [0, 0];
@@ -43,7 +43,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     this.antialiasing = true;
 
     // Define os offsets de cada animação
-    setupAnimationOffsets();
+    //setupAnimationOffsets();
 
     this.playAnimation('idle', true, false);
     this.updateHitbox();
@@ -82,7 +82,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     super.playAnimation(name, restart, ignoreOther, reverse);
 
     // Aplica o offset correto
-    applyOffset(name);
+    //applyOffset(name);
   }
 
   // Aplica o offset movendo APENAS o mainSprite
