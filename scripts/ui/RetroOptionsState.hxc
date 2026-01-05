@@ -54,8 +54,8 @@ class RetroOptionsState extends Module
     dozirc.animation.play('anims/default', false, false, true);
     dozirc.scrollFactor.set(0, 0);
     dozirc.visible = true;
-    dozirc.x += (FlxG.width / 2) - 180;
-    dozirc.y += FlxG.height / 2 - 150;
+    dozirc.x = FlxG.width - 850; // (FlxG.width / 2) - 180 /// (FlxG.width * 0.47)
+    dozirc.y = FlxG.height - 500; //(FlxG.height / 2) - 130
     dozircY = dozirc.y;
     dozirc.updateHitbox();
     playMenuAnim('default');
@@ -67,7 +67,7 @@ class RetroOptionsState extends Module
     dozircShadow.visible = true;
     dozircShadow.x = dozirc.x;
     dozircShadow.y = dozirc.y;
-    if (dozircShadow != null) dozircShadow.alpha = 0;
+    dozircShadow.alpha = 0;
     dozircShadow.updateHitbox();
 
     windozText = new FlxText(0, 0, 0, 'WinDOZ', 55);
