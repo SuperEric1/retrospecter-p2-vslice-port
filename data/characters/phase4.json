@@ -10,7 +10,11 @@
     "id": "catastro",
     "scale": 0.75
   },
-  "offsets": [0, 0],
+  "offsets": [1350, 3200],
+  "cameraOffsets": [-250, 0],
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
   "animations": [
     {
       "looped": true,
