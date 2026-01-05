@@ -10,7 +10,7 @@ TODO:
 - [ ] Poison note notesplashes
 - [ ] Encode textures to ASTC
 - [ ] Intro and theme song for settings menu
-- [ ] Tween to the readability background alpha on the settings menu
+- [ ] Tween to the readability background alpha and make mobile back button transparent in the settings menu
 - [ ] Custom main menu and settings menu
 - [ ] Crash in wrath_phase2 after restarting
 - [ ] Hydra note is not pausing when pausing the game
