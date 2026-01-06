@@ -138,6 +138,7 @@ class RetroOptionsState extends Module
       app.scrollFactor.set(0, 0);
       app.x = 90 + gap + (appAnim == "config" ? 5 : 0);
       app.y = y;
+      app.updateHitbox();
       taskBarApps.push(app);
       gap += size + 20;
     }
