@@ -26,7 +26,7 @@ class RetroOptionsState extends Module
   var curAnim:String = 'anims/default';
   var curPage:String = 'options';
   var curText:String = '';
-  var buttonPosX:Float = 45;
+  var buttonPosX:Float = FlxG.onMobile ? 57 : 45;
   var buttonOffsetY:Float = -50;
   var hasChangedButtonPos:Bool = false;
   var isFrontBgFadingIn:Bool = false;
