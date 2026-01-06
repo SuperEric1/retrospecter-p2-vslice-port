@@ -234,13 +234,18 @@ class RetroOptionsState extends Module
           curAnim = '';
         }
 
+        var settingsApp = taskBarApps[7];
         if (currentPageName == 'options') {
+          if (settingsApp != null) settingsApp.animation.play('idle');
           handleOptionsPage(optionsState);
         } else if (currentPageName == 'preferences') {
+        settingsApp.animation.play('mouse');
           handlePreferencesPage(optionsState);
         } else if (currentPageName == 'controls') {
+          settingsApp.animation.play('mouse');
           handleControlsPage(optionsState);
         } else if (currentPageName == 'offsets') {
+          settingsApp.animation.play('mouse');
           handleOffsetsPage(optionsState);
         } else {
           if (dozirc != null) playMenuAnim('default');
