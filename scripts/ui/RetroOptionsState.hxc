@@ -12,6 +12,7 @@ import funkin.ui.options.OptionsState;
 import funkin.modding.module.Module;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.StateChangeScriptEvent;
+import funkin.mobile.ui.FunkinBackButton;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.Paths;
 import Std;
@@ -166,7 +167,7 @@ class RetroOptionsState extends Module
         playMenuMusic();
         FlxG.mouse.visible = true;
         if (FlxG.mouse.cursor != null) {
-          FlxG.mouse.load(Paths.image('ui/menu/options/cursor'));
+          FlxG.mouse.load(Paths.image('ui/menu/options/cursor'), FlxG.onMobile ? 1.7 : 1);
         }
         adjustButtons(event.targetState);
       }
@@ -213,11 +214,11 @@ class RetroOptionsState extends Module
         }
 
         if (FlxG.onMobile) {
-          for (member in optionsPage.members)
+          for (member in optionsState.members)
           {
-            if (Std.isOfType(member, funkin.mobile.ui.FunkinBackButton))
+            if (Std.isOfType(member, FunkinBackButton))
             {
-              member.alpha = 0.4; // Altere para o valor desejado (0.0 a 1.0)
+              member.alpha = 0.4;
               break;
             }
           }
@@ -273,7 +274,6 @@ class RetroOptionsState extends Module
           item.label.x = x + 50;
           item.label.y = y;
           item.label.scrollFactor.set(0, 0);
-          item.updateHitbox();
         }
       }
 
@@ -330,7 +330,7 @@ class RetroOptionsState extends Module
             item.label.y += buttonOffsetY;
             item.x = buttonPosX;
             item.label.x = buttonPosX;
-            item.updateHitbox();
+            //item.updateHitbox(); // don't update hitbox or it breaks on mobile
           }
         }
       }
