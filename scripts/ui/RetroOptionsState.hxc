@@ -112,7 +112,7 @@ class RetroOptionsState extends Module
     frontBg.scrollFactor.set(0, 0);
 
     overlay = new FlxSprite(0, 0).loadGraphic(Paths.image(imagePath + "overlay"));
-    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.1));
+    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.09));
     overlay.scrollFactor.set(0, 0);
     overlay.visible = true;
     overlay.screenCenter();
