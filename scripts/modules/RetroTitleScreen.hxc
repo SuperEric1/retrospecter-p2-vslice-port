@@ -9,6 +9,8 @@ import Std;
 // this makes the custom title screen appear when starting the game.
 class RetroTitleScreen extends Module
 {
+  final ENABLED = true;
+
   public function new()
   {
     super('RetroTitleScreen');
@@ -25,7 +27,7 @@ class RetroTitleScreen extends Module
   {
     super.onStateChangeEnd(event);
 
-    if (Std.isOfType(FlxG.state, TitleState))
+    if (Std.isOfType(FlxG.state, TitleState) && ENABLED)
     {
       TitleState.initialized = true;
       if (FlxG.sound.music != null) FlxG.sound.music.stop();

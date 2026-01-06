@@ -295,7 +295,7 @@ class RetroGameUI extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro || !hasBeenCreated || retroHealthBarFill == null) return;
     if (PlayState.instance.isGamePaused) return;
-    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+    if(PlayState.instance.isGameOverState) return;
 
     var playState = PlayState.instance;
 

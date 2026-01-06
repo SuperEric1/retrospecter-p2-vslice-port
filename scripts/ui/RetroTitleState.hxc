@@ -35,9 +35,6 @@ import funkin.util.SwipeUtil;
 
 class RetroTitleState extends MusicBeatState
 {
-  /**
-   * Only play the credits once per session.
-   */
   public static var initialized:Bool = false;
 
   var blackScreen:FlxSprite;

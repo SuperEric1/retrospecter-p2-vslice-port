@@ -14,6 +14,9 @@
     "flipX": false,
     "scale": 0.75
   },
+  "death": {
+    "cameraZoom": 3.0
+  },
   "animations": [
     {
       "name": "idle",

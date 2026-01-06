@@ -148,7 +148,7 @@ class SatisfractureSong extends Song
   public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
     super.onStepHit(event);
     if (PlayState.instance == null) return;
-    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+    if(PlayState.instance.isGameOverState) return;
 
     // ENOUGH
     // As animações alt ativam no script do personagem
@@ -321,7 +321,8 @@ class SatisfractureSong extends Song
     PlayState.instance.playerStrumline.alpha = 1;
     PlayState.instance.opponentStrumline.alpha = 1;
 
-    for (bar in PlayState.instance.healthBar) bar.alpha = 1;
+    PlayState.instance.healthBar.alpha = 1;
+    PlayState.instance.healthBarBG.alpha = 1;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void

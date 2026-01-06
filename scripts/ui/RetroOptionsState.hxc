@@ -18,23 +18,36 @@ import Std;
 
 class RetroOptionsState extends Module
 {
+  final ENABLED = true;
+
   var bgPath:String = "ui/menu/options/WinDOZ";
   var imagePath:String = "ui/menu/options/";
   var curAnim:String = 'anims/default';
   var curPage:String = 'options';
+  var curText:String = '';
   var buttonPosX:Float = 45;
+  var buttonOffsetY:Float = -50;
+  var hasChangedButtonPos:Bool = false;
+  var isFrontBgFadingIn:Bool = false;
 
   var backBgAlpha:Float = 0.4;
+  var taskbar:FlxSprite;
   var backBg:FlxSprite;
   var dozirc:FlxAtlasSprite;
   var dozircShadow:FlxAtlasSprite;
   var overlay:FlxSprite;
   var windozText:FlxText;
+  var signText:FlxText;
+  var frontBg:FlxSprite;
   var debugText:FlxText;
   var hasBuilt:Bool = false;
 
+  var taskBarApps:Array<FunkinSprite> = [];
+
   var dozircTweens:Array<FlxTween> = [];
+  var dozircX:Float = 0;
   var dozircY:Float = 0;
+  var signTextY:Float = 0; // this is set on buildSprites
 
   public function new()
   {
@@ -43,6 +56,12 @@ class RetroOptionsState extends Module
 
   public function buildSprites():Void
   {
+    taskbar = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, 100, 0xFF2d3131);
+    taskbar.screenCenter(0x01);
+    taskbar.scrollFactor.set(0, 0);
+    taskbar.y = FlxG.height - 80;
+    buildApps();
+
     backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
     backBg.screenCenter();
     backBg.alpha = backBgAlpha;
@@ -55,7 +74,8 @@ class RetroOptionsState extends Module
     dozirc.scrollFactor.set(0, 0);
     dozirc.visible = true;
     dozirc.x = FlxG.width - 850; // (FlxG.width / 2) - 180 /// (FlxG.width * 0.47)
-    dozirc.y = FlxG.height - 500; //(FlxG.height / 2) - 130
+    dozirc.y = FlxG.height - 500 - 65; //(FlxG.height / 2) - 130
+    dozircX = dozirc.x;
     dozircY = dozirc.y;
     dozirc.updateHitbox();
     playMenuAnim('default');
@@ -70,23 +90,62 @@ class RetroOptionsState extends Module
     dozircShadow.alpha = 0;
     dozircShadow.updateHitbox();
 
-    windozText = new FlxText(0, 0, 0, 'WinDOZ', 55);
-    windozText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 55, 0xFFFFFFFF, 'center');
+    windozText = new FlxText(0, 0, 0, 'WinDOZ', 60);
+    windozText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 60, 0xFFFFFFFF, 'center');
     windozText.fieldWidth = FlxG.width;
     windozText.screenCenter(0x01);
-    windozText.y = 565;
-    
+    windozText.y = 560;
+
+    signText = new FlxText(0, 0, 0, 'TEST', 1);
+    signText.setFormat(Paths.font('DS-DIGIB.TTF'), 130, 0xFF7df1ef, 'center');
+    signText.scrollFactor.set(0, 0);
+    signText.fieldWidth = 300;
+    //signText.textField.background = true;
+    signText.x = dozirc.x + 250;
+    signText.y = dozirc.y + 360;
+    signTextY = signText.y;
+    signText.visible = false;
+
+    frontBg = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
+    frontBg.screenCenter();
+    frontBg.alpha = 0;
+    frontBg.scrollFactor.set(0, 0);
+
     overlay = new FlxSprite(0, 0).loadGraphic(Paths.image(imagePath + "overlay"));
-    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.07));
+    overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.1));
     overlay.scrollFactor.set(0, 0);
     overlay.visible = true;
     overlay.screenCenter();
 
   }
 
+  function buildApps():Void {
+    var path = imagePath + "apps";
+    var size = 60;
+    var gap = 0; // the gap increases as we add apps
+    var y = taskbar.y + 2;
+    var appAnims = [ "dozirc", "retro", "hivemine", "insatian", "atrocean", "izzy", "saku", "config" ];
+
+    for (appAnim in appAnims)
+    {
+      var app:FunkinSprite = FunkinSprite.create(0, 0);
+      app.loadSparrow(path);
+      app.animation.addByPrefix('idle', appAnim + '0', 3, true);
+      app.animation.addByPrefix('mouse', "mouse" + appAnim + '0', 3, true);
+      app.animation.addByPrefix('press', "press" + appAnim + '0', 3, true);
+      app.animation.play('idle');
+      app.setGraphicSize(size);
+      app.scrollFactor.set(0, 0);
+      app.x = 90 + gap + (appAnim == "config" ? 5 : 0);
+      app.y = y;
+      taskBarApps.push(app);
+      gap += size + 20;
+    }
+  }
+
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void
   {
-    if (Std.isOfType(event.targetState, OptionsState))
+    if (Std.isOfType(event.targetState, OptionsState) && ENABLED)
     {
       if (!event.targetState.members.contains(dozirc))
       {
@@ -96,10 +155,19 @@ class RetroOptionsState extends Module
         event.targetState.insert(2, backBg);
         event.targetState.insert(3, dozirc);
         event.targetState.insert(4, dozircShadow);
+        event.targetState.insert(5, signText);
+        event.targetState.insert(6, taskbar);
+        for (app in taskBarApps) event.targetState.insert(7, app);
+        event.targetState.insert(8, frontBg);
         event.targetState.add(overlay);
         if (debugText != null) event.targetState.add(debugText);
         hasBuilt = true;
         playMenuMusic();
+        FlxG.mouse.visible = true;
+        if (FlxG.mouse.cursor != null) {
+          FlxG.mouse.load(Paths.image('ui/menu/options/cursor'));
+        }
+        adjustButtons(event.targetState);
       }
     }
   }
@@ -134,42 +202,46 @@ class RetroOptionsState extends Module
       @:privateAccess {
         var bg = optionsState.members[0];
         if (bg != null && Std.isOfType(bg, FlxSprite)) {
-           var bgSprite:FlxSprite = bg;
-           if (bgSprite.graphic != null && bgSprite.graphic.key != Paths.image(bgPath))
-           {
-             bgSprite.loadGraphic(Paths.image(bgPath));
-             bgSprite.setGraphicSize(Std.int(FlxG.width * 1));
-             bgSprite.shader = null;
-           }
-        }
-
-        if (dozirc != null) dozirc.zIndex = 0;
-
-        try
-        {
-          var codex = optionsState.optionsCodex;
-          var currentPageName:String = codex.currentName;
-
-          if (currentPageName != curPage)
+          var bgSprite:FlxSprite = bg;
+          if (bgSprite.graphic != null && bgSprite.graphic.key != Paths.image(bgPath))
           {
-            trace('Mudou para página: ' + currentPageName);
-            curPage = currentPageName;
-            curAnim = '';
-          }
-
-          if (currentPageName == 'options') {
-            handleOptionsPage(optionsState);
-          } else if (currentPageName == 'preferences') {
-            handlePreferencesPage(optionsState);
-          } else if (currentPageName == 'controls') {
-            handleControlsPage(optionsState);
-          } else {
-            if (dozirc != null) playMenuAnim('default');
+            bgSprite.loadGraphic(Paths.image(bgPath));
+            bgSprite.setGraphicSize(Std.int(FlxG.width * 0.95));
+            bgSprite.shader = null;
           }
         }
-        catch (e:Dynamic)
+
+        if (FlxG.onMobile) {
+          for (member in optionsPage.members)
+          {
+            if (Std.isOfType(member, funkin.mobile.ui.FunkinBackButton))
+            {
+              member.alpha = 0.4; // Altere para o valor desejado (0.0 a 1.0)
+              break;
+            }
+          }
+        }
+
+        var codex = optionsState.optionsCodex;
+        var currentPageName:String = codex.currentName;
+
+        if (currentPageName != curPage)
         {
-          throw('Erro ao processar pagina: ' + e);
+          trace('Mudou para página: ' + currentPageName);
+          curPage = currentPageName;
+          curAnim = '';
+        }
+
+        if (currentPageName == 'options') {
+          handleOptionsPage(optionsState);
+        } else if (currentPageName == 'preferences') {
+          handlePreferencesPage(optionsState);
+        } else if (currentPageName == 'controls') {
+          handleControlsPage(optionsState);
+        } else if (currentPageName == 'offsets') {
+          handleOffsetsPage(optionsState);
+        } else {
+          if (dozirc != null) playMenuAnim('default');
         }
       }
     }
@@ -189,6 +261,20 @@ class RetroOptionsState extends Module
 
       var items = optionsPage.items;
       if (items == null) return;
+      for (item in items)
+      {
+        if (item != null && item.label.text == "EXIT" && taskbar != null)
+        {
+          var x = FlxG.width - 300;
+          var y = taskbar.y - 10;
+          item.x = x;
+          item.y = y;
+          item.label.x = x + 50;
+          item.label.y = y;
+          item.label.scrollFactor.set(0, 0);
+          item.updateHitbox();
+        }
+      }
 
       var selectedItem = items.selectedItem;
       if (selectedItem == null) return;
@@ -197,13 +283,41 @@ class RetroOptionsState extends Module
 
       if (debugText != null) debugText.text = 'OPTIONS: ' + itemName;
 
-      //if (itemName != curAnim)
-      //{
-      if (dozircShadow != null) dozircShadow.alpha = 0;
-      playMenuAnim(itemName);
-      //}
+      // Fixa a câmera em uma posição específica
+      FlxG.camera.follow(null);
+      FlxG.camera.scroll.set(0, 0);
 
-      // Ajusta posição dos itens
+      playMenuAnim(itemName);
+
+      // Animate the alpha of the front BG, making it seem like it's fading in and out
+      if (frontBg == null) return;
+      var fadeTime:Float = 1.3;
+      if (frontBg.alpha <= 0) {
+        isFrontBgFadingIn = true;
+        FlxTween.tween(frontBg, {alpha: 0.2}, fadeTime, { ease: FlxEase.quadInOut,
+          onComplete: function(twn:FlxTween) {
+            isFrontBgFadingIn = false;
+            FlxTween.tween(frontBg, {alpha: 0}, fadeTime, { ease: FlxEase.quadInOut });
+          }
+        });
+      }
+    }
+  }
+
+  // this only runs after the state is loaded so he original position dont mess with the new one
+  function adjustButtons(optionsState:OptionsState):Void
+  {
+    @:privateAccess {
+      var codex = optionsState.optionsCodex;
+      var pages = codex.pages;
+
+      var optionsPage = pages.get('options');
+
+      if (optionsPage == null) return;
+
+      var items = optionsPage.items;
+      if (items == null) return;
+
       var members:Array<Dynamic> = items.members;
       if (members != null)
       {
@@ -211,11 +325,11 @@ class RetroOptionsState extends Module
         {
           if (item != null)
           {
+            item.y += buttonOffsetY;
+            item.label.y += buttonOffsetY;
             item.x = buttonPosX;
-            if (item.label != null)
-            {
-              item.label.x = buttonPosX;
-            }
+            item.label.x = buttonPosX;
+            item.updateHitbox();
           }
         }
       }
@@ -245,6 +359,7 @@ class RetroOptionsState extends Module
       if (itemName != curAnim)
       {
         if (dozircShadow != null) dozircShadow.alpha = 0;
+        if (signText != null) signText.visible = false;
         playPreferencesAnim(itemName);
       }
     }
@@ -256,10 +371,22 @@ class RetroOptionsState extends Module
     if (dozirc != null && curAnim != 'controls-page')
     {
       if (dozircShadow != null) dozircShadow.alpha = 0;
+      if (signText != null) signText.visible = false;
       curAnim = 'controls-page';
       dozirc.animation.play('anims/controls', false, false, true);
     }
     if (debugText != null) debugText.text = 'CONTROLS PAGE';
+  }
+  function handleOffsetsPage(optionsState:OptionsState):Void
+  {
+    if (dozirc != null && curAnim != 'offsets-page')
+    {
+      if (dozircShadow != null) dozircShadow.alpha = 0;
+      if (signText != null) signText.visible = false;
+      curAnim = 'offsets-page';
+      dozirc.animation.play('anims/confused', false, false, true);
+    }
+    if (debugText != null) debugText.text = 'OFFSET PAGE';
   }
 
   function playMenuAnim(name:String):Void
@@ -272,9 +399,18 @@ class RetroOptionsState extends Module
     switch(nameUpper) {
       case 'CONTROLS': animName = 'anims/controls';
       case 'LAG ADJUSTMENT': animName = 'anims/confused';
+      case 'EXIT':
+        animName = 'anims/signAlone';
+        signText.visible = true;
+        signText.text = "BYE";
+      case 'CLEAR SAVE DATA':
+        animName = 'anims/signAlone';
+        signText.visible = true;
+        signText.text = "DEL";
+      //case 'PREFERENCES': animName = 'anims/signAlone';
     }
 
-    playAnimIfDifferent(animName);
+    playAnimIfDifferent(animName, true);
   }
 
   function playPreferencesAnim(itemName:String):Void
@@ -282,30 +418,65 @@ class RetroOptionsState extends Module
     if (dozirc == null || dozircShadow == null) return;
     var nameUpper:String = itemName.toUpperCase();
     var animName:String = 'anims/default';
+    var doesTextChangeBop:Bool = true; // desativar se o texto muda de acordo com a opção, para não ficar boppando
 
     if (nameUpper == 'DOWNSCROLL') animName = Preferences.downscroll ? 'anims/down' : 'anims/up';
     else if (nameUpper == 'NAUGHTYNESS' && Preferences.naughtyness) animName = 'anims/evil';
     else if (nameUpper == 'STRUMLINE BACKGROUND') dozircShadow.alpha = Preferences.strumlineBackgroundOpacity / 100;
-    else if (nameUpper == 'FPS') animName = 'anims/signAlone'; // TODO: adicionar texto de FPS na placa
+    else if (nameUpper == 'DEBUG DISPLAY BG') dozircShadow.alpha = Preferences.debugDisplayBGOpacity / 100;
+    else if (nameUpper == 'DEBUG DISPLAY') {
+      switch (Preferences.debugDisplay) {
+        case "Simple": animName = 'anims/cpu';
+        case "Advanced": animName = 'anims/gpu';
+      }
+    }
+    else if (nameUpper == 'SUBTITLES' && Preferences.subtitles) {
+      animName = 'anims/signAlone';
+      signText.visible = true;
+      signText.text = "HI";
+    }
+    else if (nameUpper == 'FPS') {
+      doesTextChangeBop = false;
+      animName = 'anims/signAlone';
+      signText.visible = true;
+      signText.text = Std.string(Preferences.framerate);
+    }
     else if (nameUpper == 'FLASHING LIGHTS' && Preferences.flashingLights) animName = 'anims/glasses';
     else if (nameUpper == 'LAUNCH IN FULLSCREEN') animName = Preferences.autoFullscreen ? 'anims/signAlone' : 'anims/signSmol';
+    else if (nameUpper == 'PAUSE ON UNFOCUS' && Preferences.autoPause) animName = 'anims/pause';
     //else if (nameUpper == 'SUGGESTIVE CONTENT') animName = 'anims/oops';
     //else if (nameUpper == 'SONG LENGTH') animName = Preferences.songLength ? 'anims/booba' : 'anims/clock';
     //else if (nameUpper == 'MECHANICS') animName = 'anims/online';
 
-    playAnimIfDifferent(animName);
+    playAnimIfDifferent(animName, doesTextChangeBop);
   }
 
-  function playAnimIfDifferent(animName:String):Void
+  /*
+  * Plays the given animation if it's different from the current one.
+  * @param animName The name of the animation to play.
+  * @param doesTextChangeBop Whether the text change should trigger a bop animation. (not working as intended idk)
+  */
+  function playAnimIfDifferent(animName:String, doesTextChangeBop:Bool = true):Void
   {
-    if (dozirc == null) return;
+    if (dozirc == null || signText == null) return;
 
-    if (animName != curAnim)
+    if (animName != curAnim || signText.text != curText)
     {
+      dozirc.x = dozircX;
       if (dozircShadow != null) dozircShadow.alpha = 0;
-      tweenDozirc();
+      if (signText != null) signText.visible = false;
+      if (doesTextChangeBop == true) tweenDozirc();
       curAnim = animName;
+      curText = signText.text;
       dozirc.animation.play(animName, false, false, true);
+
+      // offsets
+      var defaultOffsetX:Float = 83;
+      switch (animName) {
+        case 'anims/pause': dozirc.x = dozircX + defaultOffsetX;
+        case 'anims/cpu': dozirc.x = dozircX + defaultOffsetX + 50;
+        case 'anims/gpu': dozirc.x = dozircX + defaultOffsetX + 58;
+      }
     }
   }
 
@@ -318,14 +489,16 @@ class RetroOptionsState extends Module
     var time:Float = 0.05;
     dozirc.y = dozircY;
     dozircShadow.y = dozircY;
-    var objects = [dozirc, dozircShadow];
+    signText.y = signTextY;
+    var objects = [dozirc, dozircShadow, signText];
+    var ogPositions = [dozircY, dozircY, signTextY];
     for (obj in objects) {
       dozircTweens.push(
-        FlxTween.tween(obj, {y: dozircY + targetY}, time, {
+        FlxTween.tween(obj, {y: ogPositions[objects.indexOf(obj)] + targetY}, time, {
           ease: FlxEase.quartOut,
           onComplete: function(twn:FlxTween) {
             dozircTweens.push(
-              FlxTween.tween(obj, {y: dozircY}, time, {
+              FlxTween.tween(obj, {y: ogPositions[objects.indexOf(obj)]}, time, {
                 ease: FlxEase.quadOut
               })
             );

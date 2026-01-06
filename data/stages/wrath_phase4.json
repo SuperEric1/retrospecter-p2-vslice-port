@@ -6,7 +6,7 @@
     "dad": {
       "zIndex": 301,
       "position": [2000, 9000],
-      "cameraOffsets": [1550, 6670]
+      "cameraOffsets": [-200, 6670]
     },
     "bf": {
       "zIndex": 200,

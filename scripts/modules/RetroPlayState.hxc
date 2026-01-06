@@ -392,7 +392,7 @@ class RetroPlayState extends Module {
         izzyMechanicTimer = null;
         return;
       }
-      if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+      if(PlayState.instance.isGameOverState) return;
       unscrambleStrumline();
     });
   }
@@ -696,7 +696,7 @@ class RetroPlayState extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (PlayState.instance.isGamePaused) return;
-    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+    if(PlayState.instance.isGameOverState) return;
 
     if (poisonAmount > 0 && PlayState.instance.health > 0.08) {
       PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
