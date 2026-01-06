@@ -168,11 +168,7 @@ class RetroPlayState extends Module {
 
       PlayState.instance.health -= event.healthChange;
       event.doesNotesplash = false;
-      #if mobile
-      HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #else
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #end
     }
 
     if (k == 'Hydra') {
@@ -187,11 +183,7 @@ class RetroPlayState extends Module {
 
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
-      #if mobile
-      HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #else
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #end
     }
 
     if (k == 'poison') {
@@ -206,11 +198,7 @@ class RetroPlayState extends Module {
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
-      #if mobile
-      HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #else
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #end
     }
 
     if (k == 'izzyNote') {
@@ -240,12 +228,7 @@ class RetroPlayState extends Module {
       }
 
       scrambleStrumline();
-
-      #if mobile
-      HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #else
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
-      #end
     }
   } // fim do if de checagem que é nota do player
 
