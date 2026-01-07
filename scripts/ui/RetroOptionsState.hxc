@@ -12,6 +12,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.TouchUtil;
 import funkin.ui.options.OptionsState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.util.ReflectUtil;
 import funkin.modding.module.Module;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.StateChangeScriptEvent;
@@ -19,6 +20,7 @@ import funkin.mobile.ui.FunkinBackButton;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.Paths;
 import Std;
+import Reflect;
 
 class RetroOptionsState extends Module
 {
@@ -416,6 +418,19 @@ class RetroOptionsState extends Module
       if (!FlxG.onMobile && items.selectedIndex >= items.length - 1)
       {
         items.selectItem(0); // Volta para o primeiro item se estiver no EXIT
+      }
+
+      var goingBack:Bool = ReflectUtil.getProperty(codex.currentPage, "goingBack");
+      if (goingBack && !isShuttingDown) {
+        isShuttingDown = true;
+        taskBarApps = [];
+        playAnimIfDifferent('anims/signAlone', true);
+        signText.visible = true;
+        signText.text = "BYE";
+        FlxG.sound.music.fadeOut(1.0);
+        FlxG.keys.enabled = false;
+        FlxG.mouse.visible = false;
+        return;
       }
 
       var selectedItem = items.selectedItem;
