@@ -37,6 +37,8 @@ class RetroGameUI extends Module {
   var isRetro:Bool = false;
   var downscroll = false;
   var healthBgYOffset:Float = 0;
+  // move judgements a little bit to the left on non-mobile or non-arrows scheme
+  var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
 
   var retroHealthBar:FlxBar;
   var retroHealthBarOverlay:FunkinSprite;
@@ -161,7 +163,10 @@ class RetroGameUI extends Module {
 
   function loadTextElements() {
     var camera = PlayState.instance.camHUD;
-    var yPos = PlayState.instance.playerStrumline.strumlineNotes.members[0].y;
+    var yPos = PlayState.instance.playerStrumline.y * 1.075;
+    if (!downscroll) {
+      yPos = PlayState.instance.playerStrumline.y + 50;
+    }
     var zIndex = 9999;
 
     judgement = new FlxText(0, yPos, 0, '', 20);
@@ -178,14 +183,14 @@ class RetroGameUI extends Module {
     comboText.visible = false;
     PlayState.instance.add(comboText);
 
-    score = new FlxText(0, 0, 0, '', 20);
+    score = new FlxText(0, yPos + judgement.frameHeight, 0, '', 20);
     score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     score.fieldWidth = FlxG.width;
     score.screenCenter(0x01);
     score.cameras = [camera];
     score.zIndex = zIndex;
-    score.y = yPos + judgement.frameHeight;
     score.visible = false;
+    score.x += judgementXOffset;
     PlayState.instance.add(score);
 
     PlayState.instance.scoreText.alpha = 0;
@@ -226,8 +231,9 @@ class RetroGameUI extends Module {
   }
 
   function updateJudgement(judgementName:String, noteScore:Float, isComboBreak = false, doesPopup:Bool = true, stayDuration:Float = 0):Void {
-    var judgementData = getJudgement(judgementName);
     cancelTweens();
+    var judgementData = getJudgement(judgementName);
+    var xOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -50;
 
     // Atualizar o texto e cor do julgamento
     judgement.text = judgementData.text;
@@ -240,7 +246,7 @@ class RetroGameUI extends Module {
     //comboText.color = 0xFFFFFF;
 
     var totalWidth = judgement.width + comboText.width;
-    judgement.x = (FlxG.width - totalWidth) / 2;
+    judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
     comboText.x = judgement.x + judgement.width;
 
     if (noteScore) {
@@ -427,7 +433,7 @@ class RetroGameUI extends Module {
 
   function animateTexts(doesPulse:Bool = true, stayDuration:Float = 0):Void {
     var pulseDuration:Float = 0.1;
-    var pulseScale:Float = 1.05;
+    var pulseScale:Float = 1.06;
     judgement.scale.x = 1;
     judgement.scale.y = 1;
     comboText.scale.x = 1;

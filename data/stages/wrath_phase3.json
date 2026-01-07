@@ -7,7 +7,7 @@
       "zIndex": 300,
       "position": [1350, 825],
       "scale": 0.2,
-      "cameraOffsets": [-530, -230]
+      "cameraOffsets": [-380, -80]
     },
     "gf": {
       "zIndex": 100,

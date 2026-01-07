@@ -48,6 +48,7 @@ class RetroOptionsState extends Module
   var browserText:FlxText;
   var frontBg:FlxSprite;
   var debugText:FlxText;
+  var fade:FlxSprite;
   var hasBuilt:Bool = false;
 
   var taskBarApps:Array<FunkinSprite> = [];
@@ -130,10 +131,10 @@ class RetroOptionsState extends Module
     var mobile = false;
     browser = FunkinSprite.create(0, 0);
     browser.loadSparrow(imagePath + "browser");
+    browser.setGraphicSize(896); // Std.int(FlxG.width * 0.7)
     browser.animation.addByPrefix('normal', '1', 1, true);
     browser.animation.addByPrefix('incognito', '2', 1, true);
     browser.animation.play('normal');
-    browser.setGraphicSize(Std.int(FlxG.width * 0.7));
     browser.scrollFactor.set(0, 0);
     browser.screenCenter();
     browser.y -= 20;
@@ -142,7 +143,6 @@ class RetroOptionsState extends Module
 
     browserIcon = FunkinSprite.create(0, 0);
     browserIcon.loadSparrow(imagePath + "browserIcon");
-    browser.setGraphicSize(Std.int(FlxG.width * 0.7));
     browserIcon.animation.addByPrefix('idle', 'idle0', 3, true);
     browserIcon.animation.addByPrefix('hover', 'mouse0', 3, false);
     browserIcon.animation.play('idle');
@@ -170,6 +170,11 @@ class RetroOptionsState extends Module
     frontBg.screenCenter();
     frontBg.alpha = 0;
     frontBg.scrollFactor.set(0, 0);
+
+    fade = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
+    fade.screenCenter();
+    fade.alpha = 0;
+    fade.scrollFactor.set(0, 0);
 
     overlay = new FlxSprite(0, 0).loadGraphic(Paths.image(imagePath + "overlay"));
     overlay.setGraphicSize(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.09));
@@ -277,6 +282,7 @@ class RetroOptionsState extends Module
         event.targetState.add(browserText);
         event.targetState.add(browserIcon);
         event.targetState.add(overlay);
+        event.targetState.add(fade);
         if (debugText != null) event.targetState.add(debugText);
         playMenuMusic();
         FlxG.mouse.visible = true;
@@ -388,10 +394,14 @@ class RetroOptionsState extends Module
 
       var items = optionsPage.items;
       if (items == null) return;
-      for (item in items)
+      var exitItemIndex:Int = -1;
+
+      for (i in 0...items.length)
       {
+        var item = items.members[i];
         if (item != null && item.label.text == "EXIT" && taskbar != null)
         {
+          exitItemIndex = i;
           var x = FlxG.width - 300;
           var y = taskbar.y - 10;
           item.x = x;
@@ -399,7 +409,13 @@ class RetroOptionsState extends Module
           item.label.x = x + 50;
           item.label.y = y;
           item.label.scrollFactor.set(0, 0);
+          item.kill();
+          break; // we found the exit button, stop!!
         }
+      }
+      if (!FlxG.onMobile && items.selectedIndex >= items.length - 1)
+      {
+        items.selectItem(0); // Volta para o primeiro item se estiver no EXIT
       }
 
       var selectedItem = items.selectedItem;
@@ -458,6 +474,15 @@ class RetroOptionsState extends Module
                 FlxG.keys.enabled = false;
                 FlxG.mouse.visible = false;
                 FlxG.switchState(() -> new MainMenuState());
+              });
+              FlxTween.tween(fade, {alpha: 1}, 0.2, {
+                startDelay: 0.8,
+                ease: FlxEase.quadInOut,
+                onComplete: function(twn:FlxTween) {
+                  if (!isShuttingDown && fade != null) {
+                    fade.alpha = 0;
+                  }
+                }
               });
             }
           } else if (justReleased) {

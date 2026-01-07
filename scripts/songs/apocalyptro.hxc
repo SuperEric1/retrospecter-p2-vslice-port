@@ -71,7 +71,7 @@ class ApocalyptroSong extends Song
       hasFadedUi = true;
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 3)  / 1000, {ease: FlxEase.linear}));
     }
-    if (event.step >= 1744 && event.step <= 2100) { // caso o jogador lague
+    if (event.step >= 1744 && event.step <= 2150) { // caso o jogador lague
       PlayState.instance.playerStrumline.alpha = 1;
     }
   }

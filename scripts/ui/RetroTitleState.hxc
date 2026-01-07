@@ -313,8 +313,8 @@ class RetroTitleState extends MusicBeatState
   {
     for (i in 0...textArray.length)
     {
-      var t:FlxText = new FlxText(0,0,0, textArray[i]);
-      t.setFormat(Paths.font('Bebas-Regular.ttf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
+      var t:FlxText = new FlxText(0,0,0, textArray[i].toUpperCase());
+      t.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
       t.screenCenter(0x01);
       t.y += (textSprites.length*60)+200;
       add(t);
@@ -324,8 +324,8 @@ class RetroTitleState extends MusicBeatState
 
   function addMoreText(text:String):Void
   {
-    var t:FlxText = new FlxText(0,0,0, text);
-    t.setFormat(Paths.font('Bebas-Regular.ttf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
+    var t:FlxText = new FlxText(0,0,0, text.toUpperCase());
+    t.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
     t.screenCenter(0x01);
     t.y += (textSprites.length*60)+200;
     add(t);

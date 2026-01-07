@@ -308,9 +308,14 @@ class RetroPlayState extends Module {
     super.onSongStart(event);
     if (!isRetro) return;
 
-    // salvar posicao real dos strums
     healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
     healthBarBgOgPos = [PlayState.instance.healthBarBG.x, PlayState.instance.healthBarBG.y];
+    // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
+    ogStrumsX = [];
+    ogStrumsY = [];
+    ogOppStrumsX = [];
+    ogOppStrumsY = [];
+    // saves new positions
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
@@ -759,7 +764,9 @@ class RetroPlayState extends Module {
     if (!isMobile) {
       chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
     }
-    chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
+    if (isDownscroll) {
+      chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
+    } else chainText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height + 10;
     chainText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
     chainText.zIndex = strum.strumlineNotes.members[3] + 1;
     chainText.cameras = [PlayState.instance.camHUD];
@@ -888,6 +895,7 @@ class RetroPlayState extends Module {
       chainText.visible = false;
     }
 
+    PlayState.instance.playerStrumline.alpha = 1;
     for (i in 0...4) {
       var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] != null && ogStrumsY[i] != null) {
