@@ -722,9 +722,9 @@ class WrathPhase3 extends Stage
 			var value = event.eventData.value;
 			switch (Std.parseInt(value.char)) {
 				case 0:
-	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.15}, 0.9, {ease: FlxEase.quadOut});
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.3}, 0.9, {ease: FlxEase.quadOut});
 				case 1:
-	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 1.2, {ease: FlxEase.quadOut});
+	            FlxTween.tween(PlayState.instance, {currentCameraZoom: 1.1}, 1.2, {ease: FlxEase.quadOut});
 				default:
 
 			}
