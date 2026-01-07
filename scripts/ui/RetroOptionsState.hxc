@@ -269,29 +269,32 @@ class RetroOptionsState extends Module
     {
       if (!event.targetState.members.contains(dozirc))
       {
+        var state = event.targetState;
         //loadDebugElements();
         taskBarApps = []; // delete the previous apps to prevent errors
         buildSprites();
-        event.targetState.insert(1, windozText);
-        event.targetState.insert(2, backBg);
-        event.targetState.insert(3, dozirc);
-        event.targetState.insert(4, dozircShadow);
-        event.targetState.insert(5, signText);
-        event.targetState.insert(6, taskbar);
-        for (app in taskBarApps) event.targetState.insert(7, app);
-        event.targetState.insert(8, frontBg);
-        event.targetState.add(browser);
-        event.targetState.add(browserText);
-        event.targetState.add(browserIcon);
-        event.targetState.add(overlay);
-        event.targetState.add(fade);
-        if (debugText != null) event.targetState.add(debugText);
-        playMenuMusic();
+        state.insert(1, windozText);
+        state.insert(2, backBg);
+        state.insert(3, dozirc);
+        state.insert(4, dozircShadow);
+        state.insert(5, signText);
+        state.insert(6, taskbar);
+        for (app in taskBarApps) state.insert(7, app);
+        state.insert(8, frontBg);
+        state.add(browser);
+        state.add(browserText);
+        state.add(browserIcon);
+        state.add(overlay);
+        state.add(fade);
+        if (debugText != null) state.add(debugText);
         FlxG.mouse.visible = true;
-        if (FlxG.mouse.cursor != null) {
-          FlxG.mouse.load(Paths.image('ui/menu/options/cursor'), FlxG.onMobile ? 1.7 : 1);
+        if (FlxG.mouse.cursor != null) FlxG.mouse.load(Paths.image('ui/menu/options/cursor'), FlxG.onMobile ? 1.7 : 1);
+        adjustButtons(state);
+        if (FlxG.onMobile) {
+          var backButton = ReflectUtil.getProperty(state.optionsCodex.currentPage, "backButton");
+          backButton?.alpha = 0.25;
         }
-        adjustButtons(event.targetState);
+        playMenuMusic();
         hasBuilt = true;
         isShuttingDown = false;
       }
@@ -420,7 +423,7 @@ class RetroOptionsState extends Module
         items.selectItem(0); // Volta para o primeiro item se estiver no EXIT
       }
 
-      var goingBack:Bool = ReflectUtil.getProperty(codex.currentPage, "goingBack");
+      var goingBack:Bool = FlxG.onMobile ? ReflectUtil.getProperty(codex.currentPage, "goingBack") : false;
       if (goingBack && !isShuttingDown) {
         isShuttingDown = true;
         taskBarApps = [];
@@ -430,6 +433,15 @@ class RetroOptionsState extends Module
         FlxG.sound.music.fadeOut(1.0);
         FlxG.keys.enabled = false;
         FlxG.mouse.visible = false;
+        FlxTween.tween(fade, {alpha: 1}, 0.15, {
+          startDelay: 0.4,
+          ease: FlxEase.quadInOut,
+          onComplete: function(twn:FlxTween) {
+            if (!isShuttingDown && fade != null) {
+              fade.alpha = 0;
+            }
+          }
+        });
         return;
       }
 
