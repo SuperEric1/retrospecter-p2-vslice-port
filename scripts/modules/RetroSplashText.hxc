@@ -11,6 +11,7 @@ import funkin.util.ReflectUtil;
 import funkin.util.Constants;
 import funkin.modding.module.Module;
 import funkin.modding.module.ModuleHandler;
+import funkin.api.newgrounds.NewgroundsClient;
 
 class RetroSplashText extends Module
 {
@@ -21,16 +22,15 @@ class RetroSplashText extends Module
     super('RetroSplashText');
   }
 
-  override function onUpdate(event:UpdateScriptEvent)
+   public function onStateChangeEnd(event:StateChangeScriptEvent):Void
   {
-	  super.onUpdate(event);
-
-      if (ReflectUtil.getClassNameOf(FlxG.state) == "funkin.ui.mainmenu.MainMenuState")
+      if (Std.isOfType(event.targetState, MainMenuState))
       {
+          var ogText = FlxG.state.leftWatermarkText.text;
           FlxG.state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
-          FlxG.state.leftWatermarkText.size = 25;
-          FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port - v" + retroV;
-          FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight;
+          FlxG.state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
+          FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port v" + retroV + " | FNF " + ogText;
+          FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 50);
       }
   }
 }
