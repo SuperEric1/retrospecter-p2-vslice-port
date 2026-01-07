@@ -444,7 +444,7 @@ class RetroOptionsState extends Module
         var isBrowserOpen = (browserOpenForApp == i);
 
         var isOverlapping:Bool = app.overlapsPoint(FlxG.mouse.getWorldPosition());
-        if (FlxG.onMobile && TouchUtil != null) isOverlapping = TouchUtil.overlapsComplex(app);
+        if (FlxG.onMobile && TouchUtil != null) isOverlapping = TouchUtil.overlapsComplex(app) || app.overlapsPoint(FlxG.mouse.getWorldPosition());
 
         if (isOverlapping)
         {
