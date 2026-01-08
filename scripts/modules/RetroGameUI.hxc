@@ -207,11 +207,14 @@ class RetroGameUI extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
-      if (!event.note.isHoldNote) {
-        updateJudgement(event.judgement, event.score, event.isComboBreak, true);
-      } else {
-				var stayDuration:Float = event.note.length / 1000;
-        updateJudgement(event.judgement, event.score, event.isComboBreak, true, stayDuration);
+      var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
+      if (isNormalNote) {
+        if (!event.note.isHoldNote) {
+          updateJudgement(event.judgement, event.score, event.isComboBreak, true);
+        } else {
+          var stayDuration:Float = event.note.length / 1000;
+          updateJudgement(event.judgement, event.score, event.isComboBreak, true, stayDuration);
+        }
       }
     }
   }
@@ -221,10 +224,15 @@ class RetroGameUI extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
-      var k = event.note.noteData.kind;
-      var hurtNotes:Array<String> = ['poison', 'izzyNote', 'chain', 'autoChain', 'Hydra', 'Fake Note'];
-      if (hurtNotes.contains[k] || !event.note.alive || k == 'autoChain') return; // por algum motivo o autoChain ainda passa nesse evento, então precisamos especificar ele
-      updateJudgement('miss', event.score, true);
+      var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
+
+      if (isNormalNote) updateJudgement('miss', event.score, true);
+
+      // antigo sistema
+      /*var k = event.note.noteData.kind;
+      var hurtNotes:Array<String> = ['poison', 'izzyNote', 'chain', 'autoChain', 'sakuNote', 'Hydra', 'Fake Note'];
+      if (hurtNotes.contains(k) || !event.note.alive) return;
+      */
     }
   }
 

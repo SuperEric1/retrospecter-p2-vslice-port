@@ -1,0 +1,172 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.ScriptEvent;
+import funkin.Paths;
+
+class LustStage extends Stage
+{
+  var bgX:Float = -1000;
+  var bgY:Float = -700;
+
+  var heartFrames:Array<Int> = [0, 1, 2, 3, 4, 0, 4, 0];
+  var hasCreatedStage:Bool = false;
+
+  // Stage sprites
+  var bg:StageProp;
+  var hooks:StageProp;
+  var chairs:StageProp;
+  var tables:StageProp;
+  var bar:StageProp;
+  var bars:StageProp;
+  var dfloor:StageProp;
+  var heart:StageProp;
+  var fgBottom:StageProp;
+  var fgLeftTable:StageProp;
+  var fgRightTable:StageProp;
+  var fgCages:StageProp;
+  var fgCurtains:StageProp;
+
+  public function new()
+  {
+    super('lust_2');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    if (hasCreatedStage) return;
+
+    // Background
+    bg = makeSprite('bg', 'Background', bgX, bgY);
+
+    // Get suggestive setting
+    var suggestiveEnabled = Save.instance.modOptions.get('retroSuggestive');
+    var hooksAnim = suggestiveEnabled ? 'Sex toys' : 'SFW hooks';
+
+    // Hooks (sex toys or SFW)
+    hooks = makeAnimSprite('hooks', hooksAnim, bgX, bgY);
+
+    // Chairs
+    chairs = makeAnimSprite('chairs', 'BG chairs', bgX, bgY);
+
+    // Tables
+    tables = makeAnimSprite('tables', 'BG tables', bgX, bgY);
+
+    // Bar
+    bar = makeAnimSprite('bar', 'Barr', bgX, bgY);
+
+    // Bar stools
+    bars = makeAnimSprite('bars', 'Bar stools', bgX, bgY);
+
+    // Dance floor
+    dfloor = makeAnimSprite('dfloor', 'Dance floor', bgX, bgY);
+
+    // Heart lights
+    heart = makeAnimSprite('heart', 'Heart', bgX, bgY);
+    heart.animation.curAnim.curFrame = 0;
+
+    // Foreground bottom
+    fgBottom = makeAnimSprite('FG_Bottom', 'FG_Bottom', bgX, bgY);
+
+    // Foreground left table
+    fgLeftTable = makeAnimSprite('FG_LeftTable', 'FG_LeftTable', bgX, bgY);
+
+    // Foreground right table
+    fgRightTable = makeAnimSprite('FG_RightTable', 'FG_RightTable', bgX, bgY);
+
+    // Foreground cages
+    fgCages = makeAnimSprite('FG_cages', 'FG_cages', bgX, bgY);
+
+    // Foreground curtains (above boyfriend)
+    fgCurtains = makeAnimSprite('FG_curtains', 'FG_curtains', bgX, bgY);
+    fgCurtains.zIndex = getBoyfriend() != null ? getBoyfriend().zIndex + 1 : 200;
+
+    hasCreatedStage = true;
+    PlayState.instance.refresh();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    setupShaders();
+  }
+
+  function makeSprite(name:String, imageName:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture('lust/' + imageName);
+    sprite.active = false;
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function makeAnimSprite(name:String, animName:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadSparrow('lust/saku-master');
+    sprite.animation.addByPrefix(animName, animName, 0);
+    sprite.animation.play(animName);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function setupShaders():Void
+  {
+    // This would need the actual shader implementation
+    // For now, this is a placeholder for the mosaic censorship shader setup
+    if (!Save.instance.modOptions.get('retroSuggestive')) return;
+
+    // The shader setup would go here
+    // Similar to the Lua code's runHaxeCode section
+    // But since we don't have the actual shader class imported,
+    // we'll leave this as a TODO for now
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    // Update heart frame based on beat
+    var beatIndex = event.beat % 8;
+    if (heart != null && heart.animation != null && heart.animation.curAnim != null) {
+      heart.animation.curAnim.curFrame = heartFrames[beatIndex];
+    }
+
+    // Update dance floor frame based on beat
+    if (dfloor != null && dfloor.animation != null && dfloor.animation.curAnim != null) {
+      dfloor.animation.curAnim.curFrame = event.beat % 2;
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+  }
+
+  override function onDestroy(event):Void
+  {
+    super.onDestroy(event);
+    hasCreatedStage = false;
+  }
+}

@@ -15,63 +15,57 @@
   "atlasSettings": {
     "applyStageMatrix": true
   },
+  "offsets": [480, 110],
+  "cameraOffsets": [300, 80],
   "animations": [
     {
       "name": "singLEFT",
       "prefix": "anims/saku 2 left",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [126, 0]
     },
     {
       "name": "singDOWN",
       "prefix": "anims/saku 2 down",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [27, 0]
     },
     {
       "name": "singUP",
       "prefix": "anims/saku 2 up",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [40, 0]
     },
     {
       "name": "singRIGHT",
       "prefix": "anims/saku 2 right",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [-43, 0]
     },
     {
       "looped": true,
       "name": "idle",
       "prefix": "anims/saku 2 idle",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [0, 0]
     },
     {
       "name": "mommy",
       "prefix": "anims/saku step on me",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [0, 0]
     },
     {
       "name": "temptation",
       "prefix": "anims/saku temptation 1",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [0, 0]
     },
     {
       "name": "laugh-end",
       "prefix": "anims/saku temptation 2",
       "animType": "symbol",
-      "offsets": [0, 0],
-      "frameRate": 24
+      "offsets": [0, 0]
     }
   ],
   "flipX": false

@@ -111,7 +111,7 @@ class RetroPlayState extends Module {
     }
   }
 
-  function onNoteIncoming(event) {
+  public function onNoteIncoming(event:NoteScriptEvent) {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
 
@@ -120,22 +120,24 @@ class RetroPlayState extends Module {
     }
     var k = event.note.noteData.kind;
 
+    // Notas que não contam pro score
+    var hurtNotes = [
+      'poison', 'izzyNote', 'chain', 'autoChain',
+      'sakuNote', 'Hydra', 'Fake Note',
+      'none'
+    ];
+    if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
+        //throw 'epa';
+        event.note.scoreable = false; // não dar score/combo ao acertar.
+        Highscore.tallies.totalNotes--;
+    }
+
     // Notas removíveis
     if (k == 'none') {
-      if (event.note.noteData.getMustHitNote()) {
-        Highscore.tallies.totalNotes--;
-      }
+      // a remoção do score acontece ali em cima
 			event.cancelEvent();
       event.stopPropagation();
 			event.note.kill();
-    }
-
-    // Notas que não contam pro score
-    if (k == 'Fake Note' || k == 'poison' || k == 'izzyNote' ||
-        k =='chain' || k == 'autoChain' || k == 'Hydra') {
-      if (event.note.noteData.getMustHitNote()) {
-        Highscore.tallies.totalNotes--;
-      }
     }
 
     super('onNoteIncoming');
