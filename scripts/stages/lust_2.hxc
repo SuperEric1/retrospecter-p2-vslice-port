@@ -163,6 +163,24 @@ class LustStage extends Stage
     super.addCharacter(character, charType);
 
   }
+  
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    if (event.eventData.eventKind == "FocusCamera")
+    {
+      var value = event.eventData.value;
+      var step = Conductor.instance.currentStep;
+      switch (Std.parseInt(value.char)) {
+        case 0:
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: PlayState.instance.stageZoom + 0.1}, 0.7, {ease: FlxEase.quadOut});
+        case 1:
+          FlxTween.tween(PlayState.instance, {currentCameraZoom: PlayState.instance.stageZoom}, 1, {ease: FlxEase.quadOut});
+        default:
+      }
+    }
+  }
 
   override function onDestroy(event):Void
   {
