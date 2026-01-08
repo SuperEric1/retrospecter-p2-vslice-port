@@ -15,5 +15,6 @@ TODO:
 - [ ] Song length timer
 - [ ] Encode textures to ASTC
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
+- [ ] Song info popup at the start of songs
 - [X] Catastrofiend difficulties
 - [X] Text engine for voicelines mid-song (maybe use the new subtitles?)
