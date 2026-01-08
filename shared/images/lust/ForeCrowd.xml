@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ForeCrowd.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="LeftTable_Bop0000" x="10" y="10" width="1089" height="618" frameX="0" frameY="-7" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0001" x="10" y="10" width="1089" height="618" frameX="0" frameY="-7" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0002" x="1109" y="10" width="1088" height="619" frameX="-1" frameY="-6" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0003" x="1109" y="10" width="1088" height="619" frameX="-1" frameY="-6" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0004" x="2207" y="10" width="1085" height="622" frameX="-2" frameY="-4" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0005" x="2207" y="10" width="1085" height="622" frameX="-2" frameY="-4" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0006" x="10" y="642" width="1083" height="624" frameX="-3" frameY="-1" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0007" x="10" y="642" width="1083" height="624" frameX="-3" frameY="-1" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0008" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0009" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0010" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0011" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0012" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="LeftTable_Bop0013" x="1103" y="642" width="1083" height="625" frameX="-3" frameY="0" frameWidth="1089" frameHeight="626"/>
+	<SubTexture name="RIghttable_bop0000" x="2196" y="642" width="1285" height="792" frameX="0" frameY="-4" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0001" x="2196" y="642" width="1285" height="792" frameX="0" frameY="-4" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0002" x="10" y="1444" width="1286" height="794" frameX="0" frameY="-2" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0003" x="10" y="1444" width="1286" height="794" frameX="0" frameY="-2" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0004" x="1306" y="1444" width="1283" height="795" frameX="-2" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0005" x="1306" y="1444" width="1283" height="795" frameX="-2" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0006" x="2599" y="1444" width="1282" height="796" frameX="-3" frameY="0" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0007" x="2599" y="1444" width="1282" height="796" frameX="-3" frameY="0" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0008" x="10" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0009" x="10" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0010" x="1300" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0011" x="1300" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0012" x="10" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0013" x="10" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0014" x="1300" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+	<SubTexture name="RIghttable_bop0015" x="1300" y="2250" width="1280" height="795" frameX="-4" frameY="-1" frameWidth="1286" frameHeight="796"/>
+</TextureAtlas>

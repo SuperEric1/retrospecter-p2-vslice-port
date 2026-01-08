@@ -11,16 +11,6 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     super('phase4');
   }
 
-  /*
-    animOffsets.set('idle', [0, 0]);
-    animOffsets.set('singLEFT', [-640, 0]);
-    animOffsets.set('singDOWN', [0, 450]);
-    animOffsets.set('singUP', [-80, -250]);
-    animOffsets.set('singRIGHT', [500, 0]);
-
-    animOffsets.set('leaveNow', [500, 100]);
-  */
-
   function onCreate(event:ScriptEvent)
   {
     super.onCreate(event);

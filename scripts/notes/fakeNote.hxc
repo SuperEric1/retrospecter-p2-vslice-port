@@ -58,14 +58,11 @@ class fakeNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		for ( fakeNote in PlayState.instance.playerStrumline.notes.members )
+		if ( event.note.kind == "Fake Note" )
 		{
-			if ( event.note.kind == "Fake Note" )
-			{
-				event.note.kill();
-				event.cancel();
-				event.stopPropagation();
-			}
+			event.note.kill();
+			event.cancel();
+			event.stopPropagation();
 		}
 	}
 }

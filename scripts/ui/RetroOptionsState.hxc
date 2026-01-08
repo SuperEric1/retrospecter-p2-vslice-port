@@ -7,12 +7,14 @@ import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Preferences;
+import funkin.save.Save;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.util.TouchUtil;
 import funkin.ui.options.OptionsState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.ReflectUtil;
+import funkin.effects.IntervalShake;
 import funkin.modding.module.Module;
 import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.StateChangeScriptEvent;
@@ -33,6 +35,7 @@ class RetroOptionsState extends Module
   var curText:String = '';
   var buttonPosX:Float = FlxG.onMobile ? 57 : 45;
   var buttonOffsetY:Float = -50;
+  var dozircShake:Bool = false;
   var hasChangedButtonPos:Bool = false;
   var isFrontBgFadingIn:Bool = false;
   var isShuttingDown:Bool = false;
@@ -45,12 +48,14 @@ class RetroOptionsState extends Module
   var overlay:FlxSprite;
   var windozText:FlxText;
   var signText:FlxText;
+  var signArrows:FunkinSprite;
   var browser:FunkinSprite;
   var browserIcon:FunkinSprite;
   var browserText:FlxText;
   var frontBg:FlxSprite;
   var debugText:FlxText;
   var fade:FlxSprite;
+  var hasAddedOptions:Bool = false;
   var hasBuilt:Bool = false;
 
   var taskBarApps:Array<FunkinSprite> = [];
@@ -71,11 +76,13 @@ class RetroOptionsState extends Module
   var browserTextY:Float = 0;
   var dozircX:Float = 0;
   var dozircY:Float = 0;
-  var signTextY:Float = 0; // this is set on buildSprites
+  var signTextY:Float = 0;
+  var signArrowsY:Float = 0;
 
   public function new()
   {
     super("RetroOptionsState");
+    //setupSave(); // this is done in RetroSave.hxc
   }
 
   public function buildSprites():Void
@@ -127,10 +134,23 @@ class RetroOptionsState extends Module
     //signText.textField.background = true;
     signText.x = dozirc.x + 280;
     signText.y = dozirc.y + 405;
-    signTextY = signText.y;
     signText.visible = false;
+    signTextY = signText.y;
 
-    var mobile = false;
+    signArrows = FunkinSprite.create(0, 0);
+    signArrows.loadSparrow(imagePath + "anim");
+    signArrows.animation.addByPrefix('idle', 'shakeDisabled0', 1, true);
+    signArrows.animation.addByPrefix('shake', 'shakeEnabled0', 18, true);
+    signArrows.animation.addByPrefix('hazard', 'scrollBadEnabled0', 50, true);
+    signArrows.animation.addByPrefix('hazard-off', 'scrollBadDisabled0', 50, true);
+    signArrows.animation.play('idle');
+    signArrows.x = signText.x + (signText.fieldWidth / 2) - (signArrows.width / 2);
+    signArrows.y = signText.y - 120;
+    signArrows.scrollFactor.set(0, 0);
+    signArrows.updateHitbox();
+    signArrows.visible = false;
+    signArrowsY = signArrows.y;
+
     browser = FunkinSprite.create(0, 0);
     browser.loadSparrow(imagePath + "browser");
     browser.setGraphicSize(896); // Std.int(FlxG.width * 0.7)
@@ -278,9 +298,10 @@ class RetroOptionsState extends Module
         state.insert(3, dozirc);
         state.insert(4, dozircShadow);
         state.insert(5, signText);
-        state.insert(6, taskbar);
-        for (app in taskBarApps) state.insert(7, app);
-        state.insert(8, frontBg);
+        state.insert(6, signArrows);
+        state.insert(7, taskbar);
+        for (app in taskBarApps) { if (app != null) state.insert(8, app); }
+        state.insert(9, frontBg);
         state.add(browser);
         state.add(browserText);
         state.add(browserIcon);
@@ -297,6 +318,69 @@ class RetroOptionsState extends Module
         playMenuMusic();
         hasBuilt = true;
         isShuttingDown = false;
+        hasAddedOptions = false;
+      }
+    }
+  }
+
+  function createPreferences(state:OptionsState):Void {
+    hasAddedOptions = true;
+    var preferences = state.optionsCodex.pages.get("preferences");
+
+    for (option in retroOptions) {
+      switch (option.type) {
+        case OptionType.CHECKBOX:
+          preferences.createPrefItemCheckbox(
+            option.name,
+            option.description,
+            function(value:Bool) {
+              Save.instance.modOptions.set(option.id, value);
+              Save.instance.flush();
+            },
+            Save.instance.modOptions.get(option.id, option.defaultValue),
+            option.available != null ? option.available : true
+          );
+
+        case OptionType.NUMBER:
+          preferences.createPrefItemNumber(
+            option.name,
+            option.description,
+            function(value:Float) {
+              Save.instance.modOptions.set(option.id, value);
+              Save.instance.flush();
+            },
+            null, // valueFormatter (você pode adicionar se quiser)
+            Save.instance.modOptions.get(option.id, option.defaultValue),
+            option.min != null ? option.min : 0.0,
+            option.max != null ? option.max : 10.0,
+            option.step != null ? option.step : 0.1,
+            option.precision != null ? option.precision : 2
+          );
+
+        case OptionType.PERCENTAGE:
+          preferences.createPrefItemPercentage(
+            option.name,
+            option.description,
+            function(value:Int) {
+              Save.instance.modOptions.set(option.id, value);
+              Save.instance.flush();
+            },
+            Save.instance.modOptions.get(option.id, option.defaultValue),
+            option.min != null ? Std.int(option.min) : 0,
+            option.max != null ? Std.int(option.max) : 100
+          );
+
+        case OptionType.ENUM:
+          preferences.createPrefItemEnum(
+            option.name,
+            option.description,
+            option.enumValues,
+            function(key:String, value:Dynamic) {
+              Save.instance.modOptions.set(option.id, value);
+              Save.instance.flush();
+            },
+            option.defaultEnumKey != null ? option.defaultEnumKey : "None"
+          );
       }
     }
   }
@@ -320,12 +404,11 @@ class RetroOptionsState extends Module
   override function onUpdate(event:ScriptEvent):Void
   {
     super.onUpdate(event);
-
     if (FlxG.state == null) return;
-
-    if (Std.isOfType(FlxG.state, OptionsState))
+    if (Std.isOfType(FlxG.state, OptionsState) && hasBuilt)
     {
       var optionsState:OptionsState = FlxG.state;
+      if (!hasAddedOptions) createPreferences(optionsState);
 
       // Isso permite acessar tudo dentro de OptionsState mesmo sendo privado
       @:privateAccess {
@@ -457,7 +540,6 @@ class RetroOptionsState extends Module
 
       playMenuAnim(itemName);
 
-      if (!hasBuilt) return; // if the elements didn't get added yet, don't run the animations
       // Animate taskbar apps. play animation when the mouse is hovering over them.
       var justPressed = FlxG.mouse.justPressed;
       var justReleased = FlxG.mouse.justReleased;
@@ -655,6 +737,17 @@ class RetroOptionsState extends Module
 
       var prefItems = preferencesPage.items;
       if (prefItems == null) return;
+      // mod preferences title
+      for (i in 0...prefItems.length)
+      {
+        var item = prefItems.members[i];
+        if (item != null && item.label.text == retroOptions[0].name)
+        {
+          item.label.alpha = 0.8;
+          item.label.color = 0xFF7df1ef;
+          break; // we found the button, stop!!
+        }
+      }
 
       var selectedItem = prefItems.selectedItem;
       if (selectedItem == null) return;
@@ -667,6 +760,7 @@ class RetroOptionsState extends Module
       {
         if (dozircShadow != null) dozircShadow.alpha = 0;
         if (signText != null) signText.visible = false;
+        if (signArrows != null) signArrows.visible = false;
         playPreferencesAnim(itemName);
       }
     }
@@ -728,6 +822,7 @@ class RetroOptionsState extends Module
     var nameUpper:String = itemName.toUpperCase();
     var animName:String = 'anims/default';
     var doesTextChangeBop:Bool = true; // desativar se o texto muda de acordo com a opção, para não ficar boppando
+    var save:Save = Save.instance.modOptions;
 
     if (nameUpper == 'DOWNSCROLL') animName = Preferences.downscroll ? 'anims/down' : 'anims/up';
     else if (nameUpper == 'NAUGHTYNESS' && Preferences.naughtyness) animName = 'anims/evil';
@@ -753,11 +848,34 @@ class RetroOptionsState extends Module
     else if (nameUpper == 'FLASHING LIGHTS' && Preferences.flashingLights) animName = 'anims/glasses';
     else if (nameUpper == 'LAUNCH IN FULLSCREEN') animName = Preferences.autoFullscreen ? 'anims/signAlone' : 'anims/signSmol';
     else if (nameUpper == 'PAUSE ON UNFOCUS' && Preferences.autoPause) animName = 'anims/pause';
-    //else if (nameUpper == 'SUGGESTIVE CONTENT') animName = 'anims/oops';
-    //else if (nameUpper == 'SONG LENGTH') animName = Preferences.songLength ? 'anims/booba' : 'anims/clock';
-    //else if (nameUpper == 'MECHANICS') animName = 'anims/online';
+    // custom
+    else if (nameUpper == 'NOTE MECHANICS') animName = save.get("retroMechanics") ? 'anims/online' : 'anims/offline';
+    else if (nameUpper == 'SHADERS') animName = save.get("retroShaders") ? 'anims/glow' : 'anims/low';
+    else if (nameUpper == 'SCREEN SHAKE' && save.get("retroShake")) {
+      animName = 'anims/shake';
+    }
+    else if (nameUpper == 'SONG LENGTH TIMER') animName = save.get("retroSongLength") ? 'anims/booba' : 'anims/clock';
+    else if (nameUpper == 'SUGGESTIVE CONTENT' && save.get("retroSuggestive")) animName = 'anims/oops';
+    else if (nameUpper == 'MODCHARTS') {
+      animName = 'anims/signAlone';
+      signArrows.visible = true;
+      if (save.get("retroModcharts")) {
+        signArrows.animation.play("shake");
+      } else signArrows.animation.play("idle");
+    }
+    else if (nameUpper == 'TRANSFORM HAZARD NOTES') {
+      animName = 'anims/signAlone';
+      signArrows.visible = true;
+      if (save.get("retroNotesTransform")) {
+        signArrows.animation.play("hazard-off");
+      } else signArrows.animation.play("hazard");
+    }
 
     playAnimIfDifferent(animName, doesTextChangeBop);
+    if (dozircShake && !IntervalShake.isShaking(dozirc)) {
+      final intensity = Preferences.flashingLights ? 0.005 : 0.0012;
+      IntervalShake.shake(dozirc, 60, 0, intensity, intensity, FlxEase.linear);
+    }
   }
 
   /*
@@ -771,6 +889,10 @@ class RetroOptionsState extends Module
 
     if (animName != curAnim || signText.text != curText)
     {
+      if (dozircShake) {
+        dozircShake = false;
+        IntervalShake.stopShaking(dozirc);
+      }
       dozirc.x = dozircX;
       if (dozircShadow != null) dozircShadow.alpha = 0;
       if (signText != null) signText.visible = false;
@@ -779,12 +901,14 @@ class RetroOptionsState extends Module
       curText = signText.text;
       dozirc.animation.play(animName, false, false, true);
 
-      // offsets
+      // offsets & confis
       var defaultOffsetX:Float = 83;
       switch (animName) {
         case 'anims/pause': dozirc.x = dozircX + defaultOffsetX;
         case 'anims/cpu': dozirc.x = dozircX + defaultOffsetX + 50;
         case 'anims/gpu': dozirc.x = dozircX + defaultOffsetX + 74;
+        case 'anims/glow': dozirc.x = dozircX + defaultOffsetX + 207;
+        case 'anims/shake': dozircShake = true;
       }
     }
   }
@@ -799,8 +923,8 @@ class RetroOptionsState extends Module
     dozirc.y = dozircY;
     dozircShadow.y = dozircY;
     signText.y = signTextY;
-    var objects = [dozirc, dozircShadow, signText];
-    var ogPositions = [dozircY, dozircY, signTextY];
+    var objects = [dozirc, dozircShadow, signText, signArrows];
+    var ogPositions = [dozircY, dozircY, signTextY, signArrowsY];
     for (obj in objects) {
       dozircTweens.push(
         FlxTween.tween(obj, {y: ogPositions[objects.indexOf(obj)] + targetY}, time, {
@@ -870,4 +994,121 @@ class RetroOptionsState extends Module
     debugText.scrollFactor.set(0, 0);
     debugText.visible = true;
   }
+
+  var retroOptions:Array<CustomOption> = [
+    {
+      name: "Vs. RetroSpecter",
+      description: "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)",
+      id: "retroPrefsTitle",
+      type: OptionType.ENUM,
+      enumValues: [" " => null],
+      defaultEnumKey: " "
+    },
+    {
+      id: "retroModcharts",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Modcharts",
+      description: "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)",
+    },
+    {
+      id: "retroMechanics",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Note Mechanics",
+      description: "Toggles hazard note mechanics for all songs that use them.",
+    },
+    {
+      id: "retroNotesTransform",
+      type: OptionType.CHECKBOX,
+      defaultValue: false,
+      name: "Transform Hazard Notes",
+      description: "Transforms hazard notes into normal notes. Note Mechanics needs to be toggled on for this option to work.",
+    },
+    {
+      id: "retroShaders",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Shaders",
+      description: "Toggles shaders for certain sprites and events.\n(Disabling recommended for lower-end phones.)",
+    },
+    {
+      id: "retroShake",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Screen Shake",
+      description: "Shakes Screen during certain events. (ie. Zerktro's singing.)",
+    },
+    {
+      id: "retroSongLength",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Song Length Timer",
+      description: "When enabled, display the song length in the corner of the screen during gameplay. (Not recommended for Story Mode.)",
+    },
+    {
+      id: "retroSuggestive",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Suggestive Content",
+      description: "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song.",
+    },
+
+
+    /* Template options
+    {
+      name: "Note Splash Opacity",
+      description: "Adjust note splash transparency",
+      id: "noteSplashOpacity",
+      type: OptionType.PERCENTAGE,
+      defaultValue: 100,
+      min: 0,
+      max: 100
+    },
+    {
+      name: "Scroll Speed",
+      description: "Adjust note scroll speed",
+      id: "scrollSpeed",
+      type: OptionType.NUMBER,
+      defaultValue: 1.0,
+      min: 0.5,
+      max: 3.0,
+      step: 0.1,
+      precision: 2
+    },
+    {
+      name: "Note Hit Sound",
+      description: "Sound effect when hitting notes",
+      id: "noteHitSound",
+      type: OptionType.ENUM,
+      enumValues: [
+        "None" => "none",
+        "Ping Pong" => "pingpong",
+        "Hitsound" => "hitsound"
+      ],
+      defaultEnumKey: "None"
+    }*/
+  ];
+}
+
+typedef CustomOption = {
+  var name:String;
+  var description:String;
+  var id:String;
+  var type:OptionType;
+  @:optional var defaultValue:Dynamic;
+  @:optional var min:Float;
+  @:optional var max:Float;
+  @:optional var step:Float;
+  @:optional var precision:Int;
+  @:optional var enumValues:Map<String, Dynamic>;
+  @:optional var defaultEnumKey:String;
+  @:optional var available:Bool;
+}
+
+enum OptionType {
+  CHECKBOX;
+  NUMBER;
+  PERCENTAGE;
+  ENUM;
 }

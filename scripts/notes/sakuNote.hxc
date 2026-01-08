@@ -1,0 +1,76 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class sakuNote extends Module {
+	public function new() {
+		super("sakuNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "sakuNote" )
+		{
+      var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			event.note.x += -45;
+			event.note.yOffset += -265;
+
+			event.note.frames = Paths.getSparrowAtlas( 'HeartNotes' );
+      if (downscroll) {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0', 24, false );
+      } else {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+      }
+
+			var sakuNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						sakuNote = "purpleScroll";
+					case 1:
+						sakuNote = "blueScroll";
+					case 2:
+						sakuNote = "greenScroll";
+					case 3:
+						sakuNote = "redScroll";
+				}
+
+			event.note.animation.play( sakuNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.kind == "sakuNote" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}

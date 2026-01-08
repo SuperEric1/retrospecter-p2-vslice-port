@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="heartmelterbg_lesbians.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10000" x="10" y="10" width="556" height="489" frameX="0" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10001" x="10" y="10" width="556" height="489" frameX="0" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10002" x="576" y="10" width="556" height="490" frameX="0" frameY="-1" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10003" x="576" y="10" width="556" height="490" frameX="0" frameY="-1" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10004" x="1142" y="10" width="554" height="492" frameX="-1" frameY="0" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10005" x="1142" y="10" width="554" height="492" frameX="-1" frameY="0" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10006" x="10" y="512" width="553" height="491" frameX="-2" frameY="-1" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10007" x="10" y="512" width="553" height="491" frameX="-2" frameY="-1" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10008" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10009" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10010" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10011" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10012" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+	<SubTexture name="Heartmelter_BGCameos_fartable instance 10013" x="573" y="512" width="553" height="490" frameX="-2" frameY="-2" frameWidth="556" frameHeight="492"/>
+</TextureAtlas>

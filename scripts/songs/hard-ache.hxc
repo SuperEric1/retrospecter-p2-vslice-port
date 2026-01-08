@@ -1,0 +1,129 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.math.FlxBasePoint;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.play.song.Song;
+import funkin.save.Save;
+import funkin.Conductor;
+import funkin.play.PlayState;
+import funkin.play.cutscene.CutsceneType;
+import funkin.play.cutscene.VideoCutscene;
+import funkin.play.GameOverSubState;
+import funkin.util.ReflectUtil;
+import funkin.play.PlayStatePlaylist;
+import funkin.ui.FullScreenScaleMode;
+
+class HardAcheSong extends Song
+{
+  var playState:PlayState;
+  var tweens = [];
+  var pausedTweens = [];
+
+  public function new()
+  {
+    super('hard-ache');
+
+  }
+
+  public override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    playState = PlayState.instance;
+    var save:Save = Save.instance.modOptions;
+    // load alt inst if suggestive content is disbled
+    if (!save.get("retroSuggestive")) {
+      playState.currentInstrumental = 'nolines';
+    }
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+  }
+
+  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+
+    var curBeat = event.beat;
+    if (curBeat == 0) {
+      //playStage.getBoyfriend().danceEvery = 0;
+      //playStage.getBoyfriend().playAnimation('brow', true);
+    }
+  }
+
+  public function onStepHit(event) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (event.step == 1) {
+
+    }
+  }
+
+  override function onDestroy(event)
+	{
+		super.onDestroy(event);
+		resetTweens();
+	}
+
+	private function resetTweens()
+	{
+		for (tween in tweens)
+		{
+			if (tween != null)
+				tween.cancel();
+		}
+		tweens = [];
+		pausedTweens = [];
+	}
+
+	override function onResume(event)
+	{
+		super.onResume(event);
+		for (tween in pausedTweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = true;
+			}
+		}
+		pausedTweens = [];
+	}
+
+	override function onPause(event)
+	{
+		super.onPause(event);
+		pausedTweens = [];
+		for (tween in tweens)
+		{
+			if (tween != null && !tween.finished)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+	}
+
+  function onSongRetry(event:ScriptEvent)
+  {
+    super.onSongRetry(event);
+
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
+}

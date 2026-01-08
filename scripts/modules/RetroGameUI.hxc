@@ -118,6 +118,12 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+        case 'sakuromap2-atlas':
+          defaultScale = [0.4, 0.4];
+          healthBgYOffset = -75;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/sakuP2/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
 
         default:
           playState.healthBar.visible = true;
@@ -369,6 +375,8 @@ class RetroGameUI extends Module {
           syncIconAnim(playerIcon, false);
         }
         return 0xFF282d4e;
+      case 'bf-lust':
+        return 0xFF6b1b3f;
 
       case 'phase1':
         return 0xFF17d7e3;
@@ -387,6 +395,8 @@ class RetroGameUI extends Module {
         return 0xFF17d7e3;
       case 'izzy':
         return 0xFF78fff8;
+      case 'sakuromap2-atlas':
+        return 0xFFa9328c;
       default:
         return p1BarColor;
     }

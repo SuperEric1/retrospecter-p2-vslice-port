@@ -47,6 +47,7 @@ class GirlfriendWrathCharacter extends SparrowCharacter
   function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
+    if (PlayState.instance == null) return;
     //synchronizeShader();
 
     speaker.visible = this.visible;
@@ -69,6 +70,7 @@ class GirlfriendWrathCharacter extends SparrowCharacter
   function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance == null) return;
 
     if (event.beat % 2 == 0)
     {

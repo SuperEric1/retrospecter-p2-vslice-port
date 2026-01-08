@@ -1,16 +1,16 @@
 {
 	"events": [
-		
+
 	],
 	"notes": {
 		"easy": [
-			
-		], 
+
+		],
 		"normal": [
-			
-		], 
+
+		],
 		"hard": [
-      
+
 		]
 	},
 	"scrollSpeed": {"easy": 1, "normal": 1, "hard": 1},

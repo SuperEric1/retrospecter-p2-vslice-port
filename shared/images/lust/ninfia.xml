@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ninfia.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ninfia0000" x="614" y="0" width="298" height="466" frameX="0" frameY="-4" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0001" x="614" y="0" width="298" height="466" frameX="0" frameY="-4" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0002" x="0" y="0" width="298" height="468" frameX="0" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0003" x="0" y="0" width="298" height="468" frameX="0" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0004" x="308" y="0" width="296" height="470" frameX="-1" frameY="0" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0005" x="308" y="0" width="296" height="470" frameX="-1" frameY="0" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0006" x="922" y="0" width="294" height="469" frameX="-2" frameY="-1" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0007" x="922" y="0" width="294" height="469" frameX="-2" frameY="-1" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0008" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0009" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0010" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0011" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0012" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+	<SubTexture name="ninfia0013" x="1226" y="0" width="294" height="468" frameX="-2" frameY="-2" frameWidth="298" frameHeight="470"/>
+</TextureAtlas>

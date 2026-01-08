@@ -47,17 +47,4 @@ class hollowNote extends Module {
 		}
 	}
 
-
-	/*public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		super.onNoteMiss( event );
-
-		for ( hollowNote in PlayState.instance.playerStrumline.notes.members )
-		{
-			if ( event.note.kind == "hollowNotes" )
-			{
-
-			}
-		}
-	}*/
 }

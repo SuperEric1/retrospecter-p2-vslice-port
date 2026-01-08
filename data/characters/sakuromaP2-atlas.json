@@ -1,0 +1,78 @@
+{
+  "version": "1.0.0",
+  "name": "SakuromaP2 Atlas",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/saku-phase2",
+  "singTime": 6.1,
+  "isPixel": false,
+  "scale": 1.44,
+  "healthIcon": {
+    "id": "mommy",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "animations": [
+    {
+      "name": "singLEFT",
+      "prefix": "anims/saku 2 left",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "anims/saku 2 down",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "singUP",
+      "prefix": "anims/saku 2 up",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "anims/saku 2 right",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "looped": true,
+      "name": "idle",
+      "prefix": "anims/saku 2 idle",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "mommy",
+      "prefix": "anims/saku step on me",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "temptation",
+      "prefix": "anims/saku temptation 1",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    },
+    {
+      "name": "laugh-end",
+      "prefix": "anims/saku temptation 2",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24
+    }
+  ],
+  "flipX": false
+}

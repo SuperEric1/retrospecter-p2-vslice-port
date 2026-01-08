@@ -71,7 +71,7 @@ class autoChainNote extends Module {
 		}
 	}
 
-	// no retroplaystate
+	// in retroplaystate
 	/*public override function onNoteMiss( event:NoteScriptEvent )
 	{
 		super.onNoteMiss( event );

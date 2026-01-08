@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="heartmelterbg_aino.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="BG_Cameo_Aino instance 10000" x="10" y="10" width="432" height="348" frameX="0" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10001" x="10" y="10" width="432" height="348" frameX="0" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10002" x="452" y="10" width="431" height="348" frameX="0" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10003" x="452" y="10" width="431" height="348" frameX="0" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10004" x="893" y="10" width="435" height="346" frameX="-1" frameY="-1" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10005" x="893" y="10" width="435" height="346" frameX="-1" frameY="-1" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10006" x="1338" y="10" width="439" height="347" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10007" x="1338" y="10" width="439" height="347" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10008" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10009" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10010" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10011" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10012" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10013" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10014" x="459" y="368" width="453" height="342" frameX="-1" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10015" x="459" y="368" width="453" height="342" frameX="-1" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10016" x="922" y="368" width="454" height="342" frameX="-1" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10017" x="922" y="368" width="454" height="342" frameX="-1" frameY="-3" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10018" x="1386" y="368" width="446" height="345" frameX="-1" frameY="-1" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10019" x="1386" y="368" width="446" height="345" frameX="-1" frameY="-1" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10020" x="10" y="724" width="440" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10021" x="10" y="724" width="440" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10022" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10023" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10024" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10025" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10026" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+	<SubTexture name="BG_Cameo_Aino instance 10027" x="10" y="368" width="439" height="346" frameX="-1" frameY="0" frameWidth="455" frameHeight="351"/>
+</TextureAtlas>

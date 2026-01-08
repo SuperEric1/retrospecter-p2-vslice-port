@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="heartmelterbg_bonmecha.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10000" x="10" y="10" width="397" height="462" frameX="0" frameY="-2" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10001" x="10" y="10" width="397" height="462" frameX="0" frameY="-2" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10002" x="417" y="10" width="397" height="463" frameX="0" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10003" x="417" y="10" width="397" height="463" frameX="0" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10004" x="824" y="10" width="397" height="463" frameX="0" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10005" x="824" y="10" width="397" height="463" frameX="0" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10006" x="1231" y="10" width="396" height="464" frameX="0" frameY="0" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10007" x="1231" y="10" width="396" height="464" frameX="0" frameY="0" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10008" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10009" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10010" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10011" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10012" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+	<SubTexture name="HeratmelterBGCameos_BonMecha instance 10013" x="1637" y="10" width="394" height="463" frameX="-1" frameY="-1" frameWidth="397" frameHeight="464"/>
+</TextureAtlas>

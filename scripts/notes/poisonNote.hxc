@@ -76,13 +76,10 @@ class poisonNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		for ( poisonNote in PlayState.instance.playerStrumline.notes.members )
+		if ( event.note.kind == "poison" )
 		{
-			if ( event.note.kind == "poison" )
-			{
-        event.cancel();
-        event.stopPropagation();
-			}
+			event.cancel();
+			event.stopPropagation();
 		}
 	}
 }

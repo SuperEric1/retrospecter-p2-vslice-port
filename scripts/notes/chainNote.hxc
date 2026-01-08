@@ -75,13 +75,10 @@ class chainNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		for ( chainNote in PlayState.instance.playerStrumline.notes.members )
+		if ( event.note.kind == "chain" )
 		{
-			if ( event.note.kind == "chain" )
-			{
-        event.cancel();
-        event.stopPropagation();
-			}
+			event.cancel();
+			event.stopPropagation();
 		}
 	}
 }

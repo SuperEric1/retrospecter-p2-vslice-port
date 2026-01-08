@@ -36,6 +36,8 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "Hydra":
           return;
+        case "sakuNote":
+          return;
         case "Fake Note":
           return;
       }

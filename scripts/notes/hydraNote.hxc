@@ -75,13 +75,10 @@ class HydraNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		for ( HydraNote in PlayState.instance.playerStrumline.notes.members )
+		if ( event.note.kind == "Hydra" )
 		{
-			if ( event.note.kind == "Hydra" )
-			{
-        event.cancel();
-        event.stopPropagation();
-			}
+			event.cancel();
+			event.stopPropagation();
 		}
 	}
 }

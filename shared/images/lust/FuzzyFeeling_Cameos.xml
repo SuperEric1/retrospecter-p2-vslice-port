@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="FuzzyFeeling_Cameos.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10000" x="10" y="10" width="1098" height="909" frameX="0" frameY="-2" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10001" x="10" y="10" width="1098" height="909" frameX="0" frameY="-2" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10002" x="1118" y="10" width="1098" height="909" frameX="0" frameY="-2" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10003" x="1118" y="10" width="1098" height="909" frameX="0" frameY="-2" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10004" x="2226" y="10" width="1097" height="911" frameX="0" frameY="0" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10005" x="2226" y="10" width="1097" height="911" frameX="0" frameY="0" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10006" x="3333" y="10" width="1096" height="911" frameX="-1" frameY="0" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10007" x="3333" y="10" width="1096" height="911" frameX="-1" frameY="0" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10008" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10009" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10010" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10011" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10012" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosLeft instance 10013" x="10" y="931" width="1095" height="911" frameX="-1" frameY="-1" frameWidth="1098" frameHeight="912"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10000" x="1115" y="931" width="1064" height="918" frameX="0" frameY="-5" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10001" x="1115" y="931" width="1064" height="918" frameX="0" frameY="-5" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10002" x="2189" y="931" width="1065" height="918" frameX="0" frameY="-5" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10003" x="2189" y="931" width="1065" height="918" frameX="0" frameY="-5" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10004" x="3264" y="931" width="1059" height="920" frameX="-3" frameY="-3" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10005" x="3264" y="931" width="1059" height="920" frameX="-3" frameY="-3" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10006" x="10" y="1861" width="1057" height="922" frameX="-5" frameY="-1" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10007" x="10" y="1861" width="1057" height="922" frameX="-5" frameY="-1" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10008" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10009" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10010" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10011" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10012" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+	<SubTexture name="FuzzyFeeling_CameosRight instance 10013" x="1077" y="1861" width="1057" height="923" frameX="-5" frameY="0" frameWidth="1065" frameHeight="923"/>
+</TextureAtlas>

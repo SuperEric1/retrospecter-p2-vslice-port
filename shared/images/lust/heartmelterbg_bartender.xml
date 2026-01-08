@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="heartmelterbg_bartender.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10000" x="10" y="10" width="236" height="342" frameX="0" frameY="-3" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10001" x="10" y="10" width="236" height="342" frameX="0" frameY="-3" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10002" x="256" y="10" width="236" height="342" frameX="0" frameY="-3" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10003" x="256" y="10" width="236" height="342" frameX="0" frameY="-3" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10004" x="502" y="10" width="236" height="344" frameX="0" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10005" x="502" y="10" width="236" height="344" frameX="0" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10006" x="748" y="10" width="235" height="345" frameX="-1" frameY="0" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10007" x="748" y="10" width="235" height="345" frameX="-1" frameY="0" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10008" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10009" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10010" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10011" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10012" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+	<SubTexture name="HeartmelterBGCameo_Bartender instance 10013" x="10" y="365" width="235" height="344" frameX="-1" frameY="-1" frameWidth="236" frameHeight="345"/>
+</TextureAtlas>

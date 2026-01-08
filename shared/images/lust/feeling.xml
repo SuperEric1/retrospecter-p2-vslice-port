@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="feeling.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="feeling0000" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0001" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0002" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0003" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0004" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0005" x="3224" y="738" width="151" height="615" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0006" x="3076" y="1476" width="366" height="630" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0007" x="3076" y="1476" width="366" height="630" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0008" x="3076" y="1476" width="366" height="630" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0009" x="2864" y="2214" width="700" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0010" x="2864" y="2214" width="700" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0011" x="2864" y="2214" width="700" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0012" x="0" y="2867" width="984" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0013" x="0" y="2867" width="984" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0014" x="0" y="2867" width="984" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0015" x="0" y="2214" width="2859" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0016" x="0" y="2214" width="2859" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0017" x="0" y="2214" width="2859" height="648" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0018" x="0" y="1476" width="3071" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0019" x="0" y="1476" width="3071" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0020" x="0" y="1476" width="3071" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0021" x="0" y="738" width="3219" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0022" x="0" y="738" width="3219" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0023" x="0" y="738" width="3219" height="733" frameX="0" frameY="0" frameWidth="3582" frameHeight="733"/>
+	<SubTexture name="feeling0024" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0025" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0026" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0027" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0028" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0029" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0030" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0031" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0032" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0033" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0034" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0035" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0036" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0037" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0038" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0039" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0040" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0041" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0042" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0043" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0044" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0045" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0046" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0047" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0048" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0049" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0050" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0051" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0052" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0053" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0054" x="0" y="0" width="3582" height="733"/>
+	<SubTexture name="feeling0055" x="0" y="0" width="3582" height="733"/>
+</TextureAtlas>

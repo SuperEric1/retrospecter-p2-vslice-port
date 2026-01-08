@@ -1,0 +1,39 @@
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+
+class RetroSave extends Module
+{
+    public function new()
+    {
+      super("RetroSave");
+      setupSave();
+    }
+
+    function setupSave():Void {
+      var save:Save = Save.instance;
+
+      if (!save.modOptions.exists("retroModcharts"))
+        save.modOptions.set("retroModcharts", true);
+
+      if (!save.modOptions.exists("retroMechanics"))
+        save.modOptions.set("retroMechanics", true);
+
+      if (!save.modOptions.exists("retroNotesTransform"))
+        save.modOptions.set("retroNotesTransform", false);
+
+      if (!save.modOptions.exists("retroShaders"))
+        save.modOptions.set("retroShaders", false);
+
+      if (!save.modOptions.exists("retroShake"))
+        save.modOptions.set("retroShake", true);
+
+      if (!save.modOptions.exists("retroSuggestive"))
+        save.modOptions.set("retroSuggestive", true);
+
+      if (!save.modOptions.exists("retroSongLength"))
+        save.modOptions.set("retroSongLength", false);
+
+      save.flush();
+    }
+}

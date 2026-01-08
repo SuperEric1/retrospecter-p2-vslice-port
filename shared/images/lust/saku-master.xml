@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="saku-master.png" width="5992" height="4504">
+	<SubTexture name="BG chairs" x="731" y="264" width="734" height="924" frameX="-0" frameY="-1124" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="BG tables" x="2" y="36" width="725" height="879" frameX="-0" frameY="-1137" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Bar stools" x="3448" y="2" width="525" height="615" frameX="-3644" frameY="-1212" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Barr" x="2956" y="2" width="488" height="521" frameX="-3689" frameY="-1214" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Dance floor 1" x="2" y="1194" width="3145" height="663" frameX="-576" frameY="-1197" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Dance floor 2" x="2" y="1861" width="3145" height="689" frameX="-576" frameY="-1197" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="FG_Bottom" x="2" y="2554" width="4177" height="781" frameX="-0" frameY="-1776" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="FG_LeftTable" x="2236" y="2" width="716" height="343" frameX="-900" frameY="-2214" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="FG_RightTable" x="1516" y="2" width="716" height="339" frameX="-2552" frameY="-2218" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="FG_cages" x="3977" y="2" width="2013" height="729" frameX="-1100" frameY="-117" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="FG_curtains" x="1469" y="735" width="4177" height="455" frameX="-0" frameY="-0" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Heart0000" x="3151" y="1194" width="1784" height="1085" frameX="-1197" frameY="-160" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Heart0001" x="4183" y="2283" width="1784" height="1098" frameX="-1197" frameY="-160" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Heart0002" x="2" y="3339" width="1784" height="1103" frameX="-1197" frameY="-160" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Heart0003" x="1790" y="3339" width="1800" height="1117" frameX="-1188" frameY="-146" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Heart0004" x="3594" y="3385" width="1800" height="1117" frameX="-1188" frameY="-146" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="SFW hooks" x="2" y="2" width="739" height="30" frameX="-12" frameY="-550" frameWidth="4177" frameHeight="2557"/>
+	<SubTexture name="Sex toys" x="745" y="2" width="767" height="258" frameX="-0" frameY="-547" frameWidth="4177" frameHeight="2557"/>
+</TextureAtlas>
