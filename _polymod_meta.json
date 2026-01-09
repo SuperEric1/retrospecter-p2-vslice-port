@@ -1,8 +1,16 @@
 {
-    "title": "Vs. RetroSpecter Part 2 V-Slice",
-    "description": "Fan port. Ported by SuperEric",
+    "title": "Vs. RetroSpecter - Part Two: Infernadise",
+    "description": "Fan port!",
     "author": "RetroSpecter",
+    "homepage": "https://github.com/SuperEric1/retrospecter-p2-vslice-port",
+    "contributors": [
+      {
+        "name": "SuperEric",
+        "role": "Mod porter, programmer",
+        "url": "https://youtube.com/@super_eric"
+      }
+    ],
     "api_version": "0.8.0",
     "mod_version": "1.0.0",
-    "license": "CC BY 4.0,MIT"
+    "license": "Apache-2.0"
 }
