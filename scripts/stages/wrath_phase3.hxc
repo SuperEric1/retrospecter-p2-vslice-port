@@ -1,5 +1,3 @@
-package stages;
-
 import flixel.FlxG;
 import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;

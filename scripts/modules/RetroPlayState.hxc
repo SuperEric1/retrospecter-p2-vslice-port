@@ -681,7 +681,7 @@ class RetroPlayState extends Module {
     });
   }
 
-  public function onUpdate(event):Void {
+  public function onUpdate(event:UpdateScriptEvent):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
     if (!isRetro) return;

@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "name": "80sNightflaid",
+  "renderType": "sparrow",
+  "assetPath": "characters/others/80sNightflaid",
+  "startingAnimation": "singLEFT",
+  "singTime": 4,
+  "isPixel": false,
+  "danceEvery": 2,
+  "scale": 2,
+  "healthIcon": {
+    "id": "nightflaid",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "cameraOffsets": [-150, 0],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "offsets": [0, 0]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "offsets": [0, 0]
+    }
+  ],
+  "flipX": false
+}

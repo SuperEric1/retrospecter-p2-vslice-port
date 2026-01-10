@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Scythe_Note_Assets.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Scythe_Note_Down0000" x="10" y="10" width="193" height="223" frameX="-42" frameY="-49" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0001" x="203" y="10" width="193" height="225" frameX="-42" frameY="-48" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0002" x="396" y="10" width="219" height="255" frameX="-29" frameY="-33" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0003" x="615" y="10" width="238" height="277" frameX="-20" frameY="-22" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0004" x="853" y="10" width="252" height="292" frameX="-13" frameY="-15" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0005" x="1105" y="10" width="262" height="304" frameX="-8" frameY="-9" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0006" x="1367" y="10" width="268" height="311" frameX="-5" frameY="-5" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0007" x="1635" y="10" width="271" height="315" frameX="-3" frameY="-3" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0008" x="1906" y="10" width="273" height="317" frameX="-2" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0009" x="2179" y="10" width="273" height="317" frameX="-2" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0010" x="2452" y="10" width="275" height="318" frameX="-1" frameY="-1" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0011" x="2727" y="10" width="275" height="318" frameX="-1" frameY="-1" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Down0012" x="3002" y="10" width="277" height="321"/>
+	<SubTexture name="Scythe_Note_Down0013" x="3002" y="10" width="277" height="321"/>
+	<SubTexture name="Scythe_Note_Left0000" x="3279" y="10" width="221" height="193" frameX="-50" frameY="-42" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0001" x="3500" y="10" width="225" height="193" frameX="-48" frameY="-42" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0002" x="3725" y="10" width="255" height="219" frameX="-33" frameY="-29" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0003" x="10" y="331" width="277" height="238" frameX="-22" frameY="-20" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0004" x="287" y="331" width="292" height="252" frameX="-15" frameY="-13" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0005" x="579" y="331" width="304" height="262" frameX="-9" frameY="-8" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0006" x="883" y="331" width="311" height="268" frameX="-6" frameY="-5" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0007" x="1194" y="331" width="315" height="271" frameX="-3" frameY="-3" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0008" x="1509" y="331" width="317" height="273" frameX="-2" frameY="-2" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0009" x="1826" y="331" width="317" height="273" frameX="-2" frameY="-2" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0010" x="2143" y="331" width="318" height="275" frameX="-2" frameY="-1" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0011" x="2143" y="331" width="318" height="275" frameX="-2" frameY="-1" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Left0012" x="2461" y="331" width="321" height="277"/>
+	<SubTexture name="Scythe_Note_Left0013" x="2461" y="331" width="321" height="277"/>
+	<SubTexture name="Scythe_Note_Right0000" x="2782" y="331" width="223" height="193" frameX="-49" frameY="-42" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0001" x="3005" y="331" width="225" height="193" frameX="-48" frameY="-42" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0002" x="3230" y="331" width="255" height="219" frameX="-33" frameY="-29" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0003" x="3485" y="331" width="277" height="238" frameX="-22" frameY="-20" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0004" x="3762" y="331" width="292" height="252" frameX="-15" frameY="-13" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0005" x="10" y="608" width="304" height="262" frameX="-9" frameY="-8" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0006" x="314" y="608" width="311" height="268" frameX="-5" frameY="-5" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0007" x="625" y="608" width="315" height="271" frameX="-3" frameY="-3" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0008" x="940" y="608" width="317" height="273" frameX="-2" frameY="-2" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0009" x="1257" y="608" width="317" height="273" frameX="-2" frameY="-2" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0010" x="1574" y="608" width="318" height="275" frameX="-1" frameY="-1" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0011" x="1892" y="608" width="318" height="275" frameX="-1" frameY="-1" frameWidth="321" frameHeight="277"/>
+	<SubTexture name="Scythe_Note_Right0012" x="2210" y="608" width="321" height="277"/>
+	<SubTexture name="Scythe_Note_Right0013" x="2210" y="608" width="321" height="277"/>
+	<SubTexture name="Scythe_Note_Up0000" x="2531" y="608" width="193" height="221" frameX="-42" frameY="-50" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0001" x="2724" y="608" width="193" height="225" frameX="-42" frameY="-48" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0002" x="2917" y="608" width="219" height="255" frameX="-29" frameY="-33" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0003" x="3136" y="608" width="238" height="277" frameX="-20" frameY="-22" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0004" x="3374" y="608" width="252" height="292" frameX="-13" frameY="-15" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0005" x="3626" y="608" width="262" height="304" frameX="-8" frameY="-9" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0006" x="10" y="912" width="268" height="311" frameX="-5" frameY="-6" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0007" x="278" y="912" width="271" height="315" frameX="-3" frameY="-3" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0008" x="549" y="912" width="273" height="317" frameX="-2" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0009" x="822" y="912" width="273" height="317" frameX="-2" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0010" x="1095" y="912" width="275" height="318" frameX="-1" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0011" x="1095" y="912" width="275" height="318" frameX="-1" frameY="-2" frameWidth="277" frameHeight="321"/>
+	<SubTexture name="Scythe_Note_Up0012" x="1370" y="912" width="277" height="321"/>
+	<SubTexture name="Scythe_Note_Up0013" x="1370" y="912" width="277" height="321"/>
+	<SubTexture name="StrumHit_Down0000" x="1647" y="912" width="235" height="267" frameX="-5" frameY="-4" frameWidth="245" frameHeight="274"/>
+	<SubTexture name="StrumHit_Down0001" x="1882" y="912" width="235" height="267" frameX="-5" frameY="-4" frameWidth="245" frameHeight="274"/>
+	<SubTexture name="StrumHit_Down0002" x="2117" y="912" width="245" height="274"/>
+	<SubTexture name="StrumHit_Down0003" x="2117" y="912" width="245" height="274"/>
+	<SubTexture name="StrumHit_Left0000" x="2362" y="912" width="268" height="235" frameX="-3" frameY="-5" frameWidth="274" frameHeight="245"/>
+	<SubTexture name="StrumHit_Left0001" x="2630" y="912" width="268" height="235" frameX="-3" frameY="-5" frameWidth="274" frameHeight="245"/>
+	<SubTexture name="StrumHit_Left0002" x="2898" y="912" width="274" height="245"/>
+	<SubTexture name="StrumHit_Left0003" x="2898" y="912" width="274" height="245"/>
+	<SubTexture name="StrumHit_Right0000" x="3172" y="912" width="267" height="235" frameX="-4" frameY="-5" frameWidth="274" frameHeight="245"/>
+	<SubTexture name="StrumHit_Right0001" x="3439" y="912" width="267" height="235" frameX="-4" frameY="-5" frameWidth="274" frameHeight="245"/>
+	<SubTexture name="StrumHit_Right0002" x="3706" y="912" width="274" height="245"/>
+	<SubTexture name="StrumHit_Right0003" x="3706" y="912" width="274" height="245"/>
+	<SubTexture name="StrumHit_Up0000" x="10" y="1233" width="235" height="268" frameX="-5" frameY="-3" frameWidth="245" frameHeight="274"/>
+	<SubTexture name="StrumHit_Up0001" x="245" y="1233" width="235" height="268" frameX="-5" frameY="-3" frameWidth="245" frameHeight="274"/>
+	<SubTexture name="StrumHit_Up0002" x="480" y="1233" width="245" height="274"/>
+	<SubTexture name="StrumHit_Up0003" x="480" y="1233" width="245" height="274"/>
+	<SubTexture name="Strum_Down0000" x="725" y="1233" width="150" height="179"/>
+	<SubTexture name="Strum_Left0000" x="875" y="1233" width="179" height="150"/>
+	<SubTexture name="Strum_Right0000" x="1054" y="1233" width="179" height="150"/>
+	<SubTexture name="Strum_Up0000" x="1233" y="1233" width="150" height="179"/>
+	<SubTexture name="strum_hold_end0000" x="1383" y="1233" width="55" height="69"/>
+	<SubTexture name="strum_hold_piece0000" x="1438" y="1233" width="57" height="44"/>
+</TextureAtlas>

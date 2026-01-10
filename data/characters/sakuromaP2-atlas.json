@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "SakuromaP2 Atlas",
+  "name": "SakuromaP2",
   "renderType": "animateatlas",
   "assetPath": "shared:characters/atlases/saku-phase2",
   "singTime": 6.1,

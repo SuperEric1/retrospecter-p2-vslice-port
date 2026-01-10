@@ -155,7 +155,7 @@ class SatisfractureSong extends Song
     if (event.step == 176) { //notas do retro somem
       tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
     }
-    if (event.step == 188) { //enough
+    if (event.step == 188) { //enough (o zoom é no chart)
       isDoingEnough = true;
       playState.mayPauseGame = false;
       var retro = playStage.getDad();

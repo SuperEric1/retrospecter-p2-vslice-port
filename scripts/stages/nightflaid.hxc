@@ -1,0 +1,1159 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.video.FunkinVideoSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.Paths;
+
+import supereric.retrospecter.modules.RetroGameUI;
+import supereric.retrospecter.modules.RetroPVE_VideoModule;
+
+/**
+ * Nightflaid Stage - Dynamic multi-character boss rush stage with color-changing shaders
+ *
+ * SHADER IMPLEMENTATION NEEDED:
+ * This stage requires a custom shader system called "NightflaidShaderHandler" with:
+ * - Left and right side color management
+ * - Color tweening (gradual color transitions)
+ * - Side swapping (swap left/right colors)
+ * - Lighting toggle
+ *
+ * Additional shader effects needed:
+ * - ReflectionShader: Creates reflection effect for characters
+ * - VCRBorder: Adds VCR-style border effect
+ * - NTSCFilter: Adds NTSC/analog TV distortion effect
+ *
+ * CUSTOM CAMERAS:
+ * The original implementation uses multiple custom cameras:
+ * - camCharacters: For character reflections
+ * - camVideo: For special "unbeatable" sequence with VCR effects
+ *
+ * GAMEPLAY MECHANICS:
+ * This stage supports multiple opponent characters that switch mid-song:
+ * - Each character has unique health bar colors and visual effects
+ * - Some characters have special mechanics (shake, screen effects, note drain)
+ * - Special "80sNightflaid" transformation sequence with unique visuals
+ */
+class NightflaidStage extends Stage
+{
+  var xAdjust:Float = -300;
+  var yAdjust:Float = -700;
+  var bgX:Float = -1700 + xAdjust;
+  var bgY:Float = -1200 + yAdjust;
+  var bgWidth:Float = 2760;
+  var bgHeight:Float = 1429;
+  var ogNfY:Float;
+
+  var hasCreatedStage:Bool = false;
+  var usedCheckPoint:Bool = false;
+  var qe:Bool = true;
+
+  // Color variants based on song
+  var alt:String = '';
+  var colorr:String = 'fb002d';
+
+  // Stage sprites
+  var N_hls:StageProp;
+  var N_drk:StageProp;
+  var N_clr:StageProp;
+  var N_top:StageProp;
+  var N_glw:StageProp;
+  var N_glt:StageProp;
+  var N_rlt:StageProp;
+  var N_lt1:StageProp;
+  var N_lt2:StageProp;
+  var coverSpr:StageProp;
+  var unbeatableBG:StageProp;
+  var whiteScreen:StageProp;
+  var nfUnbeatable:FunkinSprite;
+  var midsongVideo:FunkinVideoSprite; // Pre-created video sprite
+  var midsongVideoBlackBars:FunkinSprite; // Black bars for video
+  var midsongVideoPath:String = ''; // Path to load later
+  var midsongVideoResyncThreshold:Int = 1000; // Resync threshold in ms
+  var midsongVideoPlaying:Bool = false; // Track if video is currently playing
+  var hasVideoSpriteBeenCreated:Bool = false;
+
+  // Unbeatable elements
+  var unbeatableNeedlesLeft:Array<FlxSprite> = [];
+  var unbeatableNeedlesRight:Array<FlxSprite> = [];
+  var unbeatableLightningLeft:FlxSprite;
+  var unbeatableLightningRight:FlxSprite;
+  var needlesActive:Bool = false;
+
+  // Light animation variables
+  var lightLeftBlinkCount:Float = 0;
+  var lightLeftBlinkTime:Float = 0;
+  var lightRightBlinkCount:Float = 0;
+  var lightRightBlinkTime:Float = 0;
+  var redLightTime:Float = 0;
+
+  // Event tracking
+  var sq:Bool = false;
+  var qqs:Bool = false;
+  var qqas:Bool = false;
+  var qweqe:Bool = false;
+  var qqqqq:Bool = false;
+  var finalFadeout:Bool = false;
+  var dd:Bool = false;
+  var pp:Bool = false;
+
+  // Animation tracking
+  var singSuffix:String = null;
+  var singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
+  var animsWithOwnIdles:Array<String> = ['DAD', 'SONIC'];
+  var groundedAnims:Array<String> = ['WHITTY', 'RUV', 'TABI', 'POKEMON'];
+  var aerialAnims:Array<String> = ['GARCELLO', 'TRICKY', 'SHAGGY'];
+
+  // Zoom beats
+  var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
+
+  // Ground offset for descend/ascend animations
+  var groundedOff:Int = 250;
+
+  // Opponent animation tracking
+  var lastIdleSuffix:String = '';
+  var savedColor:String = '';
+
+  // Character color data
+  var characterColors:haxe.ds.StringMap<String, CharacterColorData> = new haxe.ds.StringMap();
+
+  public function new()
+  {
+    super('nightflaid');
+    initializeCharacterColors();
+  }
+
+  function initializeCharacterColors():Void
+  {
+    characterColors.set('DAD', {iconColor: '0xFFB066CF', barColor: '0xFFFF0105', health: 1, digiMulti: null, digideathShake: null, digideathScreenShake: null, digideathNoteDrain: null});
+    characterColors.set('WHITTY', {iconColor: '0xFFCE012C', barColor: '0xFFD70029', health: 1});
+    characterColors.set('RUV', {iconColor: '0xFF968BA3', barColor: '0xFF796793', health: 1, digideathShake: true});
+    characterColors.set('GARCELLO', {iconColor: '0xFF01FF93', barColor: '0xFF01FF93', health: 1, digideathShake: false});
+    characterColors.set('TABI', {iconColor: '0xFF5C6A83', barColor: '0xFF5E6983', health: 2, digideathScreenShake: true, digideathShake: true, digideathNoteDrain: true});
+    characterColors.set('TRICKY', {iconColor: '0xFFFF1904', barColor: '0xFFFD0002', health: 1.25, digideathScreenShake: false, digideathShake: false, digideathNoteDrain: false, digiMulti: 12});
+    characterColors.set('SHAGGY', {iconColor: '0xFFD11B1D', barColor: '0xFFD31A1F', health: 1});
+    characterColors.set('SONIC', {iconColor: '0xFF0058B4', barColor: '0xFF2B0572', health: 1});
+    characterColors.set('POKEMON', {iconColor: '0xFF7D5D8E', barColor: '0xFF7D5D8E', health: 1});
+    characterColors.set('80sNightflaid', {iconColor: '0xFFA7D6F4', barColor: '0xFFA7D6F4', health: 1});
+  }
+
+  /**
+   * STAGE MECHANICS OVERVIEW:
+   *
+   * COLOR VARIANTS:
+   * - Default (red): colorr = 'fb002d', alt = ''
+   * - Hexerpatient (green): colorr = '00FB3C', alt = '_green'
+   * - Extiraging (cyan): colorr = '00FBCE', alt = '_cyan'
+   *
+   * TIMELINE EVENTS (by step):
+   * - Step 64: Initial color tween to CCCCCC (if not checkpoint)
+   * - Steps 1664-2944: Dynamic camera side swapping based on focus
+   * - Step 2304: Both sides go dark (0d0d0d)
+   * - Step 2432: Left side lights up with song color
+   * - Step 2944: Lightings turn on
+   * - Step 3456: Lightings turn off, return to dark
+   * - Step 3512: Final fadeout to black (story mode only)
+   *
+   * SPECIAL SEQUENCES:
+   * - "80sNightflaid" character: Triggers "Unbeatable" sequence
+  * Switches to camVideo with VCR/NTSC effects
+  * Shows animated lightning and moving needles
+  * Animated background with random movement
+   *
+   * OPPONENT TRANSFORMATIONS:
+   * Each opponent character (DAD, WHITTY, RUV, etc.) has:
+   * - Custom health bar colors
+   * - Custom icon colors
+   * - Unique health values
+   * - Special effects (shake, screen shake, note drain)
+   * - Different idle suffix patterns
+   *
+   * ANIMATION SUFFIXES:
+   * - animsWithOwnIdles: Use '-CHARACTERNAME' for idle and sing
+   * - groundedAnims: Use '-GENERAL' for idle, '-CHARACTERNAME' for sing
+   * - aerialAnims: Use '' for idle, '-CHARACTERNAME' for sing
+   */
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    if (hasCreatedStage) return;
+
+    // Determine song variant
+    var songName = PlayState.instance?.currentChart?.songName ?? '';
+    if (songName == 'hexerpatient')
+    {
+      alt = '_green';
+      colorr = '00FB3C';
+    }
+    else if (songName == 'extiraging')
+    {
+      alt = '_cyan';
+      colorr = '00FBCE';
+    }
+
+    // Create background layers
+    N_hls = makeSprite('N_hls', 'nightflaid/highlights', bgX, bgY);
+    N_drk = makeSprite('N_drk', 'nightflaid/darklayer' + alt, bgX, bgY);
+
+    // Color layer (solid color)
+    N_clr = FunkinSprite.create(bgX, bgY);
+    N_clr.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
+    PlayState.instance.add(N_clr, 'N_clr');
+
+    N_top = makeSprite('N_top', 'nightflaid/toplayer' + alt, bgX, bgY);
+
+    // Scale color layer to match top layer
+    N_clr.setGraphicSize(Std.int(N_top.width), Std.int(N_top.height));
+    N_clr.updateHitbox();
+
+    // Glow layer (foreground)
+    N_glw = makeSprite('N_glw', 'nightflaid/glow' + alt, bgX, bgY);
+    N_glw.zIndex = 200; // Above characters
+
+    // Glow top
+    N_glt = makeSprite('N_glt', 'nightflaid/glowTop' + alt, 140 + xAdjust, -1280 + yAdjust);
+    N_glt.scale.set(2.65, 2.65);
+    N_glt.updateHitbox();
+
+    // Red lights
+    N_rlt = makeSprite('N_rlt', 'nightflaid/redlights' + alt, -1375 + xAdjust, -555 + yAdjust);
+    N_rlt.scale.set(2.65, 2.65);
+    N_rlt.updateHitbox();
+
+    // Light rays
+    N_lt1 = makeSprite('N_lt1', 'nightflaid/lightray', -1340 + xAdjust, -765 + yAdjust);
+    N_lt1.scale.set(2.65, 2.65);
+    N_lt1.updateHitbox();
+
+    N_lt2 = makeSprite('N_lt2', 'nightflaid/lightray', 2900 + xAdjust, -765 + yAdjust);
+    N_lt2.scale.set(2.65, 2.65);
+    N_lt2.flipX = true;
+    N_lt2.updateHitbox();
+
+    // Cover sprite (black screen overlay)
+    coverSpr = FunkinSprite.create(-100, -100);
+    coverSpr.makeGraphic(1, 1, FlxColor.BLACK);
+    coverSpr.scrollFactor.set(0, 0);
+    coverSpr.setGraphicSize(FlxG.width + 200, FlxG.height + 200);
+    coverSpr.updateHitbox();
+    coverSpr.alpha = 0;
+    coverSpr.visible = false;
+    coverSpr.zIndex = 1;
+    PlayState.instance.add(coverSpr, 'coverSpr');
+
+    nfUnbeatable = FunkinSprite.create(0, 0);
+    nfUnbeatable.loadSparrow('characters/others/80sNightflaid');
+    nfUnbeatable.animation.addByPrefix('idle', 'idle');
+    nfUnbeatable.animation.addByPrefix('singLEFT', 'left');
+    nfUnbeatable.animation.addByPrefix('singRIGHT', 'right');
+    nfUnbeatable.animation.addByPrefix('singUP', 'up');
+    nfUnbeatable.animation.play('idle');
+    nfUnbeatable.scale.set(2, 2);
+    nfUnbeatable.camera = PlayState.instance.camHUD;
+    nfUnbeatable.updateHitbox();
+    //PlayState.instance.add(nfUnbeatable);
+
+    initializeMidsongVideo(); // Create video sprite early cuz of zindex I HATE THIS SHIT RAHHHHH
+
+    // Unbeatable background
+    unbeatableBG = makeSprite('unbeatableBG', 'nightflaid/unbeatableBG' + alt, -1000 + xAdjust, 0 + yAdjust); // old y: -900 + yAdjust
+    unbeatableBG.scrollFactor.set(0, 0);
+    unbeatableBG.antialiasing = false;
+    unbeatableBG.scale.set(150, 150);
+    unbeatableBG.updateHitbox();
+    unbeatableBG.alpha = 0;
+    //unbeatableBG.camera = PlayState.instance.camHUD;
+    //unbeatableBG.zIndex = 1;
+
+    // White screen flash
+    whiteScreen = FunkinSprite.create(1, 1);
+    whiteScreen.makeGraphic(1, 1, FlxColor.WHITE);
+    whiteScreen.scale.set(5000, 5000);
+    whiteScreen.updateHitbox();
+    whiteScreen.screenCenter();
+    whiteScreen.alpha = 0.001;
+    whiteScreen.zIndex = 300;
+    whiteScreen.camera = PlayState.instance.camHUD;
+    PlayState.instance.add(whiteScreen, 'whiteScreen');
+
+    hasCreatedStage = true;
+    PlayState.instance.refresh();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    setupUnbeatableElements();
+    setupShaders();
+    if (ogNfY == 0 || ogNfY == null) ogNfY = getDad().y;
+
+    //setOppAnimation('DAD');
+
+    // Check for checkpoint
+    if (Conductor.instance.songPosition > 200000)
+    {
+      usedCheckPoint = true;
+      //if (getDad() != null) getDad().y = 350;
+    }
+    else
+    {
+      // Initial color tween would go here
+      // triggerNightflaidColorTween('0d0d0d', 0.15);
+    }
+  }
+
+  function initializeMidsongVideo():Void
+  {
+    // Create black bars sprite for video letterboxing
+    midsongVideoBlackBars = FunkinSprite.create(0, 0);
+    midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF000000);
+    //midsongVideoBlackBars.zIndex = 298; // Just behind video
+    midsongVideoBlackBars.scrollFactor.set(0, 0);
+    midsongVideoBlackBars.visible = false;
+    midsongVideoBlackBars.active = false;
+    PlayState.instance.add(midsongVideoBlackBars);
+
+    // Create video sprite early so it's added before other unbeatable elements
+    // This ensures correct rendering order without z-index issues
+    midsongVideo = new FunkinVideoSprite(0, 0);
+    midsongVideo.zIndex = 0;
+    midsongVideo.scrollFactor.set(0, 0);
+    midsongVideo.visible = false; // Start invisible
+    midsongVideo.active = false; // Don't update until we play
+
+    hasVideoSpriteBeenCreated = true;
+    PlayState.instance.add(midsongVideo);
+    PlayState.instance.refresh();
+  }
+
+  function makeSprite(name:String, imageName:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imageName);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function setupUnbeatableElements():Void
+  {
+    // Lightning sprites
+    var leftPos:Float = 110.0 - 500.0;
+    unbeatableLightningLeft = FunkinSprite.create(leftPos, -50);
+    unbeatableLightningLeft.loadSparrow('nightflaid/ycbu_lightning');
+    unbeatableLightningLeft.animation.addByPrefix('lightning', 'lightning', 24, true);
+    unbeatableLightningLeft.animation.play('lightning', true);
+    unbeatableLightningLeft.scrollFactor.set(0, 0);
+    unbeatableLightningLeft.visible = false;
+    unbeatableLightningLeft.active = false;
+    //unbeatableLightningLeft.camera = PlayState.instance.camHUD;
+    //unbeatableLightningLeft.zIndex = 2;
+    PlayState.instance.add(unbeatableLightningLeft);
+
+    var rightPos:Float = 1020.0 + 500.0;
+    unbeatableLightningRight = FunkinSprite.create(rightPos, -50);
+    unbeatableLightningRight.loadSparrow('nightflaid/ycbu_lightning');
+    unbeatableLightningRight.animation.addByPrefix('lightning', 'lightning', 24, true);
+    unbeatableLightningRight.animation.play('lightning', true);
+    unbeatableLightningRight.scrollFactor.set(0, 0);
+    unbeatableLightningRight.flipY = true;
+    unbeatableLightningRight.visible = false;
+    unbeatableLightningRight.active = false;
+    //unbeatableLightningRight.camera = PlayState.instance.camHUD;
+    //unbeatableLightningRight.zIndex = 2;
+    PlayState.instance.add(unbeatableLightningRight);
+
+    // Create needles
+    for (i in 0...6)
+    {
+      var needleY:Float = 0.0;
+      switch(i % 3)
+      {
+        case 1: needleY = 360.0;
+        case 2: needleY = 720.0;
+      }
+
+      var needle = FunkinSprite.create(-1900, needleY);
+      needle.scrollFactor.set(0, 0);
+      needle.loadSparrow('nightflaid/needle');
+      needle.animation.addByPrefix('needle', 'anim', 24, true);
+      needle.animation.play('needle', true);
+      needle.visible = false;
+      needle.active = false;
+      //needle.camera = PlayState.instance.camHUD;
+      //needle.zIndex = 3;
+      PlayState.instance.add(needle);
+
+      if (i < 3)
+      {
+        unbeatableNeedlesLeft.push(needle);
+      }
+      else
+      {
+        needle.flipX = true;
+        unbeatableNeedlesRight.push(needle);
+      }
+    }
+
+    // Start unbeatable tween
+    unbeatableTween();
+  }
+
+  function unbeatableTween():Void
+  {
+    if (unbeatableBG == null) return;
+
+    FlxTween.tween(unbeatableBG, {
+      x: FlxG.random.float(-1000.0, -1400.0),
+      angle: FlxG.random.float(-25.0, 25.0)
+    }, FlxG.random.float(2.5, 4.5), {
+      ease: FlxEase.linear,
+      onComplete: function(twn:FlxTween) {
+        unbeatableTween();
+      }
+    });
+  }
+
+  function setupShaders():Void
+  {
+    // TODO: Placeholder for shader setup
+
+    // SHADER SETUP NEEDED:
+    //
+    // 1. NightflaidShaderHandler - Main shader system
+    //    - Create instance: nightflaidShaderHandler = new NightflaidShaderHandler()
+    //    - leftSide and rightSide shader objects with colorTween() method
+    //    - swapColors(duration) method
+    //    - toggleLights(enabled) method
+    //
+    // 2. ReflectionShader - Character reflection effect
+    //    - Create instance: refShader = new ReflectionShader()
+    //    - setReflectionY(670.0) - Sets Y position of reflection plane
+    //    - update() method - Called each frame
+    //    - Apply to camCharacters
+    //
+    // 3. VCRBorder - VCR tape border effect
+    //    - Create instance: vcrBorder = new VCRBorder()
+    //    - enabled property (bool)
+    //    - intensity property (float, 0.0 to 1.0)
+    //    - Apply to camVideo, camHUD, and camSustains
+    //
+    // 4. NTSCFilter - Analog TV distortion
+    //    - Create instance: ntscFilter = new NTSCFilter()
+    //    - enabled property (bool)
+    //    - distortionMult property (float)
+    //    - scanlineMult property (float)
+    //    - time property (updated each frame)
+    //    - Apply to camVideo
+    //
+    // 5. Custom Camera Setup
+    //    - camCharacters = new FlxCamera() with bgColor = 0x00000000 (transparent)
+    //    - camVideo = new FlxCamera() with bgColor = 0x00000000 (transparent)
+    //    - Set camera order properly so layers render correctly
+    //    - Assign sprites to appropriate cameras:
+    //      * boyfriendGroup, dadGroup, subtitle -> camCharacters
+    //      * coverSpr, whiteScreen, unbeatableBG, lightning, needles -> camVideo
+    //
+    // 6. Camera Synchronization
+    //    - In onUpdate, sync camCharacters position/zoom with camGame
+    //    - Update shader time values each frame
+  }
+
+  function setCameraOnThings(top:Bool):Void
+  {
+    // TODO: Placeholder for camera switching
+    // Would switch between normal view and "unbeatable" view
+    needlesActive = top;
+
+    if (top)
+    {
+      // Enable VCR/NTSC effects
+      FlxTween.tween(unbeatableLightningLeft, {x: unbeatableLightningLeft.x + 500.0}, 0.75, {ease: FlxEase.quadOut});
+      FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x - 500.0}, 0.75, {ease: FlxEase.quadOut});
+    }
+    else
+    {
+      // Disable effects
+    }
+
+    // Update needle visibility
+    for (needle in unbeatableNeedlesLeft)
+    {
+      needle.active = needlesActive;
+      needle.visible = needlesActive;
+    }
+    for (needle in unbeatableNeedlesRight)
+    {
+      needle.active = needlesActive;
+      needle.visible = needlesActive;
+    }
+    unbeatableLightningLeft.visible = needlesActive;
+    unbeatableLightningRight.visible = needlesActive;
+    unbeatableLightningLeft.active = needlesActive;
+    unbeatableLightningRight.active = needlesActive;
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    var elapsed = event.elapsed;
+
+    // Light blinking logic - Left light
+    lightLeftBlinkTime -= elapsed * 5.0;
+    if (lightLeftBlinkTime < 0)
+    {
+      lightLeftBlinkCount = FlxG.random.float(2, 4);
+      lightLeftBlinkTime = FlxG.random.float(12.0, 20.0);
+    }
+    else
+    {
+      if (lightLeftBlinkTime > lightLeftBlinkCount)
+      {
+        if (N_lt1 != null) N_lt1.visible = true;
+      }
+      else
+      {
+        if (N_lt1 != null) N_lt1.visible = (lightLeftBlinkTime % 1 < 0.5);
+      }
+    }
+
+    // Light blinking logic - Right light
+    lightRightBlinkTime -= elapsed * 5.0;
+    if (lightRightBlinkTime < 0)
+    {
+      lightRightBlinkCount = FlxG.random.float(2, 4);
+      lightRightBlinkTime = FlxG.random.float(12.0, 20.0);
+    }
+    else
+    {
+      if (lightRightBlinkTime > lightRightBlinkCount)
+      {
+        if (N_lt2 != null) N_lt2.visible = true;
+      }
+      else
+      {
+        if (N_lt2 != null) N_lt2.visible = (lightRightBlinkTime % 1 < 0.5);
+      }
+    }
+
+    // Red light pulsing
+    redLightTime += elapsed;
+    if (N_rlt != null)
+    {
+      N_rlt.alpha = Math.sin(Math.PI * redLightTime) * 0.25 + 0.85;
+    }
+
+    // Update needles if active
+    if (needlesActive)
+    {
+      for (needle in unbeatableNeedlesLeft)
+      {
+        needle.x = unbeatableLightningLeft.x - 80.0;
+        needle.y -= 360 * elapsed;
+        if (needle.y < -needle.height)
+        {
+          needle.y += (720.0 / 2.0) * 3.0;
+        }
+      }
+
+      for (needle in unbeatableNeedlesRight)
+      {
+        needle.x = unbeatableLightningRight.x - 80.0;
+        needle.y += 360 * elapsed;
+        if (needle.y > FlxG.height)
+        {
+          needle.y -= (720.0 / 2.0) * 3.0;
+        }
+      }
+    }
+
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    var curBeat = event.beat;
+
+    // Zoom on specific beats
+    for (zoomBeat in zoomBeats)
+    {
+      if (curBeat == zoomBeat)
+      {
+        var crochet = (Conductor.instance.stepLengthMs * 4) / 1000;
+        FlxTween.tween(PlayState.instance.camGame, {zoom: PlayState.instance.camGame.zoom + 0.1, angle: -4.5}, crochet, {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn:FlxTween) {
+            FlxTween.tween(PlayState.instance.camGame, {angle: 0}, crochet, {ease: FlxEase.expoOut});
+          }
+        });
+
+        FlxTween.tween(PlayState.instance.camHUD, {zoom: 1.1, angle: 4}, crochet, {
+          ease: FlxEase.expoIn,
+          onComplete: function(twn:FlxTween) {
+            FlxTween.tween(PlayState.instance.camHUD, {angle: 0}, crochet, {ease: FlxEase.expoOut});
+          }
+        });
+      }
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+
+    var curStep = event.step;
+
+    // Step-based events
+    if (curStep >= 3512 && !finalFadeout && PlayState.instance.isStoryMode)
+    {
+      finalFadeout = true;
+      if (coverSpr != null)
+      {
+        coverSpr.alpha = 0;
+        coverSpr.visible = true;
+        FlxTween.tween(coverSpr, {alpha: 1}, 0.5);
+      }
+    }
+
+    if (curStep >= 64 && !sq && !usedCheckPoint)
+    {
+      sq = true;
+      // Trigger initial color tween
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween', ['CCCCCC', '0.15'])));
+    }
+
+    if (curStep >= 2944 && !qqs)
+    {
+      qqs = true;
+      // Turn on lightings
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid lightings', ['on', ''])));
+    }
+
+    if (curStep >= 3456 && !qqas)
+    {
+      qqas = true;
+      // Turn off lightings and go dark
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid lightings', ['off', ''])));
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween', ['0d0d0d', '0.15'])));
+    }
+
+    if (curStep >= 2304 && !qweqe)
+    {
+      // Both sides go dark
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween right-only', ['0d0d0d', '0.3'])));
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween left-only', ['0d0d0d', '0.3'])));
+      qweqe = true;
+      qe = false;
+    }
+
+    if (curStep >= 2432 && !qqqqq)
+    {
+      // Left side lights up
+      //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween left-only', [colorr, '0.3'])));
+      qqqqq = true;
+      qe = true;
+    }
+
+    // Resync é gerenciado pelo RetroPVE_VideoModule agora
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    // Handle camera related events
+    if (eventKind == "FocusCamera")
+    {
+      var value = event.eventData.value;
+      var step = Conductor.instance.currentStep;
+      // Dynamic camera side swapping between steps 1664-2944
+      if (!qe) return;
+
+      var currentStep = Conductor.instance.currentStep;
+      if (currentStep < 1664 || currentStep >= 2944) return;
+
+      // Track which side should be lit based on camera focus
+      switch (Std.parseInt(value.char)) {
+        case 0:
+          if (!dd) {
+            dd = true;
+            pp = false;
+            // Swap sides and update colors
+            // triggerNightflaidSwapSides('', '');
+            // triggerNightflaidColorTweenLeftOnly(colorr, 0.3);
+            // triggerNightflaidColorTweenRightOnly('0d0d0d', 0.3);
+          }
+        case 1:
+          if (!pp) {
+            pp = true;
+            dd = false;
+            // Swap sides and update colors
+            // triggerNightflaidSwapSides('', '');
+            // triggerNightflaidColorTweenRightOnly(colorr, 0.3);
+            // triggerNightflaidColorTweenLeftOnly('0d0d0d', 0.3);
+          }
+        default:
+          break;
+      }
+    }
+
+    // Handle Nightflaid events
+    if (eventKind == "NightflaidEvents") {
+      switch (Std.parseInt(value.eventType)) {
+        case 0: // Nightflaid color tween
+          if (value != null && value.length >= 3)
+          {
+            var colorHex:String = value[1];
+            var duration:Float = Std.parseFloat(value[2]);
+          }
+
+        case 1: // Nightflaid color tween left-only
+          if (value != null && value.length >= 3)
+          {
+            var colorHex:String = value[1];
+            var duration:Float = Std.parseFloat(value[2]);
+          }
+
+        case 2: // Nightflaid color tween right-only
+          if (value != null && value.length >= 3)
+          {
+            var colorHex:String = value[1];
+            var duration:Float = Std.parseFloat(value[2]);
+          }
+
+        case 3: // Nightflaid swap sides
+          var duration:Float = 0.15;
+          if (value != null && value.length > 0)
+          {
+            duration = Std.parseFloat(value[1]);
+          }
+
+        case 4: // Nightflaid lightings
+          var enableLights:Bool = false;
+          if (value != null && value.length > 0)
+          {
+            var val = value[1].toLowerCase();
+            enableLights = (val == 'on' || val == '1');
+          }
+      }
+    }
+
+    switch (eventKind) {
+      case "PlayAnimation":
+        if (value != null)
+        {
+          handleCutsceneAnimation(value.anim);
+        }
+
+      case "RetroChangeCharacter":
+        if (value != null)
+        {
+          var target = value.character;
+          var characterId = value.newchar;
+          if (target == "dad" || characterId != null)
+          {
+            handleOpponentCharacterChange(characterId);
+          }
+        }
+
+      case "RetroPlayVideo":
+        if (value != null && value.length > 0)
+        {
+          //midsongVideoPath = value[0]; // this is not needed ig
+        }
+        handleMidsongCutscene();
+    }
+  }
+
+  function handleCutsceneAnimation(animName:String):Void
+  {
+    var dad = getDad();
+    if (dad == null) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+
+    switch (animName)
+    {
+      case 'descend':
+        FlxTween.cancelTweensOf(dad);
+        FlxTween.tween(dad, {y: dad.y + groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
+
+      case 'ascend':
+        FlxTween.cancelTweensOf(dad);
+        FlxTween.tween(dad, {y: dad.y - groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
+
+      case 'final':
+        // Fade out HUD
+        FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 2, {ease: FlxEase.quadOut});
+    }
+  }
+
+  function handleOpponentCharacterChange(character:String):Void
+  {
+    var dad = getDad();
+    if (dad == null) return;
+
+    setOppAnimation(character);
+
+    if (character == 'nightflaid_unbeatable')
+    {
+      // Special setup for 80s Nightflaid character
+      if (dad.animation != null)
+      {
+        dad.playAnimation('singLEFT', true);
+      }
+
+      if (coverSpr != null)
+      {
+        FlxTween.cancelTweensOf(coverSpr);
+        coverSpr.alpha = 1;
+      }
+
+      var posY = FlxG.height - (getDad().height / 2) + 40; // 200
+      dad.y = posY + FlxG.height + 100; //posY + FlxG.height + 100
+      FlxTween.tween(dad, {y: posY}, 0.75, {ease: FlxEase.circOut});
+      FlxTween.tween(getBoyfriend(), {alpha: 0}, 0.75, {ease: FlxEase.circOut});
+
+      if (unbeatableBG != null)
+      {
+        FlxTween.tween(unbeatableBG, {alpha: 1}, 0.75, {ease: FlxEase.circOut});
+      }
+
+      PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, FlxG.height, 0.1, FlxEase.circOut);
+      FlxTween.tween(PlayState.instance, {currentCameraZoom: 1}, 0.3, {ease: FlxEase.circOut});
+
+      setCameraOnThings(true);
+    }
+
+    if (character == 'nightflaid_atlas')
+    {
+      dad.y = ogNfY;
+      PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
+      getBoyfriend().alpha = 1;
+    }
+  }
+
+  function setOppAnimation(anim:String):Void
+  {
+    var dad = getDad();
+    if (dad == null) return;
+
+    if (anim == null) anim = '';
+    anim = anim.toUpperCase();
+
+    // Get character configuration
+    var colorData = characterColors.get(anim);
+    if (colorData != null)
+    {
+      // Update health bar colors
+      var iconColor:FlxColor = FlxColor.fromString(colorData.iconColor);
+      var barColor:FlxColor = FlxColor.fromString(colorData.barColor);
+
+      if (PlayState.instance.iconP2 != null)
+      {
+        FlxTween.cancelTweensOf(PlayState.instance.iconP2);
+        FlxTween.tween(PlayState.instance.iconP2, {color: iconColor}, 1, {ease: FlxEase.circOut});
+      }
+
+      if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.leftBar != null)
+      {
+        FlxTween.cancelTweensOf(PlayState.instance.healthBar.leftBar);
+        FlxTween.tween(PlayState.instance.healthBar.leftBar, {color: barColor}, 1, {ease: FlxEase.circOut});
+      }
+
+      // Update health value
+      PlayState.instance.health = colorData.health;
+
+      // Apply special effects
+      if (colorData.digideathShake != null)
+      {
+        // PlayState.instance.digideathShake = colorData.digideathShake;
+      }
+      if (colorData.digideathScreenShake != null)
+      {
+        // PlayState.instance.digideathScreenShake = colorData.digideathScreenShake;
+      }
+      if (colorData.digideathNoteDrain != null)
+      {
+        // PlayState.instance.digideathNoteDrain = colorData.digideathNoteDrain;
+      }
+      if (colorData.digiMulti != null)
+      {
+        // PlayState.instance.digiMulti = colorData.digiMulti;
+      }
+    }
+
+    // Update animation suffix based on character type
+    if (animsWithOwnIdles.contains(anim))
+    {
+      dad.idleSuffix = '-' + anim;
+      singSuffix = '-' + anim;
+    }
+    else if (groundedAnims.contains(anim))
+    {
+      dad.idleSuffix = '-GENERAL';
+      singSuffix = '-' + anim;
+    }
+    else if (aerialAnims.contains(anim))
+    {
+      dad.idleSuffix = '';
+      singSuffix = '-' + anim;
+    }
+    else
+    {
+      dad.idleSuffix = '';
+      singSuffix = null;
+    }
+
+    // Play animation if different idle suffix
+    if (lastIdleSuffix != dad.idleSuffix)
+    {
+      lastIdleSuffix = dad.idleSuffix;
+      if (dad.animation != null)
+      {
+        dad.dance();
+      }
+    }
+  }
+
+  public function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+		if (!event.note.noteData.getMustHitNote() && getDad().characterType == CharacterType.DAD) {
+      if (singSuffix != null)
+      {
+        var dir = event.note.noteData.getDirection();
+        var dad = getDad();
+        dad.holdTimer = 0;
+        dad.playSingAnimation(dir, false, singSuffix);
+      }
+    }
+  }
+  function handleMidsongCutscene():Void
+  {
+    var dad = getDad();
+    if (dad == null) return;
+
+    // Play the midsong video
+    playMidsongVideo();
+
+    // Transition dad out
+    FlxTween.tween(dad, {y: dad.y + FlxG.height + 100}, 0.5, {ease: FlxEase.sineIn});
+
+    if (unbeatableBG != null)
+    {
+      FlxTween.tween(unbeatableBG, {alpha: 0}, 0.5, {ease: FlxEase.circOut});
+    }
+
+    // Pre-transition effects
+    if (unbeatableLightningLeft != null)
+    {
+      FlxTween.tween(unbeatableLightningLeft, {x: unbeatableLightningLeft.x - 500.0}, 0.5, {ease: FlxEase.quadIn});
+    }
+    if (unbeatableLightningRight != null)
+    {
+      FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x + 500.0}, 0.5, {ease: FlxEase.quadIn});
+    }
+
+    // Update health bar colors to white
+    if (PlayState.instance.iconP2 != null)
+    {
+      FlxTween.tween(PlayState.instance.iconP2, {color: FlxColor.WHITE}, 0.5, {ease: FlxEase.circOut});
+    }
+    if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.leftBar != null)
+    {
+      FlxTween.tween(PlayState.instance.healthBar.leftBar, {color: FlxColor.WHITE}, 0.5, {ease: FlxEase.circOut});
+    }
+
+    // After animation completes, switch character and reset
+    new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+      // Switch to nightflaid_atlas character
+      if (coverSpr != null)
+      {
+        coverSpr.alpha = 1;
+        FlxTween.tween(coverSpr, {alpha: 0}, 0.5);
+      }
+
+      setCameraOnThings(false);
+
+      // Reset color tween to dark
+      // triggerNightflaidColorTween('0d0d0d', 0.15);
+    });
+  }
+
+  function playMidsongVideo():Void
+  {
+    if (midsongVideo == null) return;
+
+    // Make video and black bars visible and active
+    midsongVideo.active = true;
+    midsongVideo.visible = true;
+    midsongVideoBlackBars.active = true;
+    midsongVideoBlackBars.visible = true;
+    midsongVideoPlaying = true;
+
+    // Load and play the video
+    var videoPath = Paths.videos('nightflaid');
+
+    if (midsongVideo.load(videoPath))
+    {
+      // Scale the video to fit the screen while keeping aspect ratio
+      midsongVideo.bitmap.onFormatSetup.add(() -> {
+        var scale:Float = Math.min(FlxG.width / midsongVideo.bitmap.bitmapData.width, FlxG.height / midsongVideo.bitmap.bitmapData.height);
+        midsongVideo.setGraphicSize((midsongVideo.bitmap.bitmapData.width * scale) + 10, midsongVideo.bitmap.bitmapData.height * scale);
+        midsongVideo.updateHitbox();
+        midsongVideo.screenCenter();
+      });
+
+      midsongVideo.play();
+      midsongVideo.bitmap.volumeAdjust = 0; // mute video
+
+      // Handle video end
+      midsongVideo.bitmap.onEndReached.add(function() {
+        midsongVideo.visible = false;
+        midsongVideo.active = false;
+        midsongVideoBlackBars.visible = false;
+        midsongVideoBlackBars.active = false;
+        midsongVideoPlaying = false;
+      }, true);
+
+      // Handle video errors
+      midsongVideo.bitmap.onEncounteredError.add(function() {
+        trace('ERROR: Failed to play midsong video: ' + videoPath);
+        midsongVideo.visible = false;
+        midsongVideo.active = false;
+        midsongVideoBlackBars.visible = false;
+        midsongVideoBlackBars.active = false;
+        midsongVideoPlaying = false;
+      }, true);
+
+      // Quando o vídeo é ativado, o stage registra no módulo:
+      var videoModule = ModuleHandler.getModule('RetroPVE_VideoModule');
+      videoModule.scriptCall('registerVideoForResync', [midsongVideo, midsongVideoBlackBars, true]);
+
+      // O módulo faz o resync automaticamente em onStepHit()
+    }
+    else
+    {
+      trace('ERROR: Could not load video file: ' + videoPath);
+      midsongVideo.visible = false;
+      midsongVideo.active = false;
+      midsongVideoBlackBars.visible = false;
+      midsongVideoBlackBars.active = false;
+      midsongVideoPlaying = false;
+    }
+  }
+
+  /*function checkResyncVideo(?instant:Bool = false, ?resume:Bool = true):Void
+  {
+    // Only resync if video is actually playing
+    if (midsongVideo?.bitmap == null) return;
+    if (!midsongVideoPlaying || !midsongVideo.visible || !midsongVideo.active) return;
+
+    // Calculate expected video time based on song position
+    var expectedVideoTime:Float = Conductor.instance.songPosition - Conductor.instance.combinedOffset;
+    var videoError:Float = midsongVideo.bitmap.time - expectedVideoTime;
+
+    if (instant || Math.abs(videoError) > midsongVideoResyncThreshold)
+    {
+      trace('VIDEO RESYNC: Drift = ' + Std.int(Math.abs(videoError)) + 'ms');
+      midsongVideo.pause();
+      midsongVideo.bitmap.time = expectedVideoTime;
+      if (resume) midsongVideo.resume();
+    }
+  }*/
+
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    hasCreatedStage = false;
+    midsongVideoPlaying = false;
+
+    // Cleanup arrays
+    unbeatableNeedlesLeft = [];
+    unbeatableNeedlesRight = [];
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    switch (charType)
+    {
+      case CharacterType.GF:
+        character.antialiasing = false;
+        character.danceEvery = 0;
+        character.visible = false;
+        character.kill(); // finish HER!!
+      default:
+    }
+  }
+
+  /*override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    if (event.eventData.eventKind == "FocusCamera")
+    {
+      var value = event.eventData.value;
+      var step = Conductor.instance.currentStep;
+      // Dynamic camera side swapping between steps 1664-2944
+      if (!qe) return;
+
+      var currentStep = Conductor.instance.currentStep;
+      if (currentStep < 1664 || currentStep >= 2944) return;
+
+      // Track which side should be lit based on camera focus
+      switch (Std.parseInt(value.char)) {
+        case 0:
+          if (!dd) {
+            dd = true;
+            pp = false;
+            // Swap sides and update colors
+            // triggerNightflaidSwapSides('', '');
+            // triggerNightflaidColorTweenLeftOnly(colorr, 0.3);
+            // triggerNightflaidColorTweenRightOnly('0d0d0d', 0.3);
+          }
+        case 1:
+          if (!pp) {
+            pp = true;
+            dd = false;
+            // Swap sides and update colors
+            // triggerNightflaidSwapSides('', '');
+            // triggerNightflaidColorTweenRightOnly(colorr, 0.3);
+            // triggerNightflaidColorTweenLeftOnly('0d0d0d', 0.3);
+          }
+        default:
+      }
+    }
+  }*/
+
+}
+
+// Character configuration structure
+typedef CharacterColorData = {
+  var iconColor:String;
+  var barColor:String;
+  var health:Float;
+  @:optional var digiMulti:Float;
+  @:optional var digideathShake:Bool;
+  @:optional var digideathScreenShake:Bool;
+  @:optional var digideathNoteDrain:Bool;
+}

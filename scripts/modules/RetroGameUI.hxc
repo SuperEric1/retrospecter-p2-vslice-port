@@ -1,3 +1,5 @@
+package supereric.retrospecter.modules;
+
 import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.modding.module.Module;
@@ -119,11 +121,17 @@ class RetroGameUI extends Module {
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
         case 'sakuromap2-atlas':
-          defaultScale = [0.4, 0.4];
+          defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/sakuP2/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
+        case 'nightflaid_atlas':
+          defaultScale = [0.5, 0.5];
+          healthBgYOffset = -95;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/death/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/death/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/death/bar');
 
         default:
           playState.healthBar.visible = true;
@@ -195,7 +203,8 @@ class RetroGameUI extends Module {
     score.screenCenter(0x01);
     score.cameras = [camera];
     score.zIndex = zIndex;
-    score.visible = false;
+    if (PlayState.instance.isBotPlayMode) score.text = 'BOTPLAY';
+    score.visible = !PlayState.instance.isBotPlayMode ? false : true;
     score.x += judgementXOffset;
     PlayState.instance.add(score);
 
@@ -206,7 +215,7 @@ class RetroGameUI extends Module {
   public function onNoteHit(event:HitNoteScriptEvent):Void {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
-    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+    if (event.note.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
       if (isNormalNote) {
         if (!event.note.isHoldNote) {
@@ -223,7 +232,7 @@ class RetroGameUI extends Module {
 	{
     if (PlayState.instance == null) return;
     if (!isRetro) return;
-    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+    if (event.note.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
       if (isNormalNote) updateJudgement('miss', event.score, true);
@@ -239,7 +248,7 @@ class RetroGameUI extends Module {
   public function onNoteHoldDrop(event:HoldNoteScriptEvent) {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
-    if (event.holdNote.noteData.getMustHitNote()) { // Só pro jogador!
+    if (event.holdNote.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
       updateJudgement('miss', event.score, event.isComboBreak, false);
     }
   }
@@ -310,7 +319,7 @@ class RetroGameUI extends Module {
     super.onCreate(event);
   }
 
-  public function onUpdate(event) {
+  public function onUpdate(event:UpdateScriptEvent) {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
     if (!isRetro || !hasBeenCreated || retroHealthBarFill == null) return;
@@ -405,8 +414,10 @@ class RetroGameUI extends Module {
         return 0xFF78fff8;
       case 'sakuromap2-atlas':
         return 0xFFa9328c;
+      case 'nightflaid_atlas':
+        return 0xFFFFFFFF;
       default:
-        return p1BarColor;
+        return p2BarColor;
     }
   }
 

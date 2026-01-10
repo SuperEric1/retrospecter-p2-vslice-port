@@ -1,13 +1,13 @@
 import funkin.play.event.SongEvent;
 import funkin.play.PlayState;
 
-class SillyEvents extends SongEvent {
+class WrathEvents extends SongEvent { // why did i name it sillyevents
   function new() {
     super('WrathEvents');
   }
 
   override function getTitle() {
-      return "WrathEvents";
+      return "Phase 3 Events";
   }
 
   override function handleEvent(data) {

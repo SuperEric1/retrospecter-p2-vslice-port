@@ -14,14 +14,14 @@
     "previewEnd": 15000,
     "difficulties": ["easy", "normal", "hard"],
     "characters": {
-      "album": "volume1",
       "player": "bf-lust",
-      "girlfriend": "gf-lust",
+      "girlfriend": "gf",
       "opponent": "sakuromaP2-atlas",
       "instrumental": "",
       "altInstrumentals": []
     },
     "stage": "lust_2",
+    "album": "sakuP2",
     "noteStyle": "retrospecter",
     "ratings": {}
   },

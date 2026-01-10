@@ -1,0 +1,47 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+
+class NightflaidEvents extends SongEvent {
+  function new() {
+    super('NightflaidEvents');
+  }
+
+  override function getTitle() {
+      return "Nightflaid Events";
+  }
+
+  override function handleEvent(data) {
+      if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+      if (PlayState.instance.isMinimalMode) return;
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "eventType",
+        title: "Tipo do Evento",
+        defaultValue: 0,
+        type: "enum",
+        keys: [
+          "Nightflaid color tween" => 0,
+          "Nightflaid color tween left-only" => 1,
+          "Nightflaid color tween right-only" => 2,
+          "Nightflaid swap sides" => 3,
+          "Nightflaid lightings" => 4,
+        ]
+      },
+      {
+        name: "1",
+        title: "Valor 1",
+        defaultValue: '',
+        type: "string"
+      },
+      {
+        name: "2",
+        title: "Valor 2",
+        defaultValue: '',
+        type: "string"
+      }
+    ];
+  }
+}

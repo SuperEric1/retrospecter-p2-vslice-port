@@ -162,8 +162,17 @@ class LustStage extends Stage
   {
     super.addCharacter(character, charType);
 
+    switch (charType)
+    {
+      case CharacterType.GF:
+        character.antialiasing = false;
+        character.danceEvery = 0;
+        character.visible = false;
+        character.kill(); // finish HER!!
+      default:
+    }
   }
-  
+
   override public function onSongEvent(event:SongEventScriptEvent):Void
   {
     super.onSongEvent(event);

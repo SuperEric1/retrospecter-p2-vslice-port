@@ -1,0 +1,373 @@
+{
+  "version": "1.0.0",
+  "name": "Nightflaid",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/nightgflaid",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "danceEvery": 1,
+  "healthIcon": {
+    "id": "nightflaid",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "animations": [
+    {
+      "name": "singLEFT",
+      "prefix": "anims/nightflaid left",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "anims/nightflaid down",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP",
+      "prefix": "anims/nightflaid up",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "anims/nightflaid right",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "intro",
+      "prefix": "anims/nightflaid intro line",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "idle",
+      "prefix": "anims/nightflaid idle",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "ascend",
+      "prefix": "anims/nightflaid ascend",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "descend",
+      "prefix": "anims/nightflaid descend",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "idle-SONIC",
+      "prefix": "anims/Nightflaid Alt Idle B",
+      "offsets": [500, 130],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "SONIC laugh",
+      "prefix": "anims/NF TT Laugh",
+      "offsets": [570, 46],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-SONIC",
+      "prefix": "anims/NF TT Left",
+      "offsets": [750, 416],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-SONIC",
+      "prefix": "anims/NF TT Down",
+      "offsets": [610, 380],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-SONIC",
+      "prefix": "anims/NF TT Up",
+      "offsets": [486, -68],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-SONIC",
+      "prefix": "anims/NF TT Right",
+      "offsets": [564, 370],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "idle-GENERAL",
+      "prefix": "anims/Nightflaid Alt Idle A",
+      "offsets": [500, 130],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-POKEMON",
+      "prefix": "anims/NF DeathToll Left",
+      "offsets": [480, 206],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-POKEMON",
+      "prefix": "anims/NF DeathToll Up",
+      "offsets": [485, 231],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-POKEMON",
+      "prefix": "anims/NF DeathToll Right",
+      "offsets": [1800, 177],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-POKEMON",
+      "prefix": "anims/NF DeathToll Down",
+      "offsets": [491, 245],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-GARCELLO",
+      "prefix": "anims/NF Release Left",
+      "offsets": [448, 179],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-GARCELLO",
+      "prefix": "anims/NF Release Up",
+      "offsets": [446, 168],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-GARCELLO",
+      "prefix": "anims/NF Release Down",
+      "offsets": [500, 130],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-GARCELLO",
+      "prefix": "anims/NF Release Right",
+      "offsets": [579, 390],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-TRICKY",
+      "prefix": "anims/NF Expurgation Left",
+      "offsets": [591, 155],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-TRICKY",
+      "prefix": "anims/NF Expurgation Up",
+      "offsets": [578, 386],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-TRICKY",
+      "prefix": "anims/NF Expurgation Down",
+      "offsets": [502, 356],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-TRICKY",
+      "prefix": "anims/NF Expurgation Right",
+      "offsets": [700, 21],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "EXPURGATION laugh",
+      "prefix": "anims/NF Expurgation Laugh",
+      "offsets": [556, 113],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "idle-DAD",
+      "prefix": "anims/NF Dadbattle Idle",
+      "offsets": [719, 440],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-DAD",
+      "prefix": "anims/NF Dadbattle Left",
+      "offsets": [851, 350],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-DAD",
+      "prefix": "anims/NF Dadbattle Up",
+      "offsets": [839, 300],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-DAD",
+      "prefix": "anims/NF Dadbattle Down",
+      "offsets": [679, 390],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-DAD",
+      "prefix": "anims/NF Dadbattle Right",
+      "offsets": [569, 270],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-WHITTY",
+      "prefix": "anims/NF Whitty Left",
+      "offsets": [601, 160],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-WHITTY",
+      "prefix": "anims/NF Whitty Up",
+      "offsets": [451, -60],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-WHITTY",
+      "prefix": "anims/NF Whitty Down",
+      "offsets": [571, 21],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-WHITTY",
+      "prefix": "anims/NF Whitty Right",
+      "offsets": [735, 227],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-RUV",
+      "prefix": "anims/NF Zavodila Left",
+      "offsets": [568, 49],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-RUV",
+      "prefix": "anims/NF Zavodila Up",
+      "offsets": [915, 78],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-RUV",
+      "prefix": "anims/NF Zavodila Down",
+      "offsets": [558, 163],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-RUV",
+      "prefix": "anims/NF Zavodila Right",
+      "offsets": [568, 104],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-TABI",
+      "prefix": "anims/NF Genocide Left",
+      "offsets": [835, -124],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-TABI",
+      "prefix": "anims/NF Genocide Right",
+      "offsets": [682, 293],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-TABI",
+      "prefix": "anims/NF Genocide Up",
+      "offsets": [736, -23],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-TABI",
+      "prefix": "anims/NF Genocide Down",
+      "offsets": [545, 223],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singLEFT-SHAGGY",
+      "prefix": "anims/NF Thunderstorm Left",
+      "offsets": [471, 400],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT-SHAGGY",
+      "prefix": "anims/NF Thunderstorm Right",
+      "offsets": [546, 418],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singDOWN-SHAGGY",
+      "prefix": "anims/NF Thunderstorm Down",
+      "offsets": [539, 290],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "singUP-SHAGGY",
+      "prefix": "anims/NF Thunderstorm Up",
+      "offsets": [571, 215],
+      "animType": "symbol",
+      "frameRate": 24
+    },
+    {
+      "name": "final",
+      "prefix": "anims/nightflaid outro line",
+      "offsets": [0, 0],
+      "animType": "symbol",
+      "frameRate": 24
+    }
+  ],
+  "animType": "symbol",
+  "flipX": false
+}

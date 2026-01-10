@@ -1,0 +1,32 @@
+{
+  "version": "1.0.0",
+  "name": "FINALE",
+  "songs": ["extirpatient"],
+  "titleAsset": "storymenu/titles/finale",
+  "background": "#000000",
+  "props": [
+    {
+      "assetPath": "storymenu/titles/not",
+      "scale": 0.001,
+      "offsets": [0, 0],
+      "animations": []
+    },
+    {
+      "assetPath": "storymenu/props/bf_retro",
+      "scale": 0.7,
+      "offsets": [20, 80],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "BF idle dance",
+          "frameRate": 24
+        },
+        {
+          "name": "confirm",
+          "prefix": "BF HEY",
+          "frameRate": 24
+        }
+      ]
+    }
+  ]
+}

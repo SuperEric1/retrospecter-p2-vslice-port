@@ -34,6 +34,7 @@ class HardAcheSong extends Song
     var save:Save = Save.instance.modOptions;
     // load alt inst if suggestive content is disbled
     if (!save.get("retroSuggestive")) {
+      if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
       playState.currentInstrumental = 'nolines';
     }
   }
