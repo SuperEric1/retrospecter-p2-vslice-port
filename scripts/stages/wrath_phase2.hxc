@@ -499,6 +499,8 @@ class WrathPhase2Stage extends Stage
   override public function onUpdate(event):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
     var songPos = Conductor.instance.songPosition / 1000;
 
     //zindex here is still broken idk how to fix it
@@ -594,6 +596,9 @@ class WrathPhase2Stage extends Stage
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (!hasCreatedStage) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (canBop && event.beat % 2 == 0) {
       crack.active = isCrackVisible;

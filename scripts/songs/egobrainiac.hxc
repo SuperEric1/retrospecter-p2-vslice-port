@@ -71,6 +71,8 @@ class EgobrainiacSong extends Song
   {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var curBeat = event.beat;
 

@@ -347,6 +347,8 @@ class WrathPhase4Stage extends Stage
     super.onUpdate(event);
     if (PlayState.instance == null) return;
     if (!hasCreatedStage) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var v = 0.023;
     var curStep = Conductor.instance.currentStepTime;
@@ -642,6 +644,8 @@ class WrathPhase4Stage extends Stage
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (event.beat % 2 == 0) {
       var lastColor = curColor;

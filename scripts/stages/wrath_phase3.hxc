@@ -452,6 +452,8 @@ class WrathPhase3 extends Stage
     override public function onUpdate(event:UpdateScriptEvent):Void
     {
         super.onUpdate(event);
+        if (PlayState.instance.isGamePaused) return;
+        if (PlayState.instance.isGameOverState) return;
 
         // Camera fix durante erupção
         if (inEruption && PlayState.instance != null)
@@ -514,7 +516,7 @@ class WrathPhase3 extends Stage
             debris3.velocity.y = 500 + (scale - 0.8) * 50;
         }
 
-        // Sink logic - SOLUÇÃO: usar spriteMap ao invés de getNamedProp
+        // Sink logic
         if (sinkValue > 0)
         {
             var elapsed = Conductor.instance.stepLengthMs;
@@ -617,15 +619,17 @@ class WrathPhase3 extends Stage
         }*/
     }
 
-    override public function onBeatHit(event:SongTimeScriptEvent):Void
+    /*override public function onBeatHit(event:SongTimeScriptEvent):Void
     {
         super.onBeatHit(event);
+        if (PlayState.instance.isGamePaused) return;
+        if (PlayState.instance.isGameOverState) return;
 
         if (event.beat % 16 == 0)
         {
             // Garbage collection ?
         }
-    }
+    }*/
 
     function loadDebugElements()
     {

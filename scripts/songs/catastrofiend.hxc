@@ -167,6 +167,8 @@ class CatastrofiendSong extends Song
   public override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (modcharts)
     {
@@ -178,6 +180,8 @@ class CatastrofiendSong extends Song
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (modcharts)
     {

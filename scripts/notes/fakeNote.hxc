@@ -25,12 +25,12 @@ class fakeNote extends Module {
 		if (PlayState.instance == null) return;
 	}
 
-	public override function onUpdate(event:UpdateScriptEvent):Void
+	/*public override function onUpdate(event:UpdateScriptEvent):Void
 	{
 		super.onUpdate(event);
 
 		if (PlayState.instance == null) return;
-	}
+	}*/
 
 	public override function onNoteHit(ev:HitNoteScriptEvent):Void {
 		super.onNoteHit(ev);

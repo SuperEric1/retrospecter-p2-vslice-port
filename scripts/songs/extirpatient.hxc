@@ -42,6 +42,7 @@ class ExtirpatientSong extends Song
   var songEnded:Bool = false;
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
+  var flash:FunkinSprite;
 
   var flashyBits:Array<Int> = [79, 143, 171, 199, 279, 311, 339, 367];
   var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
@@ -76,6 +77,16 @@ class ExtirpatientSong extends Song
       isDownScroll = true;
 
     negativity = isDownScroll ? -1 : 1;
+
+    flash = FunkinSprite.create();
+    flash.makeGraphic(5000, 3000, 0xFFFFFFFF);
+    flash.scrollFactor.set(0, 0);
+    flash.screenCenter();
+    flash.cameras = [PlayState.instance.camGame];
+    flash.visible = false;
+    flash.active = false;
+    PlayState.instance.add(flash);
+    PlayState.instance.refresh();
 
     // Reset flags
     resetFlags();
@@ -119,6 +130,8 @@ class ExtirpatientSong extends Song
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     trulyBeats++;
     var curBeat = event.beat;
@@ -235,6 +248,9 @@ class ExtirpatientSong extends Song
   public override function onStepHit(event:SongTimeScriptEvent):Void
   {
     super.onStepHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    
     var curStep = event.step;
 
     // Red pulses
@@ -311,6 +327,9 @@ class ExtirpatientSong extends Song
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
     var elapsed = event.elapsed;
     var curBeat = Conductor.instance.currentBeat;
 
@@ -385,18 +404,18 @@ class ExtirpatientSong extends Song
 
   function createFlash(color:Int, alpha:Float):Void
   {
-    var flash = FunkinSprite.create();
-    flash.makeGraphic(5000, 3000, color);
-    flash.scrollFactor.set(0, 0);
-    flash.screenCenter();
-    flash.cameras = [PlayState.instance.camGame];
+    flash.active = true;
+    flash.color = color;
     flash.alpha = alpha;
-    PlayState.instance.add(flash);
-
+    flash.visible = true;
     FlxTween.tween(flash, {alpha: 0}, 0.5, {
       ease: FlxEase.quadOut,
       onComplete: function(t) {
-        if (PlayState.instance != null) flash.destroy();
+        if (PlayState.instance != null && flash != null) {
+          flash.visible = false;
+          flash.active = false;
+          //flash.destroy();
+        }
       }
     });
   }
@@ -710,7 +729,7 @@ class ExtirpatientSong extends Song
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
 
-    for (i in 0...3) {
+    for (i in 0...4) {
         var strum = opponentStrums.strumlineNotes.members[i];
         tweens.push(FlxTween.tween(strum, {
           x: defaultOpponentStrumX[i],
@@ -826,6 +845,7 @@ class ExtirpatientSong extends Song
     var dad = playStage.getDad();
 
     switch (kind) {
+      // TODO: tween the zooms
       case 'normal':
         //playState.defaultCameraZoom = 0.65;
         playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 100, dad.cameraFocusPoint.y + 280);

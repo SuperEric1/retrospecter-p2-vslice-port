@@ -1,0 +1,203 @@
+import flixel.FlxG;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.play.character.AnimateAtlasCharacter;
+import StringTools;
+
+import supereric.retrospecter.modules.RetroGameUI;
+
+class NightflaidCharacter extends AnimateAtlasCharacter
+{
+  function new()
+  {
+    super('nightflaid_atlas');
+  }
+
+  // Character color data
+  var characterColors:haxe.ds.StringMap<String, CharacterColorData> = new haxe.ds.StringMap();
+
+  // Animation tracking
+  public var singSuffix:String = null;
+  var singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
+  var animsWithOwnIdles:Array<String> = ['DAD', 'SONIC'];
+  var groundedAnims:Array<String> = ['WHITTY', 'RUV', 'TABI', 'POKEMON'];
+  var aerialAnims:Array<String> = ['GARCELLO', 'TRICKY', 'SHAGGY'];
+  public var lastIdleSuffix:String = '';
+  public var savedColor:String = '';
+
+
+  function onCreate(event:ScriptEvent)
+  {
+    super.onCreate(event);
+    singSuffix = null;
+    lastIdleSuffix = '';
+    savedColor = '';
+    initializeCharacterColors();
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == "NightflaidEvents") {
+      switch (Std.parseInt(value.eventType)) {
+        case 5: // Set opp anim
+          setOppAnimation(value.value1);
+      }
+    }
+    if (eventKind == "PlayAnimation") {
+      // this needs to be here otherwise the event animation won't play (????)
+      this.animation.finished = true; // mark the animation as finished so the event's anim can play.
+      this.playAnimation(value.anim, true, true); // then force play the animation. (dude i spent so much time figuring this out why am i even doing this talvez eu endoide no meio do desenvolvimento)
+    }
+    /*if (eventKind == "RetroChangeCharacter") {
+        // ACTUALLY, we'll need to do this at the stage script because this won't run since the character died
+        if (value.newchar == '80sNightflaid') setOppAnimation(value.newchar); // so the colors update
+    }*/
+  }
+
+  function setOppAnimation(anim:String):Void
+  {
+
+    if (anim == null) anim = '';
+
+    // Get character configuration
+    var colorData = characterColors.get(anim);
+    if (colorData != null)
+    {
+      // Update health bar colors
+      var iconColor:FlxColor = FlxColor.fromString(colorData.iconColor);
+      var barColor:FlxColor = FlxColor.fromString(colorData.barColor);
+
+      if (PlayState.instance.iconP2 != null)
+      {
+        FlxTween.cancelTweensOf(PlayState.instance.iconP2);
+        FlxTween.color(PlayState.instance.iconP2, 1, PlayState.instance.iconP2.color, iconColor, {
+            ease: FlxEase.circOut,
+        });
+      }
+      
+      // do this with RetroGameUI later
+      /*if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.leftBar != null)
+      {
+        FlxTween.cancelTweensOf(PlayState.instance.healthBar.leftBar);
+        FlxTween.tween(PlayState.instance.healthBar.leftBar, {color: barColor}, 1, {ease: FlxEase.circOut});
+      }*/
+
+      // Update health value
+      PlayState.instance.health = colorData.health;
+
+      // Apply special effects
+      if (colorData.digideathShake != null)
+      {
+        // PlayState.instance.digideathShake = colorData.digideathShake;
+      }
+      if (colorData.digideathScreenShake != null)
+      {
+        // PlayState.instance.digideathScreenShake = colorData.digideathScreenShake;
+      }
+      if (colorData.digideathNoteDrain != null)
+      {
+        // PlayState.instance.digideathNoteDrain = colorData.digideathNoteDrain;
+      }
+      if (colorData.digiMulti != null)
+      {
+        // PlayState.instance.digiMulti = colorData.digiMulti;
+      }
+    }
+
+    // Update animation suffix based on character type
+    if (animsWithOwnIdles.contains(anim))
+    {
+      this.idleSuffix = '-' + anim;
+      singSuffix = '-' + anim;
+    }
+    else if (groundedAnims.contains(anim))
+    {
+      this.idleSuffix = '-GENERAL';
+      singSuffix = '-' + anim;
+    }
+    else if (aerialAnims.contains(anim))
+    {
+      this.idleSuffix = '';
+      singSuffix = '-' + anim;
+    }
+    else
+    {
+      this.idleSuffix = '';
+      singSuffix = null;
+    }
+
+    // Play animation if different idle suffix
+    if (lastIdleSuffix != this.idleSuffix)
+    {
+      lastIdleSuffix = this.idleSuffix;
+      if (this.animation != null)
+      {
+        this.dance();
+      }
+    }
+  }
+
+  public function onNoteHit(event:HitNoteScriptEvent) {
+    super.onNoteHit(event);
+		if (PlayState.instance == null) return;
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+      if (singSuffix != null)
+      {
+        var dir = event.note.noteData.getDirection();
+        this.holdTimer = 0;
+        this.playSingAnimation(dir, singSuffix);
+      }
+    }
+  }
+
+  override function onSongRetry()
+  {
+    super.onSongRetry();
+    singSuffix = null;
+    lastIdleSuffix = '';
+    savedColor = '';
+    PlayState.instance.iconP2.color = -1; // reset icon color to default
+  }
+
+  override function onAnimationFinished(name:String)
+  {
+    super.onAnimationFinished(name);
+
+  }
+
+  override public function playSingAnimation(dir:Int, ?suffix:String = ''):Void {
+    var suffixString:String = (suffix != '') ? suffix : '';
+    var anim:String = singAnimations[dir] + suffixString;
+		this.playAnimation(anim, true, true);
+	}
+
+  function initializeCharacterColors():Void
+  {
+    characterColors.set('DAD', {iconColor: '0xFFB066CF', barColor: '0xFFFF0105', health: 1, digiMulti: null, digideathShake: null, digideathScreenShake: null, digideathNoteDrain: null});
+    characterColors.set('WHITTY', {iconColor: '0xFFCE012C', barColor: '0xFFD70029', health: 1});
+    characterColors.set('RUV', {iconColor: '0xFF968BA3', barColor: '0xFF796793', health: 1, digideathShake: true});
+    characterColors.set('GARCELLO', {iconColor: '0xFF01FF93', barColor: '0xFF01FF93', health: 1, digideathShake: false});
+    characterColors.set('TABI', {iconColor: '0xFF5C6A83', barColor: '0xFF5E6983', health: 2, digideathScreenShake: true, digideathShake: true, digideathNoteDrain: true});
+    characterColors.set('TRICKY', {iconColor: '0xFFFF1904', barColor: '0xFFFD0002', health: 1.25, digideathScreenShake: false, digideathShake: false, digideathNoteDrain: false, digiMulti: 12});
+    characterColors.set('SHAGGY', {iconColor: '0xFFD11B1D', barColor: '0xFFD31A1F', health: 1});
+    characterColors.set('SONIC', {iconColor: '0xFF0058B4', barColor: '0xFF2B0572', health: 1});
+    characterColors.set('POKEMON', {iconColor: '0xFF7D5D8E', barColor: '0xFF7D5D8E', health: 1});
+    // this one below is done at the stage's script
+    characterColors.set('80sNightflaid', {iconColor: '0xFFA7D6F4', barColor: '0xFFA7D6F4', health: 1});
+  }
+
+  /*function playIdleAnim()
+  {
+    this.playAnimation('idle', false, false);
+  }*/
+}

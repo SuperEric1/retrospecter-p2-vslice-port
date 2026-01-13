@@ -220,6 +220,9 @@ class SpectralSong extends Song
   public function onUpdate(event):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    
     if (isModcharting) {
       playState.camHUD.angle = Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0) * 3;
 

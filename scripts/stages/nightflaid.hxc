@@ -110,44 +110,15 @@ class NightflaidStage extends Stage
   var dd:Bool = false;
   var pp:Bool = false;
 
-  // Animation tracking
-  var singSuffix:String = null;
-  var singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
-  var animsWithOwnIdles:Array<String> = ['DAD', 'SONIC'];
-  var groundedAnims:Array<String> = ['WHITTY', 'RUV', 'TABI', 'POKEMON'];
-  var aerialAnims:Array<String> = ['GARCELLO', 'TRICKY', 'SHAGGY'];
-
   // Zoom beats
   var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
 
   // Ground offset for descend/ascend animations
   var groundedOff:Int = 250;
 
-  // Opponent animation tracking
-  var lastIdleSuffix:String = '';
-  var savedColor:String = '';
-
-  // Character color data
-  var characterColors:haxe.ds.StringMap<String, CharacterColorData> = new haxe.ds.StringMap();
-
   public function new()
   {
     super('nightflaid');
-    initializeCharacterColors();
-  }
-
-  function initializeCharacterColors():Void
-  {
-    characterColors.set('DAD', {iconColor: '0xFFB066CF', barColor: '0xFFFF0105', health: 1, digiMulti: null, digideathShake: null, digideathScreenShake: null, digideathNoteDrain: null});
-    characterColors.set('WHITTY', {iconColor: '0xFFCE012C', barColor: '0xFFD70029', health: 1});
-    characterColors.set('RUV', {iconColor: '0xFF968BA3', barColor: '0xFF796793', health: 1, digideathShake: true});
-    characterColors.set('GARCELLO', {iconColor: '0xFF01FF93', barColor: '0xFF01FF93', health: 1, digideathShake: false});
-    characterColors.set('TABI', {iconColor: '0xFF5C6A83', barColor: '0xFF5E6983', health: 2, digideathScreenShake: true, digideathShake: true, digideathNoteDrain: true});
-    characterColors.set('TRICKY', {iconColor: '0xFFFF1904', barColor: '0xFFFD0002', health: 1.25, digideathScreenShake: false, digideathShake: false, digideathNoteDrain: false, digiMulti: 12});
-    characterColors.set('SHAGGY', {iconColor: '0xFFD11B1D', barColor: '0xFFD31A1F', health: 1});
-    characterColors.set('SONIC', {iconColor: '0xFF0058B4', barColor: '0xFF2B0572', health: 1});
-    characterColors.set('POKEMON', {iconColor: '0xFF7D5D8E', barColor: '0xFF7D5D8E', health: 1});
-    characterColors.set('80sNightflaid', {iconColor: '0xFFA7D6F4', barColor: '0xFFA7D6F4', health: 1});
   }
 
   /**
@@ -299,8 +270,6 @@ class NightflaidStage extends Stage
     setupUnbeatableElements();
     setupShaders();
     if (ogNfY == 0 || ogNfY == null) ogNfY = getDad().y;
-
-    //setOppAnimation('DAD');
 
     // Check for checkpoint
     if (Conductor.instance.songPosition > 200000)
@@ -508,6 +477,8 @@ class NightflaidStage extends Stage
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var elapsed = event.elapsed;
 
@@ -585,6 +556,8 @@ class NightflaidStage extends Stage
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var curBeat = event.beat;
 
@@ -614,6 +587,8 @@ class NightflaidStage extends Stage
   override function onStepHit(event:SongTimeScriptEvent):Void
   {
     super.onStepHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var curStep = event.step;
 
@@ -810,7 +785,7 @@ class NightflaidStage extends Stage
     var dad = getDad();
     if (dad == null) return;
 
-    setOppAnimation(character);
+    //setOppAnimation(character);
 
     if (character == 'nightflaid_unbeatable')
     {
@@ -826,10 +801,10 @@ class NightflaidStage extends Stage
         coverSpr.alpha = 1;
       }
 
-      var posY = FlxG.height - (getDad().height / 2) + 40; // 200
-      dad.y = posY + FlxG.height + 100; //posY + FlxG.height + 100
+      var posY = FlxG.height - 85; // 200
+      dad.y = FlxG.height + 100; //posY + FlxG.height + 100
       FlxTween.tween(dad, {y: posY}, 0.75, {ease: FlxEase.circOut});
-      FlxTween.tween(getBoyfriend(), {alpha: 0}, 0.75, {ease: FlxEase.circOut});
+      //FlxTween.tween(getBoyfriend(), {alpha: 0}, 0.75, {ease: FlxEase.circOut});
 
       if (unbeatableBG != null)
       {
@@ -850,101 +825,6 @@ class NightflaidStage extends Stage
     }
   }
 
-  function setOppAnimation(anim:String):Void
-  {
-    var dad = getDad();
-    if (dad == null) return;
-
-    if (anim == null) anim = '';
-    anim = anim.toUpperCase();
-
-    // Get character configuration
-    var colorData = characterColors.get(anim);
-    if (colorData != null)
-    {
-      // Update health bar colors
-      var iconColor:FlxColor = FlxColor.fromString(colorData.iconColor);
-      var barColor:FlxColor = FlxColor.fromString(colorData.barColor);
-
-      if (PlayState.instance.iconP2 != null)
-      {
-        FlxTween.cancelTweensOf(PlayState.instance.iconP2);
-        FlxTween.tween(PlayState.instance.iconP2, {color: iconColor}, 1, {ease: FlxEase.circOut});
-      }
-
-      if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.leftBar != null)
-      {
-        FlxTween.cancelTweensOf(PlayState.instance.healthBar.leftBar);
-        FlxTween.tween(PlayState.instance.healthBar.leftBar, {color: barColor}, 1, {ease: FlxEase.circOut});
-      }
-
-      // Update health value
-      PlayState.instance.health = colorData.health;
-
-      // Apply special effects
-      if (colorData.digideathShake != null)
-      {
-        // PlayState.instance.digideathShake = colorData.digideathShake;
-      }
-      if (colorData.digideathScreenShake != null)
-      {
-        // PlayState.instance.digideathScreenShake = colorData.digideathScreenShake;
-      }
-      if (colorData.digideathNoteDrain != null)
-      {
-        // PlayState.instance.digideathNoteDrain = colorData.digideathNoteDrain;
-      }
-      if (colorData.digiMulti != null)
-      {
-        // PlayState.instance.digiMulti = colorData.digiMulti;
-      }
-    }
-
-    // Update animation suffix based on character type
-    if (animsWithOwnIdles.contains(anim))
-    {
-      dad.idleSuffix = '-' + anim;
-      singSuffix = '-' + anim;
-    }
-    else if (groundedAnims.contains(anim))
-    {
-      dad.idleSuffix = '-GENERAL';
-      singSuffix = '-' + anim;
-    }
-    else if (aerialAnims.contains(anim))
-    {
-      dad.idleSuffix = '';
-      singSuffix = '-' + anim;
-    }
-    else
-    {
-      dad.idleSuffix = '';
-      singSuffix = null;
-    }
-
-    // Play animation if different idle suffix
-    if (lastIdleSuffix != dad.idleSuffix)
-    {
-      lastIdleSuffix = dad.idleSuffix;
-      if (dad.animation != null)
-      {
-        dad.dance();
-      }
-    }
-  }
-
-  public function onNoteHit(event:HitNoteScriptEvent) {
-		if (PlayState.instance == null) return;
-		if (!event.note.noteData.getMustHitNote() && getDad().characterType == CharacterType.DAD) {
-      if (singSuffix != null)
-      {
-        var dir = event.note.noteData.getDirection();
-        var dad = getDad();
-        dad.holdTimer = 0;
-        dad.playSingAnimation(dir, false, singSuffix);
-      }
-    }
-  }
   function handleMidsongCutscene():Void
   {
     var dad = getDad();

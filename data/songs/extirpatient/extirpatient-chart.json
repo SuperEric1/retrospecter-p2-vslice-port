@@ -1,6 +1,171 @@
 {
   "events": [
     {
+      "t": 483.870967741935,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "intro",
+        "force": true
+      }
+    },
+    {
+      "t": 200080.64516129,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "descend",
+        "force": true
+      }
+    },
+    {
+      "t": 201290.322580645,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "DAD"
+      }
+    },
+    {
+      "t": 216774.193548386,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "WHITTY"
+      }
+    },
+    {
+      "t": 232258.064516128,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "RUV"
+      }
+    },
+    {
+      "t": 246532.258064515,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "ascend",
+        "force": true
+      }
+    },
+    {
+      "t": 247741.93548387,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "GARCELLO"
+      }
+    },
+    {
+      "t": 262016.129032257,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "descend",
+        "force": true
+      }
+    },
+    {
+      "t": 263225.806451612,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "TABI"
+      }
+    },
+    {
+      "t": 277499.999999999,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "ascend",
+        "force": true
+      }
+    },
+    {
+      "t": 278709.677419354,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "TRICKY"
+      }
+    },
+
+    {
+      "t": 293225.806451612,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "EXPURGATION laugh",
+        "force": true
+      }
+    },
+    {
+      "t": 294193.548387096,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "SHAGGY"
+      }
+    },
+    {
+      "t": 308467.741935483,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "descend",
+        "force": true
+      }
+    },
+    {
+      "t": 309677.419354838,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "SONIC"
+      }
+    },
+    {
+      "t": 316451.612903225,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "SONIC laugh",
+        "force": true
+      }
+    },
+    {
+      "t": 324193.548387096,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "bf",
+        "anim": "hey",
+        "force": true
+      }
+    },
+    {
+      "t": 325161.29032258,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 5,
+        "value1": "POKEMON"
+      }
+    },
+    {
+      "t": 420967.741935484,
+      "e": "PlayAnimation",
+      "v": {
+        "target": "dad",
+        "anim": "final",
+        "force": true
+      }
+    },
+
+
+    {
       "t": 23225.8064516129,
       "e": "FocusCamera",
       "v": {

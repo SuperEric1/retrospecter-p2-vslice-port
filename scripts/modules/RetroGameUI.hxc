@@ -324,7 +324,7 @@ class RetroGameUI extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro || !hasBeenCreated || retroHealthBarFill == null) return;
     if (PlayState.instance.isGamePaused) return;
-    if(PlayState.instance.isGameOverState) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var playState = PlayState.instance;
 
@@ -344,7 +344,6 @@ class RetroGameUI extends Module {
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
 
     // ---- Texts ----
-    // Process hold notes on the player's side.
     for (holdNote in playState.playerStrumline.holdNotes.members)
     {
       if (holdNote == null || !holdNote.alive) continue;
@@ -369,7 +368,7 @@ class RetroGameUI extends Module {
     retroHealthBarFillBG.color = getIconColor(ogDadId);
     judgement.alpha = 0;
     comboText.alpha = 0;
-    score.alpha = 0;
+    if (!PlayState.instance.isBotPlayMode) score.alpha = 0;
   }
 
   public function getIconColor(characterId:String) {

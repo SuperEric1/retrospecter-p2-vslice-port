@@ -243,7 +243,7 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
 
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
-      var doesVocalThing = true;
+      var doesVocalThing:Bool = true;
       var k = event.note.noteData.kind;
       var noteDir = event.note.noteData.getDirection();
       if (k == "autoChain") {
@@ -256,15 +256,16 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         // don't RETURN or else the custom UI will display as a miss
       }
-      if (doesVocalThing) doVocalThing(); // efeito de miss nas vocais (caso seja uma nota normal)
-    } //fim do if que checa se a nota é do jogador
+      if (doesVocalThing) doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
+    }
+
     super.onNoteMiss(event);
 	}
   public override function onNoteHoldDrop(event:HoldNoteScriptEvent) {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (event.holdNote.noteData.getMustHitNote()) { // Só pro jogador!
-      doVocalThing(1.3); // efeito de miss nas vocais (caso seja uma nota normal)
+      doVocalThing(1.3); // efeito de miss nas vocais
     }
   }
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
@@ -282,7 +283,7 @@ class RetroPlayState extends Module {
       return;
     }
 
-    doVocalThing(); // efeito de miss nas vocais (caso seja uma nota normal)
+    doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -332,10 +333,10 @@ class RetroPlayState extends Module {
     }
   }
 
-  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  /*public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
-  }
+  }*/
 
   function scrambleStrumline() {
     if (izzyMechanicTimer != null) { //se acertar uma nota enquanto ja ta com o efeito, resetar strums e o timer pra acontecer novamente
@@ -686,7 +687,7 @@ class RetroPlayState extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (PlayState.instance.isGamePaused) return;
-    if(PlayState.instance.isGameOverState) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (poisonAmount > 0 && PlayState.instance.health > 0.08) {
       PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
@@ -836,11 +837,11 @@ class RetroPlayState extends Module {
     }
   }
 
-  function doVocalThing(mult:Float = 1.2)
+  function doVocalThing(?mult:Float = 1.2)
   {
     if (isDoingVocalThing == true) return;
     var delay = 0.25 * mult;
-    if(PlayState.instance.vocals.opponentVoices.members.length != 0) {
+    if (PlayState.instance.vocals.opponentVoices.members.length != 0) {
 		  PlayState.instance.vocals.opponentVolume = 0;
       isDoingVocalThing = true;
       new FlxTimer().start(delay, function(tmr) {
@@ -849,7 +850,7 @@ class RetroPlayState extends Module {
         isDoingVocalThing = false;
       });
 		}
-    if(PlayState.instance.vocals.playerVoices.members.length != 0) {
+    if (PlayState.instance.vocals.playerVoices.members.length != 0) {
 		  PlayState.instance.vocals.playerVolume = 0;
       isDoingVocalThing = true;
       new FlxTimer().start(delay, function(tmr) {
@@ -908,6 +909,9 @@ class RetroPlayState extends Module {
         note.colorTransform.redMultiplier = 1;
         note.colorTransform.greenMultiplier = 1;
         note.colorTransform.blueMultiplier = 1;
+        note.colorTransform.redOffset = 0;
+        note.colorTransform.greenOffset = 0;
+        note.colorTransform.blueOffset = 0;
       }
       note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (ogOppStrumsX[i] != null && ogOppStrumsY[i] != null) {
@@ -915,6 +919,12 @@ class RetroPlayState extends Module {
         note.y = ogOppStrumsY[i];
         note.angle = 0;
         note.alpha = 1;
+        note.colorTransform.redMultiplier = 1;
+        note.colorTransform.greenMultiplier = 1;
+        note.colorTransform.blueMultiplier = 1;
+        note.colorTransform.redOffset = 0;
+        note.colorTransform.greenOffset = 0;
+        note.colorTransform.blueOffset = 0;
       }
     }
 

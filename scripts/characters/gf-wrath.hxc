@@ -71,6 +71,8 @@ class GirlfriendWrathCharacter extends SparrowCharacter
   {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (event.beat % 2 == 0)
     {
