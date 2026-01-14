@@ -312,7 +312,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lava_FG, 'lava_FG');
 
         // Foreground fires
-        FG_fire_L = FunkinSprite.create(-235, 488);
+        FG_fire_L = FunkinSprite.create(-175, 488);
         FG_fire_L.loadSparrow('Phase3/FG_fire');
         FG_fire_L.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_L.animation.play('anim');
@@ -323,7 +323,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
         spriteMap.set('FG_fire_L', FG_fire_L);
 
-        FG_fire_R = FunkinSprite.create(1335, 488); //1295, 488
+        FG_fire_R = FunkinSprite.create(1275, 488); //1295, 488
         FG_fire_R.loadSparrow('Phase3/FG_fire');
         FG_fire_R.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_R.animation.play('anim');
