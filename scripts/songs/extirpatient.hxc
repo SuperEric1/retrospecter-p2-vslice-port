@@ -97,17 +97,29 @@ class ExtirpatientSong extends Song
     resetFlags();
   }
 
-  public override function onSongLoaded(event:ScriptEvent):Void
+  public override function onSongStart(event:ScriptEvent):Void
   {
-    super.onSongLoaded(event);
+    super.onSongStart(event);
 
     // Store default strum positions
     if (!hasStoredStrums) storeDefaultStrumPositions();
+  }
+
+  public override function onCountdownStart(event:ScriptEvent):Void
+  {
+    super.onCountdownStart(event);
 
     // Initial camera position if song just started
     if (Conductor.instance.songPosition < 100) {
       var dad = PlayState.instance.currentStage.getDad();
-      PlayState.instance.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 300, dad.cameraFocusPoint.y + 300);
+      PlayState.instance.currentCameraZoom = 0.6;
+      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 300, dad.cameraFocusPoint.y - 200);
+      // PlayState.instance.camHUD.alpha = 0;
+      PlayState.instance.healthBar.alpha = 0;
+      PlayState.instance.iconP1.alpha = 0;
+      PlayState.instance.iconP2.alpha = 0;
+      PlayState.instance.playerStrumline.alpha = 0;
+      PlayState.instance.opponentStrumline.alpha = 0;
     }
   }
 
@@ -131,6 +143,10 @@ class ExtirpatientSong extends Song
         defaultPlayerStrumY.push(strum.y);
       }
     }
+    defaultPlayerStrumX.push(playerStrums.x);
+    defaultPlayerStrumY.push(playerStrums.y);
+    defaultOpponentStrumX.push(opponentStrums.x);
+    defaultOpponentStrumY.push(opponentStrums.y);
   }
 
   public override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -141,6 +157,7 @@ class ExtirpatientSong extends Song
 
     trulyBeats++;
     var curBeat = event.beat;
+    var crochet = Conductor.instance.stepLengthMs * 4;
 
     // Ajustes de beat
     if (curBeat == 144 || curBeat == 172 || curBeat == 312 || curBeat == 340 || curBeat == 368) {
@@ -157,8 +174,12 @@ class ExtirpatientSong extends Song
       if (curBeat == v) {
         playState.camHUD.zoom = 1;
         playState.camGame.zoom = 0.34;
-        tweens.push(FlxTween.tween(playState.camHUD, {zoom: 1.08}, Conductor.instance.stepCrochet / 1000, {ease: FlxEase.expoIn}));
-        tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, Conductor.instance.stepCrochet / 1000, {ease: FlxEase.expoIn}));
+        tweens.push(FlxTween.tween(playState.camHUD, {zoom: 1.08}, crochet / 1000, {ease: FlxEase.expoIn}));
+        tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn, /*onComplete: function(twn:FlxTween) {
+            tweens.push(FlxTween.tween(playState.camGame, {zoom: playState.stageZoom}, crochet, {ease: FlxEase.expoIn}));
+          }*/
+        }));
+        // playState.tweenCameraZoom(0.36, crochet, true, FlxEase.expoIn);
       }
       if (curBeat == v + 1) {
         // Cancel tweens
@@ -178,28 +199,49 @@ class ExtirpatientSong extends Song
     }
 
     if (curBeat == 1) {
+      var dad = playStage.getDad();
+      playState.tweenCameraZoom(0.55, 1, true, FlxEase.expoOut);
+
+      var markiplier = isDownScroll ? 1 : -1;
+      for (i in 0...4) {
+        var strum = playState.opponentStrumline.strumlineNotes.members[i];
+        strum.y = (FlxG.height + 100) * markiplier;
+
+        strum = playState.playerStrumline.strumlineNotes.members[i];
+        strum.y = (FlxG.height + 100) * markiplier;
+      }
+      playState.playerStrumline.alpha = 1;
+      playState.opponentStrumline.alpha = 1;
       //playState.camGame.visible = true;
-      tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.55}, 1, {ease: FlxEase.expoOut}));
+      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.55}, 1, {ease: FlxEase.expoOut}));
     }
 
     if (curBeat == 6) {
       var dad = playStage.getDad();
-      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 650, dad.cameraFocusPoint.y + 450);
-      tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.5}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.sineOut}));
+      playState.tweenCameraZoom(0.5, crochet / 250, true, FlxEase.sineOut);
+      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 100, playStage.getBoyfriend().cameraFocusPoint.y);
+      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.5}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.sineOut}));
     }
 
     if (curBeat == 12) {
-      tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.34}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.quartIn}));
+      var dad = playStage.getDad();
+      // tweens.push(FlxTween.tween(playState.camHUD, {alpha: 1}, crochet / 1000, {ease: FlxEase.quartIn}));
+      playState.tweenCameraZoom(playState.stageZoom, crochet / 250, true, FlxEase.quartIn);
+      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 170, playStage.getBoyfriend().cameraFocusPoint.y);
+      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.34}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.quartIn}));
 
-      // for (i in 0...4) {
-      //   new FlxTimer().start(0.4 * i, function(tmr) {
-      //     animateStrumUp(i);
-      //   });
-      // }
+      for (i in 0...4) {
+        new FlxTimer().start(0.4 * i, function(tmr) {
+          animateStrumUp(i);
+        });
+      }
     }
 
     if (curBeat == 15) {
-      tweens.push(FlxTween.tween(playState.camHUD, {zoom: 1.1}, Conductor.instance.stepCrochet / 1000, {ease: FlxEase.expoIn}));
+      FlxTween.tween(playState.camHUD, {zoom: 1.1}, crochet / 1000, {ease: FlxEase.expoIn});
+      FlxTween.tween(playState.healthBar, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
+      FlxTween.tween(playState.iconP1, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
+      FlxTween.tween(playState.iconP2, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
     }
 
     if (curBeat == 16) {
@@ -213,8 +255,6 @@ class ExtirpatientSong extends Song
       if (flashingLights) {
         createFlash(0xFFFF0000, 0.5);
       }
-
-      playState.camHUD.visible = true;
     }
 
     if (curBeat == 448) {
@@ -339,7 +379,6 @@ class ExtirpatientSong extends Song
     var elapsed = event.elapsed;
     var curBeat = Conductor.instance.currentBeat;
 
-    if (songEnded) return;
     if (!modcharts) return;
 
     // Update red pulse note color
@@ -396,6 +435,21 @@ class ExtirpatientSong extends Song
     }
   }
 
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == "NightflaidEvents") {
+      switch (Std.parseInt(value.eventType)) {
+        case 5: // Set opp anim
+          //if (value.value1.toLowerCase() == 'pokemon') toggledToll = true;
+      }
+    }
+  }
+
   /*override function goodNoteHit(event:NoteScriptEvent):Void
   {
     super.goodNoteHit(event);
@@ -432,18 +486,20 @@ class ExtirpatientSong extends Song
 
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
+    var crochet = Conductor.instance.stepLengthMs * 4;
 
+    // don't add the tweens to the tween list or else it will be misaligned sei lá como escreve KKKKKKKKKKKKK
     if (opponentStrums != null && index < opponentStrums.strumlineNotes.members.length) {
       var strum = opponentStrums.strumlineNotes.members[index];
-      tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[index]},
-        Conductor.instance.stepCrochet / 600, {ease: FlxEase.quadOut}));
+      FlxTween.tween(strum, {y: defaultOpponentStrumY[index]},
+        crochet / 600, {ease: FlxEase.quadOut});
     }
 
     if (playerStrums != null && index < playerStrums.strumlineNotes.members.length) {
       var reversedIndex = 3 - index;
       var strum = playerStrums.strumlineNotes.members[reversedIndex];
-      tweens.push(FlxTween.tween(strum, {y: defaultPlayerStrumY[reversedIndex]},
-        Conductor.instance.stepCrochet / 600, {ease: FlxEase.quadOut}));
+      FlxTween.tween(strum, {y: defaultPlayerStrumY[reversedIndex]},
+        crochet / 600, {ease: FlxEase.quadOut});
     }
   }
 
@@ -451,7 +507,7 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts) return;
 
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
 
     if (curBeat == 643 || curBeat == 651) {
       swapStrumPositions(true);
@@ -468,7 +524,7 @@ class ExtirpatientSong extends Song
 
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
 
     for (i in 0...4) {
       if (swap) {
@@ -503,7 +559,7 @@ class ExtirpatientSong extends Song
 
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
     var offset = 85;
 
     for (i in 0...4) {
@@ -604,7 +660,7 @@ class ExtirpatientSong extends Song
   {
     if (PlayState.instance == null) return;
 
-    var crochet = Conductor.instance.crochet;
+    var crochet = Conductor.instance.stepLengthMs;
     var songPos = Conductor.instance.songPosition;
     var beat = songPos / (crochet * 4);
     var offset = Math.cos(beat * Math.PI / 4);
@@ -615,7 +671,24 @@ class ExtirpatientSong extends Song
     var playerStrums = PlayState.instance.playerStrumline;
     var curBeat = Conductor.instance.currentBeat;
 
-    for (i in 0...4) {
+    if (playerStrums != null) {
+      var strum = playerStrums;
+      strum.y = defaultPlayerStrumY[4] + (90 - 80 * offset) * negativity;
+
+      /*if (curBeat >= 656 && curBeat < 670) {
+        strum.x = defaultPlayerStrumX[4] - 320 + 100 * offset;
+      }*/
+    }
+    if (opponentStrums != null) {
+      var strum = opponentStrums;
+      strum.y = defaultOpponentStrumY[4] + (90 + 80 * offset) * negativity;
+
+      /*if (curBeat >= 656 && curBeat < 670) {
+        strum.x = defaultOpponentStrumX[4] + 306 + 100 * offset2;
+      }*/
+    }
+
+    /*for (i in 0...4) {
       if (playerStrums != null) {
         var strum = playerStrums.strumlineNotes.members[i];
         strum.y = defaultPlayerStrumY[i] + (90 - 80 * offset) * negativity;
@@ -632,7 +705,7 @@ class ExtirpatientSong extends Song
           strum.x = defaultOpponentStrumX[i] + 306 + 100 * offset2;
         }
       }
-    }
+    }*/
   }
 
   function applyTollEffect():Void
@@ -664,7 +737,7 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
     var multiplier = isDownScroll ? -1 : 1;
@@ -699,7 +772,7 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
 
@@ -731,7 +804,7 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    var crochet = Conductor.instance.stepCrochet;
+    var crochet = Conductor.instance.stepLengthMs * 4;
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
 
@@ -849,20 +922,24 @@ class ExtirpatientSong extends Song
     if (PlayState.instance == null) return;
 
     var dad = playStage.getDad();
+    var bf = playStage.getBoyfriend();
 
     switch (kind) {
       // TODO: tween the zooms
       case 'normal':
         //playState.defaultCameraZoom = 0.65;
-        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 100, dad.cameraFocusPoint.y + 280);
+        playState.tweenCameraZoom(0.65, 1, true, FlxEase.expoOut);
+        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 250, dad.cameraFocusPoint.y - 200);
 
       case 'sonic':
         //playState.defaultCameraZoom = 0.65;
-        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y + 600);
+        playState.tweenCameraZoom(0.65, 1, true, FlxEase.expoOut);
+        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 100, dad.cameraFocusPoint.y + 400);
 
       case 'reset':
         //playState.defaultCameraZoom = 0.34;
-        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 300, dad.cameraFocusPoint.y + 480);
+        playState.tweenCameraZoom(playState.stageZoom, 1, true, FlxEase.expoOut);
+        playState.cameraFollowPoint.setPosition((dad.cameraFocusPoint.x + bf.cameraFocusPoint.x) / 2, dad.cameraFocusPoint.y);
     }
   }
 
@@ -887,6 +964,10 @@ class ExtirpatientSong extends Song
     songEnded = false;
     testValue = -0.25;
     hasStoredStrums = false;
+    defaultPlayerStrumX = [];
+    defaultPlayerStrumY = [];
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
   }
 
   override function onDestroy(event:ScriptEvent):Void

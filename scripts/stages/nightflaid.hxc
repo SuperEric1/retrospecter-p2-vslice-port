@@ -890,7 +890,7 @@ class NightflaidStage extends Stage
 
       case 'ascend':
         FlxTween.cancelTweensOf(dad);
-        FlxTween.tween(dad, {y: dad.y - groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
+        FlxTween.tween(dad, {y: ogNfY}, crochet / 400, {ease: FlxEase.quadInOut});
         dad.cameraFocusPoint.y += groundedOff;
 
       case 'final':
