@@ -5,14 +5,14 @@
   "characters": {
     "bf": {
       "zIndex": 300,
-      "position": [1240, 330],
-      "cameraOffsets": [-350, -300],
+      "position": [1240, 370],
+      "cameraOffsets": [-300, -510],
       "scale": 0.774
     },
     "dad": {
       "zIndex": 200,
-      "position": [370, 100],
-      "cameraOffsets": [200, -100]
+      "position": [280, 530],
+      "cameraOffsets": [150, -200]
     },
     "gf": {
       "zIndex": 100,

@@ -18,12 +18,13 @@ import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import StringTools;
 import funkin.audio.FunkinSound;
+import funkin.play.PlayStatePlaylist;
 import funkin.effects.IntervalShake;
 
 class WrathPhase2Stage extends Stage
 {
   // Constants
-  static inline var HIDDEN:Float = 0.0001;
+  static inline var HIDDEN:Float = 0;
 
   // Variables
   var hasCreatedStage:Bool = false;
@@ -153,7 +154,7 @@ class WrathPhase2Stage extends Stage
       vortex.x = 300; //-100
       vortex.y = -550;
       // Se for story mode, começa invisível
-      if (PlayState.instance.isStoryMode) vortex.alpha = HIDDEN;
+      if (PlayStatePlaylist.isStoryMode) vortex.alpha = HIDDEN;
       PlayState.instance.add(vortex);
 
       // Back rocks
@@ -312,7 +313,7 @@ class WrathPhase2Stage extends Stage
         crystal.scrollFactor.set(0.9, 0.9);
         crystal.animation.play('idle');
 
-        if (PlayState.instance.isStoryMode && !hasPlayedInGameCutscene) {
+        if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) {
           crystal.alpha = HIDDEN;
           crystal.y += 1500;
         }
@@ -344,7 +345,7 @@ class WrathPhase2Stage extends Stage
       crack.x += 45;
       crack.y += 405 - 15 + crackOffset;
 
-      if (!(PlayState.instance.isStoryMode && !hasPlayedInGameCutscene)) {
+      if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         crack.animation.play('bop');
         crack.active = true;
       }
@@ -352,7 +353,7 @@ class WrathPhase2Stage extends Stage
       //PlayState.instance.add(crack); don't add yet cuz zindex, we do it on onUpdate
 
       // Crack 2 (only for Spectral in story mode)
-      if (isSpectral && PlayState.instance.isStoryMode) {
+      if (isSpectral && PlayStatePlaylist.isStoryMode) {
         crack_2 = FunkinSprite.create(0, 0);
         crack_2.loadSparrow('wrath/HellCrack_2');
         crack_2.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
@@ -394,7 +395,7 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.add(rocksLeft);
 
       // Scale adjustment if not in cutscene
-      if (!(PlayState.instance.isStoryMode && !hasPlayedInGameCutscene)) {
+      if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         rocks.scale.x += 0.1;
         rocks.scale.y += 0.1;
         rocksLeft.scale.x += 0.1;
@@ -463,26 +464,25 @@ class WrathPhase2Stage extends Stage
   public override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
+
+    // Overlay
+    overlay = FunkinSprite.create(0, 0);
+    overlay.loadTexture('wrath/wrath_overlay');
+    overlay.screenCenter();
+    overlay.scrollFactor.set(0.6, 0.6);
+    overlay.blend = 'screen';
+    overlay.y += -128;
+    overlay.x += 40;
+    //overlay.cameras = [PlayState.instance.camGame];
+    PlayState.instance.add(overlay);
+    PlayState.instance.refresh();
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
 
-    if (overlay == null) {
-      // Overlay
-      overlay = FunkinSprite.create(0, 0);
-      overlay.loadTexture('wrath/wrath_overlay');
-      overlay.screenCenter();
-      overlay.scrollFactor.set(0.6, 0.6);
-      overlay.blend = 'screen';
-      overlay.y += -128;
-      overlay.x += 40;
-      overlay.cameras = [PlayState.instance.camGame];
-      PlayState.instance.add(overlay);
-    }
-
-    if (!PlayState.instance.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
 
     if (!hasPlayedInGameCutscene && isSpectral) {
       hasPlayedInGameCutscene = true;
@@ -504,26 +504,30 @@ class WrathPhase2Stage extends Stage
     var songPos = Conductor.instance.songPosition / 1000;
 
     //zindex here is still broken idk how to fix it
-    if (!hasRefreshedProps) {
+    if (!hasRefreshedProps && crack != null && getDad() != null) {
       hasRefreshedProps = true;
 
       crack.zIndex = getDad().zIndex - 1;
       PlayState.instance.add(crack);
-      if (isSpectral && PlayState.instance.isStoryMode) crack_2.zIndex = getDad().zIndex - 1;
-      if (isSpectral && PlayState.instance.isStoryMode) PlayState.instance.add(crack_2);
+      if (isSpectral && PlayStatePlaylist.isStoryMode && crack_2 != null) {
+        crack_2.zIndex = getDad().zIndex - 1;
+        PlayState.instance.add(crack_2);
+      }
       PlayState.instance.refresh();
     }
 
     // Crystal floating animation
-    for (i in 0...crystals.length) {
-      if (crystals[i] == null || !hasPlayedInGameCutscene) continue;
-      crystals[i].y += 50 * Math.sin(songPos + crystalFloatData[i][1]) * event.elapsed;
+    if (crystals != null && crystals.length > 0) {
+      for (i in 0...crystals.length) {
+        if (crystals[i] == null || !hasPlayedInGameCutscene) continue;
+        crystals[i].y += 50 * Math.sin(songPos + crystalFloatData[i][1]) * event.elapsed;
 
-      // Move crystals after step 1536
-      if (Conductor.instance.currentStep >= 1536) {
-        crystals[i].x -= crystalFloatData[i][0] * event.elapsed;
-        if (crystals[i].x <= -1000) {
-          crystals[i].x = 2500;
+        // Move crystals after step 1536
+        if (Conductor.instance.currentStep >= 1536) {
+          crystals[i].x -= crystalFloatData[i][0] * event.elapsed;
+          if (crystals[i].x <= -1000) {
+            crystals[i].x = 2500;
+          }
         }
       }
     }
@@ -533,7 +537,16 @@ class WrathPhase2Stage extends Stage
   {
     super.onDestroy(event);
     resetTweens();
+
     hasCreatedStage = false;
+    hasRefreshedProps = false;
+    hasPlayedInGameCutscene = false;
+    didSakuFadeIn = false;
+    runesCanGlow = false;
+    rockColor = false;
+
+    crystals = [];
+    flashySteps = [640, 1024, 1536, 1856];
   }
 
   function changeColor(sprite:StageProp):Void

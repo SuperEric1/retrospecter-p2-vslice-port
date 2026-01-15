@@ -127,7 +127,7 @@ class RetroGameUI extends Module {
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/sakuP2/bar');
         case 'nightflaid_atlas':
-          defaultScale = [0.5, 0.5];
+          defaultScale = [0.58, 0.58];
           healthBgYOffset = -95;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/death/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/death/bar');
@@ -415,12 +415,31 @@ class RetroGameUI extends Module {
         return 0xFFa9328c;
       case 'nightflaid_atlas':
         return 0xFFFFFFFF;
+      case 'nightflaid_unbeatable':
+        FlxTween.color(PlayState.instance.iconP2, 1, PlayState.instance.iconP2.color, 0xFFA7D6F4, {
+            ease: FlxEase.circOut,
+        });
+        return updateBarColor(CharacterType.DAD, 0xFFA7D6F4, true);
       default:
         return p2BarColor;
     }
   }
 
-  function syncIconAnim(icon, opp:Bool = false) {
+  public function updateBarColor(char:CharacterType, color:FlxColor = p2BarColor, ?tween:Bool = false, ?tweenTime:Float = 1, ?tweenEase:FlxEase = FlxEase.circOut):Void {
+    var oppBar = retroHealthBarFillBG;
+    var playerBar = retroHealthBarFill;
+    var targetBar = (char == CharacterType.DAD) ? oppBar : playerBar;
+
+    if (tween) {
+      FlxTween.color(targetBar, tweenTime, targetBar.color, color, {
+        ease: tweenEase,
+      });
+    } else {
+      targetBar.color = color;
+    }
+  }
+
+  function syncIconAnim(icon, ?opp:Bool = false) {
     win = HealthIcon.WINNING_THRESHOLD;
     lose = HealthIcon.LOSING_THRESHOLD;
     health = PlayState.instance.health;

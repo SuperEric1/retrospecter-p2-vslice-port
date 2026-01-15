@@ -16,10 +16,10 @@ import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
+import funkin.ui.FullScreenScaleMode;
+import funkin.play.PlayStatePlaylist;
 import funkin.Paths;
-
-import supereric.retrospecter.modules.RetroGameUI;
-import supereric.retrospecter.modules.RetroPVE_VideoModule;
+import StringTools;
 
 /**
  * Nightflaid Stage - Dynamic multi-character boss rush stage with color-changing shaders
@@ -58,17 +58,21 @@ class NightflaidStage extends Stage
   var ogNfY:Float;
 
   var hasCreatedStage:Bool = false;
+  var hasCreatedUnbeatable:Bool = false;
   var usedCheckPoint:Bool = false;
   var qe:Bool = true;
 
+  var retroGameUI;
+
   // Color variants based on song
   var alt:String = '';
-  var colorr:String = 'fb002d';
+  var colorr:String = 'fb002d'; // #fb002d
 
   // Stage sprites
   var N_hls:StageProp;
   var N_drk:StageProp;
-  var N_clr:StageProp;
+  var N_clrRight:StageProp;
+  var N_clrLeft:StageProp;
   var N_top:StageProp;
   var N_glw:StageProp;
   var N_glt:StageProp;
@@ -84,13 +88,17 @@ class NightflaidStage extends Stage
   var midsongVideoPath:String = ''; // Path to load later
   var midsongVideoResyncThreshold:Int = 1000; // Resync threshold in ms
   var midsongVideoPlaying:Bool = false; // Track if video is currently playing
+  var midsongVideoLoaded:Bool = false; // Check if video has loaded correcly
   var hasVideoSpriteBeenCreated:Bool = false;
 
   // Unbeatable elements
   var unbeatableNeedlesLeft:Array<FlxSprite> = [];
   var unbeatableNeedlesRight:Array<FlxSprite> = [];
+  var unbeatableVignette:FlxSprite;
   var unbeatableLightningLeft:FlxSprite;
   var unbeatableLightningRight:FlxSprite;
+  var unbeatableLightningLeftPos:Float; //110.0 - 500.0
+  var unbeatableLightningRightPos:Float; // 1020.0 + 500.0
   var needlesActive:Bool = false;
 
   // Light animation variables
@@ -161,6 +169,8 @@ class NightflaidStage extends Stage
   {
     super.onCreate(event);
     if (hasCreatedStage) return;
+    resetFlags();
+    retroGameUI = ModuleHandler.getModule('RetroGameUI');
 
     // Determine song variant
     var songName = PlayState.instance?.currentChart?.songName ?? '';
@@ -179,16 +189,25 @@ class NightflaidStage extends Stage
     N_hls = makeSprite('N_hls', 'nightflaid/highlights', bgX, bgY);
     N_drk = makeSprite('N_drk', 'nightflaid/darklayer' + alt, bgX, bgY);
 
-    // Color layer (solid color)
-    N_clr = FunkinSprite.create(bgX, bgY);
-    N_clr.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
-    PlayState.instance.add(N_clr, 'N_clr');
+    // Color layers (behind the bg, used to color the ground & other things in the toplayer)
+    N_clrLeft = FunkinSprite.create(bgX, bgY);
+    N_clrLeft.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
+    N_clrLeft.color = 0xFF0d0d0d;
+    PlayState.instance.add(N_clrLeft, 'N_clrLeft');
+
+    N_clrRight = FunkinSprite.create(bgX + bgWidth, bgY);
+    N_clrRight.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
+    N_clrRight.color = 0xFF0d0d0d;
+    PlayState.instance.add(N_clrRight, 'N_clrRight');
 
     N_top = makeSprite('N_top', 'nightflaid/toplayer' + alt, bgX, bgY);
+    //N_top.visible = false;
 
-    // Scale color layer to match top layer
-    N_clr.setGraphicSize(Std.int(N_top.width), Std.int(N_top.height));
-    N_clr.updateHitbox();
+    // Scale color layers to match top layer
+    N_clrLeft.setGraphicSize(Std.int(N_top.width / 2) + 5, Std.int(N_top.height)); // + 5 so it goes behind the right layer and fills correcly
+    N_clrLeft.updateHitbox();
+    N_clrRight.setGraphicSize(Std.int(N_top.width / 2), Std.int(N_top.height));
+    N_clrRight.updateHitbox();
 
     // Glow layer (foreground)
     N_glw = makeSprite('N_glw', 'nightflaid/glow' + alt, bgX, bgY);
@@ -215,29 +234,17 @@ class NightflaidStage extends Stage
     N_lt2.updateHitbox();
 
     // Cover sprite (black screen overlay)
-    coverSpr = FunkinSprite.create(-100, -100);
-    coverSpr.makeGraphic(1, 1, FlxColor.BLACK);
+    coverSpr = FunkinSprite.create(0, 0);
+    coverSpr.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
+    coverSpr.camera = PlayState.instance.camCutscene; // camhud is hidden at the end so it must be camCutscene
     coverSpr.scrollFactor.set(0, 0);
-    coverSpr.setGraphicSize(FlxG.width + 200, FlxG.height + 200);
     coverSpr.updateHitbox();
     coverSpr.alpha = 0;
     coverSpr.visible = false;
-    coverSpr.zIndex = 1;
+    coverSpr.zIndex = 10000;
     PlayState.instance.add(coverSpr, 'coverSpr');
 
-    nfUnbeatable = FunkinSprite.create(0, 0);
-    nfUnbeatable.loadSparrow('characters/others/80sNightflaid');
-    nfUnbeatable.animation.addByPrefix('idle', 'idle');
-    nfUnbeatable.animation.addByPrefix('singLEFT', 'left');
-    nfUnbeatable.animation.addByPrefix('singRIGHT', 'right');
-    nfUnbeatable.animation.addByPrefix('singUP', 'up');
-    nfUnbeatable.animation.play('idle');
-    nfUnbeatable.scale.set(2, 2);
-    nfUnbeatable.camera = PlayState.instance.camHUD;
-    nfUnbeatable.updateHitbox();
-    //PlayState.instance.add(nfUnbeatable);
-
-    initializeMidsongVideo(); // Create video sprite early cuz of zindex I HATE THIS SHIT RAHHHHH
+    initializeMidsongVideo(); // Create video sprite early
 
     // Unbeatable background
     unbeatableBG = makeSprite('unbeatableBG', 'nightflaid/unbeatableBG' + alt, -1000 + xAdjust, 0 + yAdjust); // old y: -900 + yAdjust
@@ -246,17 +253,15 @@ class NightflaidStage extends Stage
     unbeatableBG.scale.set(150, 150);
     unbeatableBG.updateHitbox();
     unbeatableBG.alpha = 0;
-    //unbeatableBG.camera = PlayState.instance.camHUD;
-    //unbeatableBG.zIndex = 1;
+    // no need to add cuz makesprite already does that
 
     // White screen flash
-    whiteScreen = FunkinSprite.create(1, 1);
-    whiteScreen.makeGraphic(1, 1, FlxColor.WHITE);
-    whiteScreen.scale.set(5000, 5000);
+    whiteScreen = FunkinSprite.create(0, 0);
+    whiteScreen.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.WHITE);
+    whiteScreen.camera = PlayState.instance.camCutscene;
     whiteScreen.updateHitbox();
     whiteScreen.screenCenter();
-    whiteScreen.alpha = 0.001;
-    whiteScreen.zIndex = 300;
+    whiteScreen.alpha = 0;
     whiteScreen.camera = PlayState.instance.camHUD;
     PlayState.instance.add(whiteScreen, 'whiteScreen');
 
@@ -267,7 +272,7 @@ class NightflaidStage extends Stage
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    setupUnbeatableElements();
+    if (unbeatableLightningLeft == null || unbeatableLightningRight == null) setupUnbeatableElements();
     setupShaders();
     if (ogNfY == 0 || ogNfY == null) ogNfY = getDad().y;
 
@@ -286,6 +291,8 @@ class NightflaidStage extends Stage
 
   function initializeMidsongVideo():Void
   {
+    midsongVideoLoaded = false;
+
     // Create black bars sprite for video letterboxing
     midsongVideoBlackBars = FunkinSprite.create(0, 0);
     midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF000000);
@@ -300,6 +307,50 @@ class NightflaidStage extends Stage
     midsongVideo = new FunkinVideoSprite(0, 0);
     midsongVideo.zIndex = 0;
     midsongVideo.scrollFactor.set(0, 0);
+
+    if (midsongVideo.load(Paths.videos('nightflaid')))
+    {
+      midsongVideoLoaded = true;
+      // Scale the video to fit the screen while keeping aspect ratio
+      midsongVideo.bitmap.onFormatSetup.add(() -> {
+        var scale:Float = Math.min(FlxG.width / midsongVideo.bitmap.bitmapData.width, FlxG.height / midsongVideo.bitmap.bitmapData.height);
+        midsongVideo.setGraphicSize((midsongVideo.bitmap.bitmapData.width * scale) + 10, midsongVideo.bitmap.bitmapData.height * scale);
+        midsongVideo.updateHitbox();
+        midsongVideo.screenCenter();
+      });
+
+      //midsongVideo.play(); // play later!
+      midsongVideo.bitmap.volumeAdjust = 0; // mute video (it's already mute but yeah)
+
+      // Handle video end
+      midsongVideo.bitmap.onEndReached.add(function() {
+        midsongVideoBlackBars.active = false;
+        midsongVideoBlackBars.visible = false;
+        midsongVideo.active = false;
+        midsongVideo.visible = false;
+
+        midsongVideoPlaying = false;
+        midsongVideoLoaded = false;
+      }, true);
+
+      // Handle video errors
+      midsongVideo.bitmap.onEncounteredError.add(function() {
+        trace('ERROR: Failed to play midsong video: ' + videoPath);
+        midsongVideoBlackBars.active = false;
+        midsongVideoBlackBars.visible = false;
+        midsongVideo.active = false;
+        midsongVideo.visible = false;
+
+        midsongVideoPlaying = false;
+        midsongVideoLoaded = false;
+      }, true);
+    }
+    else
+    {
+      trace('ERROR: Could not load video file: ' + videoPath);
+      midsongVideoPlaying = false;
+      midsongVideoLoaded = false;
+    }
     midsongVideo.visible = false; // Start invisible
     midsongVideo.active = false; // Don't update until we play
 
@@ -318,21 +369,20 @@ class NightflaidStage extends Stage
 
   function setupUnbeatableElements():Void
   {
+    unbeatableLightningLeftPos = (FlxG.width * 0.086) - 500;
+    unbeatableLightningRightPos = (FlxG.width * 0.797) + 500;
+
     // Lightning sprites
-    var leftPos:Float = 110.0 - 500.0;
-    unbeatableLightningLeft = FunkinSprite.create(leftPos, -50);
+    unbeatableLightningLeft = FunkinSprite.create(unbeatableLightningLeftPos, -50);
     unbeatableLightningLeft.loadSparrow('nightflaid/ycbu_lightning');
     unbeatableLightningLeft.animation.addByPrefix('lightning', 'lightning', 24, true);
     unbeatableLightningLeft.animation.play('lightning', true);
     unbeatableLightningLeft.scrollFactor.set(0, 0);
     unbeatableLightningLeft.visible = false;
     unbeatableLightningLeft.active = false;
-    //unbeatableLightningLeft.camera = PlayState.instance.camHUD;
-    //unbeatableLightningLeft.zIndex = 2;
     PlayState.instance.add(unbeatableLightningLeft);
 
-    var rightPos:Float = 1020.0 + 500.0;
-    unbeatableLightningRight = FunkinSprite.create(rightPos, -50);
+    unbeatableLightningRight = FunkinSprite.create(unbeatableLightningRightPos, -50);
     unbeatableLightningRight.loadSparrow('nightflaid/ycbu_lightning');
     unbeatableLightningRight.animation.addByPrefix('lightning', 'lightning', 24, true);
     unbeatableLightningRight.animation.play('lightning', true);
@@ -340,8 +390,6 @@ class NightflaidStage extends Stage
     unbeatableLightningRight.flipY = true;
     unbeatableLightningRight.visible = false;
     unbeatableLightningRight.active = false;
-    //unbeatableLightningRight.camera = PlayState.instance.camHUD;
-    //unbeatableLightningRight.zIndex = 2;
     PlayState.instance.add(unbeatableLightningRight);
 
     // Create needles
@@ -376,12 +424,23 @@ class NightflaidStage extends Stage
       }
     }
 
+    unbeatableVignette = FunkinSprite.create(0, 0);
+    unbeatableVignette.loadTexture('nightflaid/vignette');
+    unbeatableVignette.setGraphicSize(FlxG.width * 1.5, FlxG.height * 1.05);
+    unbeatableVignette.scrollFactor.set(0, 0);
+    unbeatableVignette.alpha = 0;
+    unbeatableVignette.camera = PlayState.instance.camHUD;
+    PlayState.instance.add(unbeatableVignette);
+
+    hasCreatedUnbeatable = true;
+
     // Start unbeatable tween
     unbeatableTween();
   }
 
   function unbeatableTween():Void
   {
+    if (PlayState.instance == null) return;
     if (unbeatableBG == null) return;
 
     FlxTween.tween(unbeatableBG, {
@@ -451,27 +510,40 @@ class NightflaidStage extends Stage
       // Enable VCR/NTSC effects
       FlxTween.tween(unbeatableLightningLeft, {x: unbeatableLightningLeft.x + 500.0}, 0.75, {ease: FlxEase.quadOut});
       FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x - 500.0}, 0.75, {ease: FlxEase.quadOut});
+      FlxTween.tween(unbeatableVignette, {alpha: 1}, 0.75, {ease: FlxEase.quadOut});
+
+      FullScreenScaleMode.addCutouts(0.75, FlxEase.quadOut);
     }
     else
     {
       // Disable effects
+      FlxTween.cancelTweensOf(unbeatableVignette);
+      FlxTween.cancelTweensOf(unbeatableLightningLeft);
+      FlxTween.cancelTweensOf(unbeatableLightningRight);
+      FlxTween.tween(unbeatableVignette, {alpha: 0}, 0.5, {ease: FlxEase.quadOut});
+      FullScreenScaleMode.removeCutouts();
+      triggerColorTween('CCCCCC', 0, 'both');
     }
 
     // Update needle visibility
     for (needle in unbeatableNeedlesLeft)
     {
-      needle.active = needlesActive;
-      needle.visible = needlesActive;
+      if (needle != null) {
+        needle.active = needlesActive;
+        needle.visible = needlesActive;
+      }
     }
     for (needle in unbeatableNeedlesRight)
     {
-      needle.active = needlesActive;
-      needle.visible = needlesActive;
+      if (needle != null) {
+        needle.active = needlesActive;
+        needle.visible = needlesActive;
+      }
     }
-    unbeatableLightningLeft.visible = needlesActive;
-    unbeatableLightningRight.visible = needlesActive;
     unbeatableLightningLeft.active = needlesActive;
     unbeatableLightningRight.active = needlesActive;
+    unbeatableLightningLeft.visible = needlesActive;
+    unbeatableLightningRight.visible = needlesActive;
   }
 
   override function onUpdate(event:UpdateScriptEvent):Void
@@ -593,15 +665,24 @@ class NightflaidStage extends Stage
     var curStep = event.step;
 
     // Step-based events
-    if (curStep >= 3512 && !finalFadeout && PlayState.instance.isStoryMode)
+    if (curStep >= 3512 && !finalFadeout && PlayStatePlaylist.isStoryMode) // storymode only
     {
       finalFadeout = true;
-      if (coverSpr != null)
+      PlayState.instance.mayPauseGame = false;
+      // Hide pause button
+      if (FlxG.onMobile)
       {
-        coverSpr.alpha = 0;
-        coverSpr.visible = true;
-        FlxTween.tween(coverSpr, {alpha: 1}, 0.5);
+        FlxTween.tween(PlayState.instance.pauseButton,
+          {x: (FlxG.width - PlayState.instance.pauseButton.width) - (40 + (FullScreenScaleMode.gameCutoutSize.x / 2))}, 2, {ease: FlxEase.quintOut});
       }
+      // Black screen
+      coverSpr.alpha = 0;
+      coverSpr.visible = true;
+      FlxTween.tween(coverSpr, {alpha: 1}, 0.5);
+      // End song (mayPauseGame won't let the song end normally)
+      new FlxTimer().start(2.5, function(tmr) {
+        PlayState.instance.endSong(true);
+      });
     }
 
     if (curStep >= 64 && !sq && !usedCheckPoint)
@@ -609,6 +690,7 @@ class NightflaidStage extends Stage
       sq = true;
       // Trigger initial color tween
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween', ['CCCCCC', '0.15'])));
+      triggerColorTween('CCCCCC', 0.15, 'both');
     }
 
     if (curStep >= 2944 && !qqs)
@@ -624,6 +706,7 @@ class NightflaidStage extends Stage
       // Turn off lightings and go dark
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid lightings', ['off', ''])));
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween', ['0d0d0d', '0.15'])));
+      triggerColorTween('0d0d0d', 0, 'both');
     }
 
     if (curStep >= 2304 && !qweqe)
@@ -631,6 +714,7 @@ class NightflaidStage extends Stage
       // Both sides go dark
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween right-only', ['0d0d0d', '0.3'])));
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween left-only', ['0d0d0d', '0.3'])));
+      triggerColorTween('0d0d0d', 0, 'both');
       qweqe = true;
       qe = false;
     }
@@ -639,11 +723,17 @@ class NightflaidStage extends Stage
     {
       // Left side lights up
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween left-only', [colorr, '0.3'])));
+      triggerColorTween(colorr, 0, 'left');
       qqqqq = true;
       qe = true;
     }
 
-    // Resync é gerenciado pelo RetroPVE_VideoModule agora
+    if ((curStep >= 3191 && curStep < 3200) && whiteScreen.alpha == 0) {
+      FlxTween.tween(whiteScreen, {alpha: 1}, 0.9);
+    }
+    if (curStep >= 3200 && whiteScreen.alpha == 1) {
+      FlxTween.tween(whiteScreen, {alpha: 0}, 0.5);
+    }
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void
@@ -658,11 +748,11 @@ class NightflaidStage extends Stage
     {
       var value = event.eventData.value;
       var step = Conductor.instance.currentStep;
-      // Dynamic camera side swapping between steps 1664-2944
+      // Dynamic camera side swapping between steps 1663-2944
       if (!qe) return;
 
       var currentStep = Conductor.instance.currentStep;
-      if (currentStep < 1664 || currentStep >= 2944) return;
+      if (currentStep < 1663 || currentStep >= 2944) return;
 
       // Track which side should be lit based on camera focus
       switch (Std.parseInt(value.char)) {
@@ -674,6 +764,8 @@ class NightflaidStage extends Stage
             // triggerNightflaidSwapSides('', '');
             // triggerNightflaidColorTweenLeftOnly(colorr, 0.3);
             // triggerNightflaidColorTweenRightOnly('0d0d0d', 0.3);
+            triggerColorTween(colorr, 0, 'right');
+            triggerColorTween('0d0d0d', 0, 'left');
           }
         case 1:
           if (!pp) {
@@ -683,6 +775,8 @@ class NightflaidStage extends Stage
             // triggerNightflaidSwapSides('', '');
             // triggerNightflaidColorTweenRightOnly(colorr, 0.3);
             // triggerNightflaidColorTweenLeftOnly('0d0d0d', 0.3);
+            triggerColorTween(colorr, 0, 'left');
+            triggerColorTween('0d0d0d', 0, 'right');
           }
         default:
           break;
@@ -749,11 +843,34 @@ class NightflaidStage extends Stage
         }
 
       case "RetroPlayVideo":
-        if (value != null && value.length > 0)
-        {
-          //midsongVideoPath = value[0]; // this is not needed ig
-        }
         handleMidsongCutscene();
+    }
+  }
+
+  function triggerColorTween(color:String, duration:Float, ?side:String = 'both', ?easeType:FlxEase = FlxEase.cubicOut):Void
+  {
+    var targetColor:Int = StringTools.startsWith(color, '#') ? FlxColor.fromString(color) : FlxColor.fromString('#' + color);
+
+    if (side.toLowerCase() == 'both') {
+      if (duration > 0) {
+        FlxTween.color(N_clrLeft, duration, N_clrLeft.color, targetColor, { ease: easeType });
+        FlxTween.color(N_clrRight, duration, N_clrRight.color, targetColor, { ease: easeType });
+      } else {
+        N_clrLeft.color = targetColor;
+        N_clrRight.color = targetColor;
+      }
+    } else if (side.toLowerCase() == 'left') {
+      if (duration > 0) {
+        FlxTween.color(N_clrLeft, duration, N_clrLeft.color, targetColor, { ease: easeType });
+      } else {
+        N_clrLeft.color = targetColor;
+      }
+    } else if (side.toLowerCase() == 'right') {
+      if (duration > 0) {
+        FlxTween.color(N_clrRight, duration, N_clrRight.color, targetColor, { ease: easeType });
+      } else {
+        N_clrRight.color = targetColor;
+      }
     }
   }
 
@@ -769,13 +886,16 @@ class NightflaidStage extends Stage
       case 'descend':
         FlxTween.cancelTweensOf(dad);
         FlxTween.tween(dad, {y: dad.y + groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
+        dad.cameraFocusPoint.y -= groundedOff;
 
       case 'ascend':
         FlxTween.cancelTweensOf(dad);
         FlxTween.tween(dad, {y: dad.y - groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
+        dad.cameraFocusPoint.y += groundedOff;
 
       case 'final':
-        // Fade out HUD
+        //dad.danceEvery = 0;
+        PlayState.instance.disableKeys = true;
         FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 2, {ease: FlxEase.quadOut});
     }
   }
@@ -790,18 +910,15 @@ class NightflaidStage extends Stage
     if (character == 'nightflaid_unbeatable')
     {
       // Special setup for 80s Nightflaid character
-      if (dad.animation != null)
-      {
-        dad.playAnimation('singLEFT', true);
-      }
+      dad.playAnimation('singLEFT', true);
 
-      if (coverSpr != null)
+      /*if (coverSpr != null)
       {
         FlxTween.cancelTweensOf(coverSpr);
         coverSpr.alpha = 1;
-      }
+      }*/
 
-      var posY = FlxG.height - 85; // 200
+      var posY = FlxG.height - (dad.width / 4.5); // 200
       dad.y = FlxG.height + 100; //posY + FlxG.height + 100
       FlxTween.tween(dad, {y: posY}, 0.75, {ease: FlxEase.circOut});
       //FlxTween.tween(getBoyfriend(), {alpha: 0}, 0.75, {ease: FlxEase.circOut});
@@ -821,7 +938,10 @@ class NightflaidStage extends Stage
     {
       dad.y = ogNfY;
       PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
-      getBoyfriend().alpha = 1;
+      PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getDad().cameraFocusPoint.y, 0.1, FlxEase.circOut);
+      midsongVideo.visible = false;
+      midsongVideoBlackBars.visible = false;
+      //triggerColorTween('CCCCCC', 0.05, 'both');
     }
   }
 
@@ -852,34 +972,26 @@ class NightflaidStage extends Stage
     }
 
     // Update health bar colors to white
-    if (PlayState.instance.iconP2 != null)
-    {
-      FlxTween.tween(PlayState.instance.iconP2, {color: FlxColor.WHITE}, 0.5, {ease: FlxEase.circOut});
-    }
-    if (PlayState.instance.healthBar != null && PlayState.instance.healthBar.leftBar != null)
-    {
-      FlxTween.tween(PlayState.instance.healthBar.leftBar, {color: FlxColor.WHITE}, 0.5, {ease: FlxEase.circOut});
-    }
+    FlxTween.color(PlayState.instance.iconP2, 0.5, PlayState.instance.iconP2.color, -1, { ease: FlxEase.circOut });
+    retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
 
     // After animation completes, switch character and reset
     new FlxTimer().start(0.5, function(tmr:FlxTimer) {
       // Switch to nightflaid_atlas character
-      if (coverSpr != null)
-      {
-        coverSpr.alpha = 1;
-        FlxTween.tween(coverSpr, {alpha: 0}, 0.5);
-      }
+      coverSpr.alpha = 1;
+      FlxTween.tween(coverSpr, {alpha: 0}, 0.5);
 
       setCameraOnThings(false);
 
       // Reset color tween to dark
       // triggerNightflaidColorTween('0d0d0d', 0.15);
+      triggerColorTween(colorr, 0, 'both');
     });
   }
 
   function playMidsongVideo():Void
   {
-    if (midsongVideo == null) return;
+    if (midsongVideo == null || !midsongVideoLoaded) return;
 
     // Make video and black bars visible and active
     midsongVideo.active = true;
@@ -888,83 +1000,89 @@ class NightflaidStage extends Stage
     midsongVideoBlackBars.visible = true;
     midsongVideoPlaying = true;
 
-    // Load and play the video
-    var videoPath = Paths.videos('nightflaid');
+    midsongVideo.play();
 
-    if (midsongVideo.load(videoPath))
-    {
-      // Scale the video to fit the screen while keeping aspect ratio
-      midsongVideo.bitmap.onFormatSetup.add(() -> {
-        var scale:Float = Math.min(FlxG.width / midsongVideo.bitmap.bitmapData.width, FlxG.height / midsongVideo.bitmap.bitmapData.height);
-        midsongVideo.setGraphicSize((midsongVideo.bitmap.bitmapData.width * scale) + 10, midsongVideo.bitmap.bitmapData.height * scale);
-        midsongVideo.updateHitbox();
-        midsongVideo.screenCenter();
-      });
-
-      midsongVideo.play();
-      midsongVideo.bitmap.volumeAdjust = 0; // mute video
-
-      // Handle video end
-      midsongVideo.bitmap.onEndReached.add(function() {
-        midsongVideo.visible = false;
-        midsongVideo.active = false;
-        midsongVideoBlackBars.visible = false;
-        midsongVideoBlackBars.active = false;
-        midsongVideoPlaying = false;
-      }, true);
-
-      // Handle video errors
-      midsongVideo.bitmap.onEncounteredError.add(function() {
-        trace('ERROR: Failed to play midsong video: ' + videoPath);
-        midsongVideo.visible = false;
-        midsongVideo.active = false;
-        midsongVideoBlackBars.visible = false;
-        midsongVideoBlackBars.active = false;
-        midsongVideoPlaying = false;
-      }, true);
-
-      // Quando o vídeo é ativado, o stage registra no módulo:
-      var videoModule = ModuleHandler.getModule('RetroPVE_VideoModule');
-      videoModule.scriptCall('registerVideoForResync', [midsongVideo, midsongVideoBlackBars, true]);
-
-      // O módulo faz o resync automaticamente em onStepHit()
-    }
-    else
-    {
-      trace('ERROR: Could not load video file: ' + videoPath);
-      midsongVideo.visible = false;
-      midsongVideo.active = false;
-      midsongVideoBlackBars.visible = false;
-      midsongVideoBlackBars.active = false;
-      midsongVideoPlaying = false;
-    }
+    // Quando o vídeo é ativado, o stage registra no módulo:
+    var videoModule = ModuleHandler.getModule('RetroPVE_VideoModule');
+    videoModule.scriptCall('registerVideoForResync', [midsongVideo, midsongVideoBlackBars, true]);
+    // O módulo faz o resync automaticamente em onStepHit()
   }
 
-  /*function checkResyncVideo(?instant:Bool = false, ?resume:Bool = true):Void
+  override function onSongRetry(event:ScriptEvent)
   {
-    // Only resync if video is actually playing
-    if (midsongVideo?.bitmap == null) return;
-    if (!midsongVideoPlaying || !midsongVideo.visible || !midsongVideo.active) return;
+    super.onSongRetry(event);
+    getDad().danceEvery = 1;
+    N_clrRight.color = -1;
+    N_clrLeft.color = -1;
+    PlayState.instance.disableKeys = false;
+    if (hasCreatedUnbeatable) { // if the unbeatable elements were already created, hide them
+      setCameraOnThings(false);
+      unbeatableBG.alpha = 0;
+      unbeatableLightningLeft.x = unbeatableLightningLeftPos;
+      unbeatableLightningRight.x = unbeatableLightningRightPos;
 
-    // Calculate expected video time based on song position
-    var expectedVideoTime:Float = Conductor.instance.songPosition - Conductor.instance.combinedOffset;
-    var videoError:Float = midsongVideo.bitmap.time - expectedVideoTime;
+      /*unbeatableLightningLeft.destroy();
+      unbeatableLightningLeft = null;
+      unbeatableLightningRight.destroy();
+      unbeatableLightningRight = null;
 
-    if (instant || Math.abs(videoError) > midsongVideoResyncThreshold)
-    {
-      trace('VIDEO RESYNC: Drift = ' + Std.int(Math.abs(videoError)) + 'ms');
-      midsongVideo.pause();
-      midsongVideo.bitmap.time = expectedVideoTime;
-      if (resume) midsongVideo.resume();
+      for (needle in unbeatableNeedlesRight)
+      {
+        if (needle != null) {
+          needle.destroy();
+          unbeatableNeedlesRight.pop(needle);
+        }
+      }
+      for (needle in unbeatableNeedlesLeft)
+      {
+        if (needle != null) {
+          needle.destroy();
+          unbeatableNeedlesLeft.pop(needle);
+        }
+      }
+
+      // Cleanup arrays
+      unbeatableNeedlesLeft = [];
+      unbeatableNeedlesRight = [];*/
     }
-  }*/
 
+    if (midsongVideo != null) {
+      midsongVideoPlaying = false;
+      //midsongVideoLoaded = false;
+      //midsongVideo.destroy();
+      //midsongVideo = null;
+      //midsongVideoBlackBars.destroy();
+      //midsongVideoBlackBars = null;
+    }
+
+    finalFadeout = false;
+  }
+
+  function resetFlags():Void {
+    sq = false;
+    qqs = false;
+    qqas = false;
+    qweqe = false;
+    qqqqq = false;
+    qe = true;
+    dd = false;
+    pp = false;
+  }
 
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
     hasCreatedStage = false;
+    hasCreatedUnbeatable = false;
     midsongVideoPlaying = false;
+    midsongVideoLoaded = false;
+    finalFadeout = false;
+    resetFlags();
+
+    // this so when we play again, the objects can appear properly (otherwise they won't build)
+    unbeatableBG = null;
+    unbeatableNeedlesLeft = null;
+    unbeatableNeedlesRight = null;
 
     // Cleanup arrays
     unbeatableNeedlesLeft = [];
@@ -977,6 +1095,10 @@ class NightflaidStage extends Stage
 
     switch (charType)
     {
+      case CharacterType.BF:
+        character.idleSuffix = '-alt';
+        character.danceEvery = 1;
+
       case CharacterType.GF:
         character.antialiasing = false;
         character.danceEvery = 0;

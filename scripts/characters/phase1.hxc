@@ -35,6 +35,7 @@ class PhaseOneCharacter extends MultiSparrowCharacter {
 
 	public function onStepHit(event) {
     super.onStepHit(event);
+		if (PlayState.instance == null) return;
 		if (PlayState.instance.currentChart.song.id != 'satisfracture') return;
 		if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;

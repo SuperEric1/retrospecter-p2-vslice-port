@@ -12,6 +12,8 @@ import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
+import funkin.save.Save;
+import funkin.Preferences;
 
 class ExtirpatientSong extends Song
 {
@@ -43,6 +45,7 @@ class ExtirpatientSong extends Song
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
   var flash:FunkinSprite;
+  var hasStoredStrums = false;
 
   var flashyBits:Array<Int> = [79, 143, 171, 199, 279, 311, 339, 367];
   var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
@@ -70,6 +73,8 @@ class ExtirpatientSong extends Song
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+    modcharts = Save.instance.modOptions.get('retroModcharts');
+    flashingLights = Preferences.flashingLights;
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
@@ -92,23 +97,24 @@ class ExtirpatientSong extends Song
     resetFlags();
   }
 
-  public override function onSongStart(event:ScriptEvent):Void
+  public override function onSongLoaded(event:ScriptEvent):Void
   {
-    super.onSongStart(event);
+    super.onSongLoaded(event);
 
     // Store default strum positions
-    storeDefaultStrumPositions();
+    if (!hasStoredStrums) storeDefaultStrumPositions();
 
     // Initial camera position if song just started
     if (Conductor.instance.songPosition < 100) {
-      var dad = playStage.getDad();
-      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 300, dad.cameraFocusPoint.y + 300);
+      var dad = PlayState.instance.currentStage.getDad();
+      PlayState.instance.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 300, dad.cameraFocusPoint.y + 300);
     }
   }
 
   function storeDefaultStrumPositions():Void
   {
     if (PlayState.instance == null) return;
+    hasStoredStrums = true;
 
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
@@ -250,7 +256,7 @@ class ExtirpatientSong extends Song
     super.onStepHit(event);
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
-    
+
     var curStep = event.step;
 
     // Red pulses
@@ -880,6 +886,7 @@ class ExtirpatientSong extends Song
     shakeTime = 0;
     songEnded = false;
     testValue = -0.25;
+    hasStoredStrums = false;
   }
 
   override function onDestroy(event:ScriptEvent):Void

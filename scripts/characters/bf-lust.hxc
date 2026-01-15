@@ -60,8 +60,8 @@ class BFLustCharacter extends MultiSparrowCharacter
 
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       if (!Save.instance.modOptions.get('retroSuggestive')) {
-        this.playSingAnimation('no', true, 'hellnah');
-        return;
+        PlayState.instance.onNoteMiss(event.note, event.playSound, event.healthChange);
+        event.cancel();
       }
     }
     super.onNoteMiss(event);

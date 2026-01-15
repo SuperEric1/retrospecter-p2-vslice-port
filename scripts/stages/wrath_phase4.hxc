@@ -265,6 +265,9 @@ class WrathPhase4Stage extends Stage
       ogCamFollowPos = [PlayState.instance.cameraFollowPoint.y, PlayState.instance.cameraFollowPoint.x];
     }
 
+    // fix camera at the start
+    PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getBoyfriend().y + 8000, 0.1, FlxEase.circOut);
+
     if (gf != null) {
       ground_M.x = gf.x + gf.width/2 - ground_M.width/2 + 380;
       ground_M.y = gf.y + gf.height/2 + 295;

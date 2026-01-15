@@ -60,7 +60,7 @@ class fakeNote extends Module {
 
 		if ( event.note.kind == "Fake Note" )
 		{
-			event.note.kill();
+			event.note.visible = false;
 			event.cancel();
 			event.stopPropagation();
 		}

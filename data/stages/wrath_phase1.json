@@ -153,7 +153,7 @@
           "frameRate": 24,
           "looped": false,
           "name": "r2",
-          "offsets": [-40, -40],
+          "offsets": [0, 0],
           "prefix": "r2"
         },
         {
@@ -164,7 +164,7 @@
           "frameRate": 24,
           "looped": false,
           "name": "r1",
-          "offsets": [-150, -150],
+          "offsets": [0, 0],
           "prefix": "r1"
         }
       ],

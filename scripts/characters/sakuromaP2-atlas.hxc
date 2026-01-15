@@ -29,10 +29,7 @@ class SakuPhaseTwoCharacter extends AnimateAtlasCharacter
 		if (PlayState.instance == null) return;
 
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
-			if (!save.get('retroSuggestive')) {
-        PlayState.instance.iconP2.visible = false;
-        return;
-      }
+			if (!save.get('retroSuggestive')) return;
 		}
 		super.onNoteHit(event);
 	}

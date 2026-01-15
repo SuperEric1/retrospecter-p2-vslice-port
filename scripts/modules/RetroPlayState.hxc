@@ -243,20 +243,18 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
 
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
-      var doesVocalThing:Bool = true;
       var k = event.note.noteData.kind;
       var noteDir = event.note.noteData.getDirection();
       if (k == "autoChain") {
         lockStrum(noteDir);
         if (k == 'autoChain') chainText.visible = true;
-        doesVocalThing = false;
 
         event.note.kill();
         event.cancel();
         event.stopPropagation();
         // don't RETURN or else the custom UI will display as a miss
       }
-      if (doesVocalThing) doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
+      if (event.note.scoreable) doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
     }
 
     super.onNoteMiss(event);
@@ -496,9 +494,10 @@ class RetroPlayState extends Module {
       if (lockSprite != null) {
         lockSprite.animation.play('unlocked' + dirName, false);
         // Esconde o sprite após a animação terminar
-        new FlxTimer().start(0.5, function(tmr:FlxTimer) {
+        var dir = direction; // Capturar o valor localmente para uso nas closures
+        new FlxTimer().start(0.6, function(tmr:FlxTimer) {
           if (PlayState.instance == null) return;
-          if (lockSprite != null) lockSprite.visible = false;
+          if (lockSprite != null && !isStrumLocked.get(dir)) lockSprite.visible = false;
         });
       }
       // retornar cores ao normal
