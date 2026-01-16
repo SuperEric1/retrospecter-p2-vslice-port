@@ -36,6 +36,7 @@ class ExtirpatientSong extends Song
 
   var toggledShove:Bool = false;
   var isDownScroll:Bool = false;
+  var isMobile:Bool = false;
   var trulyBeats:Int = 0;
   var shakeTime:Float = 0;
   var negativity:Int = 1;
@@ -101,13 +102,14 @@ class ExtirpatientSong extends Song
     // For testing purposes
     if (FlxG.onMobile) {
       // jump to tricky
-      playState.startTimestamp = 278000;
+      playState.startTimestamp = 263000;
     }
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
-    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice)
-      isDownScroll = true;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownScroll = true;
+
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     negativity = isDownScroll ? -1 : 1;
 
@@ -397,7 +399,7 @@ class ExtirpatientSong extends Song
     // Scythe appears and clashes
     if (curBeat == 588 && scythe != null) {
       FlxTween.tween(scythe, {
-        y: isDownScroll ? -475 : 75,
+        y: isDownScroll ? playState.healthBar.y + 70 : playState.healthBar.y - 160,
         angle: isDownScroll ? -205 : 25,
         alpha: 1
       }, 1, {
@@ -418,9 +420,11 @@ class ExtirpatientSong extends Song
 
     // Scythe2 spin effect
     if (curBeat == 594 && scythe2 != null) {
+      var isM = false;
       scytheActive2 = true;
       scythe2.angle = 0;
-      scythe2.x = 700;
+      scythe2.x = playState.playerStrumline.x - 50; // 700
+      if (isM) scythe2.screenCenter(0x01);
       scythe2.y = isDownScroll ? -350 : 600;
 
       if (isDownScroll) {
@@ -428,10 +432,10 @@ class ExtirpatientSong extends Song
         scythe2.flipY = true;
       }
 
-      scythe2.scale.set(0.8, 0.8);
+      scythe2.scale.set((!isM) ? 0.8 : 1, (!isM) ? 0.8: 1);
       scythe2.updateHitbox();
 
-      FlxTween.tween(scythe2, {y: isDownScroll ? -100 : 300}, 1, {
+      FlxTween.tween(scythe2, {y: isDownScroll ? -100 : 330}, 1, {
         ease: FlxEase.backOut,
         onComplete: function(twn:FlxTween) {
           toggleScytheSpin();
@@ -469,7 +473,7 @@ class ExtirpatientSong extends Song
 
       if (scythe != null) {
         FlxTween.tween(scythe, {
-          y: isDownScroll ? -400 : 150,
+          y: playState.healthBar.y + (isDownScroll ? -260 : -70),
           alpha: -0.1,
           angle: isDownScroll ? -95 : -85
         }, 0.75, {ease: FlxEase.sineOut});
@@ -682,9 +686,13 @@ class ExtirpatientSong extends Song
 
     // Update scythe positions and effects
     if (scythe != null && PlayState.instance.iconP1 != null) {
-      scythe.x = PlayState.instance.iconP1.x - 80;
+      // not draining
+      if (!draining && curBeat < 606) scythe.x = PlayState.instance.iconP1.x + (isDownScroll ? -33 : -15);
 
       if (draining) {
+        scythe.x = PlayState.instance.iconP1.x - scythe.width + 17;
+        scythe.y = PlayState.instance.healthBar.y + (isDownScroll ? -160 : -260);
+
         if (playState.health > 0.7) {
           playState.health -= elapsed / 5;
         }
@@ -902,16 +910,19 @@ class ExtirpatientSong extends Song
   function setupScytheElements():Void
   {
     if (!modcharts || PlayState.instance == null) return;
-    var mult = isDownScroll ? 1 : -1;
-    scythe = FunkinSprite.create(0, isDownScroll ? -550 : 200);
+    var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    //var isMobile = true;
+
+    scythe = FunkinSprite.create(0, isDownScroll ? 0 : PlayState.instance.healthBar.y + 100); // isDownScroll ? -550 : 200
     scythe.loadTexture('nightflaid/scythe');
     scythe.camera = PlayState.instance.camHUD;
-    scythe.origin.y = scythe.height;
     scythe.scale.set(0.4, 0.4);
-    scythe.updateHitbox();
     scythe.flipX = !isDownScroll;
     scythe.angle = isDownScroll ? -105 : -90;
     scythe.alpha = 0;
+    scythe.updateHitbox();
+    scythe.origin.y = scythe.height;
+    scythe.zIndex = playState.iconP1.zIndex + 5;
     PlayState.instance.add(scythe);
 
     // Initial color tween
@@ -923,12 +934,13 @@ class ExtirpatientSong extends Song
       }, 1, {ease: FlxEase.quadOut});
     }
 
+    var mult = isDownScroll ? 1 : -1;
     scythe2 = FunkinSprite.create(FlxG.width + 100, PlayState.instance.playerStrumline.height / 2);
     scythe2.loadTexture('nightflaid/scythe');
     scythe2.camera = PlayState.instance.camHUD;
     scythe2.origin.y = scythe.height;
-    scythe2.y += 230 * mult;
-    scythe2.scale.set(0.9, 1.1);
+    scythe2.y += ((!isMobile) ? 230 : 205) * mult - (!isDownScroll ? 50 : 0);
+    scythe2.scale.set((!isMobile) ? 0.9 : 1, (!isMobile) ? 1.1 : 1.2);
     scythe2.updateHitbox();
     scythe2.flipX = !isDownScroll;
     scythe2.angle = -90;
@@ -939,7 +951,7 @@ class ExtirpatientSong extends Song
   function scytheClash():Void
   {
     FlxTween.tween(scythe, {
-      y: isDownScroll ? -450 : 100,
+      y: isDownScroll ? playState.healthBar.y : playState.healthBar.y - 80,
       angle: isDownScroll ? -105 : -75
     }, 0.25, {
       ease: FlxEase.backInOut,
