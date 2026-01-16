@@ -286,12 +286,13 @@ class NightflaidStage extends Stage
     if (Conductor.instance.songPosition > 200000)
     {
       usedCheckPoint = true;
-      //if (getDad() != null) getDad().y = 350;
+
+      if (getDad() != null) getDad().y = ogNfY;
     }
     else
     {
-      // Initial color tween would go here
-      // triggerNightflaidColorTween('0d0d0d', 0.15);
+      // Initial color tween
+      triggerColorTween('0d0d0d', 0, 'both');
     }
   }
 
@@ -639,6 +640,17 @@ class NightflaidStage extends Stage
     super.onUpdate(event);
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+
+    // TODO: create a checkpoint engine and use chart events
+    if (Conductor.instance.songPosition > 200000 && !usedCheckPoint)
+    {
+      var checkpoints = Save.instance.modOptions.get('retroCheckpoints') ?? true;
+
+      if (checkpoints && !usedCheckPoint) {
+        usedCheckPoint = true;
+        PlayState.instance.startTimestamp = 200001;
+      }
+    }
 
     var elapsed = event.elapsed;
 
@@ -1152,8 +1164,10 @@ class NightflaidStage extends Stage
   {
     super.onSongRetry(event);
     getDad().danceEvery = 1;
-    N_clrRight.color = -1;
-    N_clrLeft.color = -1;
+    if (usedCheckPoint) {
+      N_clrRight.color = -1;
+      N_clrLeft.color = -1;
+    } else triggerColorTween('0d0d0d', 0, 'both');
     PlayState.instance.disableKeys = false;
 
     PlayState.instance.cameraFollowPoint.setPosition((getDad().cameraFocusPoint.x + getBoyfriend().cameraFocusPoint.x) / 2, getDad().cameraFocusPoint.y);
@@ -1194,6 +1208,7 @@ class NightflaidStage extends Stage
     qe = true;
     dd = false;
     pp = false;
+    usedCheckPoint = false;
   }
 
   override function onDestroy(event:ScriptEvent):Void

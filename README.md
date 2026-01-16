@@ -4,7 +4,7 @@ A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with 
 TODO:
 - [ ] Catastrofiend subtitles
 - [ ] Saku & Schythe notes
-- [ ] Hard Ache charts
+- [ ] Hard Ache and Extirpatient chart fixes
 - [ ] Phase 2 end cutscene
 - [ ] Acid death
 - [ ] Poison note notesplashes

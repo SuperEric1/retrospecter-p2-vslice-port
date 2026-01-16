@@ -51,6 +51,8 @@ class RetroPlayState extends Module {
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
   var ogOppStrumsY:Array<Float> = [];
+  var ogPlayerStrumScales:Array<Float> = [];
+  var ogOppStrumScales:Array<Float> = [];
 
   var poisonSprite:FunkinSprite;
   var poisonText:FlxText;
@@ -314,19 +316,24 @@ class RetroPlayState extends Module {
     // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
     ogStrumsX = [];
     ogStrumsY = [];
+    ogPlayerStrumScales = [];
     ogOppStrumsX = [];
     ogOppStrumsY = [];
+    ogOppStrumScales = [];
+
     // saves new positions
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
         ogStrumsX.push(strum.x);
         ogStrumsY.push(strum.y);
+        ogPlayerStrumScales.push(strum.scale);
       }
       strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (ogOppStrumsX[i] == null && ogOppStrumsY[i] == null) {
         ogOppStrumsX.push(strum.x);
         ogOppStrumsY.push(strum.y);
+        ogOppStrumScales.push(strum.scale);
       }
     }
   }
@@ -901,8 +908,10 @@ class RetroPlayState extends Module {
     for (i in 0...4) {
       var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] != null && ogStrumsY[i] != null) {
+        FlxTween.cancelTweensOf(note);
         note.x = ogStrumsX[i];
         note.y = ogStrumsY[i];
+        //note.scale.set(ogPlayerStrumScales[i]);
         note.angle = 0;
         note.alpha = 1;
         note.colorTransform.redMultiplier = 1;
@@ -914,8 +923,10 @@ class RetroPlayState extends Module {
       }
       note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (ogOppStrumsX[i] != null && ogOppStrumsY[i] != null) {
+        FlxTween.cancelTweensOf(note);
         note.x = ogOppStrumsX[i];
         note.y = ogOppStrumsY[i];
+        //note.scale.set(ogOppStrumScales[i]);
         note.angle = 0;
         note.alpha = 1;
         note.colorTransform.redMultiplier = 1;

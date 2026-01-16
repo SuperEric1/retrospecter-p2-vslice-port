@@ -62,6 +62,8 @@ class ExtirpatientSong extends Song
   var defaultOpponentStrumY:Array<Float> = [];
   var defaultPlayerStrumX:Array<Float> = [];
   var defaultPlayerStrumY:Array<Float> = [];
+  var ogPlayerStrumScales:Array<Float> = [];
+  var ogOppStrumScales:Array<Float> = [];
 
   // lesserModchart variables
   var easingValueX:Float = 1;
@@ -170,11 +172,15 @@ class ExtirpatientSong extends Song
         var strum = opponentStrums.strumlineNotes.members[i];
         defaultOpponentStrumX.push(strum.x);
         defaultOpponentStrumY.push(strum.y);
+        ogOppStrumScales.push(strum.scale.x);
+        ogOppStrumScales.push(strum.scale.y);
       }
       if (playerStrums != null) {
         var strum = playerStrums.strumlineNotes.members[i];
         defaultPlayerStrumX.push(strum.x);
         defaultPlayerStrumY.push(strum.y);
+        ogPlayerStrumScales.push(strum.scale.x);
+        ogPlayerStrumScales.push(strum.scale.y);
       }
     }
     defaultPlayerStrumX.push(playerStrums.x);
@@ -862,15 +868,20 @@ class ExtirpatientSong extends Song
     var oppIndex = pulseNumber - 1;
     var playerIndex = 4 - pulseNumber;
 
+    var pulseMult:Float = 1.15; // Size multiplier
+
     if (opponentStrums != null && oppIndex >= 0 && oppIndex < 4) {
       var strum = opponentStrums.strumlineNotes.members[oppIndex];
       FlxTween.cancelTweensOf(strum);
       FlxTween.cancelTweensOf(strum.scale);
 
-      strum.scale.set(0.8, 0.8);
+      var baseScaleX = ogOppStrumScales[oppIndex * 2];
+      var baseScaleY = ogOppStrumScales[(oppIndex * 2) + 1];
+
+      strum.scale.set(baseScaleX * pulseMult, baseScaleY * pulseMult);
       strum.y = defaultOpponentStrumY[oppIndex] - 10;
 
-      FlxTween.tween(strum.scale, {x: 0.695, y: 0.695}, crochet / 1000, {ease: FlxEase.quadOut});
+      FlxTween.tween(strum.scale, {x: baseScaleX, y: baseScaleY}, crochet / 1000, {ease: FlxEase.quadOut});
       FlxTween.tween(strum, {y: defaultOpponentStrumY[oppIndex]}, crochet / 1000, {ease: FlxEase.quadOut});
     }
 
@@ -879,18 +890,21 @@ class ExtirpatientSong extends Song
       FlxTween.cancelTweensOf(strum);
       FlxTween.cancelTweensOf(strum.scale);
 
-      strum.scale.set(0.8, 0.8);
+      var baseScaleX = ogPlayerStrumScales[oppIndex * 2];
+      var baseScaleY = ogPlayerStrumScales[(oppIndex * 2) + 1];
+
+      strum.scale.set(baseScaleX * pulseMult, baseScaleY * pulseMult);
       strum.y = defaultPlayerStrumY[playerIndex] - 10;
 
-      FlxTween.tween(strum.scale, {x: 0.695, y: 0.695}, crochet / 1000, {ease: FlxEase.quadOut});
+      FlxTween.tween(strum.scale, {x: baseScaleX, y: baseScaleY}, crochet / 1000, {ease: FlxEase.quadOut});
       FlxTween.tween(strum, {y: defaultPlayerStrumY[playerIndex]}, crochet / 1000, {ease: FlxEase.quadOut});
     }
 
     pulseNumber += pulseDir;
     if (pulseNumber == 4) {
-      pulseDir = -1;
+        pulseDir = -1;
     } else if (pulseNumber == 1) {
-      pulseDir = 1;
+        pulseDir = 1;
     }
   }
 
@@ -1384,6 +1398,8 @@ class ExtirpatientSong extends Song
     defaultPlayerStrumY = [];
     defaultOpponentStrumX = [];
     defaultOpponentStrumY = [];
+    ogPlayerStrumScales = [];
+    ogOppStrumScales = [];
 
     // lesserModchart variables
     easingValueX = 1;
