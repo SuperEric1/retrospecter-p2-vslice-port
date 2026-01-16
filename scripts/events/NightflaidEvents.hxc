@@ -28,7 +28,8 @@ class NightflaidEvents extends SongEvent {
           "Nightflaid color tween right-only" => 2,
           "Nightflaid swap sides" => 3,
           "Nightflaid lightings" => 4,
-          "Set opp animation" => 5
+          "Set opp animation" => 5,
+          "tiky" => 6
         ]
       },
       {

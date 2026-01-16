@@ -95,6 +95,119 @@
     },
 
     {
+      "t": 280645.161290322,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 281854.838709677,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 283306.451612902,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 284153.225806451,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 286451.612903225,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 286693.548387096,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 287661.29032258,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 288266.129032257,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 288870.967741935,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 290322.580645161,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 291048.387096773,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 291774.193548386,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 292258.064516128,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 292499.999999999,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 292741.93548387,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+    {
+      "t": 292983.870967741,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 6
+      }
+    },
+
+    {
       "t": 293225.806451612,
       "e": "PlayAnimation",
       "v": {

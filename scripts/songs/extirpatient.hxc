@@ -62,6 +62,27 @@ class ExtirpatientSong extends Song
   var defaultPlayerStrumX:Array<Float> = [];
   var defaultPlayerStrumY:Array<Float> = [];
 
+  // lesserModchart variables
+  var easingValueX:Float = 1;
+  var easingValueY:Float = 1;
+  var arrowIndex:Int = 0;
+  var arrowX:Float = 0;
+  var arrowY:Float = 0;
+  var arrowFlipped:Bool = false;
+  var pulseNumber:Int = 1;
+  var pulseDir:Int = 1;
+  var warningArrows:Array<FlxSprite> = [];
+
+  // Scythe variables (tricky mechanic)
+  var scythe:FunkinSprite;
+  var scythe2:FunkinSprite;
+  var draining:Bool = false;
+  var scytheActive:Bool = false;
+  var scythePushed:Bool = false;
+  var scytheActive2:Bool = false;
+  var scytheIncrease:Float = 0;
+  var toting:Bool = false;
+
   public function new()
   {
     super('extirpatient');
@@ -70,11 +91,18 @@ class ExtirpatientSong extends Song
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+    hasStoredStrums = false;
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
+
+    // For testing purposes
+    if (FlxG.onMobile) {
+      // jump to tricky
+      playState.startTimestamp = 278000;
+    }
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
@@ -90,7 +118,11 @@ class ExtirpatientSong extends Song
     flash.cameras = [PlayState.instance.camGame];
     flash.visible = false;
     flash.active = false;
-    PlayState.instance.add(flash);
+    PlayState.instance.add(flash, 'customFlash');
+
+    // Build scythe elements
+    setupScytheElements();
+
     PlayState.instance.refresh();
 
     // Reset flags
@@ -154,6 +186,7 @@ class ExtirpatientSong extends Song
     super.onBeatHit(event);
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+    if (!hasStoredStrums) return;
 
     trulyBeats++;
     var curBeat = event.beat;
@@ -175,11 +208,7 @@ class ExtirpatientSong extends Song
         playState.camHUD.zoom = 1;
         playState.camGame.zoom = 0.34;
         tweens.push(FlxTween.tween(playState.camHUD, {zoom: 1.08}, crochet / 1000, {ease: FlxEase.expoIn}));
-        tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn, /*onComplete: function(twn:FlxTween) {
-            tweens.push(FlxTween.tween(playState.camGame, {zoom: playState.stageZoom}, crochet, {ease: FlxEase.expoIn}));
-          }*/
-        }));
-        // playState.tweenCameraZoom(0.36, crochet, true, FlxEase.expoIn);
+        tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn}));
       }
       if (curBeat == v + 1) {
         // Cancel tweens
@@ -212,23 +241,18 @@ class ExtirpatientSong extends Song
       }
       playState.playerStrumline.alpha = 1;
       playState.opponentStrumline.alpha = 1;
-      //playState.camGame.visible = true;
-      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.55}, 1, {ease: FlxEase.expoOut}));
     }
 
     if (curBeat == 6) {
       var dad = playStage.getDad();
       playState.tweenCameraZoom(0.5, crochet / 250, true, FlxEase.sineOut);
       playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 100, playStage.getBoyfriend().cameraFocusPoint.y);
-      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.5}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.sineOut}));
     }
 
     if (curBeat == 12) {
       var dad = playStage.getDad();
-      // tweens.push(FlxTween.tween(playState.camHUD, {alpha: 1}, crochet / 1000, {ease: FlxEase.quartIn}));
       playState.tweenCameraZoom(playState.stageZoom, crochet / 250, true, FlxEase.quartIn);
       playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 170, playStage.getBoyfriend().cameraFocusPoint.y);
-      // tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.34}, Conductor.instance.stepCrochet / 250, {ease: FlxEase.quartIn}));
 
       for (i in 0...4) {
         new FlxTimer().start(0.4 * i, function(tmr) {
@@ -256,6 +280,214 @@ class ExtirpatientSong extends Song
         createFlash(0xFFFF0000, 0.5);
       }
     }
+
+    // LESSERMODCHART BEAT EVENTS
+
+    // Setas de aviso
+    /*if (curBeat == 642 || curBeat == 650) {
+      if (PlayState.instance.playerStrumline != null) {
+        var playerStrums = PlayState.instance.playerStrumline.strumlineNotes.members;
+        createFunnyWarning(playerStrums[3].x, playerStrums[0].y - 50 * negativity, false);
+      }
+    } else if (curBeat == 646) {
+      if (PlayState.instance.playerStrumline != null) {
+        var playerStrums = PlayState.instance.playerStrumline.strumlineNotes.members;
+        createFunnyWarning(playerStrums[3].x - 50, playerStrums[0].y + 75 * negativity, true);
+      }
+    }*/
+
+    // Easing values
+    if (curBeat == 200 || curBeat == 368) {
+      tweenEasingValue('easingValueX', 0, 1);
+    }
+
+    if (curBeat == 224 || curBeat == 392) {
+      tweenEasingValue('easingValueY', 0, 0.75);
+      var bf = playStage.getBoyfriend();
+      playState.cameraFollowPoint.setPosition(bf.cameraFocusPoint.x - 200, bf.cameraFocusPoint.y - 400);
+    }
+
+    // Zooms progressivos de câmera
+    if (curBeat == 224 || curBeat == 227 || curBeat == 230 || curBeat == 233 ||
+        curBeat == 395 || curBeat == 398 || curBeat == 401) {
+      var followPoint = playState.cameraFollowPoint;
+      followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
+
+      var newZoom = playState.currentCameraZoom + 0.02;
+      playState.tweenCameraZoom(newZoom, 0.5, true, FlxEase.cubeOut);
+    }
+
+    if (curBeat == 236 || curBeat == 404) {
+      var followPoint = playState.cameraFollowPoint;
+      followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
+
+      var newZoom = playState.currentCameraZoom + 0.06;
+      playState.tweenCameraZoom(newZoom, crochet / 1000 * 6, true, FlxEase.quadOut);
+    }
+
+    if (curBeat == 242 || curBeat == 410) {
+      var followPoint = playState.cameraFollowPoint;
+      followPoint.setPosition(followPoint.x - 50, followPoint.y - 50);
+
+      var newZoom = playState.currentCameraZoom - 0.05;
+      playState.tweenCameraZoom(newZoom, crochet / 1000 * 3, true, FlxEase.quadOut);
+    }
+
+    if (curBeat == 245) {
+      tweenEasingValue('easingValueX', 1, 2);
+      tweenEasingValue('easingValueY', 1, 2);
+
+      playState.tweenCameraZoom(0.34, crochet / 332, true, FlxEase.quartIn);
+    }
+
+    if (curBeat == 247 || curBeat == 415) {
+      FlxTween.tween(playState.camHUD, {zoom: 1.1}, crochet / 1000, {ease: FlxEase.expoIn});
+    }
+
+    if (curBeat == 248) {
+      if (flashingLights) {
+        createFlash(0xFFFF0000, 0.3);
+      }
+      playState.camGame.zoom += 0.1;
+      playState.camHUD.zoom += 0.05;
+    }
+
+    if (curBeat == 413) {
+      tweenEasingValue('easingValueX', 1, 2);
+      tweenEasingValue('easingValueY', 1, 2);
+
+      var dad = playStage.getDad();
+      playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+
+      playState.tweenCameraZoom(0.34, crochet / 332, true, FlxEase.quartIn);
+    }
+
+    if (curBeat == 416) {
+      playState.camGame.zoom += 0.1;
+      playState.camHUD.zoom += 0.06;
+    }
+    // END LESSERMODCHART BEAT EVENTS
+
+    // Beat 580: Start scythe2 movement
+    if (curBeat == 580) {
+      scytheActive = true;
+    }
+
+    // Stop scythe2 movement
+    if (curBeat == 586) {
+      scytheActive = false;
+      if (scythe2 != null) {
+        FlxTween.tween(scythe2, {x: FlxG.width + (scythe2.width / 2)}, 0.5, {ease: FlxEase.backOut});
+        if (scythe2.colorTransform != null) {
+          FlxTween.tween(scythe2.colorTransform, {
+            redOffset: 200,
+            greenOffset: -255,
+            blueOffset: -255
+          }, 0.5, {ease: FlxEase.quadOut});
+        }
+      }
+    }
+
+    // Beat 580-586: Oscillate scythe2
+    if (scytheActive && scythe2 != null) {
+      scythePushed = !scythePushed;
+      FlxTween.tween(scythe2, {x: scythePushed ? (playState.playerStrumline.x + 100) : (defaultPlayerStrumX[3] + 20)}, 0.5, {ease: FlxEase.backOut});
+    }
+
+    // Scythe appears and clashes
+    if (curBeat == 588 && scythe != null) {
+      FlxTween.tween(scythe, {
+        y: isDownScroll ? -475 : 75,
+        angle: isDownScroll ? -205 : 25,
+        alpha: 1
+      }, 1, {
+        ease: FlxEase.quadOut,
+        onComplete: function(twn:FlxTween) {
+          scytheClash();
+        }
+      });
+
+      if (scythe.colorTransform != null) {
+        FlxTween.tween(scythe.colorTransform, {
+          redOffset: 0,
+          greenOffset: 0,
+          blueOffset: 0
+        }, 1.5, {ease: FlxEase.quadOut});
+      }
+    }
+
+    // Scythe2 spin effect
+    if (curBeat == 594 && scythe2 != null) {
+      scytheActive2 = true;
+      scythe2.angle = 0;
+      scythe2.x = 700;
+      scythe2.y = isDownScroll ? -350 : 600;
+
+      if (isDownScroll) {
+        scythe2.origin.y = 0;
+        scythe2.flipY = true;
+      }
+
+      scythe2.scale.set(0.8, 0.8);
+      scythe2.updateHitbox();
+
+      FlxTween.tween(scythe2, {y: isDownScroll ? -100 : 300}, 1, {
+        ease: FlxEase.backOut,
+        onComplete: function(twn:FlxTween) {
+          toggleScytheSpin();
+        }
+      });
+
+      if (scythe2.colorTransform != null) {
+        FlxTween.tween(scythe2.colorTransform, {
+          redOffset: 0,
+          greenOffset: 0,
+          blueOffset: 0
+        }, 0.5, {ease: FlxEase.quadOut});
+      }
+    }
+
+    // Remove scythes
+    if (curBeat == 606) {
+      scytheActive2 = false;
+      toting = false;
+
+      if (scythe2 != null) {
+        FlxTween.tween(scythe2, {
+          y: isDownScroll ? -150 : 400,
+          alpha: -0.1
+        }, 0.75, {ease: FlxEase.sineOut});
+
+        if (scythe2.colorTransform != null) {
+          FlxTween.tween(scythe2.colorTransform, {
+            redOffset: 200,
+            greenOffset: -255,
+            blueOffset: -255
+          }, 0.5, {ease: FlxEase.quadOut});
+        }
+      }
+
+      if (scythe != null) {
+        FlxTween.tween(scythe, {
+          y: isDownScroll ? -400 : 150,
+          alpha: -0.1,
+          angle: isDownScroll ? -95 : -85
+        }, 0.75, {ease: FlxEase.sineOut});
+
+        scythe.offset.x = -25;
+
+        if (scythe.colorTransform != null) {
+          FlxTween.tween(scythe.colorTransform, {
+            redOffset: 200,
+            greenOffset: -255,
+            blueOffset: -255
+          }, 0.5, {ease: FlxEase.quadOut});
+        }
+      }
+
+      draining = false;
+    }
+    // END SCYTHE EFFECTS
 
     if (curBeat == 448) {
       // Camera shake adjustments would go here
@@ -296,8 +528,10 @@ class ExtirpatientSong extends Song
     super.onStepHit(event);
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+    if (!hasStoredStrums) return;
 
     var curStep = event.step;
+    var curBeat = Conductor.instance.currentBeat;
 
     // Red pulses
     var redPulseSteps = [50, 53, 56, 306, 309, 312, 562, 565, 568, 980, 984, 1652, 1656, 3442, 3445, 3448];
@@ -305,6 +539,11 @@ class ExtirpatientSong extends Song
       if (curStep == step) {
         redPulse();
       }
+    }
+
+    // Piano pulse effect
+    if (curStep % 2 == 0 && ((curBeat >= 200 && curBeat < 224) || (curBeat >= 368 && curBeat < 392))) {
+      doPulsePiano();
     }
 
     // Subtitle events
@@ -375,6 +614,7 @@ class ExtirpatientSong extends Song
     super.onUpdate(event);
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+    if (!hasStoredStrums) return;
 
     var elapsed = event.elapsed;
     var curBeat = Conductor.instance.currentBeat;
@@ -383,6 +623,36 @@ class ExtirpatientSong extends Song
 
     // Update red pulse note color
     updateRedPulse();
+
+    // LESSERMODCHART UPDATE EFFECTS
+
+    var songPos = Conductor.instance.songPosition;
+
+    // Efeito de ondulação horizontal (beats 200-250 e 368-416)
+    if ((curBeat >= 200 && curBeat < 250) || (curBeat >= 368 && curBeat < 416)) {
+      var add = 20 * Math.sin(songPos / 500) * (1 - easingValueX);
+
+      for (i in 0...4) {
+        var oppStrum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        var playerStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+        oppStrum.x = defaultOpponentStrumX[i] + add;
+        playerStrum.x = defaultPlayerStrumX[i] + add;
+      }
+    }
+
+    // Efeito de ondulação vertical (beats 224-250 e 392-416)
+    if ((curBeat >= 224 && curBeat < 250) || (curBeat >= 392 && curBeat < 416)) {
+      for (i in 0...4) {
+        var oppStrum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        var playerStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+        oppStrum.y = defaultOpponentStrumY[i] + 20 * Math.cos(songPos / 1000 + i) * (1 - easingValueY);
+        playerStrum.y = defaultPlayerStrumY[i] + 20 * Math.cos(songPos / 1000 + i + 4) * (1 - easingValueY);
+      }
+    }
+
+    // END LESSERMODCHART UPDATE EFFECTS
 
     // Wavy note movement (beats 641-654, 656-670)
     if ((curBeat >= 641 && curBeat < 654) || (curBeat >= 656 && Conductor.instance.songPosition < 324188)) {
@@ -408,6 +678,34 @@ class ExtirpatientSong extends Song
 
     if (toggledToll) {
       applyTollEffect();
+    }
+
+    // Update scythe positions and effects
+    if (scythe != null && PlayState.instance.iconP1 != null) {
+      scythe.x = PlayState.instance.iconP1.x - 80;
+
+      if (draining) {
+        if (playState.health > 0.7) {
+          playState.health -= elapsed / 5;
+        }
+
+        if (scythe.colorTransform != null) {
+          scythe.colorTransform.redOffset = 70 + 50 * Math.sin(Conductor.instance.songPosition / 100);
+        }
+
+        scythe.offset.y = FlxG.random.float(-1, 1);
+        scythe.offset.x = FlxG.random.float(-2, 2);
+      }
+    }
+
+    if (scythe2 != null && scytheActive2) {
+      scythe2.offset.x = 75 * Math.cos(Conductor.instance.songPosition / 500);
+    }
+
+    if (scythe2 != null && toting) {
+      scytheIncrease += elapsed * 7.5;
+      scythe2.angle = scytheIncrease * Math.sin(Conductor.instance.songPosition / 1000 - scytheIncrease * 2);
+      scythe2.offset.y = -scytheIncrease * Math.sin(Conductor.instance.songPosition / 500 - scytheIncrease * 2);
     }
   }
 
@@ -450,17 +748,7 @@ class ExtirpatientSong extends Song
     }
   }
 
-  /*override function goodNoteHit(event:NoteScriptEvent):Void
-  {
-    super.goodNoteHit(event);
-    var curBeat = Conductor.instance.currentBeat;
-
-    if (curBeat >= 544 && curBeat < 576) {
-      shoveNotes(-12.5);
-    }
-  }*/
-
-  // ========== HELPER FUNCTIONS ==========
+  // HELPER FUNCTIONS
 
   function createFlash(color:Int, alpha:Float):Void
   {
@@ -474,7 +762,6 @@ class ExtirpatientSong extends Song
         if (PlayState.instance != null && flash != null) {
           flash.visible = false;
           flash.active = false;
-          //flash.destroy();
         }
       }
     });
@@ -503,22 +790,184 @@ class ExtirpatientSong extends Song
     }
   }
 
+  // LESSERMODCHART FUNCTIONS
+
+  function createFunnyWarning(x:Float, y:Float, flipped:Bool):Void
+  {
+    if (!modcharts || PlayState.instance == null) return;
+
+    arrowX = x;
+    arrowY = y;
+    arrowFlipped = flipped;
+    arrowIndex = flipped ? 2 : 0;
+
+    createWarningArrow(x, y, flipped);
+    arrowIndex += arrowFlipped ? -1 : 1;
+
+    new FlxTimer().start(0.125, function(tmr:FlxTimer) {
+      createWarningArrow(arrowX, arrowY, arrowFlipped);
+      arrowIndex += arrowFlipped ? -1 : 1;
+    }, 2);
+  }
+
+  function createWarningArrow(x:Float, y:Float, flipped:Bool):Void
+  {
+    if (PlayState.instance == null) return;
+
+    var arrow = new FlxSprite(x + 135 * -arrowIndex + (flipped ? -40 : 40), y);
+    arrow.loadGraphic(Paths.image('nightflaid/arrow'));
+    arrow.alpha = 0;
+    arrow.scale.set(0.5, 0.5);
+    arrow.flipX = flipped;
+    arrow.cameras = [PlayState.instance.camHUD];
+    arrow.updateHitbox();
+
+    PlayState.instance.add(arrow);
+    warningArrows.push(arrow);
+
+    var targetX = x + 135 * -arrowIndex + (flipped ? 60 : -60);
+
+    FlxTween.tween(arrow, {alpha: 1}, 0.225, {
+      ease: FlxEase.quadOut,
+      onComplete: function(twn:FlxTween) {
+        FlxTween.tween(arrow, {alpha: 0}, 0.175, {
+          ease: FlxEase.quadIn,
+          onComplete: function(t:FlxTween) {
+            warningArrows.remove(arrow);
+            arrow.destroy();
+          }
+        });
+      }
+    });
+
+    FlxTween.tween(arrow, {x: targetX}, 0.6, {ease: FlxEase.cubeOut});
+  }
+
+  function doPulsePiano():Void
+  {
+    if (!modcharts || PlayState.instance == null) return;
+
+    var opponentStrums = PlayState.instance.opponentStrumline;
+    var playerStrums = PlayState.instance.playerStrumline;
+    var crochet = Conductor.instance.stepLengthMs * 4;
+
+    var oppIndex = pulseNumber - 1;
+    var playerIndex = 4 - pulseNumber;
+
+    if (opponentStrums != null && oppIndex >= 0 && oppIndex < 4) {
+      var strum = opponentStrums.strumlineNotes.members[oppIndex];
+      FlxTween.cancelTweensOf(strum);
+      FlxTween.cancelTweensOf(strum.scale);
+
+      strum.scale.set(0.8, 0.8);
+      strum.y = defaultOpponentStrumY[oppIndex] - 10;
+
+      FlxTween.tween(strum.scale, {x: 0.695, y: 0.695}, crochet / 1000, {ease: FlxEase.quadOut});
+      FlxTween.tween(strum, {y: defaultOpponentStrumY[oppIndex]}, crochet / 1000, {ease: FlxEase.quadOut});
+    }
+
+    if (playerStrums != null && playerIndex >= 0 && playerIndex < 4) {
+      var strum = playerStrums.strumlineNotes.members[playerIndex];
+      FlxTween.cancelTweensOf(strum);
+      FlxTween.cancelTweensOf(strum.scale);
+
+      strum.scale.set(0.8, 0.8);
+      strum.y = defaultPlayerStrumY[playerIndex] - 10;
+
+      FlxTween.tween(strum.scale, {x: 0.695, y: 0.695}, crochet / 1000, {ease: FlxEase.quadOut});
+      FlxTween.tween(strum, {y: defaultPlayerStrumY[playerIndex]}, crochet / 1000, {ease: FlxEase.quadOut});
+    }
+
+    pulseNumber += pulseDir;
+    if (pulseNumber == 4) {
+      pulseDir = -1;
+    } else if (pulseNumber == 1) {
+      pulseDir = 1;
+    }
+  }
+
+  function tweenEasingValue(varNamee:String, target:Float, duration:Float):Void
+  {
+    var varName = varNamee;
+    FlxTween.num(varName == 'easingValueX' ? easingValueX : easingValueY, target, duration, {ease: FlxEase.quadOut}, function(num:Float) {
+      if (varName == 'easingValueX') {
+        easingValueX = num;
+      } else {
+        easingValueY = num;
+      }
+    });
+  }
+
+  // SCYTHE MECHANIC FUNCTIONS
+  function setupScytheElements():Void
+  {
+    if (!modcharts || PlayState.instance == null) return;
+    var mult = isDownScroll ? 1 : -1;
+    scythe = FunkinSprite.create(0, isDownScroll ? -550 : 200);
+    scythe.loadTexture('nightflaid/scythe');
+    scythe.camera = PlayState.instance.camHUD;
+    scythe.origin.y = scythe.height;
+    scythe.scale.set(0.4, 0.4);
+    scythe.updateHitbox();
+    scythe.flipX = !isDownScroll;
+    scythe.angle = isDownScroll ? -105 : -90;
+    scythe.alpha = 0;
+    PlayState.instance.add(scythe);
+
+    // Initial color tween
+    if (scythe.colorTransform != null) {
+      FlxTween.tween(scythe.colorTransform, {
+        redOffset: 255,
+        greenOffset: -200,
+        blueOffset: -200
+      }, 1, {ease: FlxEase.quadOut});
+    }
+
+    scythe2 = FunkinSprite.create(1600, PlayState.instance.playerStrumline.y);
+    scythe2.loadTexture('nightflaid/scythe');
+    scythe2.camera = PlayState.instance.camHUD;
+    scythe2.origin.y = scythe.height;
+    scythe2.y += 230 * mult;
+    scythe2.scale.set(0.9, 1.1);
+    scythe2.updateHitbox();
+    scythe2.flipX = !isDownScroll;
+    scythe2.angle = -90;
+    scythe2.zIndex = 10000;
+    PlayState.instance.add(scythe2);
+  }
+
+  function scytheClash():Void
+  {
+    FlxTween.tween(scythe, {
+      y: isDownScroll ? -450 : 100,
+      angle: isDownScroll ? -105 : -75
+    }, 0.25, {
+      ease: FlxEase.backInOut,
+      onComplete: function(twn:FlxTween) {
+        draining = true;
+      }
+    });
+  }
+
+  function toggleScytheSpin():Void
+  {
+    toting = true;
+  }
+
   function handleSwap(curBeat:Int):Void
   {
     if (!modcharts) return;
 
-    var crochet = Conductor.instance.stepLengthMs * 4;
-
     if (curBeat == 643 || curBeat == 651) {
-      swapStrumPositions(true);
+      //swapStrumPositions(true);
     }
 
     if (curBeat == 647) {
-      swapStrumPositions(false);
+      //swapStrumPositions(false);
     }
   }
 
-  function swapStrumPositions(swap:Bool):Void
+  /*function swapStrumPositions(swap:Bool):Void
   {
     if (PlayState.instance == null) return;
 
@@ -551,9 +1000,9 @@ class ExtirpatientSong extends Song
         }
       }
     }
-  }
+  }*/
 
-  function shoveStrumsInitial():Void
+  /*function shoveStrumsInitial():Void
   {
     if (PlayState.instance == null) return;
 
@@ -574,7 +1023,7 @@ class ExtirpatientSong extends Song
           crochet / 1000, {ease: FlxEase.backIn}));
       }
     }
-  }
+  }*/
 
   function shoveNotes(amount:Float):Void
   {
@@ -652,7 +1101,6 @@ class ExtirpatientSong extends Song
 
   function addShake(amount:Float):Void
   {
-    // Camera shake implementation would go here
     playState.camGame.shake(amount * 0.001, 0.05);
   }
 
@@ -674,38 +1122,11 @@ class ExtirpatientSong extends Song
     if (playerStrums != null) {
       var strum = playerStrums;
       strum.y = defaultPlayerStrumY[4] + (90 - 80 * offset) * negativity;
-
-      /*if (curBeat >= 656 && curBeat < 670) {
-        strum.x = defaultPlayerStrumX[4] - 320 + 100 * offset;
-      }*/
     }
     if (opponentStrums != null) {
       var strum = opponentStrums;
       strum.y = defaultOpponentStrumY[4] + (90 + 80 * offset) * negativity;
-
-      /*if (curBeat >= 656 && curBeat < 670) {
-        strum.x = defaultOpponentStrumX[4] + 306 + 100 * offset2;
-      }*/
     }
-
-    /*for (i in 0...4) {
-      if (playerStrums != null) {
-        var strum = playerStrums.strumlineNotes.members[i];
-        strum.y = defaultPlayerStrumY[i] + (90 - 80 * offset) * negativity;
-
-        if (curBeat >= 656 && curBeat < 670) {
-          strum.x = defaultPlayerStrumX[i] - 320 + 100 * offset;
-        }
-      }
-      if (opponentStrums != null) {
-        var strum = opponentStrums.strumlineNotes.members[i];
-        strum.y = defaultOpponentStrumY[i] + (90 + 80 * offset) * negativity;
-
-        if (curBeat >= 656 && curBeat < 670) {
-          strum.x = defaultOpponentStrumX[i] + 306 + 100 * offset2;
-        }
-      }
-    }*/
   }
 
   function applyTollEffect():Void
@@ -755,7 +1176,6 @@ class ExtirpatientSong extends Song
       }
     }
 
-    // Color transforms would go here
     applyColorTransform(-200, -200, 100, -200);
   }
 
@@ -763,8 +1183,6 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    // Apply actual downscroll flip here
-    // Color transform reset
     applyColorTransform(0, 0, 0, 0);
   }
 
@@ -829,38 +1247,29 @@ class ExtirpatientSong extends Song
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    // Set intensity to maximum - the update function will handle the fade
     redPulseIntensity = 1.0;
   }
 
   function updateRedPulse():Void
   {
-    // Se a intensidade for maior que 0, precisamos atualizar a cor
     if (redPulseIntensity > 0.001)
     {
-      // Velocidade do decay - ajuste entre 2.0 (lento) e 5.0 (rápido)
       var decaySpeed:Float = 2.5;
-
-      // Lerp suave de volta para 0
       redPulseIntensity = FlxMath.lerp(redPulseIntensity, 0, FlxG.elapsed * decaySpeed);
 
-      // Aplicar cor vermelha em todas as strumlines
       var opponentStrums = PlayState.instance.opponentStrumline;
       var playerStrums = PlayState.instance.playerStrumline;
 
       for (i in 0...4) {
-        // Opponent strums
         if (opponentStrums != null) {
           var strum = opponentStrums.strumlineNotes.members[i];
           if (strum != null && strum.colorTransform != null) {
-            // Lerp da cor normal (0) para a cor vermelha (red: 50, green/blue: -100)
             strum.colorTransform.redOffset = FlxMath.lerp(0, 50, redPulseIntensity);
             strum.colorTransform.greenOffset = FlxMath.lerp(0, -100, redPulseIntensity);
             strum.colorTransform.blueOffset = FlxMath.lerp(0, -100, redPulseIntensity);
           }
         }
 
-        // Player strums
         if (playerStrums != null) {
           var strum = playerStrums.strumlineNotes.members[i];
           if (strum != null && strum.colorTransform != null) {
@@ -873,7 +1282,6 @@ class ExtirpatientSong extends Song
     }
     else
     {
-      // Força o valor para 0 quando muito baixo
       redPulseIntensity = 0;
     }
   }
@@ -925,19 +1333,15 @@ class ExtirpatientSong extends Song
     var bf = playStage.getBoyfriend();
 
     switch (kind) {
-      // TODO: tween the zooms
       case 'normal':
-        //playState.defaultCameraZoom = 0.65;
         playState.tweenCameraZoom(0.65, 1, true, FlxEase.expoOut);
         playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 250, dad.cameraFocusPoint.y - 200);
 
       case 'sonic':
-        //playState.defaultCameraZoom = 0.65;
         playState.tweenCameraZoom(0.65, 1, true, FlxEase.expoOut);
         playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 100, dad.cameraFocusPoint.y + 400);
 
       case 'reset':
-        //playState.defaultCameraZoom = 0.34;
         playState.tweenCameraZoom(playState.stageZoom, 1, true, FlxEase.expoOut);
         playState.cameraFollowPoint.setPosition((dad.cameraFocusPoint.x + bf.cameraFocusPoint.x) / 2, dad.cameraFocusPoint.y);
     }
@@ -968,11 +1372,30 @@ class ExtirpatientSong extends Song
     defaultPlayerStrumY = [];
     defaultOpponentStrumX = [];
     defaultOpponentStrumY = [];
+
+    // lesserModchart variables
+    easingValueX = 1;
+    easingValueY = 1;
+    arrowIndex = 0;
+    pulseNumber = 1;
+    pulseDir = 1;
+
+    // scythe variables
+    draining = false;
+    scytheActive = false;
+    scythePushed = false;
+    scytheActive2 = false;
+    scytheIncrease = 0;
+    toting = false;
   }
 
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
+
+    // Cleanup warning arrows
+    warningArrows = [];
+
     resetTweens();
   }
 
@@ -1015,7 +1438,6 @@ class ExtirpatientSong extends Song
 
     resetFlags();
 
-    // Reset strumlines
     if (PlayState.instance != null) {
       if (PlayState.instance.playerStrumline != null)
         PlayState.instance.playerStrumline.alpha = 1;

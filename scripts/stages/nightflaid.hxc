@@ -7,6 +7,8 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
 import funkin.Conductor;
 import funkin.Preferences;
 import funkin.save.Save;
@@ -81,6 +83,7 @@ class NightflaidStage extends Stage
   var N_lt2:StageProp;
   var coverSpr:StageProp;
   var unbeatableBG:StageProp;
+  var redFlash:StageProp;
   var whiteScreen:StageProp;
   var nfUnbeatable:FunkinSprite;
   var midsongVideo:FunkinVideoSprite; // Pre-created video sprite
@@ -100,6 +103,24 @@ class NightflaidStage extends Stage
   var unbeatableLightningLeftPos:Float; //110.0 - 500.0
   var unbeatableLightningRightPos:Float; // 1020.0 + 500.0
   var needlesActive:Bool = false;
+
+  // Static (tricky) effect variables
+  var spookieText:FlxText;
+  var staticSprite:FunkinSprite;
+  var staticTexts:Array<String> = [
+    'RESULTS PENDING',
+    'TESTS INCONCLUSIVE',
+    'REQUIRES MORE\n DATA',
+    "SHE'S SAFE",
+    "STAY A LITTLE LONGER,\n WON'T YOU?",
+    "CHEATING DEATH OR\n CHEATING LIFE?",
+    "CONTACTING MIGHTFLAID",
+    "INTRIGUING SPECIMEN"
+  ];
+  var rareTexts:Array<String> = [
+    "WAR'S ALWAYS THE SAME",
+  ];
+  var staticRemoveTimer:FlxTimer;
 
   // Light animation variables
   var lightLeftBlinkCount:Float = 0;
@@ -255,6 +276,16 @@ class NightflaidStage extends Stage
     unbeatableBG.alpha = 0;
     // no need to add cuz makesprite already does that
 
+    // Red flash (tricky)
+    flash = FunkinSprite.create(bgX, bgY);
+    flash.makeGraphic(6000, 4000, FlxColor.RED);
+    //flash.scrollFactor.set(0, 0);
+    flash.blend = 9;
+    flash.visible = false;
+    flash.active = false;
+    flash.zIndex = 500;
+    PlayState.instance.add(flash, 'redFlash');
+
     // White screen flash
     whiteScreen = FunkinSprite.create(0, 0);
     whiteScreen.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.WHITE);
@@ -264,6 +295,8 @@ class NightflaidStage extends Stage
     whiteScreen.alpha = 0;
     whiteScreen.camera = PlayState.instance.camHUD;
     PlayState.instance.add(whiteScreen, 'whiteScreen');
+
+    setupStaticElements();
 
     hasCreatedStage = true;
     PlayState.instance.refresh();
@@ -454,6 +487,79 @@ class NightflaidStage extends Stage
     });
   }
 
+  function setupStaticElements():Void
+  {
+    staticSprite = FunkinSprite.create(0, 0);
+    staticSprite.loadSparrow('nightflaid/TrickyStatic');
+    staticSprite.setGraphicSize(FlxG.width, FlxG.height);
+    staticSprite.animation.addByPrefix('static', 'static', 14, true);
+    staticSprite.animation.play('static', true);
+    staticSprite.updateHitbox();
+    staticSprite.screenCenter();
+    staticSprite.alpha = 0.3;
+    staticSprite.antialiasing = false;
+    staticSprite.camera = PlayState.instance.camHUD;
+    staticSprite.visible = false;
+    PlayState.instance.add(staticSprite);
+
+    spookieText = new FlxText(0, 0, 0, 'MADNESS', 75);
+    spookieText.setFormat(Paths.font('pause.ttf'), 75, FlxColor.BLACK, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.fromRGB(255, 0, 40));
+    spookieText.borderSize = 3;
+    spookieText.antialiasing = false;
+    spookieText.alpha = 0.3;
+    spookieText.camera = PlayState.instance.camHUD;
+    spookieText.screenCenter();
+    spookieText.visible = false;
+    PlayState.instance.add(spookieText);
+
+    staticRemoveTimer = new FlxTimer();
+  }
+
+  function updateStaticText(text:String):Void
+  {
+    spookieText.text = text;
+    spookieText.screenCenter(0x10); // Y
+    spookieText.y -= 15; // 15
+  }
+
+  function triggerStaticEffect(duration:Float):Void
+  {
+    if (staticSprite == null || spookieText == null) return;
+
+    staticSprite.visible = true;
+    spookieText.visible = true;
+
+    PlayState.instance.camHUD.shake(0.015, duration);
+    PlayState.instance.camGame.shake(0.02, duration);
+
+    // Choose random text
+    var textToShow:String;
+    if (FlxG.random.bool(5) && rareTexts.length > 0) {
+      textToShow = rareTexts[FlxG.random.int(0, rareTexts.length - 1)];
+    } else {
+      textToShow = staticTexts[FlxG.random.int(0, staticTexts.length - 1)];
+    }
+    updateStaticText(textToShow);
+
+    flash.active = true;
+    flash.alpha = 0.75;
+    flash.visible = true;
+
+    FlxTween.tween(flash, {alpha: 0}, duration * 1.25, {
+      ease: FlxEase.quadIn,
+      onComplete: function(twn:FlxTween) {
+        flash.visible = false;
+        flash.active = false;
+      }
+    });
+
+    // Schedule removal
+    staticRemoveTimer.start(duration, function(tmr:FlxTimer) {
+      staticSprite.visible = false;
+      spookieText.visible = false;
+    });
+  }
+
   function setupShaders():Void
   {
     // TODO: Placeholder for shader setup
@@ -512,7 +618,7 @@ class NightflaidStage extends Stage
       FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x - 500.0}, 0.75, {ease: FlxEase.quadOut});
       FlxTween.tween(unbeatableVignette, {alpha: 1}, 0.75, {ease: FlxEase.quadOut});
 
-      FullScreenScaleMode.addCutouts(0.75, FlxEase.quadOut);
+      //FullScreenScaleMode.addCutouts(0.75, FlxEase.quadOut);
     }
     else
     {
@@ -521,7 +627,7 @@ class NightflaidStage extends Stage
       FlxTween.cancelTweensOf(unbeatableLightningLeft);
       FlxTween.cancelTweensOf(unbeatableLightningRight);
       FlxTween.tween(unbeatableVignette, {alpha: 0}, 0.5, {ease: FlxEase.quadOut});
-      FullScreenScaleMode.removeCutouts();
+      //FullScreenScaleMode.removeCutouts();
       triggerColorTween('CCCCCC', 0, 'both');
     }
 
@@ -621,6 +727,11 @@ class NightflaidStage extends Stage
           needle.y -= (720.0 / 2.0) * 3.0;
         }
       }
+    }
+
+    // Rotate spookie text
+    if (spookieText != null && spookieText.visible) {
+      spookieText.angle = 3 * Math.sin(Conductor.instance.songPosition * 20);
     }
 
   }
@@ -821,6 +932,11 @@ class NightflaidStage extends Stage
             var val = value[1].toLowerCase();
             enableLights = (val == 'on' || val == '1');
           }
+
+        case 6: // tiky
+          var duration:Float = Std.parseFloat(value.value1);
+          if (Math.isNaN(duration)) duration = 0.15; // default duration
+          triggerStaticEffect(duration);
       }
     }
 
@@ -1015,6 +1131,13 @@ class NightflaidStage extends Stage
     N_clrRight.color = -1;
     N_clrLeft.color = -1;
     PlayState.instance.disableKeys = false;
+
+    if (staticSprite != null) staticSprite.visible = false;
+    if (spookieText != null) {
+      spookieText.visible = false;
+    }
+    if (staticRemoveTimer != null) staticRemoveTimer.cancel();
+
     if (hasCreatedUnbeatable) { // if the unbeatable elements were already created, hide them
       setCameraOnThings(false);
       unbeatableBG.alpha = 0;
@@ -1087,6 +1210,14 @@ class NightflaidStage extends Stage
     // Cleanup arrays
     unbeatableNeedlesLeft = [];
     unbeatableNeedlesRight = [];
+
+    // Remove static elements (tricky)
+    if (staticRemoveTimer != null) {
+      staticRemoveTimer.cancel();
+      staticRemoveTimer = null;
+    }
+    spookieText = null;
+    staticSprite = null;
   }
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
