@@ -100,10 +100,10 @@ class ExtirpatientSong extends Song
     flashingLights = Preferences.flashingLights;
 
     // For testing purposes
-    if (FlxG.onMobile) {
+    /*if (FlxG.onMobile) {
       // jump to tricky
       playState.startTimestamp = 263000;
-    }
+    }*/
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
