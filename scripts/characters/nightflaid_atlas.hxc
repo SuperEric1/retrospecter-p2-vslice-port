@@ -5,6 +5,7 @@ import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.play.PlayState;
+import funkin.util.Constants;
 import funkin.play.character.CharacterType;
 import funkin.play.character.AnimateAtlasCharacter;
 import funkin.modding.module.ModuleHandler;
@@ -30,6 +31,9 @@ class NightflaidCharacter extends AnimateAtlasCharacter
   var aerialAnims:Array<String> = ['GARCELLO', 'TRICKY', 'SHAGGY'];
   public var lastIdleSuffix:String = '';
   public var savedColor:String = '';
+
+  final HEALTH_DRAIN:Float = 1.8 / 100.0 * Constants.HEALTH_MAX; // -1.8%
+  final HEALTH_HOLD_DRAIN_PER_SECOND = 7.5 / 100.0 * Constants.HEALTH_MAX; // -7.5% / second
 
   var digideathNoteDrain:Bool = null;
   var digideathScreenShake:Bool = null;
@@ -59,6 +63,7 @@ class NightflaidCharacter extends AnimateAtlasCharacter
   override public function onSongEvent(event:SongEventScriptEvent):Void
   {
     super.onSongEvent(event);
+    if (PlayState.instance == null) return;
 
     var eventKind = event.eventData.eventKind;
     var value = event.eventData.value;
@@ -164,12 +169,45 @@ class NightflaidCharacter extends AnimateAtlasCharacter
         this.holdTimer = 0;
         this.playSingAnimation(dir, singSuffix);
       }
+      if (digideathNoteDrain == true && PlayState.instance.health > 0.3) {
+        PlayState.instance.health -= HEALTH_DRAIN;
+      }
+      if (digideathShake == true) {
+        PlayState.instance.camGame.shake((2.75 * 4.5) * 0.001, 0.05);
+      }
+      if (digideathScreenShake == true) {
+        PlayState.instance.camHUD.shake(2.75 * 0.001, 0.05);
+      }
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (digideathNoteDrain == true && PlayState.instance.health > 0.3) {
+      // Process hold notes on the opp's side.
+      for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
+      {
+        if (holdNote == null || !holdNote.alive) continue;
+        // While the hold note is being hit, and there is length on the hold note...
+        if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+        {
+          // Take health.
+          PlayState.instance.health -= HEALTH_HOLD_DRAIN_PER_SECOND * event.elapsed;
+        }
+      }
     }
   }
 
   override function onSongRetry(event:ScriptEvent)
   {
     super.onSongRetry(event);
+    if (PlayState.instance == null) return;
+
     singSuffix = null;
     lastIdleSuffix = '';
     savedColor = '';

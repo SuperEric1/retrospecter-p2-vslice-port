@@ -728,7 +728,7 @@ class ExtirpatientSong extends Song
       }
 
       if (curBeat >= 480 && curBeat < 512) {
-        addShake(2.75);
+        addShake(2.75 * 4); // 2.75
       }
 
       if (curBeat >= 479 && curBeat < 496 && modcharts) {
@@ -1351,7 +1351,7 @@ class ExtirpatientSong extends Song
 
       case 'sonic':
         playState.tweenCameraZoom(0.65, 1, true, FlxEase.expoOut);
-        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 100, dad.cameraFocusPoint.y + 400);
+        playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 200, dad.cameraFocusPoint.y + 250);
 
       case 'reset':
         playState.tweenCameraZoom(playState.stageZoom, 1, true, FlxEase.expoOut);

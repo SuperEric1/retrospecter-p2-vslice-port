@@ -7,6 +7,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
 import funkin.Conductor;
@@ -139,6 +140,13 @@ class NightflaidStage extends Stage
   var dd:Bool = false;
   var pp:Bool = false;
 
+  // Gradient stripe variables
+  var gradientStripes:Array<FlxSprite> = [];
+  var stripesActive:Bool = false;
+  var stripeSpeed:Float = 1000 * 5.5; // pixels per second
+  var stripeWidth:Int = 1100;
+  var stripeSpacing:Float = stripeWidth * 2; // spacing between stripes
+
   // Zoom beats
   var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
 
@@ -150,42 +158,6 @@ class NightflaidStage extends Stage
     super('nightflaid');
   }
 
-  /**
-   * STAGE MECHANICS OVERVIEW:
-   *
-   * COLOR VARIANTS:
-   * - Default (red): colorr = 'fb002d', alt = ''
-   * - Hexerpatient (green): colorr = '00FB3C', alt = '_green'
-   * - Extiraging (cyan): colorr = '00FBCE', alt = '_cyan'
-   *
-   * TIMELINE EVENTS (by step):
-   * - Step 64: Initial color tween to CCCCCC (if not checkpoint)
-   * - Steps 1664-2944: Dynamic camera side swapping based on focus
-   * - Step 2304: Both sides go dark (0d0d0d)
-   * - Step 2432: Left side lights up with song color
-   * - Step 2944: Lightings turn on
-   * - Step 3456: Lightings turn off, return to dark
-   * - Step 3512: Final fadeout to black (story mode only)
-   *
-   * SPECIAL SEQUENCES:
-   * - "80sNightflaid" character: Triggers "Unbeatable" sequence
-  * Switches to camVideo with VCR/NTSC effects
-  * Shows animated lightning and moving needles
-  * Animated background with random movement
-   *
-   * OPPONENT TRANSFORMATIONS:
-   * Each opponent character (DAD, WHITTY, RUV, etc.) has:
-   * - Custom health bar colors
-   * - Custom icon colors
-   * - Unique health values
-   * - Special effects (shake, screen shake, note drain)
-   * - Different idle suffix patterns
-   *
-   * ANIMATION SUFFIXES:
-   * - animsWithOwnIdles: Use '-CHARACTERNAME' for idle and sing
-   * - groundedAnims: Use '-GENERAL' for idle, '-CHARACTERNAME' for sing
-   * - aerialAnims: Use '' for idle, '-CHARACTERNAME' for sing
-   */
   override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
@@ -220,6 +192,8 @@ class NightflaidStage extends Stage
     N_clrRight.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
     N_clrRight.color = 0xFF0d0d0d;
     PlayState.instance.add(N_clrRight, 'N_clrRight');
+
+    setupGradientStripes();
 
     N_top = makeSprite('N_top', 'nightflaid/toplayer' + alt, bgX, bgY);
     //N_top.visible = false;
@@ -283,7 +257,6 @@ class NightflaidStage extends Stage
     flash.blend = 9;
     flash.visible = false;
     flash.active = false;
-    flash.zIndex = 500;
     PlayState.instance.add(flash, 'redFlash');
 
     // White screen flash
@@ -306,7 +279,7 @@ class NightflaidStage extends Stage
   {
     super.onSongLoaded(event);
     if (unbeatableLightningLeft == null || unbeatableLightningRight == null) setupUnbeatableElements();
-    setupShaders();
+
     if (ogNfY == 0 || ogNfY == null) ogNfY = getDad().y;
 
     // Check for checkpoint
@@ -398,6 +371,59 @@ class NightflaidStage extends Stage
     sprite.loadTexture(imageName);
     PlayState.instance.add(sprite, name);
     return sprite;
+  }
+
+  function createGradientStripe(color:Int):FlxSprite
+  {
+      var c = FlxColor.fromInt(color);
+      var bgColor = 0xFF0d0d0d;
+
+      var colors:Array<FlxColor> = [bgColor, c, c, bgColor];
+
+      // 0 indicates horizontal rotation (left to right), or no rotation
+      var sprite = FlxGradient.createGradientFlxSprite(stripeWidth, bgHeight * 2, colors, 1, 0);
+
+      sprite.scrollFactor.set(0, 0);
+      return sprite;
+  }
+
+  function setupGradientStripes():Void
+  {
+    var targetColor:Int = StringTools.startsWith(colorr, '#') ? FlxColor.fromString(colorr) : FlxColor.fromString('#' + colorr);
+
+    // Create 5 stripes
+    for (i in 0...5)
+    {
+      var stripe = createGradientStripe(targetColor);
+
+      // Position off-screen to the right, with spacing
+      stripe.x = (bgX + bgWidth) + (i * stripeSpacing);
+      stripe.y = 0 + yAdjust;
+      stripe.visible = false;
+
+      PlayState.instance.add(stripe);
+      gradientStripes.push(stripe);
+    }
+  }
+
+  function startGradientStripes():Void
+  {
+    stripesActive = true;
+    for (stripe in gradientStripes)
+    {
+      stripe.visible = true;
+    }
+  }
+
+  function stopGradientStripes():Void
+  {
+    stripesActive = false;
+    for (stripe in gradientStripes)
+    {
+      stripe.visible = false;
+      // Reset position
+      stripe.x = (bgX + bgWidth) + gradientStripes.indexOf(stripe) * stripeSpacing;
+    }
   }
 
   function setupUnbeatableElements():Void
@@ -502,8 +528,9 @@ class NightflaidStage extends Stage
     staticSprite.visible = false;
     PlayState.instance.add(staticSprite);
 
-    spookieText = new FlxText(0, 0, 0, 'MADNESS', 75);
-    spookieText.setFormat(Paths.font('pause.ttf'), 75, FlxColor.BLACK, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.fromRGB(255, 0, 40));
+    var size = !FlxG.onMobile ? 75 : 85;
+    spookieText = new FlxText(0, 0, 0, 'MADNESS', size);
+    spookieText.setFormat(Paths.font('pause.ttf'), size, FlxColor.BLACK, 'center', FlxTextBorderStyle.OUTLINE, FlxColor.fromRGB(255, 0, 40));
     spookieText.borderSize = 3;
     spookieText.antialiasing = false;
     spookieText.alpha = 0.3;
@@ -558,51 +585,6 @@ class NightflaidStage extends Stage
       staticSprite.visible = false;
       spookieText.visible = false;
     });
-  }
-
-  function setupShaders():Void
-  {
-    // TODO: Placeholder for shader setup
-
-    // SHADER SETUP NEEDED:
-    //
-    // 1. NightflaidShaderHandler - Main shader system
-    //    - Create instance: nightflaidShaderHandler = new NightflaidShaderHandler()
-    //    - leftSide and rightSide shader objects with colorTween() method
-    //    - swapColors(duration) method
-    //    - toggleLights(enabled) method
-    //
-    // 2. ReflectionShader - Character reflection effect
-    //    - Create instance: refShader = new ReflectionShader()
-    //    - setReflectionY(670.0) - Sets Y position of reflection plane
-    //    - update() method - Called each frame
-    //    - Apply to camCharacters
-    //
-    // 3. VCRBorder - VCR tape border effect
-    //    - Create instance: vcrBorder = new VCRBorder()
-    //    - enabled property (bool)
-    //    - intensity property (float, 0.0 to 1.0)
-    //    - Apply to camVideo, camHUD, and camSustains
-    //
-    // 4. NTSCFilter - Analog TV distortion
-    //    - Create instance: ntscFilter = new NTSCFilter()
-    //    - enabled property (bool)
-    //    - distortionMult property (float)
-    //    - scanlineMult property (float)
-    //    - time property (updated each frame)
-    //    - Apply to camVideo
-    //
-    // 5. Custom Camera Setup
-    //    - camCharacters = new FlxCamera() with bgColor = 0x00000000 (transparent)
-    //    - camVideo = new FlxCamera() with bgColor = 0x00000000 (transparent)
-    //    - Set camera order properly so layers render correctly
-    //    - Assign sprites to appropriate cameras:
-    //      * boyfriendGroup, dadGroup, subtitle -> camCharacters
-    //      * coverSpr, whiteScreen, unbeatableBG, lightning, needles -> camVideo
-    //
-    // 6. Camera Synchronization
-    //    - In onUpdate, sync camCharacters position/zoom with camGame
-    //    - Update shader time values each frame
   }
 
   function setCameraOnThings(top:Bool):Void
@@ -734,6 +716,31 @@ class NightflaidStage extends Stage
       spookieText.angle = 3 * Math.sin(Conductor.instance.songPosition * 20);
     }
 
+    // Stripes movement (gradient thingy)
+    var startX:Float = bgWidth * 6;
+    var limitX:Float = bgX - 10000;
+
+    if (stripesActive)
+    {
+      for (stripe in gradientStripes)
+      {
+        stripe.x -= stripeSpeed * elapsed;
+
+        if (stripe.x < limitX)
+        {
+          var maxX:Float = startX - stripeSpacing;
+          for (otherStripe in gradientStripes)
+          {
+            if (otherStripe != stripe)
+            {
+               if (otherStripe.x > maxX) maxX = otherStripe.x;
+            }
+          }
+
+          stripe.x = maxX + stripeSpacing;
+        }
+      }
+    }
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -807,17 +814,25 @@ class NightflaidStage extends Stage
     if (curStep >= 2944 && !qqs)
     {
       qqs = true;
-      // Turn on lightings
+      // Turn on lightings (gradients)
+      startGradientStripes();
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid lightings', ['on', ''])));
     }
 
     if (curStep >= 3456 && !qqas)
     {
       qqas = true;
-      // Turn off lightings and go dark
+      stopGradientStripes();
+
+      // Turn off lightings and go dark (finale)
+      var targetColor:Int = StringTools.startsWith(colorr, '#') ? FlxColor.fromString(colorr) : FlxColor.fromString('#' + colorr);
+
+      triggerColorTween('0d0d0d', 0, 'both');
+      FlxTween.color(N_clrLeft, 0.1, N_clrLeft.color, targetColor, { ease: FlxEase.cubicInOut, onComplete: function(twn:FlxTween) {
+        triggerColorTween('0d0d0d', 0.05, 'left', FlxEase.cubicInOut);
+      }});
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid lightings', ['off', ''])));
       //PlayState.instance.dispatchEvent(new SongEventScriptEvent(new SongEventData(0, 'Nightflaid color tween', ['0d0d0d', '0.15'])));
-      triggerColorTween('0d0d0d', 0, 'both');
     }
 
     if (curStep >= 2304 && !qweqe)
@@ -1001,13 +1016,13 @@ class NightflaidStage extends Stage
     {
       case 'descend':
         FlxTween.cancelTweensOf(dad);
-        FlxTween.tween(dad, {y: dad.y + groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
-        dad.cameraFocusPoint.y -= groundedOff;
+        if (dad.y != ogNfY + groundedOff) dad.cameraFocusPoint.y -= groundedOff;
+        FlxTween.tween(dad, {y: ogNfY + groundedOff}, crochet / 400, {ease: FlxEase.quadInOut});
 
       case 'ascend':
         FlxTween.cancelTweensOf(dad);
+        if (dad.y != ogNfY) dad.cameraFocusPoint.y += groundedOff;
         FlxTween.tween(dad, {y: ogNfY}, crochet / 400, {ease: FlxEase.quadInOut});
-        dad.cameraFocusPoint.y += groundedOff;
 
       case 'final':
         //dad.danceEvery = 0;
@@ -1052,9 +1067,15 @@ class NightflaidStage extends Stage
 
     if (character == 'nightflaid_atlas')
     {
+      triggerColorTween('0d0d0d', 0, 'both');
       dad.y = ogNfY;
       PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
       PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getDad().cameraFocusPoint.y, 0.1, FlxEase.circOut);
+      PlayState.instance.opponentStrumline.visible = true;
+      FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+      FlxTween.tween(PlayState.instance.healthBar, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+      FlxTween.tween(PlayState.instance.iconP1, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+      FlxTween.tween(PlayState.instance.iconP2, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       midsongVideo.visible = false;
       midsongVideoBlackBars.visible = false;
       //triggerColorTween('CCCCCC', 0.05, 'both');
@@ -1087,6 +1108,13 @@ class NightflaidStage extends Stage
       FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x + 500.0}, 0.5, {ease: FlxEase.quadIn});
     }
 
+    FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, onComplete: function(twn:FlxTween) {
+      PlayState.instance.opponentStrumline.visible = false;
+    }});
+    FlxTween.tween(PlayState.instance.healthBar, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+    FlxTween.tween(PlayState.instance.iconP1, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+    FlxTween.tween(PlayState.instance.iconP2, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+
     // Update health bar colors to white
     FlxTween.color(PlayState.instance.iconP2, 0.5, PlayState.instance.iconP2.color, -1, { ease: FlxEase.circOut });
     retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
@@ -1098,10 +1126,6 @@ class NightflaidStage extends Stage
       FlxTween.tween(coverSpr, {alpha: 0}, 0.5);
 
       setCameraOnThings(false);
-
-      // Reset color tween to dark
-      // triggerNightflaidColorTween('0d0d0d', 0.15);
-      triggerColorTween(colorr, 0, 'both');
     });
   }
 
@@ -1132,6 +1156,10 @@ class NightflaidStage extends Stage
     N_clrLeft.color = -1;
     PlayState.instance.disableKeys = false;
 
+    PlayState.instance.cameraFollowPoint.setPosition((getDad().cameraFocusPoint.x + getBoyfriend().cameraFocusPoint.x) / 2, getDad().cameraFocusPoint.y);
+
+    stopGradientStripes();
+
     if (staticSprite != null) staticSprite.visible = false;
     if (spookieText != null) {
       spookieText.visible = false;
@@ -1143,30 +1171,6 @@ class NightflaidStage extends Stage
       unbeatableBG.alpha = 0;
       unbeatableLightningLeft.x = unbeatableLightningLeftPos;
       unbeatableLightningRight.x = unbeatableLightningRightPos;
-
-      /*unbeatableLightningLeft.destroy();
-      unbeatableLightningLeft = null;
-      unbeatableLightningRight.destroy();
-      unbeatableLightningRight = null;
-
-      for (needle in unbeatableNeedlesRight)
-      {
-        if (needle != null) {
-          needle.destroy();
-          unbeatableNeedlesRight.pop(needle);
-        }
-      }
-      for (needle in unbeatableNeedlesLeft)
-      {
-        if (needle != null) {
-          needle.destroy();
-          unbeatableNeedlesLeft.pop(needle);
-        }
-      }
-
-      // Cleanup arrays
-      unbeatableNeedlesLeft = [];
-      unbeatableNeedlesRight = [];*/
     }
 
     if (midsongVideo != null) {
@@ -1218,6 +1222,12 @@ class NightflaidStage extends Stage
     }
     spookieText = null;
     staticSprite = null;
+
+    for (stripe in gradientStripes)
+    {
+      if (stripe != null) stripe.destroy();
+    }
+    gradientStripes = [];
   }
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
