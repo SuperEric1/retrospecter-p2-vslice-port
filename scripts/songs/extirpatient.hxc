@@ -235,11 +235,11 @@ class ExtirpatientSong extends Song
 
       var markiplier = isDownScroll ? 1 : -1;
       for (i in 0...4) {
-        var strum = playState.opponentStrumline.strumlineNotes.members[i];
-        strum.y = (FlxG.height + 100) * markiplier;
+        var strum = playState.playerStrumline.strumlineNotes.members[i];
+        strum.y = FlxG.height + 300 * markiplier;
 
-        strum = playState.playerStrumline.strumlineNotes.members[i];
-        strum.y = (FlxG.height + 100) * markiplier;
+        strum = playState.opponentStrumline.strumlineNotes.members[i];
+        strum.y = !isMobile ? FlxG.height + 300 * markiplier : -300;
       }
       playState.playerStrumline.alpha = 1;
       playState.opponentStrumline.alpha = 1;
