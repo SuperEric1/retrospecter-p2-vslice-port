@@ -923,7 +923,7 @@ class ExtirpatientSong extends Song
       }, 1, {ease: FlxEase.quadOut});
     }
 
-    scythe2 = FunkinSprite.create(1600, PlayState.instance.playerStrumline.y);
+    scythe2 = FunkinSprite.create(FlxG.width + 100, PlayState.instance.playerStrumline.height / 2);
     scythe2.loadTexture('nightflaid/scythe');
     scythe2.camera = PlayState.instance.camHUD;
     scythe2.origin.y = scythe.height;
