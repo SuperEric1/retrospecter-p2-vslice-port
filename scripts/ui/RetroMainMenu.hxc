@@ -60,7 +60,7 @@ class RetroMainMenu extends MusicBeatState
   var menuStartIndex:Int = -1;
 
   var idleTimer:FlxTimer;
-  var idleTimeoutSeconds:Float = 4.0;
+  var idleTimeoutSeconds:Float = 3.0;
 
   // Mouse/Touch
   var lastMousePos:FlxPoint;
@@ -76,7 +76,7 @@ class RetroMainMenu extends MusicBeatState
   var horizontalSpacing:Float = 15;
   var baseY:Float = 360;
   var camMinOffset = -10;
-  var camMaxOffset = 400;
+  var camMaxOffset = 100;
   var backZIndex:Float = 1;
   var frontZIndex:Float = 50;
   var itemScrollFactor = [0.1, 0];
@@ -215,14 +215,21 @@ class RetroMainMenu extends MusicBeatState
     item.setGraphicSize(Std.int(FlxG.height * sizeMult));
     item.updateHitbox();
 
-    var cutLeft:Float = (item.width / 4);
+    var cutLeft:Float = item.width / (FlxG.onMobile ? 4.5 : 4);
     var cutRight:Float = cutLeft;
 
     switch (name) {
       case 'story':
-        cutLeft = 0;
+        cutLeft = 10;
+        cutRight += 40;
       case 'options':
-        cutRight = 0;
+        cutRight = 70;
+      case 'credits':
+        cutLeft -= 20;
+        cutRight += 20;
+      case 'side':
+        cutLeft -= 20;
+        cutRight += 20;
       default:
     }
 
@@ -303,10 +310,8 @@ class RetroMainMenu extends MusicBeatState
 
       item.x = currentX - clip.x;
 
-      // Só aplicamos o ajuste manual se NÃO estivermos espalhando perfeitamente na tela.
-      // Se estiver espalhando (Mobile Wide), a matemática do 'currentX' já cuida disso.
-      // Se quiser forçar o ajuste mesmo assim, remova o "!isSpreading &&".
-      if (!isSpreading && i == menuItems.length - 1) {
+      // Corrigir o espaçamento do options
+      if (i == menuItems.length - 1) {
         item.x += horizontalSpacing * 1.7;
       }
 
@@ -331,7 +336,7 @@ class RetroMainMenu extends MusicBeatState
       var lastItem = menuItems[menuItems.length - 1];
 
       if (isSpreading) {
-        var screenCenter = FlxG.width / 2;
+        var screenCenter = FlxG.width * 0.8;
         minCamX = screenCenter;
         maxCamX = screenCenter;
       } else {
