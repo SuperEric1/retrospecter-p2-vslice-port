@@ -76,7 +76,7 @@ class RetroMainMenu extends MusicBeatState
   var horizontalSpacing:Float = 15;
   var baseY:Float = 360;
   var camMinOffset = -10;
-  var camMaxOffset = 600;
+  var camMaxOffset = 400;
   var backZIndex:Float = 1;
   var frontZIndex:Float = 50;
   var itemScrollFactor = [0.1, 0];
@@ -221,7 +221,7 @@ class RetroMainMenu extends MusicBeatState
     switch (name) {
       case 'story':
         cutLeft = 0;
-      case 'configs':
+      case 'options':
         cutRight = 0;
       default:
     }
@@ -277,10 +277,10 @@ class RetroMainMenu extends MusicBeatState
 
     // Se o espaçamento calculado for MAIOR que o mínimo, significa que os itens cabem na tela e vão se espalhar. Então começamos da margem positiva.
     if (finalSpacing > horizontalSpacing) {
-        currentX = sidePadding;
+      currentX = sidePadding;
     } else {
-        // Se o espaçamento for o mínimo, significa que o conteúdo é maior que a tela (vai ter scroll).
-        currentX = -85;
+      // Se o espaçamento for o mínimo, significa que o conteúdo é maior que a tela (vai ter scroll).
+      currentX = -85;
     }
 
     for (i in 0...totalItems)
@@ -291,9 +291,8 @@ class RetroMainMenu extends MusicBeatState
 
       item.x = currentX - clip.x;
 
-      // Mantendo esse ajuste para o último item APENAS se estivermos no modo Scroll (espaçamento mínimo).
-      // Se estivermos preenchendo a tela (spread), esse ajuste quebraria o alinhamento final.
-      if (finalSpacing == horizontalSpacing && i == menuItems.length - 1) {
+      // O último item sempre fica desalinhado por algum motivo, então a gente adiciona um pouco mais de espaço para alinhar ele:
+      if (i == menuItems.length - 1) {
         item.x += horizontalSpacing * 1.7;
       }
 
@@ -316,14 +315,14 @@ class RetroMainMenu extends MusicBeatState
 
       // Se os itens couberem na tela (finalSpacing > horizontalSpacing), travamos a câmera no centro para evitar "dança" desnecessária.
       if (finalSpacing > horizontalSpacing) {
-          var screenCenter = FlxG.width / 2;
-          minCamX = screenCenter;
-          maxCamX = screenCenter;
+        var screenCenter = FlxG.width / 2 + (firstItem.width / 3); // o primeiro item (story) não tem cut, então a gente compensa pra ficar centralizado certinho
+        minCamX = screenCenter;
+        maxCamX = screenCenter;
       } else {
-          minCamX = (FlxG.width / 2) + camMinOffset;
-          maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
+        minCamX = (FlxG.width / 2) + camMinOffset;
+        maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
 
-          if (maxCamX < minCamX) maxCamX = minCamX;
+        if (maxCamX < minCamX) maxCamX = minCamX;
       }
     }
   }
