@@ -255,14 +255,23 @@ class RetroMainMenu extends MusicBeatState
     var totalItems:Int = menuItems.length;
     if (totalItems == 0) return;
 
+    // 1. Calcular a largura total do conteúdo
     var totalContentWidth:Float = 0;
     for (i in 0...totalItems) {
-      totalContentWidth += menuItems[i].clipRect.width;
+      var w = menuItems[i].clipRect.width;
+
+      // TRUQUE: Se for o último item, subtraímos a parte que você "liberou" do corte.
+      // Isso faz o cálculo de espaçamento pensar que o item ainda é curto,
+      // gerando intervalos maiores entre os itens anteriores.
+      if (i == totalItems - 1) {
+          w -= (menuItems[i].width / 4);
+      }
+
+      totalContentWidth += w;
     }
 
-    // Originalmente, começava em -85. (mudar caso altere o currentX ali em baixo)
-    var sidePadding:Float = 85; // Margem nas bordas esquerda e direita
-    if (FlxG.onMobile) sidePadding = 40; // Margem menor em mobile para aproveitar a tela
+    var sidePadding:Float = 85;
+    if (FlxG.onMobile) sidePadding = 40;
 
     var availableWidth:Float = FlxG.width - (sidePadding * 2);
 
@@ -273,16 +282,19 @@ class RetroMainMenu extends MusicBeatState
     }
 
     var finalSpacing:Float = Math.max(horizontalSpacing, spreadSpacing);
+
+    // Verifica se estamos em modo "Espalhado" (tela cheia) ou "Scroll"
+    var isSpreading:Bool = (finalSpacing > horizontalSpacing);
+
     var currentX:Float;
 
-    // Se o espaçamento calculado for MAIOR que o mínimo, significa que os itens cabem na tela e vão se espalhar. Então começamos da margem positiva.
-    if (finalSpacing > horizontalSpacing) {
+    if (isSpreading) {
       currentX = sidePadding;
     } else {
-      // Se o espaçamento for o mínimo, significa que o conteúdo é maior que a tela (vai ter scroll).
       currentX = -85;
     }
 
+    // --- POSICIONAMENTO ---
     for (i in 0...totalItems)
     {
       var item:FlxSprite = menuItems[i];
@@ -291,8 +303,10 @@ class RetroMainMenu extends MusicBeatState
 
       item.x = currentX - clip.x;
 
-      // O último item sempre fica desalinhado por algum motivo, então a gente adiciona um pouco mais de espaço para alinhar ele:
-      if (i == menuItems.length - 1) {
+      // Só aplicamos o ajuste manual se NÃO estivermos espalhando perfeitamente na tela.
+      // Se estiver espalhando (Mobile Wide), a matemática do 'currentX' já cuida disso.
+      // Se quiser forçar o ajuste mesmo assim, remova o "!isSpreading &&".
+      if (!isSpreading && i == menuItems.length - 1) {
         item.x += horizontalSpacing * 1.7;
       }
 
@@ -303,7 +317,10 @@ class RetroMainMenu extends MusicBeatState
       hitbox.width = clip.width * item.scale.x;
       hitbox.height = clip.height * item.scale.y;
 
-      // Avança o X usando o espaçamento calculado
+      // Avança o X.
+      // Nota: Como usamos o clip.width REAL aqui (grande), mas calculamos o spacing
+      // baseado no width PEQUENO, isso vai empurrar o último item levemente
+      // mais para a direita, preenchendo o espaço vazio.
       currentX += clip.width + finalSpacing;
     }
 
@@ -313,9 +330,8 @@ class RetroMainMenu extends MusicBeatState
       var firstItem = menuItems[0];
       var lastItem = menuItems[menuItems.length - 1];
 
-      // Se os itens couberem na tela (finalSpacing > horizontalSpacing), travamos a câmera no centro para evitar "dança" desnecessária.
-      if (finalSpacing > horizontalSpacing) {
-        var screenCenter = FlxG.width / 2 + (firstItem.width / 3); // o primeiro item (story) não tem cut, então a gente compensa pra ficar centralizado certinho
+      if (isSpreading) {
+        var screenCenter = FlxG.width / 2;
         minCamX = screenCenter;
         maxCamX = screenCenter;
       } else {
