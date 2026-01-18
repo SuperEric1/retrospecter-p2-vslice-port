@@ -1,0 +1,12 @@
+package supereric.retrospecter.ui;
+
+import funkin.ui.MusicBeatSubState;
+
+// ...
+
+class RetroPauseMenu extends MusicBeatSubState
+{
+    // ... code is surely here
+    // also: to close this sub-state, simply calling `close();` will work!
+    // ^ thanks kade
+}

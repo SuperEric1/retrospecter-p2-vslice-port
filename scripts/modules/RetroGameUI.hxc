@@ -31,6 +31,8 @@ import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
 
+import supereric.retrospecter.ui.RetroPauseMenu;
+
 class RetroGameUI extends Module {
   public function new() {
     super('RetroGameUI');
@@ -168,6 +170,8 @@ class RetroGameUI extends Module {
       playState.add(retroHealthBarOverlay);
 
       // Outros
+      playState.iconP1.bopEvery = 8;
+      playState.iconP2.bopEvery = 8;
       playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
 
       playState.refresh();
@@ -317,6 +321,24 @@ class RetroGameUI extends Module {
 
   override public function onCreate(event) {
     super.onCreate(event);
+  }
+
+  public override function onPause(event:PauseScriptEvent)
+  {
+    if (!isRetro) return;
+    if (true) return; // not implemented yet
+
+    // Ignore base game's pause menu
+    event.cancelEvent();
+
+    // Flags to 'pause' the game
+    PlayState.instance.persistentUpdate = false;
+    PlayState.instance.persistentDraw = true;
+
+    // Create and show the pause menu
+    final pauseSubState = new RetroPauseMenu();
+    PlayState.instance.shouldSubstatePause = true;
+    PlayState.instance.openSubState(pauseSubState);
   }
 
   public function onUpdate(event:UpdateScriptEvent) {

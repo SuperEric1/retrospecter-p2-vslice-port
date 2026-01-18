@@ -33,9 +33,12 @@ import funkin.save.Save;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
 
+import funkin.ui.title.TitleState;
+
 class RetroTitleState extends MusicBeatState
 {
-  public static var initialized:Bool = false;
+  public static var initialized:Bool = false; // to determine if we created the sprites
+  var hasPlayedIntro:Bool; // to actually check if the intro has played before
 
   var blackScreen:FlxSprite;
   var team:FlxSprite;
@@ -56,13 +59,25 @@ class RetroTitleState extends MusicBeatState
     var texts = getIntroTextShit();
     curWacky = texts[FlxG.random.int(0, texts.length - 1)];
     //funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
+
+    skippedIntro = false;
+    transitioning = false;
+
     Conductor.instance.update(0);
 
-    if (!initialized) new FlxTimer().start(1, function(tmr:FlxTimer) {
-      startIntro();
-    });
+    hasPlayedIntro = Save.instance.modOptions.get('retroTitleIntroPlayed') == true;
+
+    if (!hasPlayedIntro)
+    {
+      new FlxTimer().start(1, function(tmr:FlxTimer) {
+        startIntro();
+      });
+    }
     else
+    {
       startIntro();
+      skipIntro();
+    }
   }
 
   var logoRetro:FlxSprite;
@@ -139,13 +154,8 @@ class RetroTitleState extends MusicBeatState
     add(upFire);
     add(glow);
 
-    if (FlxG.onMobile) {
-    titleText = new FlxSprite(50 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
-    titleText.frames = Paths.getSparrowAtlas('titleEnter_mobile');
-    } else {
-    titleText = new FlxSprite(100 + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
-    titleText.frames = Paths.getSparrowAtlas('titleEnter');
-    }
+    titleText = new FlxSprite((FlxG.onMobile ? 50 : 100) + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
+    titleText.frames = Paths.getSparrowAtlas('titleEnter' + (FlxG.onMobile ? '_mobile' : ''));
     titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
     titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
     titleText.animation.play('idle');
@@ -153,8 +163,6 @@ class RetroTitleState extends MusicBeatState
     titleText.visible = false;
     // titleText.screenCenter(X);
     add(titleText);
-
-    //textGroup = [];
 
     blackScreen = bg.clone();
 
@@ -170,9 +178,7 @@ class RetroTitleState extends MusicBeatState
 
     FlxG.mouse.visible = false;
 
-    if (initialized) skipIntro();
-    else
-      initialized = true;
+    if (!initialized) initialized = true;
   }
 
   function playMenuMusic():Void
@@ -213,15 +219,13 @@ class RetroTitleState extends MusicBeatState
   {
     //FlxG.bitmapLog.add(FlxG.camera.buffer);
 
-    #if (desktop || android)
     // Pressing BACK on the title screen should close the game.
     // This lets you exit without leaving fullscreen mode.
     // Only applicable on desktop and Android.
-    if (#if android FlxG.android.justReleased.BACK || #end controls.BACK)
+    /*if ((FlxG.onAndroid && FlxG.android.justReleased.BACK) || controls.BACK)
     {
-      openfl.Lib.application.window.close();
-    }
-    #end
+      System.exit(0);
+    }*/
 
     Conductor.instance.update();
 
@@ -445,6 +449,7 @@ class RetroTitleState extends MusicBeatState
   }
 
   function shadowLogo(hide = false):Void {
+    if (!initialized) return;
     if (!hide) {
       hasShownShadow = true;
       glow.alpha = 1;
@@ -460,7 +465,7 @@ class RetroTitleState extends MusicBeatState
 
   function skipIntro():Void
   {
-    if (!skippedIntro)
+    if (!skippedIntro && initialized)
     {
       deleteCoolText();
       cancelTweens();
@@ -472,10 +477,14 @@ class RetroTitleState extends MusicBeatState
       backFire.visible = true;
       glow.visible = true;
       titleText.visible = true;
+      blackScreen.visible = false;
 
       FlxG.camera.flash(FlxColor.WHITE, 3);
       bumpLogo();
       skippedIntro = true;
+
+      Save.instance.modOptions.set('retroTitleIntroPlayed', true);
+      Save.instance.flush();
     }
   }
 

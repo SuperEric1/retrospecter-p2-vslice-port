@@ -1,0 +1,65 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.addons.transition.FlxTransitionableState;
+import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.title.TitleState;
+import funkin.ui.title.AttractState;
+import funkin.modding.base.ScriptedMusicBeatState;
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import Std;
+
+class RetroUIManager extends Module
+{
+  public function new()
+  {
+    super('RetroUIManager');
+  }
+
+  public static var titleInitialized:Bool = false;
+
+  var backBg:FlxSprite = null;
+
+  // Redirect to custom states/menus
+  function onStateChangeEnd(event:StateChangeScriptEvent)
+  {
+    super.onStateChangeEnd(event);
+    if (!Save.instance.modOptions.get('retroCustomMenus')) return;
+    var targetState = event.targetState;
+
+    if (Std.isOfType(targetState, TitleState))
+    {
+      if (!titleInitialized) {
+        // make sure it resets once we reopen or reload the game (since modules stay active between states and only resets on reload.)
+        Save.instance.modOptions.set('retroTitleIntroPlayed', false);
+        Save.instance.flush();
+        titleInitialized = true;
+      }
+      if (FlxG.sound.music != null) FlxG.sound.music.stop();
+      FlxG.switchState(ScriptedMusicBeatState.init("RetroTitleState"));
+    }
+    else if (Std.isOfType(targetState, MainMenuState))
+    {
+      // insert background to avoid weird transition
+      if (backBg != null) backBg.destroy();
+      backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+      backBg.screenCenter();
+      backBg.scrollFactor.set(0, 0);
+      targetState.insert(50, backBg);
+      FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+    }
+  }
+
+  function onStateChangeBegin(event:StateChangeScriptEvent)
+  {
+    super.onStateChangeBegin(event);
+    if (!Save.instance.modOptions.get('retroCustomMenus')) return;
+    var targetState = event.targetState;
+
+    if (Std.isOfType(targetState, MainMenuState))
+    {
+      FlxTransitionableState.skipNextTransIn = true;
+    }
+  }
+}

@@ -20,13 +20,14 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.events.StateChangeScriptEvent;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.mobile.input.ControlsHandler;
 import funkin.Paths;
 import Std;
 import Reflect;
 
 class RetroOptionsState extends Module
 {
-  final ENABLED = true;
+  var canUpdate:Bool = false;
 
   var bgPath:String = "ui/menu/options/WinDOZ";
   var imagePath:String = "ui/menu/options/";
@@ -285,9 +286,12 @@ class RetroOptionsState extends Module
 
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void
   {
-    if (Std.isOfType(event.targetState, OptionsState) && ENABLED)
+    if (Std.isOfType(event.targetState, OptionsState))
     {
-      if (!event.targetState.members.contains(dozirc))
+      hasAddedOptions = false; // add the options again!
+      canUpdate = Save.instance.modOptions.get('retroCustomMenus'); // to determine if the menu will build/update. we update this variable once the state changes to not cause any bugs with onUpdate.
+
+      if (!event.targetState.members.contains(dozirc) && canUpdate)
       {
         var state = event.targetState;
         //loadDebugElements();
@@ -318,7 +322,6 @@ class RetroOptionsState extends Module
         playMenuMusic();
         hasBuilt = true;
         isShuttingDown = false;
-        hasAddedOptions = false;
       }
     }
   }
@@ -405,10 +408,11 @@ class RetroOptionsState extends Module
   {
     super.onUpdate(event);
     if (FlxG.state == null) return;
-    if (Std.isOfType(FlxG.state, OptionsState) && hasBuilt)
+    if (Std.isOfType(FlxG.state, OptionsState))
     {
       var optionsState:OptionsState = FlxG.state;
       if (!hasAddedOptions) createPreferences(optionsState);
+      if (!hasBuilt || !canUpdate) return;
 
       // Isso permite acessar tudo dentro de OptionsState mesmo sendo privado
       @:privateAccess {
@@ -501,12 +505,12 @@ class RetroOptionsState extends Module
           break; // we found the exit button, stop!!
         }
       }
-      if (!FlxG.onMobile && items.selectedIndex >= items.length - 1)
+      if (!ControlsHandler.usingExternalInputDevice && items.selectedIndex >= items.length - 1)
       {
         items.selectItem(0); // Volta para o primeiro item se estiver no EXIT
       }
 
-      var goingBack:Bool = FlxG.onMobile ? ReflectUtil.getProperty(codex.currentPage, "goingBack") : false;
+      var goingBack:Bool = (FlxG.onMobile) ? ReflectUtil.getProperty(codex.currentPage, "goingBack") : false;
       if (goingBack && !isShuttingDown) {
         isShuttingDown = true;
         taskBarApps = [];
@@ -553,7 +557,7 @@ class RetroOptionsState extends Module
         var isBrowserOpen = (browserOpenForApp == i);
 
         var isOverlapping:Bool = app.overlapsPoint(FlxG.mouse.getWorldPosition());
-        if (FlxG.onMobile && TouchUtil != null) isOverlapping = TouchUtil.overlapsComplex(app) || app.overlapsPoint(FlxG.mouse.getWorldPosition());
+        if (FlxG.onMobile && TouchUtil != null && !ControlsHandler.usingExternalInputDevice) isOverlapping = TouchUtil.overlapsComplex(app) || app.overlapsPoint(FlxG.mouse.getWorldPosition());
 
         if (isOverlapping)
         {
@@ -652,7 +656,7 @@ class RetroOptionsState extends Module
       }
       if (browserIcon != null) {
         var isOverlapping:Bool = browserIcon.overlapsPoint(FlxG.mouse.getWorldPosition());
-        if (FlxG.onMobile && TouchUtil != null) isOverlapping = TouchUtil.overlapsComplex(browserIcon);
+        if (FlxG.onMobile && TouchUtil != null && !ControlsHandler.usingExternalInputDevice) isOverlapping = TouchUtil.overlapsComplex(browserIcon);
 
         if (isOverlapping)
         {
@@ -1026,6 +1030,13 @@ class RetroOptionsState extends Module
       description: "Transforms hazard notes into normal notes. Note Mechanics needs to be toggled on for this option to work.",
     },
     {
+      id: "retroCheckpoints",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Checkpoints",
+      description: "Allows to automatically go back to a certain point of the song when retrying.",
+    },
+    {
       id: "retroShaders",
       type: OptionType.CHECKBOX,
       defaultValue: true,
@@ -1052,6 +1063,13 @@ class RetroOptionsState extends Module
       defaultValue: true,
       name: "Suggestive Content",
       description: "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song.",
+    },
+    {
+      id: "retroCustomMenus",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Custom Menus",
+      description: "Enables the mod's custom menus. Disable this if you want the original FNF menus back.",
     },
 
 

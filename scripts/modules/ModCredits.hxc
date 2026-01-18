@@ -9,15 +9,24 @@ class RetroCredits extends Module {
 
 	public function onCreate(event:ScriptEvent) {
 		super.onCreate(event);
-
 		// these need to be in reverse here because of unshift()
 
 		// Port Credits
 		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "------------------------",
+			body: []
+		});
+
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
 			header: "V-Slice Mod Fan Port By",
 			body: [
-				{line: "SuperEric"}
+				{line: "SuperEric"},
 			]
+		});
+
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "------------------------",
+			body: []
 		});
 
 		// Playtesters
@@ -264,7 +273,7 @@ class RetroCredits extends Module {
 		CreditsDataHandler.CREDITS_DATA.entries.unshift({
 			header: "Vs. RetroSpecter - Part Two: Infernadise",
 			body: [
-				{line: "Original Mod Credits:"}
+				{line: "Credits from the original mod:"}
 			]
 		});
 	}

@@ -1,0 +1,680 @@
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.FlxState;
+import flixel.math.FlxRect;
+import flixel.math.FlxPoint;
+import flixel.effects.FlxFlicker;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import flixel.graphics.frames.FlxAtlasFrames;
+import funkin.FunkinMemory;
+import funkin.util.Constants;
+import funkin.util.TouchUtil;
+import funkin.graphics.FunkinCamera;
+import funkin.graphics.FunkinSprite;
+import funkin.audio.FunkinSound;
+import funkin.ui.MusicBeatState;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.story.StoryMenuState;
+import funkin.Paths;
+import funkin.ui.FullScreenScaleMode;
+import funkin.ui.credits.CreditsState;
+import funkin.Preferences;
+import flixel.math.FlxMath;
+import funkin.mobile.input.ControlsHandler;
+import funkin.ui.title.TitleState;
+import funkin.util.SwipeUtil;
+
+class RetroMainMenu extends MusicBeatState
+{
+  public var retroV:String = '1.0';
+
+  var bg:FlxSprite;
+  var bgFront:FlxSprite;
+  var magenta:FlxSprite;
+  var camFollow:FlxObject;
+  var titleText:FlxText;
+  var label1:FunkinSprite;
+  var label2:FunkinSprite;
+
+  // Menu
+  var menuItems:Array<FunkinSprite>;
+  var menuCallbacks:Array<Dynamic>;
+  var menuHitboxes:Array<FlxObject>;
+  var menuNames:Array<String>;
+  var minCamX:Float = 0;
+  var maxCamX:Float = 0;
+  var menuClips:Array<FlxRect>;
+
+  // Estado
+  var selectedIndex:Int = 0;
+  var canNavigate:Bool = false;
+  var isBusy:Bool = false;
+  var isExiting:Bool = false;
+  var hasSelection:Bool = false;
+  var menuStartIndex:Int = -1;
+
+  var idleTimer:FlxTimer;
+  var idleTimeoutSeconds:Float = 4.0;
+
+  // Mouse/Touch
+  var lastMousePos:FlxPoint;
+  var _totalScreenMovedX:Float = 0;
+  var _totalScreenMovedY:Float = 0;
+  var blockMouse:Bool = false;
+  var mouseMovementThreshold:Float = 10; // Pixels que o mouse precisa mover para reconhecer movimento
+  var mouseHasMoved:Bool = false;
+  var lastTouchedIndex:Int = -1; // Para touch: primeiro toque seleciona, segundo confirma
+
+  // Config
+  var overrideMusic:Bool = false;
+  var horizontalSpacing:Float = 15;
+  var baseY:Float = 360;
+  var camMinOffset = -10;
+  var camMaxOffset = 600;
+  var backZIndex:Float = 1;
+  var frontZIndex:Float = 50;
+  var itemScrollFactor = [0.1, 0];
+
+  static var rememberedSelectedIndex:Int = 0;
+
+  public function new(?_overrideMusic:Bool)
+  {
+    super();
+
+    if (_overrideMusic != null)
+      overrideMusic = _overrideMusic;
+
+    menuItems = [];
+    menuCallbacks = [];
+    menuHitboxes = [];
+    menuNames = [];
+    menuClips = [];
+
+    magenta = new FlxSprite();
+    camFollow = new FlxObject(0, 0, 1, 1);
+    idleTimer = new FlxTimer();
+    lastMousePos = FlxPoint.get(0, 0);
+
+    FlxG.keys.enabled = true;
+  }
+
+  override function create():Void
+  {
+    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
+
+    transIn = FlxTransitionableState.defaultTransIn;
+    transOut = FlxTransitionableState.defaultTransOut;
+
+    if (!overrideMusic) playMenuMusic();
+
+    persistentUpdate = true;
+    persistentDraw = true;
+
+    if (bgFront != null) bgFront.destroy();
+
+    bg = new FlxSprite();
+    bg.makeGraphic(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.1), FlxColor.BLACK);
+    bg.scrollFactor.set(0, 0);
+    bg.updateHitbox();
+    bg.screenCenter();
+    add(bg);
+
+    add(camFollow);
+
+    menuStartIndex = members.length;
+
+    var path = 'ui/mainmenu/';
+    createMenuItem('story', path + 'story', goToStory);
+    createMenuItem('side', path + 'side', goToFreeplay);
+    createMenuItem('credits', path + 'credits', goToCredits);
+    createMenuItem('options', path + 'options', goToOptions, 0.75);
+    positionMenuItems();
+
+    var labelSize = Std.int(FlxG.height * 0.8);
+    label1 = FunkinSprite.create(0, 0);
+    label1.frames = Paths.getSparrowAtlas(path + 'logosFirst');
+    label1.animation.addByPrefix('nothing', 'nothing', 1, true);
+    label1.animation.addByPrefix('story', 'story', 1, true);
+    label1.animation.addByPrefix('freeplay', 'freeplay', 1, true);
+    label1.animation.addByPrefix('options', 'options', 1, true);
+    label1.animation.play('story');
+    label1.setGraphicSize(labelSize);
+    label1.updateHitbox();
+    label1.y = baseY - (label1.height / 2);
+    label1.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
+    label1.alpha = 0;
+    add(label1);
+
+    label2 = FunkinSprite.create(0, 0);
+    label2.frames = Paths.getSparrowAtlas(path + 'logosExtra');
+    label2.animation.addByPrefix('nothing', 'nothing', 1, true);
+    label2.animation.addByPrefix('credits', 'credits', 1, true);
+    label2.animation.addByPrefix('side', 'side', 1, true);
+    label2.animation.addByPrefix('options', 'options', 1, true);
+    label2.animation.play('side');
+    label2.setGraphicSize(labelSize);
+    label2.updateHitbox();
+    label2.y = label1.y;
+    label2.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
+    label2.alpha = label1.alpha;
+    add(label2);
+
+    selectedIndex = rememberedSelectedIndex;
+    if (selectedIndex >= menuItems.length) selectedIndex = 0;
+
+    setIdleState();
+
+    camFollow.setPosition(FlxG.width * 0.8, baseY); //  FlxG.width / 2 + camMinOffset
+    resetCamera();
+
+    var closeCallback:Dynamic = function(_:Dynamic) {
+      resetCamera(false);
+    };
+    subStateClosed.add(closeCallback);
+
+    super.create();
+
+    if (FlxG.mouse.cursor != null && !ControlsHandler.usingExternalInputDevice) {
+      FlxG.mouse.visible = true;
+      FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
+    }
+
+    if (FlxG.state.leftWatermarkText != null) {
+      var ogText = FlxG.state.leftWatermarkText.text;
+      FlxG.state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
+      FlxG.state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
+      FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port v" + retroV + " | FNF " + Constants.VERSION;
+      FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
+    }
+
+    // Inicializar posição do mouse
+    lastMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
+
+    // Habilitar navegação
+    new FlxTimer().start(0.6, function(_:FlxTimer) {
+      canNavigate = true;
+    });
+  }
+
+  function createMenuItem(name:String, atlasPath:String, callback:Dynamic, ?sizeMult:Int = 0.87):Void
+  {
+    var item:FunkinSprite = FunkinSprite.create(0, 0);
+
+    item.frames = Paths.getSparrowAtlas(atlasPath);
+
+    var upperName:String = name.toUpperCase();
+    item.animation.addByPrefix('bright', upperName + 'BRIGHT', 24, false);
+    item.animation.addByPrefix('dark', upperName + 'DARK', 24, false);
+    item.animation.play('bright');
+    item.setGraphicSize(Std.int(FlxG.height * sizeMult));
+    item.updateHitbox();
+
+    var cutLeft:Float = (item.width / 4);
+    var cutRight:Float = cutLeft;
+
+    switch (name) {
+      case 'story':
+        cutLeft = 0;
+      case 'configs':
+        cutRight = 0;
+      default:
+    }
+
+    var clipX:Float = cutLeft;
+    var clipY:Float = 0;
+    var clipW:Float = item.frameWidth - cutLeft - cutRight;
+    var clipH:Float = item.frameHeight;
+
+    item.clipRect = new FlxRect(clipX, clipY, clipW, clipH);
+    menuClips.push(new FlxRect(clipX, clipY, clipW, clipH));
+
+    item.ID = menuItems.length;
+    item.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
+
+    // CRIAR HITBOX ESPECÍFICA
+    var hitbox = new FlxObject(0, 0, clipW * item.scale.x, clipH * item.scale.y);
+    hitbox.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
+    menuHitboxes.push(hitbox);
+    add(hitbox); // Adicionado ao estado para processar scrollFactor corretamente
+
+    menuItems.push(item);
+    menuCallbacks.push(callback);
+    menuNames.push(name);
+
+    add(item);
+  }
+
+  function positionMenuItems():Void
+  {
+    var totalItems:Int = menuItems.length;
+    if (totalItems == 0) return;
+
+    var totalVisibleWidth:Float = 0;
+    for (i in 0...totalItems) {
+      totalVisibleWidth += menuItems[i].clipRect.width;
+    }
+
+    totalVisibleWidth += (totalItems - 1) * horizontalSpacing;
+
+    var currentX:Float = -85;
+
+    for (i in 0...totalItems)
+    {
+      var item:FlxSprite = menuItems[i];
+      var hitbox:FlxObject = menuHitboxes[i];
+      var clip:FlxRect = menuClips[i];
+
+      item.x = currentX - clip.x;
+      if (i == menuItems.length - 1) item.x += horizontalSpacing * 1.7;
+      item.y = baseY - (item.height / 2);
+
+      hitbox.x = item.x + (clip.x * item.scale.x);
+      hitbox.y = item.y + (clip.y * item.scale.y);
+      hitbox.width = clip.width * item.scale.x;
+      hitbox.height = clip.height * item.scale.y;
+
+      currentX += clip.width + horizontalSpacing;
+    }
+
+    if (menuItems.length > 0)
+    {
+      var firstItem = menuItems[0];
+      var lastItem = menuItems[menuItems.length - 1];
+
+      minCamX = (FlxG.width / 2) + camMinOffset;
+      maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
+
+      if (maxCamX < minCamX) maxCamX = minCamX;
+    }
+  }
+
+  function setIdleState():Void
+  {
+    lastMousePos.set(FlxG.mouse.x, FlxG.mouse.y);
+    blockMouse = false;
+    hasSelection = false;
+
+    for (i in 0...menuItems.length)
+    {
+      menuItems[i].animation.play('bright');
+      updateItemClip(i, false);
+    }
+    updateLabel(null);
+    idleTimer.cancel();
+    lastTouchedIndex = -1; // Reset touch state
+  }
+
+  function updateItemClip(index:Int, isSelected:Bool):Void
+  {
+    if (menuItems[index] == null || menuClips[index] == null) return;
+
+    var item = menuItems[index];
+
+    var targetScale:Float = isSelected ? 1.015 : 1.0;
+    FlxTween.cancelTweensOf(item.scale);
+    FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.25, {ease: FlxEase.sineOut});
+
+    if (isSelected) {
+      item.clipRect = null;
+      remove(item);
+      insert(menuStartIndex + menuItems.length - 1, item);
+    } else {
+      var clipData = menuClips[index];
+      item.clipRect = new FlxRect(clipData.x, clipData.y, clipData.width, clipData.height);
+      remove(item);
+      insert(menuStartIndex + index, item);
+    }
+  }
+
+  function selectItem(index:Int, playSound:Bool = true):Void
+  {
+    if (index < 0 || index >= menuItems.length) return;
+
+    hasSelection = true;
+    selectedIndex = index;
+
+    for (i in 0...menuItems.length)
+    {
+      var isThisSelected = (i == selectedIndex);
+      menuItems[i].animation.play(isThisSelected ? 'bright' : 'dark');
+      if (isThisSelected) updateLabel(menuNames[i]);
+      updateItemClip(i, isThisSelected);
+    }
+
+    var selected = menuItems[selectedIndex];
+    var clipData = menuClips[selectedIndex];
+
+    var targetX:Float = selected.x + clipData.x + (clipData.width);
+    targetX = FlxMath.bound(targetX, minCamX, maxCamX);
+
+    camFollow.setPosition(targetX, baseY);
+
+    if (playSound) FunkinSound.playOnce(Paths.sound('scrollMenu'), 1);
+
+    resetIdleTimer();
+  }
+
+  function updateLabel(name:String):Void {
+    if (name == null) {
+      FlxTween.cancelTweensOf(label1);
+      FlxTween.cancelTweensOf(label2);
+      FlxTween.tween(label1, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      FlxTween.tween(label2, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+      return;
+    }
+
+    var isExtra:Bool = (name == 'side' || name == 'credits');
+    var activeLabel = isExtra ? label2 : label1;
+    var inactiveLabel = isExtra ? label1 : label2;
+
+    inactiveLabel.animation.play('nothing');
+
+    activeLabel.animation.play(name);
+    FlxTween.cancelTweensOf(activeLabel);
+    FlxTween.tween(activeLabel, {alpha: 1}, 0.2, {ease: FlxEase.quadOut});
+
+    var targetItem = menuItems[selectedIndex];
+    var clipData = menuClips[selectedIndex];
+
+    var itemCenterX:Float = targetItem.x + clipData.x + (clipData.width / 2);
+
+    var distance:Float = 500;
+    var offsetExtra:Float = 0;
+
+    var side:Float = 1.0;
+
+    switch(name) {
+      case 'story':
+        side = 1.0;
+        offsetExtra = 100;
+      case 'side':
+        side = 1.0;
+        offsetExtra = -50;
+      case 'credits':
+        side = -1.0;
+        offsetExtra = -20;
+      case 'options':
+        side = -1.0;
+        offsetExtra = 100;
+    }
+
+    activeLabel.x = itemCenterX + (distance * side) + (offsetExtra * side) - (activeLabel.width / 2);
+  }
+
+  function resetIdleTimer():Void
+  {
+    idleTimer.cancel();
+
+    var timeoutCallback:Dynamic = function(_:FlxTimer) {
+      setIdleState();
+    };
+
+    idleTimer.start(idleTimeoutSeconds, timeoutCallback);
+  }
+
+  function confirmSelection():Void
+  {
+    if (!hasSelection || isBusy || isExiting) return;
+    if (selectedIndex < 0 || selectedIndex >= menuItems.length) return;
+
+    isBusy = true;
+    canNavigate = false;
+    idleTimer.cancel();
+
+    var selected:FlxSprite = menuItems[selectedIndex];
+    var callback:Dynamic = menuCallbacks[selectedIndex];
+
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+
+    var timerType = Preferences.flashingLights ? FlxFlicker : FlxTimer;
+    var timerCallback:Dynamic = function(_:timerType) {
+      isBusy = false;
+      rememberedSelectedIndex = selectedIndex;
+      if (callback != null) callback();
+    };
+
+    var flickerTime:Float = 0.7;
+    if (Preferences.flashingLights) FlxFlicker.flicker(selected, flickerTime, 0.06, true, false, timerCallback);
+    else new FlxTimer().start(flickerTime, timerCallback);
+  }
+
+  // Callbacks de navegação
+  function goToStory():Void
+  {
+    var stateFunc:Dynamic = function():FlxState {
+      return new StoryMenuState();
+    };
+    FlxG.signals.preStateSwitch.addOnce(() -> {
+      FunkinMemory.clearFreeplay();
+      FunkinMemory.purgeCache();
+    });
+    startExitState(stateFunc);
+  }
+
+  function goToFreeplay():Void
+  {
+    var stateFunc:Dynamic = function():FlxState {
+      return new FreeplayState();
+    };
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = false;
+
+    FreeplayState.CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
+
+    startExitState(stateFunc);
+  }
+
+  function goToOptions():Void
+  {
+    var stateFunc:Dynamic = function():FlxState {
+      return new funkin.ui.options.OptionsState();
+    };
+    startExitState(stateFunc);
+  }
+
+  function goToCredits():Void
+  {
+    var stateFunc:Dynamic = function():FlxState {
+      return new CreditsState();
+    };
+    startExitState(stateFunc);
+  }
+
+  function startExitState(state:Dynamic):Void
+  {
+    if (isExiting) return;
+
+    isExiting = true;
+    canNavigate = false;
+    idleTimer.cancel();
+    persistentUpdate = false;
+    persistentDraw = false;
+
+    var targetState = state;
+    var tweenCallback:Dynamic = function(_:FlxTween) {
+      if (FlxG.mouse.cursor != null && !ControlsHandler.usingExternalInputDevice) FlxG.mouse.visible = false;
+      FlxG.switchState(targetState);
+    };
+
+    bgFront = new FlxSprite();
+    bgFront.makeGraphic(Std.int(FlxG.width * 1.1), Std.int(FlxG.height * 1.1), FlxColor.BLACK);
+    bgFront.scrollFactor.set(0, 0);
+    bgFront.screenCenter();
+    bgFront.alpha = 0;
+    bgFront.updateHitbox();
+    insert(1000, bgFront);
+
+    FlxTween.tween(bgFront, {alpha: 1}, 0.15, {
+      ease: FlxEase.cubicIn,
+      onComplete: tweenCallback
+    });
+  }
+
+  function playMenuMusic():Void
+  {
+    FunkinSound.playMusic('freakyMenu', {
+      overrideExisting: true,
+      restartTrack: false,
+      persist: true
+    });
+  }
+
+  function resetCamera(snap:Bool = true):Void
+  {
+    FlxG.camera.follow(camFollow, null, 0.06);
+    if (snap) FlxG.camera.snapToTarget();
+  }
+
+  override function closeSubState():Void
+  {
+    super.closeSubState();
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    if (!canNavigate || isBusy || isExiting || !FlxG.keys.enabled) return;
+
+    var hadInput:Bool = false;
+
+    // MOUSE/TOUCH HANDLING
+
+    // var camMoving:Bool = (Math.abs(FlxG.camera.scroll.x - (camFollow.x - FlxG.width / 2)) > 1);
+
+    var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased || SwipeUtil.swipeAny;
+    var currentMouseX:Float = FlxG.mouse.x;
+    var currentMouseY:Float = FlxG.mouse.y;
+
+    if (lastMousePos == null && isExternalInput) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
+
+    // Calcular distância manualmente
+    var dx:Float = currentMouseX - lastMousePos.x;
+    var dy:Float = currentMouseY - lastMousePos.y;
+    var mouseDist:Float = Math.sqrt(dx * dx + dy * dy);
+
+    if (FlxG.mouse.justMoved && !isTouching) {
+      if (mouseDist > mouseMovementThreshold && !blockMouse) {
+        resetIdleTimer();
+        mouseHasMoved = true;
+      }
+      lastMousePos.set(currentMouseX, currentMouseY);
+    }
+
+    // Preparar detecção de input
+    var justPressed:Bool = TouchUtil.justPressed || FlxG.mouse.justPressed;
+    var justReleased:Bool = TouchUtil.justReleased || FlxG.mouse.justReleased;
+
+    /*if (FlxG.onMobile && TouchUtil != null && !ControlsHandler.usingExternalInputDevice)
+    {
+      justPressed = TouchUtil.justPressed;
+      justReleased = TouchUtil.justReleased;
+    }*/
+
+    // Iterar pelos items para detectar hover/click
+    for (i in 0...menuHitboxes.length)
+    {
+      var hitbox = menuHitboxes[i];
+
+      var isOverlapping:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(hitbox)) || FlxG.mouse.overlaps(hitbox);
+
+      if (isOverlapping)
+      {
+        // Aqui usamos FlxG.mouse.justMoved para ter certeza que não vai ter um falso positivo, assim o menu pode voltar para idle normalmente.
+        if (!isTouching && mouseHasMoved && FlxG.mouse.justMoved && (i != selectedIndex || !hasSelection))
+        {
+          selectItem(i, true);
+          mouseHasMoved = false;
+          hadInput = true;
+        }
+
+        if (justPressed)
+        {
+          blockMouse = false; // Mouse teve um input, desbloquear.
+          hadInput = true;
+          // Se o menu estiver em IDLE (sem seleção) OU o clique for em um item DIFERENTE
+          if (!hasSelection || i != selectedIndex) {
+            selectItem(i, true);
+            lastTouchedIndex = i; // Registra qual item recebeu o primeiro toque
+          } else {
+            // Se já estava selecionado E clicou no MESMO item: CONFIRMA
+            confirmSelection();
+          }
+
+          // Importante: após um clique, paramos de processar outras hitboxes e inputs globais
+          return;
+        }
+        break;
+      }
+    }
+
+    // KEYBOARD/SWIPE HANDLING
+
+    var goLEFT = SwipeUtil.swipeLeft || FlxG.keys.justPressed.LEFT;
+    var goRIGHT = SwipeUtil.swipeRight || FlxG.keys.justPressed.RIGHT;
+
+    var doSELECT = FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.Z; // also select if we press enter
+    var goBACK = FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESC;
+
+    if (goLEFT || goRIGHT)
+    {
+      blockMouse = true; // Bloquear movimentos do mouse para não interferir.
+      hadInput = true;
+
+      // Bloqueia a seleção por hover do mouse até que o usuário mova o mouse fisicamente de novo
+      mouseHasMoved = false;
+      lastMousePos.set(FlxG.mouse.x, FlxG.mouse.y);
+
+      var dir = goLEFT ? -1 : 1;
+      var next = selectedIndex + dir;
+
+      if (!hasSelection) {
+        selectItem(selectedIndex, true);
+      } else {
+        if (next < 0) next = menuItems.length - 1;
+        if (next >= menuItems.length) next = 0;
+        selectItem(next, true);
+      }
+    }
+
+    if (doSELECT && hasSelection) {
+      hadInput = true;
+      confirmSelection();
+    }
+
+    if (goBACK) goBack();
+
+    // Resetar timer se teve input
+    if (hadInput && hasSelection && !isBusy)
+    {
+      resetIdleTimer();
+    }
+
+  }
+
+  function goBack():Void
+  {
+    trace("BACK: Interact complete.");
+    rememberedSelectedIndex = selectedIndex;
+    FunkinSound.playOnce(Paths.sound('cancelMenu'));
+
+    FlxG.switchState(() -> new TitleState());
+  }
+
+  override function destroy():Void
+  {
+    super.destroy();
+
+    if (lastMousePos != null)
+    {
+      lastMousePos.put();
+      lastMousePos = null;
+    }
+  }
+}

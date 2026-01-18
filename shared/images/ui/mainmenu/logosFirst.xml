@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="logosFirst.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="nothing" x="0" y="0" width="1" height="1"/>
+	<SubTexture name="extras" x="0" y="0" width="480" height="270"/>
+	<SubTexture name="freeplay" x="0" y="275" width="480" height="270"/>
+	<SubTexture name="options" x="485" y="0" width="480" height="270"/>
+	<SubTexture name="story" x="485" y="275" width="480" height="270"/>
+</TextureAtlas>

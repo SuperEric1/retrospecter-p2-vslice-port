@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="trophieslocked.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="TROPHIESLOCKEDBRIGHT" x="0" y="0" width="668" height="810"/>
+	<SubTexture name="TROPHIESLOCKEDDARK" x="0" y="0" width="668" height="810"/>
+</TextureAtlas>
