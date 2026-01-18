@@ -180,7 +180,7 @@ class RetroMainMenu extends MusicBeatState
 
     super.create();
 
-    if (FlxG.mouse.cursor != null && !ControlsHandler.usingExternalInputDevice) {
+    if (FlxG.mouse.cursor != null && !FlxG.onMobile) {
       FlxG.mouse.visible = true;
       FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
     }
@@ -255,14 +255,33 @@ class RetroMainMenu extends MusicBeatState
     var totalItems:Int = menuItems.length;
     if (totalItems == 0) return;
 
-    var totalVisibleWidth:Float = 0;
+    var totalContentWidth:Float = 0;
     for (i in 0...totalItems) {
-      totalVisibleWidth += menuItems[i].clipRect.width;
+      totalContentWidth += menuItems[i].clipRect.width;
     }
 
-    totalVisibleWidth += (totalItems - 1) * horizontalSpacing;
+    // Originalmente, começava em -85. (mudar caso altere o currentX ali em baixo)
+    var sidePadding:Float = 85; // Margem nas bordas esquerda e direita
+    if (FlxG.onMobile) sidePadding = 40; // Margem menor em mobile para aproveitar a tela
 
-    var currentX:Float = -85;
+    var availableWidth:Float = FlxG.width - (sidePadding * 2);
+
+    // Fórmula: (EspaçoDisponivel - LarguraDosItens) / (NumeroDeIntervalos)
+    var spreadSpacing:Float = 0;
+    if (totalItems > 1) {
+      spreadSpacing = (availableWidth - totalContentWidth) / (totalItems - 1);
+    }
+
+    var finalSpacing:Float = Math.max(horizontalSpacing, spreadSpacing);
+    var currentX:Float;
+
+    // Se o espaçamento calculado for MAIOR que o mínimo, significa que os itens cabem na tela e vão se espalhar. Então começamos da margem positiva.
+    if (finalSpacing > horizontalSpacing) {
+        currentX = sidePadding;
+    } else {
+        // Se o espaçamento for o mínimo, significa que o conteúdo é maior que a tela (vai ter scroll).
+        currentX = -85;
+    }
 
     for (i in 0...totalItems)
     {
@@ -271,7 +290,13 @@ class RetroMainMenu extends MusicBeatState
       var clip:FlxRect = menuClips[i];
 
       item.x = currentX - clip.x;
-      if (i == menuItems.length - 1) item.x += horizontalSpacing * 1.7;
+
+      // Mantendo esse ajuste para o último item APENAS se estivermos no modo Scroll (espaçamento mínimo).
+      // Se estivermos preenchendo a tela (spread), esse ajuste quebraria o alinhamento final.
+      if (finalSpacing == horizontalSpacing && i == menuItems.length - 1) {
+        item.x += horizontalSpacing * 1.7;
+      }
+
       item.y = baseY - (item.height / 2);
 
       hitbox.x = item.x + (clip.x * item.scale.x);
@@ -279,18 +304,27 @@ class RetroMainMenu extends MusicBeatState
       hitbox.width = clip.width * item.scale.x;
       hitbox.height = clip.height * item.scale.y;
 
-      currentX += clip.width + horizontalSpacing;
+      // Avança o X usando o espaçamento calculado
+      currentX += clip.width + finalSpacing;
     }
 
+    // CÂMERA E LIMITES
     if (menuItems.length > 0)
     {
       var firstItem = menuItems[0];
       var lastItem = menuItems[menuItems.length - 1];
 
-      minCamX = (FlxG.width / 2) + camMinOffset;
-      maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
+      // Se os itens couberem na tela (finalSpacing > horizontalSpacing), travamos a câmera no centro para evitar "dança" desnecessária.
+      if (finalSpacing > horizontalSpacing) {
+          var screenCenter = FlxG.width / 2;
+          minCamX = screenCenter;
+          maxCamX = screenCenter;
+      } else {
+          minCamX = (FlxG.width / 2) + camMinOffset;
+          maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
 
-      if (maxCamX < minCamX) maxCamX = minCamX;
+          if (maxCamX < minCamX) maxCamX = minCamX;
+      }
     }
   }
 
@@ -498,7 +532,7 @@ class RetroMainMenu extends MusicBeatState
 
     var targetState = state;
     var tweenCallback:Dynamic = function(_:FlxTween) {
-      if (FlxG.mouse.cursor != null && !ControlsHandler.usingExternalInputDevice) FlxG.mouse.visible = false;
+      if (FlxG.mouse.cursor != null) FlxG.mouse.visible = false;
       FlxG.switchState(targetState);
     };
 
