@@ -1,0 +1,74 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+
+class spectreNote extends Module {
+	public function new() {
+		super("spectre");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "spectre" ) {
+			var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			event.note.x += 15;
+			event.note.yOffset += -68;
+
+			event.note.frames = Paths.getSparrowAtlas( 'Notes_Spectre' );
+			if (downscroll) {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)', 24, false );
+      } else {
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+      }
+
+			var spectreNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						spectreNote = "purpleScroll";
+					case 1:
+						spectreNote = "blueScroll";
+					case 2:
+						spectreNote = "greenScroll";
+					case 3:
+						spectreNote = "redScroll";
+				}
+
+			event.note.animation.play( spectreNote, true );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.kind == "spectre" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}

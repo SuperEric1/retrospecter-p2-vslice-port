@@ -70,17 +70,6 @@ class SpectralSong extends Song
 
   }
 
-  function fixRetroPos() {
-    var retro = playStage.getDad();
-    var retroOGPos:Array<Float> = [
-      retro.x,
-      retro.y
-    ];
-
-    retro.x = retroOGPos[0];
-    retro.y = retroOGPos[1] + 125; // isso é estranho
-  }
-
   function buildProps(hide:Bool = false) {
     bgFlames = playStage.getNamedProp("flames");
     if (hide) {
@@ -222,7 +211,7 @@ class SpectralSong extends Song
     if (PlayState.instance == null) return;
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
-    
+
     if (isModcharting) {
       playState.camHUD.angle = Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0) * 3;
 
@@ -286,7 +275,6 @@ class SpectralSong extends Song
     isModcharting = false;
     playState.camHUD.angle = 0;
     playState.playerStrumline.y = ogStrumY;
-    fixRetroPos();
   }
 
   function onCreate(event:ScriptEvent):Void
@@ -298,7 +286,6 @@ class SpectralSong extends Song
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
     ogStrumY = playState.playerStrumline.y;
-    fixRetroPos();
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

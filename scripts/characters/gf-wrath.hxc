@@ -21,11 +21,11 @@ class GirlfriendWrathCharacter extends SparrowCharacter
   var speaker:StageProp;
   var refreshed:Bool = false;
 
-  var songOffsets:haxe.ds.StringMap<String, Array<Float>> = [
-    "satisfracture" => [-330, -45],
-    "spectral" => [-330, -45],
-    "apocalyptro" => [-440, -230],
-    "catastrofiend" => [-365, -100],
+  var stageOffsets:haxe.ds.StringMap<String, Array<Float>> = [
+    "wrath_phase1" => [-330, -45],
+    "wrath_phase2" => [-330, -45],
+    "wrath_phase3" => [-440, -230],
+    "wrath_phase4" => [-365, -100],
   ];
   var defaultOffset:Array<Float> = [0, 0]; // Fallback
 
@@ -52,8 +52,8 @@ class GirlfriendWrathCharacter extends SparrowCharacter
 
     speaker.visible = this.visible;
     speaker.alpha = this.alpha;
-    var currentSong:String = PlayState.instance.currentSong.id.toLowerCase();
-    var offset:Array<Float> = songOffsets.exists(currentSong) ? songOffsets.get(currentSong) : defaultOffset;
+    var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+    var offset:Array<Float> = stageOffsets.exists(currentStage) ? stageOffsets.get(currentStage) : defaultOffset;
 
     speaker.x = this.x + offset[0];
     speaker.y = this.y + offset[1];

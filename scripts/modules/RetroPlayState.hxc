@@ -126,6 +126,7 @@ class RetroPlayState extends Module {
     var hurtNotes = [
       'poison', 'izzyNote', 'chain', 'autoChain',
       'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
+      'spectre',
       'none'
     ];
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
@@ -170,7 +171,7 @@ class RetroPlayState extends Module {
       lockStrum(noteDir);
       if (k == 'autoChain') chainText.visible = true;
 
-      PlayState.instance.health -= event.healthChange;
+      //PlayState.instance.health -= event.healthChange;
       event.doesNotesplash = false;
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
@@ -185,7 +186,7 @@ class RetroPlayState extends Module {
       playBeamAnimation(noteDir);
       FlxG.sound.play(Paths.sound('noteSounds/hydra'));
 
-      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
@@ -199,7 +200,7 @@ class RetroPlayState extends Module {
 
       poisonAmount++;
       updatePoisonCounter();
-      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
@@ -246,7 +247,7 @@ class RetroPlayState extends Module {
         return;
       }
 
-      PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
       if (solidCameraSprite != null) {
@@ -267,6 +268,11 @@ class RetroPlayState extends Module {
 
       scrambleStrumline();
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
+    if (k == 'spectre') {
+      FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
+      event.doesNotesplash = false;
     }
   } // fim do if de checagem que é nota do player
 
@@ -851,17 +857,19 @@ class RetroPlayState extends Module {
   }
 
   function updatePoisonCounter() {
-    var songName:String = PlayState.instance?.currentChart?.songName?.toLowerCase();
+    var oppId:String = PlayState.instance.currentStage.getDad().characterId.toLowerCase();
     if (poisonSprite != null) {
       poisonSprite.visible = true;
       poisonSprite.active = true;
-      switch (songName) {
-        case "spectral":
+      switch (oppId) {
+        case "phase2":
           poisonSprite.animation.play('P2', true);
-        case "apocalyptro":
+        case "zerktro-freeplay":
+          poisonSprite.animation.play('P2', true);
+        case "phase3":
           poisonSprite.animation.play('P3', true);
           poisonTextYOffset = 4;
-        case "catastrofiend":
+        case "phase4":
           poisonSprite.animation.play('P4', true);
           poisonSpriteYOffset = -7;
           poisonTextYOffset = 8;
@@ -1003,6 +1011,21 @@ class RetroPlayState extends Module {
   {
     super.onGameOver(event);
 
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    //var value = event.eventData.value;
+
+    switch (eventKind) {
+      case "RetroChangeCharacter":
+        updatePoisonCounter(); // update poison counter sprite.
+
+      default:
+    }
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
@@ -1192,7 +1215,7 @@ class RetroPlayState extends Module {
       FunkinMemory.permanentCacheTexture(Paths.image('Phase4/dragonball'));
       FunkinMemory.permanentCacheTexture(Paths.image('Phase4/insatianVoid'));
       FunkinMemory.permanentCacheTexture(Paths.image('Phase4/nftf'));
-      
+
 			hasCachedTextures = true;
     }
   }

@@ -38,6 +38,11 @@ class BFWrathCharacter extends MultiSparrowCharacter
           return;
         case "Fake Note":
           return;
+        case "spectre":
+          return;
+        case "GF Sing":
+          PlayState.instance.currentStage.getGirlfriend().animation.play('cheer');
+          return;
       }
     }
     super.onNoteHit(event);

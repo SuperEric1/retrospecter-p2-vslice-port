@@ -40,9 +40,14 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "Fake Note":
           return;
-        case "Hey!": // this is in extirpatient's chart, it's a single note during the sonic section
+        case "spectre":
+          return;
+        case "Hey!": // this is in some charts, it's an animation note
           this.animation.finished = true;
           this.playAnimation('hey', true, true);
+          return;
+        case "GF Sing": // this is in ectospasm, it's an animation note
+          PlayState.instance.currentStage.getGirlfriend().animation.play('cheer');
           return;
       }
     }

@@ -13,11 +13,7 @@
     "previewStart": 0,
     "previewEnd": 15000,
     "songVariations": [],
-    "difficulties": [
-      "easy",
-      "normal",
-      "hard"
-    ],
+    "difficulties": ["easy", "normal", "hard"],
     "characters": {
       "player": "bf-retrospecter",
       "girlfriend": "gf-wrath",
@@ -28,7 +24,11 @@
     "stage": "wrath_phase2",
     "album": "phase2",
     "noteStyle": "retrospecter",
-    "ratings": {}
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
   },
   "timeFormat": "ms",
   "timeChanges": [
@@ -46,10 +46,5 @@
       ]
     }
   ],
-  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)",
-  "ratings": {
-    "easy": 0,
-    "normal": 0,
-    "hard": 0
-  }
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
 }

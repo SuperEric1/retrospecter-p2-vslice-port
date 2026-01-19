@@ -1,0 +1,45 @@
+{
+  "version": "2.2.0",
+  "songName": "Ectospasm",
+  "artist": "RetroSpecter & Kamex",
+  "charter": "Chubby & Lily-Clipee-Chan",
+  "looped": false,
+  "offsets": {
+    "instrumental": 0,
+    "altInstrumentals": {},
+    "vocals": {}
+  },
+  "playData": {
+    "previewStart": 0,
+    "previewEnd": 15000,
+    "songVariations": ["apocalypse"],
+    "difficulties": ["easy", "normal", "hard"],
+    "characters": {
+      "player": "bf-retrospecter",
+      "girlfriend": "gf-wrath",
+      "opponent": "phase2",
+      "instrumental": "",
+      "altInstrumentals": ["apocalypse"]
+    },
+    "stage": "wrath_phase2",
+    "album": "phase2",
+    "noteStyle": "retrospecter",
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
+  },
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 212,
+      "n": 4,
+      "d": 4,
+      "bt": [4, 4, 4, 4]
+    }
+  ],
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
+}

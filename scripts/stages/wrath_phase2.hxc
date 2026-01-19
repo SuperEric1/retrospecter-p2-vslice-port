@@ -96,6 +96,10 @@ class WrathPhase2Stage extends Stage
   function fixRetroPos():Void
   {
     var retro = getDad();
+
+    var dadId = getDad().characterId.toLowerCase();
+    if (dadId != 'phase2') return;
+
     if (retro != null)
     {
       retro.y += 125; // isso é estranho
@@ -119,8 +123,6 @@ class WrathPhase2Stage extends Stage
 
     // Inicializar variáveis de cutscene
     hasPlayedInGameCutscene = false;
-    ogStrumY = PlayState.instance.playerStrumline.y;
-    fixRetroPos();
 
     if (hasCreatedStage) return;
 
@@ -303,7 +305,7 @@ class WrathPhase2Stage extends Stage
         else glowR2 = glowR;
       }
 
-      // Crystals (backgroundLevel > 1)
+      // Crystals
       for (i in 0...8) {
         var crystal = FunkinSprite.create(0, 0);
         crystal.loadSparrow('wrath/Crystals');
@@ -405,7 +407,7 @@ class WrathPhase2Stage extends Stage
       }
     }
 
-    hasCreatedStage = true;
+    //hasCreatedStage = true; // moving this to onSongLoaded to fix the overlay sprite
     PlayState.instance.refresh();
   }
 
@@ -444,6 +446,7 @@ class WrathPhase2Stage extends Stage
         });
 
       case CharacterType.DAD:
+        fixRetroPos();
         rim.angle = 90;
         //rim.threshold = 0.3;
 
@@ -465,17 +468,23 @@ class WrathPhase2Stage extends Stage
   {
     super.onSongLoaded(event);
 
+    if (ogStrumY == 0 || ogStrumY == null) ogStrumY = PlayState.instance.playerStrumline.y;
+
     // Overlay
-    overlay = FunkinSprite.create(0, 0);
-    overlay.loadTexture('wrath/wrath_overlay');
-    overlay.screenCenter();
-    overlay.scrollFactor.set(0.6, 0.6);
-    overlay.blend = 'screen';
-    overlay.y += -128;
-    overlay.x += 40;
-    //overlay.cameras = [PlayState.instance.camGame];
-    PlayState.instance.add(overlay);
-    PlayState.instance.refresh();
+    if (!hasCreatedStage) {
+      overlay = FunkinSprite.create(0, 0);
+      overlay.loadTexture('wrath/wrath_overlay');
+      overlay.screenCenter();
+      overlay.scrollFactor.set(0.6, 0.6);
+      overlay.blend = 'screen';
+      overlay.y += -128;
+      overlay.x += 40;
+      //overlay.cameras = [PlayState.instance.camGame];
+      PlayState.instance.add(overlay);
+      PlayState.instance.refresh();
+    }
+
+    hasCreatedStage = true;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -523,7 +532,7 @@ class WrathPhase2Stage extends Stage
         crystals[i].y += 50 * Math.sin(songPos + crystalFloatData[i][1]) * event.elapsed;
 
         // Move crystals after step 1536
-        if (Conductor.instance.currentStep >= 1536) {
+        if (Conductor.instance.currentStep >= 1536 && isSpectral) {
           crystals[i].x -= crystalFloatData[i][0] * event.elapsed;
           if (crystals[i].x <= -1000) {
             crystals[i].x = 2500;
@@ -652,7 +661,15 @@ class WrathPhase2Stage extends Stage
     hasPlayedInGameCutscene = true;
     isModcharting = false;
     PlayState.instance.camHUD.angle = 0;
-    PlayState.instance.playerStrumline.y = ogStrumY;
+    if (ogStrumY != null || ogStrumY != 0) PlayState.instance.playerStrumline.y = ogStrumY;
+
+    // Reset crystals positions
+    for (i in 0...8) {
+      var crystal = crystals[i];
+      if (crystal == null) continue;
+      crystal.x = crystalPos[i][0];
+      crystal.y = crystalPos[i][1];
+    }
     //FlxG.resetState(); // ummm no
   }
 

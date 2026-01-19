@@ -24,7 +24,11 @@
     "stage": "nightflaid",
     "album": "nightflaid",
     "noteStyle": "retrospecter",
-    "ratings": {}
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
   },
   "timeFormat": "ms",
   "timeChanges": [
@@ -37,10 +41,5 @@
       "bt": [4, 4, 4, 4]
     }
   ],
-  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)",
-  "ratings": {
-    "easy": 0,
-    "normal": 0,
-    "hard": 0
-  }
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
 }

@@ -276,7 +276,7 @@ class RetroGameUI extends Module {
     judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
     comboText.x = judgement.x + judgement.width;
 
-    if (noteScore) {
+    if (noteScore > 0) {
       score.text = PlayState.instance.songScore + noteScore;
     } else score.text = PlayState.instance.songScore;
 

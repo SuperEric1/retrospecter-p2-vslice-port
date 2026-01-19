@@ -13,11 +13,7 @@
     "previewStart": 0,
     "previewEnd": 15000,
     "songVariations": [],
-    "difficulties": [
-      "easy",
-      "normal",
-      "hard"
-    ],
+    "difficulties": ["easy", "normal", "hard"],
     "characters": {
       "album": "volume1",
       "player": "bf-wind",
@@ -29,7 +25,11 @@
     "stage": "wrath_phase4",
     "album": "phase4",
     "noteStyle": "retrospecter",
-    "ratings": {}
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
   },
   "timeFormat": "ms",
   "timeChanges": [
@@ -47,10 +47,5 @@
       ]
     }
   ],
-  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)",
-  "ratings": {
-    "easy": 0,
-    "normal": 0,
-    "hard": 0
-  }
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
 }

@@ -17,6 +17,7 @@ class wrathPhaseOneStage extends Stage
   }
 
   var overlay:StageProp;
+  var hasCreatedStage:Bool = false;
 
   function onCreate(event:ScriptEvent):Void
   {
@@ -46,11 +47,11 @@ class wrathPhaseOneStage extends Stage
     }
   }
 
-  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  public override function onSongLoaded(event:ScriptEvent):Void
   {
-    super.onCountdownStart(event);
+    super.onSongLoaded(event);
 
-    if (overlay == null) {
+    if (!hasCreatedStage) {
       // Overlay
       overlay = FunkinSprite.create(0, 0);
       overlay.loadTexture('wrath/wrath_overlay');
@@ -59,9 +60,12 @@ class wrathPhaseOneStage extends Stage
       overlay.blend = 'screen';
       overlay.y += -128;
       overlay.x += 40;
-      overlay.cameras = [PlayState.instance.camGame];
+      //overlay.cameras = [PlayState.instance.camGame];
       PlayState.instance.add(overlay);
+      PlayState.instance.refresh();
     }
+
+    hasCreatedStage = true;
   }
 
   public function onGameOver(event:ScriptEvent)

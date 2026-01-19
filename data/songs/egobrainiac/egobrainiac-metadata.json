@@ -13,11 +13,7 @@
     "previewStart": 0,
     "previewEnd": 15000,
     "songVariations": [],
-    "difficulties": [
-      "easy",
-      "normal",
-      "hard"
-    ],
+    "difficulties": ["easy", "normal", "hard"],
     "characters": {
       "player": "bf-retrospecter",
       "girlfriend": "gf-default",
@@ -28,7 +24,11 @@
     "stage": "pride",
     "album": "pride",
     "noteStyle": "retrospecter",
-    "ratings": {}
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
   },
   "timeFormat": "ms",
   "timeChanges": [
@@ -46,10 +46,5 @@
       ]
     }
   ],
-  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)",
-  "ratings": {
-    "easy": 2,
-    "normal": 3,
-    "hard": 4
-  }
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
 }
