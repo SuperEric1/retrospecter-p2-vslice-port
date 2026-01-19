@@ -3,6 +3,7 @@ import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
+import funkin.mobile.input.ControlsHandler;
 import funkin.util.HapticUtil;
 import flixel.util.FlxTimer;
 import flixel.FlxG;
