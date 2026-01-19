@@ -78,10 +78,7 @@ class EctospasmSong extends Song
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
   {
-    var hasBeatenThis = Save.instance.hasBeatenSong(this.id, null);
-    if (!hasBeatenThis) {
       return !Save.instance.hasBeatenSong(this.id, null);
-    } else return !Save.instance.hasBeatenSong(this.id, null, 'apocalypse');
   }
 
   public override function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String>
