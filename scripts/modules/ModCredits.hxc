@@ -4,7 +4,9 @@ import funkin.ui.credits.CreditsDataHandler;
 
 class RetroCredits extends Module {
 	public function new() {
-		super("RetroCredits");
+		super("RetroCredits", 1, {
+			state: CreditsState
+		});
 	}
 
 	public function onCreate(event:ScriptEvent) {

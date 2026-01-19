@@ -25,6 +25,7 @@ import funkin.Paths;
 import funkin.ui.FullScreenScaleMode;
 import funkin.ui.credits.CreditsState;
 import funkin.Preferences;
+import funkin.PlayerSettings;
 import flixel.math.FlxMath;
 import funkin.mobile.input.ControlsHandler;
 import funkin.ui.title.TitleState;
@@ -113,6 +114,8 @@ class RetroMainMenu extends MusicBeatState
 
     if (!overrideMusic) playMenuMusic();
 
+    if (FlxG.onMobile) addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
+
     persistentUpdate = true;
     persistentDraw = true;
 
@@ -171,7 +174,7 @@ class RetroMainMenu extends MusicBeatState
     setIdleState();
 
     camFollow.setPosition(FlxG.width * 0.8, baseY); //  FlxG.width / 2 + camMinOffset
-    resetCamera();
+    resetCamera(FlxG.onMobile ? true : false);
 
     var closeCallback:Dynamic = function(_:Dynamic) {
       resetCamera(false);
@@ -372,7 +375,7 @@ class RetroMainMenu extends MusicBeatState
 
     var targetScale:Float = isSelected ? 1.015 : 1.0;
     FlxTween.cancelTweensOf(item.scale);
-    FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.25, {ease: FlxEase.sineOut});
+    FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.35, {ease: FlxEase.sineOut});
 
     if (isSelected) {
       item.clipRect = null;
@@ -600,7 +603,7 @@ class RetroMainMenu extends MusicBeatState
 
     // MOUSE/TOUCH HANDLING
 
-    // var camMoving:Bool = (Math.abs(FlxG.camera.scroll.x - (camFollow.x - FlxG.width / 2)) > 1);
+    var camMoving:Bool = (Math.abs(FlxG.camera.scroll.x - (camFollow.x - FlxG.width / 2)) > 1);
 
     var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased || SwipeUtil.swipeAny;
     var currentMouseX:Float = FlxG.mouse.x;
@@ -670,11 +673,12 @@ class RetroMainMenu extends MusicBeatState
 
     // KEYBOARD/SWIPE HANDLING
 
-    var goLEFT = SwipeUtil.swipeLeft || FlxG.keys.justPressed.LEFT;
-    var goRIGHT = SwipeUtil.swipeRight || FlxG.keys.justPressed.RIGHT;
+    var goLEFT = SwipeUtil.swipeLeft || PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
+    var goRIGHT = SwipeUtil.swipeRight || PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
 
-    var doSELECT = FlxG.keys.justPressed.ENTER || FlxG.keys.justPressed.Z; // also select if we press enter
-    var goBACK = FlxG.keys.justPressed.BACKSPACE || FlxG.keys.justPressed.ESC;
+    var doSELECT = PlayerSettings.player1.controls.ACCEPT_P; // also select if we press enter
+    var goBACK = PlayerSettings.player1.controls.BACK_P;
+    var doIDLE = PlayerSettings.player1.controls.RESET_P;
 
     if (goLEFT || goRIGHT)
     {
@@ -701,6 +705,8 @@ class RetroMainMenu extends MusicBeatState
       hadInput = true;
       confirmSelection();
     }
+
+    if (doIDLE && !camMoving) setIdleState();
 
     if (goBACK) goBack();
 
