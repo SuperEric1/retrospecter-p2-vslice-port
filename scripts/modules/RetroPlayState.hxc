@@ -125,7 +125,7 @@ class RetroPlayState extends Module {
     // Notas que não contam pro score
     var hurtNotes = [
       'poison', 'izzyNote', 'chain', 'autoChain',
-      'sakuNote', 'Hydra', 'Fake Note',
+      'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
       'none'
     ];
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
@@ -201,6 +201,40 @@ class RetroPlayState extends Module {
       updatePoisonCounter();
       PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
+      event.doesNotesplash = false;
+      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
+    if (k == 'scytheNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      var fullHealth = getHealthPercent(100);
+      var halfHealth = getHealthPercent(65);
+      var baseDamage:Float = Constants.HEALTH_MAX / 2;
+      var minDamage:Float = baseDamage * 0.2;
+      var nearDeathTarget:Float = Constants.HEALTH_MAX * 0.4;
+
+      if (fullHealth > halfHealth) {
+        PlayState.instance.health -= baseDamage;
+      } else {
+        // Se tiver menos de 50% (ou exatamente 50%)
+        // Calculamos o dano necessário para chegar no "nearDeathTarget"
+        var damageToApply:Float = fullHealth - nearDeathTarget;
+
+        // Se o dano calculado for menor que o mínimo, usamos o mínimo
+        // Isso garante que se ele já estiver quase morrendo, o minDamage o matará
+        // No entanto, se o jogador estiver no modo practice, não vamos aplicar dano.
+        if (damageToApply < minDamage) {
+          damageToApply = !PlayState.instance.isPracticeMode ? minDamage : 0;
+        }
+
+        PlayState.instance.health -= damageToApply;
+      }
+      FlxG.sound.play(Paths.sound('noteSounds/Nightflaid'));
       event.doesNotesplash = false;
       if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
@@ -867,6 +901,10 @@ class RetroPlayState extends Module {
 		}
   }
 
+  function getHealthPercent(percent:Float):Void {
+    return percent / 100.0 * Constants.HEALTH_MAX;
+  }
+
   function onSongRetry(event:ScriptEvent)
 	{
 	  super.onSongRetry(event);
@@ -1110,6 +1148,7 @@ class RetroPlayState extends Module {
     isDrugged = false;
 
     if (!hasCachedTextures) {
+      // Notes
 			FunkinMemory.permanentCacheTexture(Paths.image('hollowNotes'));
 			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_down'));
 			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_up'));
@@ -1119,6 +1158,19 @@ class RetroPlayState extends Module {
 			FunkinMemory.permanentCacheTexture(Paths.image('strumChains'));
 			FunkinMemory.permanentCacheTexture(Paths.image('HydraNotes'));
 			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam'));
+			FunkinMemory.permanentCacheTexture(Paths.image('scytheNotes'));
+			FunkinMemory.permanentCacheTexture(Paths.image('HeartNotes'));
+
+      // Main menu
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/credits'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst'));
+
+      // Phase 2 - Spectral
+      FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals'));
 
       // Phase 3 - Apocalyptro
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));
@@ -1135,6 +1187,12 @@ class RetroPlayState extends Module {
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_M'));
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_L'));
       FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_R'));
+
+      // Phase 4 - Catastrofiend
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/dragonball'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/insatianVoid'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/nftf'));
+      
 			hasCachedTextures = true;
     }
   }

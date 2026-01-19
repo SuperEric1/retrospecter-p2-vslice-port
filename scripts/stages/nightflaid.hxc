@@ -1083,7 +1083,7 @@ class NightflaidStage extends Stage
       dad.y = ogNfY;
       PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
       PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getDad().cameraFocusPoint.y, 0.1, FlxEase.circOut);
-      PlayState.instance.opponentStrumline.visible = true;
+      //PlayState.instance.opponentStrumline.visible = true;
       FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       FlxTween.tween(PlayState.instance.healthBar, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       FlxTween.tween(PlayState.instance.iconP1, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
@@ -1120,15 +1120,17 @@ class NightflaidStage extends Stage
       FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x + 500.0}, 0.5, {ease: FlxEase.quadIn});
     }
 
-    FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, onComplete: function(twn:FlxTween) {
+    FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, /*onComplete: function(twn:FlxTween) {
       PlayState.instance.opponentStrumline.visible = false;
-    }});
+    }*/});
     FlxTween.tween(PlayState.instance.healthBar, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
     FlxTween.tween(PlayState.instance.iconP1, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
-    FlxTween.tween(PlayState.instance.iconP2, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+    FlxTween.tween(PlayState.instance.iconP2, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, onComplete: function(twn:FlxTween) {
+      PlayState.instance.iconP2.color = -1;
+    }});
 
     // Update health bar colors to white
-    FlxTween.color(PlayState.instance.iconP2, 0.5, PlayState.instance.iconP2.color, -1, { ease: FlxEase.circOut });
+    // FlxTween.color(PlayState.instance.iconP2, 0.5, PlayState.instance.iconP2.color, -1, { ease: FlxEase.circOut });
     retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
 
     // After animation completes, switch character and reset
@@ -1263,45 +1265,6 @@ class NightflaidStage extends Stage
       default:
     }
   }
-
-  /*override public function onSongEvent(event:SongEventScriptEvent):Void
-  {
-    super.onSongEvent(event);
-
-    if (event.eventData.eventKind == "FocusCamera")
-    {
-      var value = event.eventData.value;
-      var step = Conductor.instance.currentStep;
-      // Dynamic camera side swapping between steps 1664-2944
-      if (!qe) return;
-
-      var currentStep = Conductor.instance.currentStep;
-      if (currentStep < 1664 || currentStep >= 2944) return;
-
-      // Track which side should be lit based on camera focus
-      switch (Std.parseInt(value.char)) {
-        case 0:
-          if (!dd) {
-            dd = true;
-            pp = false;
-            // Swap sides and update colors
-            // triggerNightflaidSwapSides('', '');
-            // triggerNightflaidColorTweenLeftOnly(colorr, 0.3);
-            // triggerNightflaidColorTweenRightOnly('0d0d0d', 0.3);
-          }
-        case 1:
-          if (!pp) {
-            pp = true;
-            dd = false;
-            // Swap sides and update colors
-            // triggerNightflaidSwapSides('', '');
-            // triggerNightflaidColorTweenRightOnly(colorr, 0.3);
-            // triggerNightflaidColorTweenLeftOnly('0d0d0d', 0.3);
-          }
-        default:
-      }
-    }
-  }*/
 
 }
 

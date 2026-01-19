@@ -266,7 +266,8 @@ class WrathPhase4Stage extends Stage
     }
 
     // fix camera at the start
-    PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getBoyfriend().y + 8000, 0.1, FlxEase.circOut);
+    //PlayState.instance.camGame.snapToTarget();
+    PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getBoyfriend().y + 8000, 0);
 
     if (gf != null) {
       ground_M.x = gf.x + gf.width/2 - ground_M.width/2 + 380;
@@ -639,7 +640,7 @@ class WrathPhase4Stage extends Stage
     bfPositionY = a;
     var dad = getDad();
     if (dad != null) {
-      dad.y = bfPositionY - 2200;
+      dad.y = bfPositionY - 2300;
       dad.cameraFocusPoint.y = bfPositionY;
     }
   }
@@ -647,6 +648,7 @@ class WrathPhase4Stage extends Stage
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance == null) return;
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 

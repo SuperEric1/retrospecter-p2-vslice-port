@@ -25,7 +25,6 @@ class WrathPhase3 extends Stage
     var debrisSpread:Float = 600;
     var debrisResetY:Float = 800;
     var debrisXCenter:Float = 600;
-    var defaultCamZoom:Float = 1;
     var lava_FG_Y:Float = 950;
     var debugText:FlxText;
     var hasCreatedStage:Bool = false;
@@ -347,7 +346,6 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_glow, 'FG_glow');
         spriteMap.set('FG_glow', FG_glow);
 
-        defaultCamZoom = 1.0; // Ajustar conforme necessário
         hasCreatedStage = true;
     }
 
@@ -684,8 +682,7 @@ class WrathPhase3 extends Stage
             case 1:
                 if (hasErupted) return; // pra nao subir de novo se o jogador reiniciar a musica ou morrer
                 inEruption = !inEruption;
-                var duration:Float = 25;
-                if (Math.isNaN(duration)) duration = 20;
+                var duration:Float = 60;
                 // var targetY = inEruption ? (lava_FG_Y - 1000) : lava_FG_Y;
                 // FlxTween.tween(lava_FG, {y: targetY}, duration, {ease: FlxEase.linear});
                 var targetY = 790; // baixar o y

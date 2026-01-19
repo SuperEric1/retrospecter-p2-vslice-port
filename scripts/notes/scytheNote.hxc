@@ -1,0 +1,65 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+
+class scytheNote extends Module {
+	public function new() {
+		super("scytheNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "scytheNote" )
+			{
+			event.note.x += -79;
+			event.note.yOffset += -74;
+
+			event.note.frames = Paths.getSparrowAtlas( 'scytheNotes' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, true );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, true );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, true );
+			event.note.animation.addByPrefix( 'redScroll', 'Right', 24, true );
+
+			var scytheNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						scytheNote = "purpleScroll";
+					case 1:
+						scytheNote = "blueScroll";
+					case 2:
+						scytheNote = "greenScroll";
+					case 3:
+						scytheNote = "redScroll";
+				}
+
+			event.note.animation.play( scytheNote, true );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.kind == "scytheNote" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}
