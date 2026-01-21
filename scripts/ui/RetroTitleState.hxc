@@ -69,6 +69,7 @@ class RetroTitleState extends MusicBeatState
   var mainCamera:FlxCamera;
 
   // Background system
+  var startPoint = FullScreenScaleMode.gameCutoutSize.x / 2; // where the X position of the sprites will start
   var bgSprites:Array<FlxSprite> = [];
   var currentBgConfig:BackgroundConfig = null;
   var backgrounds:Array<BackgroundConfig> = [];
@@ -369,6 +370,7 @@ class RetroTitleState extends MusicBeatState
       bumpLogo();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
+        
         moveToMainMenu();
       });
     }
@@ -407,6 +409,7 @@ class RetroTitleState extends MusicBeatState
 
   function moveToMainMenu():Void
   {
+    FullScreenScaleMode.removeCutouts();
     if (attractTimer != null)
     {
       attractTimer.cancel();
@@ -825,21 +828,21 @@ class RetroTitleState extends MusicBeatState
     bg.scrollFactor.set(0, 0);
     addBg(bg);
 
-    var m = new FlxSprite(-30, 170).loadGraphic(Paths.image('Phase4/titlestate/Final_BGMountains'));
+    var m = new FlxSprite(startPoint + -30, 170).loadGraphic(Paths.image('Phase4/titlestate/Final_BGMountains'));
     m.scale.set(0.7, 0.7);
     m.updateHitbox();
     m.scrollFactor.set(0, 0);
     m.y += toAdd;
     addBg(m);
 
-    var iz = new FlxSprite(400, -90).loadGraphic(Paths.image('Phase4/titlestate/izzy'));
+    var iz = new FlxSprite(startPoint + 400, -90).loadGraphic(Paths.image('Phase4/titlestate/izzy'));
     iz.scale.set(0.666, 0.666);
     iz.updateHitbox();
     iz.scrollFactor.set(0, 0);
     iz.y += toAdd;
     addBg(iz);
 
-    var cloud = new FlxSprite(700, -90);
+    var cloud = new FlxSprite(startPoint + 700, -90);
     cloud.frames = Paths.getSparrowAtlas('Phase4/titlestate/clouds');
     cloud.scale.set(0.71, 0.71);
     cloud.animation.addByPrefix("idle", "Symbol 9", 24, true);
@@ -847,7 +850,7 @@ class RetroTitleState extends MusicBeatState
     cloud.y += toAdd;
     addBg(cloud);
 
-    var portal = new FlxSprite(980, 260);
+    var portal = new FlxSprite(startPoint + 980, 260);
     portal.frames = Paths.getSparrowAtlas('Phase4/titlestate/insatianVoid');
     portal.scale.set(0.71, 0.71);
     portal.animation.addByPrefix("idle", "void", 60, true);
@@ -855,7 +858,7 @@ class RetroTitleState extends MusicBeatState
     portal.y += toAdd;
     addBg(portal);
 
-    var smok = new FlxSprite(-225, -370);
+    var smok = new FlxSprite(startPoint + -225, -370);
     smok.frames = Paths.getSparrowAtlas('Phase4/titlestate/smoke');
     smok.scale.set(0.666, 0.666);
     smok.animation.addByPrefix("idle", "aaaaa", 6, true);
@@ -863,14 +866,14 @@ class RetroTitleState extends MusicBeatState
     smok.y += toAdd;
     addBg(smok);
 
-    var d = new FlxSprite(-60, 150).loadGraphic(Paths.image('Phase4/titlestate/doz'));
+    var d = new FlxSprite(startPoint + -60, 150).loadGraphic(Paths.image('Phase4/titlestate/doz'));
     d.scale.set(0.666, 0.666);
     d.updateHitbox();
     d.scrollFactor.set(0, 0);
     d.y += toAdd;
     addBg(d);
 
-    var face = new FlxSprite(-30, 360);
+    var face = new FlxSprite(startPoint + -30, 360);
     face.frames = Paths.getSparrowAtlas('Phase4/titlestate/faces');
     face.scale.set(0.5, 0.5);
     face.animation.addByPrefix("idle", "Final_DozircYard", 24, true);
@@ -878,7 +881,7 @@ class RetroTitleState extends MusicBeatState
     face.y += toAdd;
     addBg(face);
 
-    var lll = new FlxSprite(-190, 450);
+    var lll = new FlxSprite(startPoint + -190, 450);
     lll.frames = Paths.getSparrowAtlas('Phase4/titlestate/lake');
     lll.scale.set(0.666, 0.666);
     lll.animation.addByPrefix("idle", "Final_SoulRiver", 24, true);
@@ -953,7 +956,7 @@ class RetroTitleState extends MusicBeatState
     phase4_cdd.y += toAdd;
     addBg(phase4_cdd);
 
-    var beee = new FlxSprite(270, -200);
+    var beee = new FlxSprite(startPoint + 270, -200);
     beee.frames = Paths.getSparrowAtlas('Phase4/titlestate/bee');
     beee.scale.set(0.666, 0.666);
     beee.animation.addByPrefix("idle", "Symbol 1", 24, true);
@@ -982,7 +985,7 @@ class RetroTitleState extends MusicBeatState
   {
     // Helper function para criar sprites
     var createNightflaidSprite = function(spr:String):FlxSprite {
-      var bg = new FlxSprite(-112, 0);
+      var bg = new FlxSprite(startPoint + -112, 0);
       if (spr != '') {
         bg.loadGraphic(Paths.image('nightflaid/' + spr));
         bg.scale.set(0.27, 0.27);
@@ -1029,11 +1032,11 @@ class RetroTitleState extends MusicBeatState
     createNightflaidSprite('glow');
 
     // Raios de luz
-    nightflaid_leftRay = new FlxSprite(-68, 110);
+    nightflaid_leftRay = new FlxSprite(startPoint + -68, 110);
     nightflaid_leftRay.loadGraphic(Paths.image('nightflaid/lightray'));
     addBg(nightflaid_leftRay);
 
-    nightflaid_rightRay = new FlxSprite(1122, 110);
+    nightflaid_rightRay = new FlxSprite(startPoint + 1122, 110);
     nightflaid_rightRay.loadGraphic(Paths.image('nightflaid/lightray'));
     nightflaid_rightRay.flipX = true;
     addBg(nightflaid_rightRay);
