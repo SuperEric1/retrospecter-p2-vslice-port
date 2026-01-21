@@ -27,6 +27,7 @@ import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
 import openfl.media.Video;
 import openfl.net.NetStream;
+import funkin.Preferences;
 import funkin.Conductor;
 import funkin.util.Constants;
 import funkin.ui.freeplay.FreeplayState;
@@ -36,6 +37,9 @@ import funkin.util.SwipeUtil;
 import flixel.FlxCamera;
 import flixel.math.FlxMath;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+import openfl.filters.ShaderFilter;
 
 import funkin.ui.title.TitleState;
 
@@ -64,6 +68,8 @@ class RetroTitleState extends MusicBeatState
   var logoTweens:Array<FlxTween> = [];
   var teamLogoTweens:Array<FlxTween> = [];
 
+  var defaultFlameColor:FlxColor = 0x61FF88;
+
   // Câmeras
   var bgCam:FlxCamera;
   var mainCamera:FlxCamera;
@@ -73,6 +79,12 @@ class RetroTitleState extends MusicBeatState
   var bgSprites:Array<FlxSprite> = [];
   var currentBgConfig:BackgroundConfig = null;
   var backgrounds:Array<BackgroundConfig> = [];
+  // Phase3 specific
+  var sineValue:Float = 0;
+  var ground_L:FlxSprite;
+  var ground_R:FlxSprite;
+  var ground_M:FlxSprite;
+  var bubbles:FlxSprite;
   // Phase4 specific
   var phase4_s3:FlxSprite;
   var phase4_cdd:FlxSprite;
@@ -81,6 +93,16 @@ class RetroTitleState extends MusicBeatState
   // Wrath specific
   var wrath_groundGlow:FlxSprite;
   var wrath_glowsSpots:Array<FlxSprite> = [];
+  // Phase 2 specific
+  var runeL:FlxSprite;
+  var runeR:FlxSprite;
+  var bnnuy:FlxSprite;
+  var bnnuyGlow:FlxSprite;
+  var flames = null;
+  var flamesglow = null;
+  var groundGlow = null;
+  var rocksGlow = null;
+  var rocksGlowLeft = null;
   // Nightflaid specific
   var nightflaid_redlights:FlxSprite;
   var nightflaid_leftRay:FlxSprite;
@@ -139,15 +161,31 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "wrath",
       musicTrack: "Wrath",
-      flameColor: 0x61FF88,
+      flameColor: defaultFlameColor,
       bgZoom: 0.685
+    });
+
+    // Phase 2
+    backgrounds.push({
+      id: "phase2",
+      musicTrack: "Wrath",
+      flameColor: defaultFlameColor,
+      bgZoom: 0.685
+    });
+
+    // Phase 3
+    backgrounds.push({
+      id: "phase3",
+      musicTrack: "freakyMenu",
+      flameColor: defaultFlameColor,
+      bgZoom: 1.0
     });
 
     // Phase 4
     backgrounds.push({
       id: "phase4",
       musicTrack: "freakyMenu",
-      flameColor: 0x61FF88,
+      flameColor: defaultFlameColor,
       bgZoom: 1.001
     });
 
@@ -157,6 +195,14 @@ class RetroTitleState extends MusicBeatState
       musicTrack: "Nightflaid",
       flameColor: 0xFF001F,
       bgZoom: 1.0
+    });
+
+    // Pride
+    backgrounds.push({
+      id: "pride",
+      musicTrack: "Pride",
+      flameColor: 0x36FFE9,
+      bgZoom: 0.45
     });
   }
 
@@ -180,14 +226,21 @@ class RetroTitleState extends MusicBeatState
 
     if (currentBgConfig != null)
     {
+      bgCam.zoom = currentBgConfig.bgZoom;
       switch (currentBgConfig.id)
       {
         case "wrath":
           loadWrathBackground();
+        case "phase2":
+          loadPhase2Background();
+        case "phase3":
+          loadPhase3Background();
         case "phase4":
           loadPhase4Background();
         case "nightflaid":
           loadNightflaidBackground();
+        case "pride":
+          loadPrideBackground();
       }
     }
 
@@ -209,7 +262,7 @@ class RetroTitleState extends MusicBeatState
     logoRetro.visible = false;
     logoRetro.cameras = [mainCamera];
 
-    var color = currentBgConfig != null ? currentBgConfig.flameColor : 0x61FF88;
+    var color = currentBgConfig != null ? currentBgConfig.flameColor : defaultFlameColor;
 
     upFire = new FlxSprite(0, 0);
     upFire.frames = Paths.getSparrowAtlas('ui/flames');
@@ -219,7 +272,7 @@ class RetroTitleState extends MusicBeatState
     upFire.y += logoYOff;
     upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
     upFire.updateHitbox();
-    upFire.color = 0x61FF88; // Cor do upfire muda depois de pular a intro e mostrar o bg.
+    upFire.color = defaultFlameColor; // Cor do upfire muda depois de pular a intro e mostrar o bg.
     upFire.visible = false;
     upFire.cameras = [mainCamera];
 
@@ -370,7 +423,7 @@ class RetroTitleState extends MusicBeatState
       bumpLogo();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
-        
+
         moveToMainMenu();
       });
     }
@@ -386,6 +439,37 @@ class RetroTitleState extends MusicBeatState
     if (currentBgConfig != null && bgCam != null) {
       var lerpSpeed:Float = FlxMath.bound(elapsed * 3.125, 0, 1);
       bgCam.zoom = FlxMath.lerp(bgCam.zoom, currentBgConfig.bgZoom, lerpSpeed);
+    }
+
+    // Phase 2
+    if (currentBgConfig != null && currentBgConfig.id == "phase2")
+    {
+      var lerpSpeed:Float = FlxMath.bound(1 - (elapsed * 3.125), 0, 1);
+      if (runeR != null)
+      {
+        bnnuyGlow.alpha -= lerpSpeed/100;
+        runeL.alpha -= lerpSpeed/100;
+        runeR.alpha -= lerpSpeed/100;
+      }
+    }
+
+    // Phase 3
+    if (currentBgConfig != null && currentBgConfig.id == "phase3")
+    {
+      sineValue += elapsed;
+      for (ground in [ground_L, ground_R, ground_M, bubbles])
+      {
+        if (ground == null) continue;
+        var name:String = 'ground_L';
+        if(ground == ground_R) name = 'ground_R';
+        else if(ground == ground_M) name = 'ground_M';
+        else if(ground == bubbles) name = 'bubbles';
+
+        var offX:Float = Math.sin(sineValue * Math.PI * sineSpeed[name].x + sineAdd[name].x) * sineMult[name].x;
+        var offY:Float = Math.cos(sineValue * Math.PI * sineSpeed[name].y + sineAdd[name].y) * sineMult[name].y;
+        ground.x = groundPositions[name].x + offX;
+        ground.y = groundPositions[name].y + offY;
+      }
     }
 
     // Phase4 - Fade das janelas
@@ -409,7 +493,6 @@ class RetroTitleState extends MusicBeatState
 
   function moveToMainMenu():Void
   {
-    FullScreenScaleMode.removeCutouts();
     if (attractTimer != null)
     {
       attractTimer.cancel();
@@ -532,6 +615,18 @@ class RetroTitleState extends MusicBeatState
     // Zoom do stage (descartado por não ter no original)
     //if (bgCam != null && currentBgConfig != null) bgCam.zoom += 0.0025; // 0.015
 
+    // Phase 2 - Runas
+    if (currentBgConfig != null && currentBgConfig.id == "phase2" && skippedIntro)
+    {
+      if (Preferences.flashingLights) {
+        flamesglow.alpha = 1;
+        FlxTween.cancelTweensOf(flamesglow);
+        FlxTween.tween(flamesglow, {alpha: 0}, 0.7, {ease: FlxEase.linear});
+      }
+      runeL.alpha = 1;
+			runeR.alpha = 1;
+			bnnuyGlow.alpha = 1;
+    }
     // Phase4 - Luzes coloridas
     if (currentBgConfig != null && currentBgConfig.id == "phase4" && skippedIntro)
     {
@@ -669,7 +764,7 @@ class RetroTitleState extends MusicBeatState
       remove(team);
       team.visible = false;
       logoRetro.visible = true;
-      upFire.color = currentBgConfig != null ? currentBgConfig.flameColor : 0x61FF88;
+      upFire.color = currentBgConfig != null ? currentBgConfig.flameColor : defaultFlameColor;
       upFire.visible = true;
       backFire.visible = true;
       glow.visible = true;
@@ -735,8 +830,8 @@ class RetroTitleState extends MusicBeatState
     caveL.loadGraphic(Paths.image('wrath/wrath_cave'));
     caveL.screenCenter();
     caveL.scrollFactor.set(0.8, 0.8);
-    caveL.x += -150;
-    caveL.y += 20;
+    caveL.x += -130;
+    //caveL.y += 10;
     caveL.flipX = true;
     caveL.scale.set(0.75, 0.75);
     addBg(caveL);
@@ -745,7 +840,7 @@ class RetroTitleState extends MusicBeatState
     caveR.loadGraphic(Paths.image('wrath/wrath_cave'));
     caveR.screenCenter();
     caveR.scrollFactor.set(0.8, 0.8);
-    caveR.x += 150;
+    caveR.x += 130;
     caveR.y = caveL.y;
     caveR.scale.set(0.75, 0.75);
     addBg(caveR);
@@ -815,6 +910,324 @@ class RetroTitleState extends MusicBeatState
     addBg(glowGlow);
 
     wrath_glowsSpots.push(glowGlow);
+  }
+
+  function loadPhase2Background() {
+    var bg = new FlxSprite().loadGraphic(Paths.image('wrath/wrath_sky'));
+    bg.screenCenter();
+    bg.scrollFactor.set(0.5, 0.5);
+    addBg(bg);
+
+    var vortex = new FlxSprite(0, 0);
+    vortex.frames = Paths.getSparrowAtlas('wrath/Vortex');
+    vortex.scale.set(1/0.5, 1/0.5);
+    vortex.updateHitbox();
+    vortex.scrollFactor.set(0.5, 0.5);
+    vortex.animation.addByPrefix('speeen', "Vortex", 24, true);
+    vortex.animation.play('speeen');
+    vortex.x += -100;
+    vortex.y += -750;
+    addBg(vortex);
+
+    var gates = new FlxSprite(0, 0);
+    gates.loadGraphic(Paths.image('wrath/wrath_gates'));
+    gates.screenCenter();
+    gates.scrollFactor.set(0.55, 0.55);
+    gates.x += 75;
+    gates.y += 100 - 20;
+    addBg(gates);
+
+
+    flames = new FlxSprite(0, 0);
+    flames.frames = Paths.getSparrowAtlas('wrath/flames_colorchange');
+    flames.scrollFactor.set(0.7, 0.7);
+    flames.animation.addByPrefix('greenFlame', "Symbol 1 Instanz 1", 24, true);
+    flames.scale.set(1.6, 1.5);
+    flames.screenCenter();
+    flames.x += -250;
+    flames.y += 350;
+    flames.animation.play('greenFlame');
+    // flames.shader = abberation;
+    addBg(flames);
+
+    flamesglow = new FlxSprite(0, 0);
+    flamesglow.frames = Paths.getSparrowAtlas('wrath/flames_colorchange');
+    flamesglow.scrollFactor.set(0.7, 0.7);
+    flamesglow.animation.addByPrefix('blueFlame', "Symbol 2 Instanz 1", 24, true);
+    flamesglow.scale.set(1.6, 1.5);
+    flamesglow.screenCenter();
+    flamesglow.x += -250;
+    flamesglow.y += 350;
+    flamesglow.animation.play('blueFlame');
+    // flamesglow.shader = abberation;
+    flamesglow.alpha = 0;
+    addBg(flamesglow);
+
+    var caveL = new FlxSprite(0, 0);
+    caveL.loadGraphic(Paths.image('wrath/wrath_cave'));
+    caveL.screenCenter();
+    caveL.scrollFactor.set(0.8, 0.8);
+    caveL.x += -317 + 300 - 100;
+    caveL.flipX = true;
+    caveL.scale.set(0.75, 0.75);
+    addBg(caveL);
+
+    var rL = new FlxSprite(0, 0);
+    rL.loadGraphic(Paths.image('wrath/runes/runes-left'));
+    rL.screenCenter();
+    rL.scrollFactor.set(0.8, 0.8);
+    rL.x += -317 + 300 - 670;
+    rL.y -= 115;
+    rL.flipX = true;
+    rL.scale.set(0.4, 0.4);
+    addBg(rL);
+
+    runeL = new FlxSprite(0, 0);
+    runeL.loadGraphic(Paths.image('wrath/runes/runeGlow-left'));
+    runeL.screenCenter();
+    runeL.scrollFactor.set(0.8, 0.8);
+    runeL.x += -317 + 300 - 670;
+    runeL.y -= 115;
+    runeL.flipX = true;
+    runeL.scale.set(0.4, 0.4);
+    addBg(runeL);
+
+    var caveR = new FlxSprite(0, 0);
+    caveR.loadGraphic(Paths.image('wrath/wrath_cave'));
+    caveR.screenCenter();
+    caveR.scrollFactor.set(0.8, 0.8);
+    caveR.x += 317 - 100 - 100;
+    caveR.scale.set(0.75, 0.75);
+    addBg(caveR);
+
+    var rR = new FlxSprite(0, 0);
+    rR.loadGraphic(Paths.image('wrath/runes/runes-right'));
+    rR.screenCenter();
+    rR.scrollFactor.set(0.8, 0.8);
+    rR.x += 750;
+    rR.y -= 50;
+    //caveL.y += 81 + 35;
+    rR.scale.set(0.4, 0.4);
+    addBg(rR);
+
+    runeR = new FlxSprite(0, 0);
+    runeR.loadGraphic(Paths.image('wrath/runes/runeGlow-right'));
+    runeR.screenCenter();
+    runeR.scrollFactor.set(0.8, 0.8);
+    runeR.x += 750;
+    runeR.y -= 50;
+    runeR.scale.set(0.4, 0.4);
+    addBg(runeR);
+
+    bnnuy = new FlxSprite(1330, 550);
+    bnnuy.loadGraphic(Paths.image('wrath/bunny'));
+    bnnuy.scrollFactor.set(0.8, 0.8);
+    bnnuy.scale.set(0.6, 0.6);
+    bnnuy.updateHitbox();
+    addBg(bnnuy);
+
+    bnnuyGlow = new FlxSprite(1330, 550);
+    bnnuyGlow.loadGraphic(Paths.image('wrath/bunnyGlow'));
+    bnnuyGlow.scrollFactor.set(0.8, 0.8);
+    bnnuyGlow.scale.set(0.6, 0.6);
+    bnnuyGlow.updateHitbox();
+    addBg(bnnuyGlow);
+
+    var ground = new FlxSprite(0, 0);
+    ground.frames = Paths.getSparrowAtlas('wrath/ground');
+    ground.screenCenter();
+    ground.animation.addByPrefix('green', "green", 0, false);
+    ground.active = false;
+    ground.x += 0;
+    ground.y += 450;
+    ground.scale.set(0.6, 0.6);
+    ground.animation.play('green');
+    addBg(ground);
+
+    groundGlow = new FlxSprite(0, 0);
+    groundGlow.frames = Paths.getSparrowAtlas('wrath/ground');
+    groundGlow.screenCenter();
+    groundGlow.animation.addByPrefix('green', "green", 0, false);
+    groundGlow.animation.addByPrefix('cyan', "cyan", 0, false);
+    groundGlow.active = false;
+    groundGlow.x += 0;
+    groundGlow.y += 450;
+    groundGlow.scale.set(0.6, 0.6);
+    groundGlow.animation.play('cyan');
+    groundGlow.alpha = 0;
+    addBg(groundGlow);
+
+    var rocks = new FlxSprite(0, 0);
+    rocks.frames = Paths.getSparrowAtlas('wrath/frontRocks_1');
+    rocks.scrollFactor.set(1.1, 1.1);
+    rocks.animation.addByPrefix('green', "green", 0, false);
+    rocks.screenCenter();
+    rocks.active = false;
+    rocks.scale.set(0.6, 0.6);
+    rocks.animation.play('green');
+    addBg(rocks);
+
+    var rocksLeft = new FlxSprite(0, 0);
+    rocksLeft.frames = Paths.getSparrowAtlas('wrath/frontRocks_0');
+    rocksLeft.scrollFactor.set(1.1, 1.1);
+    rocksLeft.animation.addByPrefix('green', "green", 0, false);
+    rocksLeft.screenCenter();
+    rocksLeft.active = false;
+    rocksLeft.scale.set(0.6, 0.6);
+    rocksLeft.animation.play('green');
+    addBg(rocksLeft);
+
+    rocksGlow = new FlxSprite(0, 0);
+    rocksGlow.frames = Paths.getSparrowAtlas('wrath/frontRocks_1');
+    rocksGlow.scrollFactor.set(1.1, 1.1);
+    rocksGlow.animation.addByPrefix('cyan', "cyan", 0, false);
+    rocksGlow.screenCenter();
+    rocksGlow.scale.set(0.6, 0.6);
+    rocksGlow.animation.play('cyan');
+    rocksGlow.alpha = 0;
+    addBg(rocksGlow);
+
+    rocksGlowLeft = new FlxSprite(0, 0);
+    rocksGlowLeft.frames = Paths.getSparrowAtlas('wrath/frontRocks_0');
+    rocksGlowLeft.scrollFactor.set(1.1, 1.1);
+    rocksGlowLeft.animation.addByPrefix('cyan', "cyan", 0, false);
+    rocksGlowLeft.screenCenter();
+    rocksGlowLeft.active = false;
+    rocksGlowLeft.scale.set(0.6, 0.6);
+    rocksGlowLeft.animation.play('cyan');
+    rocksGlowLeft.alpha = 0;
+    addBg(rocksGlowLeft);
+  }
+
+  var sineSpeed:Map<String, Dynamic> = [
+    'ground_L' => {x: 0.34, y: 0.4},
+    'ground_R' => {x: 0.219, y: 0.24},
+    'ground_M' => {x: 0.271, y: 0.311},
+    'bubbles' => {x: 0.271, y: 0.311}
+  ];
+  var sineAdd:Map<String, Dynamic> = [
+    'ground_L' => {x: 0, y: 0},
+    'ground_R' => {x: 0.6, y: 0.6},
+    'ground_M' => {x: 0.2, y: 0.2},
+    'bubbles' => {x: 0.2, y: 0.2}
+  ];
+  var sineMult:Map<String, Dynamic> = [
+    'ground_L' => {x: 4, y: 4},
+    'ground_R' => {x: 4, y: 4},
+    'ground_M' => {x: 4, y: 4},
+    'bubbles' => {x: 4, y: 4}
+  ];
+  var groundPositions:Map<String, Dynamic> = [
+    'ground_L' => {x: 150, y: 550 - 60},
+    'ground_R' => {x: 670, y: 580 - 60},
+    'ground_M' => {x: 400, y: 550 - 60},
+    'bubbles' => {x: 0, y: 630 - 60}
+  ];
+
+  function loadPhase3Background() {
+    var bg = new FlxSprite(0,-900).loadGraphic(Paths.image('Phase3/bg'));
+    bg.setGraphicSize(1280);
+    bg.updateHitbox();
+    bg.screenCenter(0x01);
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+
+    var yy:Float = 300;
+    var yyy:Float = -100;
+    var toAdd:Float = 60;
+
+    var lavaLeft = new FlxSprite(90, yyy - toAdd);
+    lavaLeft.frames = Paths.getSparrowAtlas('Phase3/lavaflow_L');
+    lavaLeft.animation.addByPrefix('a', "lavaflow_L", 24, true);
+    lavaLeft.animation.play('a');
+    lavaLeft.setGraphicSize(130);
+    lavaLeft.updateHitbox();
+    addBg(lavaLeft);
+
+    var lavaRight = new FlxSprite(1030, yyy + 50 - toAdd);
+    lavaRight.frames = Paths.getSparrowAtlas('Phase3/lavaflow_R');
+    lavaRight.animation.addByPrefix('a', "lavaflow_R", 24, true);
+    lavaRight.animation.play('a');
+    lavaRight.setGraphicSize(130);
+    lavaRight.updateHitbox();
+    lavaRight.flipX = true;
+    addBg(lavaRight);
+
+    var fbg = new FlxSprite(0,-1100 - toAdd).loadGraphic(Paths.image('Phase3/frontbgTitle'));
+    fbg.setGraphicSize(1280);
+    fbg.updateHitbox();
+    fbg.screenCenter(0x01);
+    fbg.scrollFactor.set(0, 0);
+    addBg(fbg);
+
+    ground_M = new FlxSprite(0,0 - toAdd).loadGraphic(Paths.image('Phase3/ground_M'));
+    ground_M.scale.set(0.47,0.47);
+    ground_M.updateHitbox();
+    addBg(ground_M);
+
+    var lavaM = new FlxSprite(400, 590 - toAdd);
+    lavaM.frames = Paths.getSparrowAtlas('Phase3/lavarock_M');
+    lavaM.animation.addByPrefix('a', "lavarock_M", 24, true);
+    lavaM.animation.play('a');
+    lavaM.scale.set(0.47,0.47);
+    lavaM.updateHitbox();
+    addBg(lavaM);
+
+    ground_L = new FlxSprite(0,0 - toAdd).loadGraphic(Paths.image('Phase3/ground_L'));
+    ground_L.scale.set(0.47,0.47);
+    ground_L.updateHitbox();
+    addBg(ground_L);
+
+    var lavaL = new FlxSprite(150, 610 - toAdd);
+    lavaL.frames = Paths.getSparrowAtlas('Phase3/lavarock_L');
+    lavaL.animation.addByPrefix('a', "lavarock_L", 24, true);
+    lavaL.animation.play('a');
+    lavaL.scale.set(0.47,0.47);
+    lavaL.updateHitbox();
+    addBg(lavaL);
+
+    ground_R = new FlxSprite(0,0 - toAdd).loadGraphic(Paths.image('Phase3/ground_R'));
+    ground_R.scale.set(0.47,0.47);
+    ground_R.updateHitbox();
+    addBg(ground_R);
+
+    var lavaR = new FlxSprite(670, 610 - toAdd);
+    lavaR.frames = Paths.getSparrowAtlas('Phase3/lavarock_R');
+    lavaR.animation.addByPrefix('a', "lavarock_R", 24, true);
+    lavaR.animation.play('a');
+    lavaR.scale.set(0.47,0.47);
+    lavaR.updateHitbox();
+    addBg(lavaR);
+
+    bubbles = new FlxSprite(0,650 - toAdd).loadGraphic(Paths.image('Phase3/lavabubblesTitle'));
+    bubbles.setGraphicSize(1280);
+    bubbles.updateHitbox();
+    addBg(bubbles);
+
+    var lavaFore = new FlxSprite(0, 660 - toAdd);
+    lavaFore.frames = Paths.getSparrowAtlas('Phase3/lava_FG');
+    lavaFore.animation.addByPrefix('a', "lava_FG", 24, true);
+    lavaFore.animation.play('a');
+    lavaFore.setGraphicSize(1300);
+    lavaFore.updateHitbox();
+    addBg(lavaFore);
+
+    var fireLeft = new FlxSprite(-3, yy);
+    fireLeft.frames = Paths.getSparrowAtlas('Phase3/FG_fire');
+    fireLeft.animation.addByPrefix('a', "FG_fire", 24, true);
+    fireLeft.animation.play('a');
+    fireLeft.setGraphicSize(340);
+    fireLeft.updateHitbox();
+    addBg(fireLeft);
+
+    var fireRight = new FlxSprite(943, yy);
+    fireRight.frames = Paths.getSparrowAtlas('Phase3/FG_fire');
+    fireRight.animation.addByPrefix('a', "FG_fire", 24, true);
+    fireRight.animation.play('a');
+    fireRight.setGraphicSize(340);
+    fireRight.updateHitbox();
+    fireRight.flipX = true;
+    addBg(fireRight);
   }
 
   function loadPhase4Background():Void
@@ -1048,5 +1461,90 @@ class RetroTitleState extends MusicBeatState
     nightflaid_redlights.scale.x *= 2.65;
     nightflaid_redlights.scale.y *= 2.65;
     nightflaid_redlights.updateHitbox();
+  }
+
+  function loadPrideShader():Void {
+    var godrays = ScriptedFlxRuntimeShader.init('RetroGodraysShader');
+
+    mainCamera.filters = [new ShaderFilter(godrays)];
+
+    godrays.lightPos = [0.5, 0.3];
+  }
+
+  function loadPrideBackground() {
+    var xAdjust = 470;
+    var offR = -2;
+
+    var bg = new FlxSprite(startPoint + xAdjust + -1600, -1000, Paths.image("pride/background"));
+    bg.scrollFactor.set(1, 1);
+    bg.scale.set(1.1, 1.1);
+    addBg(bg);
+
+    loadPrideShader();
+
+    //LEFT pillars
+
+    var pillar4l = new FlxSprite(startPoint + xAdjust + -300, -933, Paths.image("pride/izzy_pillar_4"));
+    pillar4l.scrollFactor.set(1, 1);
+    pillar4l.scale.set(1.1, 1.1);
+    pillar4l.flipX = true;
+    pillar4l.y = -933;
+    addBg(pillar4l);
+
+    var pillar3l = new FlxSprite(startPoint + xAdjust + -883, -1035, Paths.image("pride/izzy_pillar_3"));
+    pillar3l.scrollFactor.set(1, 1);
+    pillar3l.scale.set(1.1, 1.1);
+    pillar3l.flipX = true;
+    pillar3l.y = -1035;
+    addBg(pillar3l);
+
+    var pillar2l = new FlxSprite(startPoint + xAdjust + -845, -925, Paths.image("pride/izzy_pillar_2"));
+    pillar2l.scrollFactor.set(1, 1);
+    pillar2l.scale.set(1.1, 1.1);
+    pillar2l.flipX = true;
+    pillar2l.y = -1025;
+    addBg(pillar2l);
+
+    var pillar1l = new FlxSprite(startPoint + xAdjust + -1205, -1005, Paths.image("pride/izzy_pillar_1"));
+    pillar1l.scrollFactor.set(1, 1);
+    pillar1l.scale.set(1.1, 1.1);
+    pillar1l.flipX = true;
+    pillar1l.y = -1005;
+    addBg(pillar1l);
+
+    var pillar0l = new FlxSprite(startPoint + xAdjust + -1615, -1015, Paths.image("pride/foreground_pillar_blur"));
+    pillar0l.scrollFactor.set(1, 1);
+    pillar0l.scale.set(1.1, 1.1);
+    pillar0l.flipX = true;
+    pillar0l.y = -1015;
+    addBg(pillar0l);
+
+    //RIGHT pillars
+
+    var pillar4r = new FlxSprite(startPoint + xAdjust + 60, -933, Paths.image("pride/izzy_pillar_4"));
+    pillar4r.scrollFactor.set(1, 1);
+    pillar4r.scale.set(1.1, 1.1);
+    addBg(pillar4r);
+
+    var pillar3r = new FlxSprite(startPoint + xAdjust + 140, -1035, Paths.image("pride/izzy_pillar_3"));
+    pillar3r.scrollFactor.set(1, 1);
+    pillar3r.scale.set(1.1, 1.1);
+    addBg(pillar3r);
+
+    var pillar2r = new FlxSprite(startPoint + xAdjust + 570, -1005, Paths.image("pride/izzy_pillar_2"));
+    pillar2r.scrollFactor.set(1, 1);
+    pillar2r.scale.set(1.1, 1.1);
+    addBg(pillar2r);
+
+    var pillar1r = new FlxSprite(startPoint + xAdjust + 1020, -975, Paths.image("pride/izzy_pillar_1"));
+    pillar1r.scrollFactor.set(1, 1);
+    pillar1r.scale.set(1.1, 1.1);
+    addBg(pillar1r);
+
+
+    var pillar0r = new FlxSprite(startPoint + xAdjust + 1200+offR, -1005, Paths.image("pride/foreground_pillar_blur"));
+    pillar0r.scrollFactor.set(1, 1);
+    pillar0r.scale.set(1.1, 1.1);
+    addBg(pillar0r);
   }
 }

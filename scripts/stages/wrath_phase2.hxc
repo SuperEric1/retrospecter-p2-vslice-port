@@ -20,6 +20,7 @@ import StringTools;
 import funkin.audio.FunkinSound;
 import funkin.play.PlayStatePlaylist;
 import funkin.effects.IntervalShake;
+import funkin.Preferences;
 
 class WrathPhase2Stage extends Stage
 {
@@ -214,7 +215,7 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.add(flames);
 
       // Flames change (se flashingLights estiver ativo)
-      if (true) { // Pode verificar Preferences.flashingLights se necessário
+      if (Preferences.flashingLights) {
         flamesChange = FunkinSprite.create(0, 0);
         flamesChange.loadSparrow('wrath/flames_colorchange');
         flamesChange.animation.addByPrefix('blueFlame', 'Symbol 2 Instanz 1', 24, true);

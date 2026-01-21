@@ -1,9 +1,11 @@
 import flixel.FlxG;
+import flixel.FlxCamera;
 import flixel.math.FlxAngle;
 import flixel.FlxSprite;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import flixel.addons.display.FlxRuntimeShader;
+import funkin.modding.base.ScriptedFlxRuntimeShader;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
 import funkin.graphics.shaders.DropShadowShader;
@@ -11,15 +13,23 @@ import openfl.filters.ShaderFilter;
 import funkin.play.character.CharacterType;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
+import funkin.save.Save;
 
 class prideStage extends Stage
 {
-  var godraysShader:FlxRuntimeShader;
+  // Shader
+  var godrays:ScriptedFlxRuntimeShader;
   var lightPosX:Float = 0.5;
   var lightPosY:Float = 0.3;
-  var shaderColor = 0xFFaad2ff; // #f5f5f5ff #aad2ffff
+  // Cameras
+  var camRays:FlxCamera;
+  var camNoRays:FlxCamera;
+  var camNoz:FlxCamera;
 
+  // LEGACY SHADER
+  var shaderColor = 0xFFaad2ff; // #f5f5f5ff #aad2ffff
   var shadersInit:Bool = false;
+
   var overlay:StageProp;
 
   function new()
@@ -31,62 +41,73 @@ class prideStage extends Stage
   {
     super.onCreate(event);
 
-    var objectsRight = [
-      'pillar1r',
-      'pillar2r',
-      'pillar3r',
-      'pillar4r'
-    ];
-    var objectsLeft = [
-      'pillar1l',
-      'pillar2l',
-      'pillar3l',
-      'pillar4l'
-    ];
+    // Create legacy shaders
+    if (Save.instance.modOptions.get('retroShaders')) {
+      var objectsRight = [
+        'pillar1r',
+        'pillar2r',
+        'pillar3r',
+        'pillar4r'
+      ];
+      var objectsLeft = [
+        'pillar1l',
+        'pillar2l',
+        'pillar3l',
+        'pillar4l'
+      ];
 
-    var stichShader = new DropShadowShader();
-    stichShader.setAdjustColor(-8, 0, -4, 0); // brilho, hue, contraste e saturação
-    stichShader.color = 0xFFf5f5f5;
-    stichShader.angle = 120;
-    stichShader.distance = 15;
-    stichShader.threshold = -1;
-    getNamedProp('stich').shader = stichShader;
-    getNamedProp('stich').antialiasing = false;
-    stichShader.attachedSprite = getNamedProp('stich');
-    getNamedProp('stich').animation.onFrameChange.add(function() {
-      if (getNamedProp('stich') != null)
-      {
-        stichShader.updateFrameInfo(getNamedProp('stich').frame);
+      var stichShader = new DropShadowShader();
+      stichShader.setAdjustColor(8, 0, -4, 0); // brilho, hue, contraste e saturação
+      stichShader.color = 0xFFf5f5f5;
+      stichShader.angle = 120;
+      stichShader.distance = 15;
+      stichShader.threshold = -1;
+      getNamedProp('stich').shader = stichShader;
+      getNamedProp('stich').antialiasing = false;
+      stichShader.attachedSprite = getNamedProp('stich');
+      getNamedProp('stich').animation.onFrameChange.add(function() {
+        if (getNamedProp('stich') != null)
+        {
+          stichShader.updateFrameInfo(getNamedProp('stich').frame);
+        }
+      });
+
+      //desativado por questoes de otimizacao
+      /*for (obj in objectsRight) {
+        // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
+        var rim = new DropShadowShader();
+        rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
+        rim.color = shaderColor;
+        rim.angle = 120;
+        rim.distance = 5;
+
+        getNamedProp(obj).shader = rim;
+        rim.attachedSprite = getNamedProp(obj);
       }
-    });
+      for (obj in objectsLeft) {
+        var rim = new DropShadowShader();
+        rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
+        rim.color = shaderColor;
+        rim.angle = 120;
+        rim.distance = 5;
 
-    //desativado por questoes de otimizacao
-    /*for (obj in objectsRight) {
-      // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
-      var rim = new DropShadowShader();
-      rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
-      rim.color = shaderColor;
-      rim.angle = 120;
-      rim.distance = 5;
-
-      getNamedProp(obj).shader = rim;
-      rim.attachedSprite = getNamedProp(obj);
+        getNamedProp(obj).shader = rim;
+        rim.attachedSprite = getNamedProp(obj);
+      }*/
     }
-    for (obj in objectsLeft) {
-      var rim = new DropShadowShader();
-      rim.setAdjustColor(0, 0, 0, 0); // brilho, hue, contraste e saturação
-      rim.color = shaderColor;
-      rim.angle = 120;
-      rim.distance = 5;
-
-      getNamedProp(obj).shader = rim;
-      rim.attachedSprite = getNamedProp(obj);
-    }*/
   }
 
   override public function onSongLoaded(event:ScriptEvent)
   {
     super.onSongLoaded(event);
+    var game = PlayState.instance;
+
+    // Create shaders & cameras
+    if (Save.instance.modOptions.get('retroShaders')) {
+      // code for the shaders if i knew how to mess with the cameras properly
+      // need help with the shaders!!!!
+    }
+
     if (overlay == null) {
       // Overlay
       overlay = FunkinSprite.create(0, 0);
@@ -94,21 +115,10 @@ class prideStage extends Stage
       //overlay.screenCenter();
       overlay.scrollFactor.set(0.15, 0);
       overlay.blend = 12; //screen
-      overlay.cameras = [PlayState.instance.camGame];
+      overlay.cameras = [PlayState.instance.camHUD];
       PlayState.instance.add(overlay);
     }
 
-    //godraysShader = new FlxRuntimeShader(Paths.frag('godrays-screen'));
-
-    // Define a posição inicial da luz
-    // _LightPos é um vec2, então precisamos definir os 2 valores
-    /*if (godraysShader.data._LightPos != null)
-    {
-      godraysShader.data._LightPos.value = [lightPosX, lightPosY];
-    }*/
-
-    //FlxG.camera.filters = [new ShaderFilter(godraysShader)];
-    //PlayState.instance.camHUD.filters = [new ShaderFilter(godraysShader)];
     shadersInit = true;
   }
 
@@ -120,51 +130,58 @@ class prideStage extends Stage
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
   {
-    // Apply the shader automatically to each character as it gets added.
     super.addCharacter(character, charType);
-    trace('Applied stage shader to ' + character.characterName);
 
-    var rim = new DropShadowShader();
-    rim.setAdjustColor(-8, 0, -4, 0); // brilho, hue, contraste e saturação
-    rim.color = shaderColor;
-    character.shader = rim;
-    rim.attachedSprite = character;
+    // LEGACY SHADER
+    var rim = null;
+    if (Save.instance.modOptions.get('retroShaders')) {
+      rim = new DropShadowShader();
+      rim.setAdjustColor(3, 0, -4, 0); // brilho, hue, contraste e saturação
+      rim.color = shaderColor;
+      character.shader = rim;
+      rim.attachedSprite = character;
+    }
 
     switch (charType)
     {
       case CharacterType.BF:
-        rim.angle = 140;
-        //rim.threshold = 0.3;
         if (getBoyfriend().characterId == 'bf-retrospecter') {
           character.idleSuffix = '-alt';
         }
         character.danceEvery = 1;
 
-        character.animation.onFrameChange.add(function() {
-          if (getBoyfriend() != null)
-          {
-            rim.updateFrameInfo(getBoyfriend().frame);
-          }
-        });
+        if (rim != null) {
+          //rim.threshold = 0.3;
+          rim.angle = 140;
+          character.animation.onFrameChange.add(function() {
+            if (getBoyfriend() != null)
+            {
+              rim.updateFrameInfo(getBoyfriend().frame);
+            }
+          });
+        }
 
       case CharacterType.GF:
-        rim.angle = 90;
-        rim.color = 0xFFf5f5f5;
-        rim.distance = 20;
-        rim.threshold = -1;
         character.antialiasing = false;
 
-        character.animation.onFrameChange.add(function() {
-          rim.updateFrameInfo(getGirlfriend().frame);
-        });
+        if (rim != null) {
+          rim.angle = 90;
+          rim.setAdjustColor(8, 0, -4, 0);
+          rim.color = 0xFFf5f5f5;
+          rim.distance = 20;
+          rim.threshold = -1;
+          character.animation.onFrameChange.add(function() {
+            rim.updateFrameInfo(getGirlfriend().frame);
+          });
+        }
 
       case CharacterType.DAD:
-        rim.angle = 40;
-        //rim.threshold = 0.3;
-
-        character.animation.onFrameChange.add(function() {
-          rim.updateFrameInfo(getDad().frame);
-        });
+        if (rim != null) {
+          rim.angle = 40;
+          character.animation.onFrameChange.add(function() {
+            rim.updateFrameInfo(getDad().frame);
+          });
+        }
 
       default:
     }

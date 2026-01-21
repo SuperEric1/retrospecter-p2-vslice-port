@@ -1,13 +1,13 @@
 {
   "props": [],
-  "cameraZoom": 1.05,
+  "cameraZoom": 0.9,
   "version": "1.0.0",
   "characters": {
     "bf": {
       "zIndex": 300,
-      "position": [1350, 825],
+      "position": [1250, 825],
       "scale": 0.2,
-      "cameraOffsets": [-380, -80]
+      "cameraOffsets": [-220, -80]
     },
     "gf": {
       "zIndex": 100,
@@ -17,8 +17,8 @@
     },
     "dad": {
       "zIndex": 200,
-      "position": [470, 885],
-      "cameraOffsets": [260, 5]
+      "position": [400, 885],
+      "cameraOffsets": [300, 5]
     }
   },
   "name": "Wrath_phase3"

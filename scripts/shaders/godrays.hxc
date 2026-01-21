@@ -1,0 +1,21 @@
+import flixel.addons.display.FlxRuntimeShader;
+
+class RetroGodraysShader extends FlxRuntimeShader
+{
+  public var lightPos(get, set):Float;
+
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('godrays')));
+    this.setFloatArray("_LightPos", [0.5, 0.3]);
+  }
+
+  function set_lightPos(val:Array):Float
+  {
+    return this.setFloatArray("_LightPos", val);
+  }
+  function get_lightPos():Float
+  {
+    return this.getFloatArray("_LightPos");
+  }
+}
