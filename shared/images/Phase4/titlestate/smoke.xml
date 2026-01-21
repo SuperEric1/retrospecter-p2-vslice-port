@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="smoke.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="aaaaa0000" x="1266" y="645" width="630" height="593" frameX="-23" frameY="-80" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0001" x="621" y="686" width="635" height="592" frameX="-10" frameY="-78" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0002" x="621" y="1288" width="620" height="592" frameX="-16" frameY="-80" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0003" x="1865" y="0" width="606" height="627" frameX="-27" frameY="-49" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0004" x="1250" y="0" width="605" height="635" frameX="-26" frameY="-40" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0005" x="632" y="0" width="608" height="632" frameX="-18" frameY="-26" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0006" x="0" y="0" width="622" height="676" frameX="0" frameY="0" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0007" x="0" y="686" width="611" height="666" frameX="-2" frameY="-4" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0008" x="2481" y="0" width="581" height="653" frameX="-16" frameY="-21" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0009" x="1266" y="1248" width="573" height="625" frameX="-41" frameY="-53" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0010" x="2475" y="663" width="584" height="598" frameX="-56" frameY="-82" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0011" x="2475" y="1271" width="606" height="573" frameX="-42" frameY="-108" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0012" x="1849" y="1248" width="616" height="577" frameX="-35" frameY="-105" frameWidth="653" frameHeight="682"/>
+	<SubTexture name="aaaaa0013" x="0" y="1362" width="593" height="548" frameX="-34" frameY="-114" frameWidth="653" frameHeight="682"/>
+</TextureAtlas>

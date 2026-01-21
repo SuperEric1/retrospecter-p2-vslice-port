@@ -15,6 +15,7 @@ import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
 import funkin.graphics.shaders.TitleOutline;
+import funkin.modding.base.ScriptedMusicBeatState;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import funkin.FunkinMemory;
@@ -32,13 +33,25 @@ import funkin.ui.freeplay.FreeplayState;
 import funkin.save.Save;
 import funkin.util.TouchUtil;
 import funkin.util.SwipeUtil;
+import flixel.FlxCamera;
+import flixel.math.FlxMath;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 import funkin.ui.title.TitleState;
+
+typedef BackgroundConfig =
+{
+  var id:String;
+  var musicTrack:String;
+  var flameColor:Int;
+  var bgZoom:Float;
+}
 
 class RetroTitleState extends MusicBeatState
 {
   public static var initialized:Bool = false; // to determine if we created the sprites
   var hasPlayedIntro:Bool; // to actually check if the intro has played before
+  var hasIntroStarted:Bool = false;
 
   var blackScreen:FlxSprite;
   var team:FlxSprite;
@@ -48,20 +61,59 @@ class RetroTitleState extends MusicBeatState
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
 
-  // Tweens para controlar as animações
   var logoTweens:Array<FlxTween> = [];
   var teamLogoTweens:Array<FlxTween> = [];
+
+  // Câmeras
+  var bgCam:FlxCamera;
+  var mainCamera:FlxCamera;
+
+  // Background system
+  var bgSprites:Array<FlxSprite> = [];
+  var currentBgConfig:BackgroundConfig = null;
+  var backgrounds:Array<BackgroundConfig> = [];
+  // Phase4 specific
+  var phase4_s3:FlxSprite;
+  var phase4_cdd:FlxSprite;
+  var phase4_colors:Array<Int> = [];
+  var phase4_curLight:Int = -1;
+  // Wrath specific
+  var wrath_groundGlow:FlxSprite;
+  var wrath_glowsSpots:Array<FlxSprite> = [];
+  // Nightflaid specific
+  var nightflaid_redlights:FlxSprite;
+  var nightflaid_leftRay:FlxSprite;
+  var nightflaid_rightRay:FlxSprite;
+  var nightflaid_redLightTime:Float = 0.0;
+  var nightflaid_leftColor:FlxSprite;
+  var nightflaid_rightColor:FlxSprite;
 
   override public function create():Void
   {
     super.create();
 
+    // Criar câmeras
+    bgCam = new FlxCamera();
+    bgCam.bgColor = FlxColor.BLACK;
+    mainCamera = new FlxCamera();
+    mainCamera.bgColor = FlxColor.TRANSPARENT;
+    FlxG.cameras.reset(bgCam);
+    FlxG.cameras.add(mainCamera, false);
+    FlxG.cameras.setDefaultDrawTarget(mainCamera, true);
+
+    registerBackgrounds();
+
+    if (backgrounds.length > 0) {
+      currentBgConfig = backgrounds[FlxG.random.int(0, backgrounds.length - 1)];
+    }
+
     var texts = getIntroTextShit();
     curWacky = texts[FlxG.random.int(0, texts.length - 1)];
-    //funkin.FunkinMemory.cacheSound(Paths.music('girlfriendsRingtone/girlfriendsRingtone'));
 
+    lastBeat = 0;
     skippedIntro = false;
     transitioning = false;
+    hasIntroStarted = false;
 
     Conductor.instance.update(0);
 
@@ -80,6 +132,33 @@ class RetroTitleState extends MusicBeatState
     }
   }
 
+  function registerBackgrounds():Void
+  {
+    // Wrath/Satisfracture
+    backgrounds.push({
+      id: "wrath",
+      musicTrack: "Wrath",
+      flameColor: 0x61FF88,
+      bgZoom: 0.685
+    });
+
+    // Phase 4
+    backgrounds.push({
+      id: "phase4",
+      musicTrack: "freakyMenu",
+      flameColor: 0x61FF88,
+      bgZoom: 1.001
+    });
+
+    // Nightflaid
+    backgrounds.push({
+      id: "nightflaid",
+      musicTrack: "Nightflaid",
+      flameColor: 0xFF001F,
+      bgZoom: 1.0
+    });
+  }
+
   var logoRetro:FlxSprite;
   var upFire:FlxSprite;
   var backFire:FlxSprite;
@@ -94,13 +173,28 @@ class RetroTitleState extends MusicBeatState
 
   function startIntro():Void
   {
-    if (!initialized || FlxG.sound.music == null) playMenuMusic();
+    FullScreenScaleMode.addCutouts();
 
     persistentUpdate = true;
 
+    if (currentBgConfig != null)
+    {
+      switch (currentBgConfig.id)
+      {
+        case "wrath":
+          loadWrathBackground();
+        case "phase4":
+          loadPhase4Background();
+        case "nightflaid":
+          loadNightflaidBackground();
+      }
+    }
+
     var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
     bg.screenCenter();
-    add(bg);
+    bg.visible = false;
+    bg.cameras = [mainCamera];
+    //add(bg);
 
     var logoYOff = -30;
     logoRetro = new FlxSprite(0, 0);
@@ -112,10 +206,9 @@ class RetroTitleState extends MusicBeatState
     logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
     logoRetro.updateHitbox();
     logoRetro.visible = false;
-    // "make the entire logo purple lmao" - amanzala
-    // logoRetro.color = FlxColor.fromRGB(108, 28, 255);
+    logoRetro.cameras = [mainCamera];
 
-    var color = FlxColor.fromRGB(68, 255, 146); // rgba(97, 255, 163, 1)
+    var color = currentBgConfig != null ? currentBgConfig.flameColor : 0x61FF88;
 
     upFire = new FlxSprite(0, 0);
     upFire.frames = Paths.getSparrowAtlas('ui/flames');
@@ -125,8 +218,9 @@ class RetroTitleState extends MusicBeatState
     upFire.y += logoYOff;
     upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
     upFire.updateHitbox();
-    upFire.color = color;
+    upFire.color = 0x61FF88; // Cor do upfire muda depois de pular a intro e mostrar o bg.
     upFire.visible = false;
+    upFire.cameras = [mainCamera];
 
     backFire = upFire.clone();
     backFire.animation.addByPrefix('loop', 'backFire0', 24);
@@ -137,6 +231,7 @@ class RetroTitleState extends MusicBeatState
     backFire.updateHitbox();
     backFire.color = color;
     backFire.visible = false;
+    backFire.cameras = [mainCamera];
 
     glow = logoRetro.clone();
     glow.animation.addByPrefix('loop', 'glow0', 1);
@@ -147,12 +242,10 @@ class RetroTitleState extends MusicBeatState
     glow.updateHitbox();
     glow.alpha = 0;
     glow.visible = false;
+    glow.cameras = [mainCamera];
 
-    // add logo
     add(backFire);
     add(logoRetro);
-    add(upFire);
-    add(glow);
 
     titleText = new FlxSprite((FlxG.onMobile ? 50 : 100) + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter' + (FlxG.onMobile ? '_mobile' : ''));
@@ -161,47 +254,79 @@ class RetroTitleState extends MusicBeatState
     titleText.animation.play('idle');
     titleText.updateHitbox();
     titleText.visible = false;
-    // titleText.screenCenter(X);
+    titleText.cameras = [mainCamera];
     add(titleText);
 
     blackScreen = bg.clone();
+    blackScreen.color = FlxColor.BLACK;
+    blackScreen.cameras = [mainCamera];
+    add(blackScreen);
+
+    // These are added later so it appears in front of the black screen, making the shadow effect.
+    add(upFire);
+    add(glow);
 
     team = new FlxSprite(0, FlxG.height * 0.3);
     team.loadGraphic(Paths.image('ui/team'));
-    //team.setGraphicSize(Std.int(team.width * 0.4));
     team.scale.x = 0.2;
     team.scale.y = 0.2;
     team.alpha = 0;
     team.visible = false;
     team.screenCenter(0x01);
+    team.cameras = [mainCamera];
     add(team);
 
     FlxG.mouse.visible = false;
 
+    // A música precisa ser tocada depois do stage ser criado para evitar que beats sejam pulados no beatHit.
+    var isFreakyMenu:Bool = (currentBgConfig == null || currentBgConfig.musicTrack == 'freakyMenu');
+    if (isFreakyMenu)
+    {
+      if (!hasPlayedIntro || FlxG.sound.music == null) playMenuMusic('freakyMenu');
+    }
+    else
+    {
+      if (!hasPlayedIntro && currentBgConfig != null) {
+        playMenuMusic(currentBgConfig.musicTrack, true);
+      }
+    }
+
     if (!initialized) initialized = true;
+    hasIntroStarted = true;
   }
 
-  function playMenuMusic():Void
+  function addBg(obj:Dynamic):Void
   {
-    var shouldFadeIn:Bool = (FlxG.sound.music == null);
-    // Load music. Includes logic to handle BPM changes.
-    FunkinSound.playMusic('freakyMenu',
-      {
-        startingVolume: 0.0,
-        overrideExisting: true,
-        restartTrack: false,
-        // Continue playing this music between states, until a different music track gets played.
-        persist: true
-      });
-    // Fade from 0.0 to 1 over 4 seconds
+    if (obj == null) return;
+    obj.cameras = [bgCam];
+    if (Std.isOfType(obj, FlxSprite)) {
+      bgSprites.push(obj);
+    }
+    add(obj);
+  }
+
+  function playMenuMusic(name:String = 'freakyMenu', ?intro = false):Void
+  {
+    var path:String = name;
+    if (name != 'freakyMenu') path = !intro ? 'Menu_' + name : 'Intro_' + name;
+
+    var shouldFadeIn:Bool = FlxG.sound.music == null && !intro && !hasPlayedIntro;
+
+    FunkinSound.playMusic(path,
+    {
+      startingVolume: (shouldFadeIn) ? 0.0 : 1.0,
+      overrideExisting: true,
+      restartTrack: false,
+      persist: true,
+      //loop: !intro
+      //suffix: intro ? '_Intro' : ''
+    });
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
   }
 
   function getIntroTextShit():Array<Array<String>>
   {
     var fullText:String = Assets.getText(Paths.txt('introText'));
-
-    // Split into lines and remove empty lines
     var firstArray:Array<String> = fullText.split('\n').filter(function(s:String) return s != '');
     var swagGoodArray:Array<Array<String>> = [];
 
@@ -217,59 +342,20 @@ class RetroTitleState extends MusicBeatState
 
   override function update(elapsed:Float):Void
   {
-    //FlxG.bitmapLog.add(FlxG.camera.buffer);
-
-    // Pressing BACK on the title screen should close the game.
-    // This lets you exit without leaving fullscreen mode.
-    // Only applicable on desktop and Android.
-    /*if ((FlxG.onAndroid && FlxG.android.justReleased.BACK) || controls.BACK)
-    {
-      System.exit(0);
-    }*/
-
-    Conductor.instance.update();
-
-    if (outlineShaderShit != null)
-    {
-      if (FlxG.keys.justPressed.I)
-      {
-        FlxTween.tween(outlineShaderShit, {funnyX: 50, funnyY: 50}, 0.6, {ease: FlxEase.quartOut});
-      }
-
-      if (FlxG.keys.pressed.D)
-      {
-        outlineShaderShit.funnyX += 1;
-      }
-
-      // outlineShaderShit.xPos.value[0] += 1;
-    }
-
-    if (FlxG.keys.justPressed.Y)
-    {
-      FlxTween.cancelTweensOf(FlxG.stage.window, ['x', 'y']);
-      FlxTween.tween(FlxG.stage.window, {x: FlxG.stage.window.x + 300}, 1.4, {ease: FlxEase.quadInOut, type: PINGPONG, startDelay: 0.35});
-      FlxTween.tween(FlxG.stage.window, {y: FlxG.stage.window.y + 100}, 0.7, {ease: FlxEase.quadInOut, type: PINGPONG});
-    }
+    var crochet = (Conductor.instance.stepLengthMs * 4) / 1000;
 
     if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
 
-    // do controls.PAUSE | controls.ACCEPT instead?
     var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
-
     if (FlxG.onMobile) {
       if (TouchUtil.justReleased && !SwipeUtil.justSwipedAny) pressedEnter = true;
     }
-
     var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
-
-    if (gamepad != null)
-    {
+    if (gamepad != null) {
       if (gamepad.justPressed.START || gamepad.justPressed.ACCEPT) pressedEnter = true;
     }
 
-    // If you spam Enter, we should skip the transition.
-    if (pressedEnter && transitioning && skippedIntro)
-    {
+    if (pressedEnter && transitioning && skippedIntro) {
       moveToMainMenu();
     }
 
@@ -277,7 +363,7 @@ class RetroTitleState extends MusicBeatState
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
-      FlxG.camera.flash(FlxColor.WHITE, 1.8);
+      mainCamera.flash(FlxColor.WHITE, 1.8);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
       bumpLogo();
@@ -288,9 +374,32 @@ class RetroTitleState extends MusicBeatState
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
 
-    if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized)
-    {
+    /*if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized) {
       FlxG.sound.music.volume += 0.5 * elapsed;
+    }*/
+
+    // STAGES
+
+    // Zoom da câmera do background (faz voltar pro zoom padrão)
+    if (currentBgConfig != null && bgCam != null) {
+      var lerpSpeed:Float = FlxMath.bound(elapsed * 3.125, 0, 1);
+      bgCam.zoom = FlxMath.lerp(bgCam.zoom, currentBgConfig.bgZoom, lerpSpeed);
+    }
+
+    // Phase4 - Fade das janelas
+    if (currentBgConfig != null && currentBgConfig.id == "phase4")
+    {
+      if (phase4_s3 != null)
+        phase4_s3.alpha -= crochet * elapsed * 1.5;
+      if (phase4_cdd != null)
+        phase4_cdd.alpha -= crochet * elapsed * 1.5;
+    }
+
+    // Nightflaid - Luzes
+    if (currentBgConfig != null && currentBgConfig.id == "nightflaid" && nightflaid_redlights != null)
+    {
+      nightflaid_redLightTime += elapsed;
+      nightflaid_redlights.alpha = Math.sin(Math.PI * nightflaid_redLightTime) * 0.25 + 0.85;
     }
 
     super.update(elapsed);
@@ -305,7 +414,7 @@ class RetroTitleState extends MusicBeatState
     }
 
     FunkinMemory.purgeCache();
-    FlxG.switchState(() -> new MainMenuState());
+    FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu")); // Precisa ser RetroMainMenu para que a música acompanhe junto, se não o main menu padrão do fnf vai substituir a música
   }
 
   override function draw()
@@ -321,6 +430,7 @@ class RetroTitleState extends MusicBeatState
       t.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
       t.screenCenter(0x01);
       t.y += (textSprites.length*60)+200;
+      t.cameras = [mainCamera];
       add(t);
       textSprites.push(t);
     }
@@ -332,6 +442,7 @@ class RetroTitleState extends MusicBeatState
     t.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 60, 0xFFFFFF, 'center', FlxTextBorderStyle.NONE);
     t.screenCenter(0x01);
     t.y += (textSprites.length*60)+200;
+    t.cameras = [mainCamera];
     add(t);
     textSprites.push(t);
   }
@@ -347,21 +458,24 @@ class RetroTitleState extends MusicBeatState
 
   override function beatHit():Bool
   {
-    // super.beatHit() returns false if a module cancelled the event.
     if (!super.beatHit()) return false;
+    var crochet = (Conductor.instance.stepLengthMs * 3.4) / 1000;
 
     if (!skippedIntro)
     {
-      // if the user is draggin the window some beats will
-      // be missed so this is just to compensate
-      if (Conductor.instance.currentBeat > lastBeat)
-      {
+      if (Conductor.instance.currentBeat < lastBeat) {
+        // If the intro song has just replayed, we skip the intro to make sure it goes well
+        // This if need to be before we check for the intro beats.
+        lastBeat = 0;
+        if (!skippedIntro) skipIntro();
+        return true;
+      }
+      if (Conductor.instance.currentBeat > lastBeat) {
         for (i in lastBeat...Conductor.instance.currentBeat)
         {
           switch (i + 1)
           {
             case 1:
-              //createCoolText(['The', 'Funkin Crew Inc']);
               createCoolText(['Vs. RetroSpecter', 'Part 2: Infernadise']);
             case 2:
               addMoreText('V-Slice Port');
@@ -390,50 +504,122 @@ class RetroTitleState extends MusicBeatState
             case 9:
               addMoreText(curWacky[1]);
             case 12:
-              // show logo in shadows
               deleteCoolText();
               shadowLogo();
-            case 16:
-              skipIntro();
+            case 15:
+              // timer here cuz if we are playing an intro song the beat 16 will be skipped,
+              new FlxTimer().start(crochet, function(tmr:FlxTimer) {
+                skipIntro();
+              });
+            /*case 16:
+              if (!skippedIntro) skipIntro();*/
           }
         }
       }
       lastBeat = Conductor.instance.currentBeat;
     }
+
     if ((skippedIntro && !transitioning) || hasShownShadow)
     {
-      // logo anims here
       bumpLogo();
+    }
+
+    // STAGES
+
+    // Zoom do stage (descartado por não ter no original)
+    //if (bgCam != null && currentBgConfig != null) bgCam.zoom += 0.0025; // 0.015
+
+    // Phase4 - Luzes coloridas
+    if (currentBgConfig != null && currentBgConfig.id == "phase4" && skippedIntro)
+    {
+      if (Conductor.instance.currentBeat % 1 == 0)
+      {
+        phase4_curLight = FlxG.random.int(0, phase4_colors.length - 1, [phase4_curLight]);
+        if (phase4_s3 != null)
+        {
+          phase4_s3.color = phase4_colors[phase4_curLight];
+          phase4_s3.alpha = 1;
+        }
+        if (phase4_cdd != null)
+        {
+          phase4_cdd.color = phase4_colors[phase4_curLight];
+          phase4_cdd.alpha = 1;
+        }
+      }
+    }
+
+    // Wrath - Glows pulsando
+    if (currentBgConfig != null && currentBgConfig.id == "wrath" && skippedIntro) {
+      handleWrathGlows(1);
+    }
+
+    // Nightflaid - Alternância de cores e raios de luz
+    if (currentBgConfig != null && currentBgConfig.id == "nightflaid" && skippedIntro)
+    {
+      if (Conductor.instance.currentBeat % 2 == 0)
+      {
+        // Beat par - esquerda vermelha, direita escura
+        if (nightflaid_leftColor != null)
+          FlxTween.color(nightflaid_leftColor, 0.15, nightflaid_leftColor.color, 0xFFFB002D);
+        if (nightflaid_rightColor != null)
+          FlxTween.color(nightflaid_rightColor, 0.15, nightflaid_rightColor.color, 0xFF0D0D0D);
+        if (nightflaid_leftRay != null)
+          FlxTween.tween(nightflaid_leftRay, {alpha: 1}, 0.15);
+        if (nightflaid_rightRay != null)
+          FlxTween.tween(nightflaid_rightRay, {alpha: 0}, 0.15);
+      }
+      else
+      {
+        // Beat ímpar - direita vermelha, esquerda escura
+        if (nightflaid_leftColor != null)
+          FlxTween.color(nightflaid_leftColor, 0.15, nightflaid_leftColor.color, 0xFF0D0D0D);
+        if (nightflaid_rightColor != null)
+          FlxTween.color(nightflaid_rightColor, 0.15, nightflaid_rightColor.color, 0xFFFB002D);
+        if (nightflaid_rightRay != null)
+          FlxTween.tween(nightflaid_rightRay, {alpha: 1}, 0.15);
+        if (nightflaid_leftRay != null)
+          FlxTween.tween(nightflaid_leftRay, {alpha: 0}, 0.15);
+      }
     }
 
     return true;
   }
 
+  function handleWrathGlows(?multiplier:Float = 1):Void
+  {
+    for (g in wrath_glowsSpots)
+    {
+      g.alpha = 0.5 * multiplier;
+      FlxTween.cancelTweensOf(g);
+      FlxTween.tween(g, {alpha: 0}, 0.5);
+    }
+  }
+
   function bumpLogo():Void {
-    var backDelay = transitioning ? 0.35 : 0;
     cancelTweens();
+    var backDelay = transitioning ? 0.35 : 0;
+    var crochet = (Conductor.instance.stepLengthMs * 4) / 1000;
     var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
     var baseScale:Float = 0.85;
-    var bumpScale:Float = 0.88;
+    var bumpScale:Float = 0.87;
     for (obj in objects) {
-    obj.scale.x = baseScale;
-    obj.scale.y = baseScale;
-    logoTweens.push(
-      FlxTween.tween(obj.scale, {x: bumpScale, y: bumpScale}, 0.05, {
-        ease: FlxEase.quartOut,
-        onComplete: function(twn:FlxTween) {
-          logoTweens.push(
-            FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, 0.3 + backDelay, {
-              ease: FlxEase.quadInOut
-            })
-          );
-        }
-      })
-    );
-  }
-  // glow
-  if (hasShownShadow) return; // retornar se estiver mostrando a sombra
-  logoTweens.push(
+      obj.scale.x = baseScale;
+      obj.scale.y = baseScale;
+      logoTweens.push(
+        FlxTween.tween(obj.scale, {x: bumpScale, y: bumpScale}, 0.005, { // 0.05
+          ease: FlxEase.quartOut,
+          onComplete: function(twn:FlxTween) {
+            logoTweens.push(
+              FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, crochet + backDelay, { // 0.3
+                ease: FlxEase.cubicOut
+              })
+            );
+          }
+        })
+      );
+    }
+    if (hasShownShadow) return;
+    /*logoTweens.push(
       FlxTween.tween(glow, {alpha: 1}, 0.03, {
         ease: FlxEase.quartOut,
         onComplete: function(twn:FlxTween) {
@@ -445,7 +631,7 @@ class RetroTitleState extends MusicBeatState
           );
         }
       })
-    );
+    );*/
   }
 
   function shadowLogo(hide = false):Void {
@@ -467,19 +653,27 @@ class RetroTitleState extends MusicBeatState
   {
     if (!skippedIntro && initialized)
     {
+      if (currentBgConfig != null && currentBgConfig.musicTrack != 'freakyMenu') {
+        playMenuMusic(currentBgConfig.musicTrack, false);
+      }
+      if (hasPlayedIntro && currentBgConfig.musicTrack == 'freakyMenu') { // this is necessary
+        playMenuMusic(currentBgConfig.musicTrack, false);
+      }
+
       deleteCoolText();
       cancelTweens();
       shadowLogo(true);
       remove(team);
       team.visible = false;
       logoRetro.visible = true;
+      upFire.color = currentBgConfig != null ? currentBgConfig.flameColor : 0x61FF88;
       upFire.visible = true;
       backFire.visible = true;
       glow.visible = true;
       titleText.visible = true;
       blackScreen.visible = false;
 
-      FlxG.camera.flash(FlxColor.WHITE, 3);
+      mainCamera.flash(FlxColor.WHITE, 3);
       bumpLogo();
       skippedIntro = true;
 
@@ -498,5 +692,358 @@ class RetroTitleState extends MusicBeatState
       if (tween != null) tween.cancel();
     }
     teamLogoTweens = [];
+  }
+
+  override public function closeSubstate():Void {
+    if (event.eventCanceled) return;
+    FullScreenScaleMode.removeCutouts;
+
+    super.closeSubState();
+  }
+
+  // BACKGROUND LOADERS
+
+  function loadWrathBackground():Void
+  {
+    var bg = new FlxSprite().loadGraphic(Paths.image('wrath/wrath_sky'));
+    bg.screenCenter();
+    bg.scrollFactor.set(0.5, 0.5);
+    addBg(bg);
+
+    var gates = new FlxSprite(0, 0);
+    gates.loadGraphic(Paths.image('wrath/wrath_gates'));
+    gates.screenCenter();
+    gates.scrollFactor.set(0.55, 0.55);
+    gates.x += 75;
+    gates.y += 50;
+    addBg(gates);
+
+    var r = new FlxSprite(600, -200);
+    r.loadGraphic(Paths.image('wrath/wrath_backrocks_02'));
+    r.scale.set(0.5, 0.5);
+    addBg(r);
+
+    var l = new FlxSprite(-900, -200);
+    l.loadGraphic(Paths.image('wrath/wrath_backrocks_01'));
+    l.scale.set(0.5, 0.5);
+    addBg(l);
+
+    var caveL = new FlxSprite(0, 0);
+    caveL.loadGraphic(Paths.image('wrath/wrath_cave'));
+    caveL.screenCenter();
+    caveL.scrollFactor.set(0.8, 0.8);
+    caveL.x += -150;
+    caveL.y += 20;
+    caveL.flipX = true;
+    caveL.scale.set(0.75, 0.75);
+    addBg(caveL);
+
+    var caveR = new FlxSprite(0, 0);
+    caveR.loadGraphic(Paths.image('wrath/wrath_cave'));
+    caveR.screenCenter();
+    caveR.scrollFactor.set(0.8, 0.8);
+    caveR.x += 150;
+    caveR.y = caveL.y;
+    caveR.scale.set(0.75, 0.75);
+    addBg(caveR);
+
+    var ground = new FlxSprite(0, 0);
+    ground.frames = Paths.getSparrowAtlas('wrath/ground');
+    ground.screenCenter();
+    ground.animation.addByPrefix('green', "green", 0, false);
+    ground.animation.play('green');
+    ground.x += 0;
+    ground.y += 450;
+    ground.scale.set(0.6, 0.6);
+    addBg(ground);
+
+    // Ground Glow
+    wrath_groundGlow = new FlxSprite(0, 0);
+    wrath_groundGlow.frames = Paths.getSparrowAtlas('wrath/ground');
+    wrath_groundGlow.screenCenter();
+    wrath_groundGlow.animation.addByPrefix('green', "green", 0, false);
+    wrath_groundGlow.animation.addByPrefix('cyan', "cyan", 0, false);
+    wrath_groundGlow.x += 0;
+    wrath_groundGlow.y += 450;
+    wrath_groundGlow.scale.set(0.6, 0.6);
+    wrath_groundGlow.animation.play('cyan');
+    wrath_groundGlow.alpha = 0;
+    addBg(wrath_groundGlow);
+
+    // Add glows
+    addWrathGlow(975-20, 135-20+5, wrath_groundGlow, 2);
+    addWrathGlow(975 + 1100, 135-20+5+10+10, wrath_groundGlow, 2);
+    addWrathGlow(1515-300-10, 135-20+5+10+10+200+10, wrath_groundGlow, 2);
+    addWrathGlow(975 + 1250+10+10, 135-20+5+10+10+10, wrath_groundGlow, 1.5);
+  }
+
+  function addWrathGlow(x:Float, y:Float, reference:FlxSprite, ?size:Float = 1):Void
+  {
+    var scrollX:Float = 1;
+    var scrollY:Float = 1;
+    var offsetX:Float = 0;
+    var offsetY:Float = 0;
+
+    if (reference != null) {
+      scrollX = reference.scrollFactor.x;
+      scrollY = reference.scrollFactor.y;
+      offsetX = reference.x;
+      offsetY = reference.y;
+    }
+
+    var glow = new FlxSprite();
+    glow.frames = Paths.getSparrowAtlas('CrystalGlow');
+    glow.scrollFactor.set(scrollX, scrollY);
+    glow.animation.addByPrefix('green', "green", 0, false);
+    glow.scale.set(size, size);
+    glow.setPosition(x + offsetX, y + offsetY);
+    glow.animation.play('green');
+    glow.alpha = 0.5;
+    addBg(glow);
+
+    var glowGlow = new FlxSprite();
+    glowGlow.frames = Paths.getSparrowAtlas('CrystalGlow');
+    glowGlow.scrollFactor.set(scrollX, scrollY);
+    glowGlow.animation.addByPrefix('cyan', "cyan", 0, false);
+    glowGlow.scale.set(size, size);
+    glowGlow.setPosition(x + offsetX, y + offsetY);
+    glowGlow.animation.play('cyan');
+    glowGlow.alpha = 0;
+    addBg(glowGlow);
+
+    wrath_glowsSpots.push(glowGlow);
+  }
+
+  function loadPhase4Background():Void
+  {
+    var toAdd:Float = 30;
+
+    var bg = new FlxSprite().loadGraphic(Paths.image('Phase4/titlestate/bg'));
+    bg.scale.set(0.666, 0.666);
+    bg.updateHitbox();
+    bg.screenCenter();
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+
+    var m = new FlxSprite(-30, 170).loadGraphic(Paths.image('Phase4/titlestate/Final_BGMountains'));
+    m.scale.set(0.7, 0.7);
+    m.updateHitbox();
+    m.scrollFactor.set(0, 0);
+    m.y += toAdd;
+    addBg(m);
+
+    var iz = new FlxSprite(400, -90).loadGraphic(Paths.image('Phase4/titlestate/izzy'));
+    iz.scale.set(0.666, 0.666);
+    iz.updateHitbox();
+    iz.scrollFactor.set(0, 0);
+    iz.y += toAdd;
+    addBg(iz);
+
+    var cloud = new FlxSprite(700, -90);
+    cloud.frames = Paths.getSparrowAtlas('Phase4/titlestate/clouds');
+    cloud.scale.set(0.71, 0.71);
+    cloud.animation.addByPrefix("idle", "Symbol 9", 24, true);
+    cloud.animation.play("idle");
+    cloud.y += toAdd;
+    addBg(cloud);
+
+    var portal = new FlxSprite(980, 260);
+    portal.frames = Paths.getSparrowAtlas('Phase4/titlestate/insatianVoid');
+    portal.scale.set(0.71, 0.71);
+    portal.animation.addByPrefix("idle", "void", 60, true);
+    portal.animation.play("idle");
+    portal.y += toAdd;
+    addBg(portal);
+
+    var smok = new FlxSprite(-225, -370);
+    smok.frames = Paths.getSparrowAtlas('Phase4/titlestate/smoke');
+    smok.scale.set(0.666, 0.666);
+    smok.animation.addByPrefix("idle", "aaaaa", 6, true);
+    smok.animation.play("idle");
+    smok.y += toAdd;
+    addBg(smok);
+
+    var d = new FlxSprite(-60, 150).loadGraphic(Paths.image('Phase4/titlestate/doz'));
+    d.scale.set(0.666, 0.666);
+    d.updateHitbox();
+    d.scrollFactor.set(0, 0);
+    d.y += toAdd;
+    addBg(d);
+
+    var face = new FlxSprite(-30, 360);
+    face.frames = Paths.getSparrowAtlas('Phase4/titlestate/faces');
+    face.scale.set(0.5, 0.5);
+    face.animation.addByPrefix("idle", "Final_DozircYard", 24, true);
+    face.animation.play("idle");
+    face.y += toAdd;
+    addBg(face);
+
+    var lll = new FlxSprite(-190, 450);
+    lll.frames = Paths.getSparrowAtlas('Phase4/titlestate/lake');
+    lll.scale.set(0.666, 0.666);
+    lll.animation.addByPrefix("idle", "Final_SoulRiver", 24, true);
+    lll.animation.play("idle");
+    lll.y += toAdd;
+    addBg(lll);
+
+    var s = new FlxSprite(0, 300).loadGraphic(Paths.image('Phase4/titlestate/s1'));
+    s.scale.set(0.666, 0.666);
+    s.updateHitbox();
+    s.screenCenter(0x01);
+    s.scrollFactor.set(0, 0);
+    s.y += toAdd;
+    addBg(s);
+
+    var s2 = new FlxSprite(0, 385).loadGraphic(Paths.image('Phase4/titlestate/builds'));
+    s2.scale.set(0.666, 0.666);
+    s2.updateHitbox();
+    s2.screenCenter(0x01);
+    s2.scrollFactor.set(0, 0);
+    s2.y += toAdd;
+    addBg(s2);
+
+    // Luzes animadas
+    phase4_s3 = new FlxSprite(0, 385).loadGraphic(Paths.image('Phase4/titlestate/lights'));
+    phase4_s3.scale.set(0.666, 0.666);
+    phase4_s3.updateHitbox();
+    phase4_s3.screenCenter(0x01);
+    phase4_s3.scrollFactor.set(0, 0);
+    phase4_s3.y += toAdd;
+    addBg(phase4_s3);
+
+    var a = new FlxSprite(0, 90).loadGraphic(Paths.image('Phase4/titlestate/sakutower'));
+    a.scale.set(0.666, 0.666);
+    a.updateHitbox();
+    a.screenCenter(0x01);
+    a.scrollFactor.set(0, 0);
+    a.y += toAdd;
+    addBg(a);
+
+    try {
+      var spotlight = new FlxAtlasSprite(90, 150 + toAdd, Paths.animateAtlas('Phase4/titlestate/spot'));
+      if (spotlight != null) {
+        spotlight.anim.play('SpotLight Animation', true, false, true);
+        spotlight.scrollFactor.set(0, 0);
+        spotlight.scale.set(0.34, 0.34);
+        spotlight.updateHitbox();
+        spotlight.alpha = 0.6;
+        spotlight.blend = 0;
+        addBg(spotlight);
+      }
+    } catch (e:Dynamic) {
+      trace("Spotlight asset não encontrado: " + e);
+    }
+
+    // Cores para as luzes
+    phase4_colors = [0xFF31A2FD, 0xFF31FD8C, 0xFFFB33F5, 0xFFFD4531, 0xFFFBA633];
+
+    var cd = new FlxSprite(0, 440).loadGraphic(Paths.image('Phase4/titlestate/b'));
+    cd.scale.set(0.666, 0.666);
+    cd.updateHitbox();
+    cd.screenCenter(0x01);
+    cd.scrollFactor.set(0, 0);
+    cd.y += toAdd;
+    addBg(cd);
+
+    phase4_cdd = new FlxSprite(0, 440).loadGraphic(Paths.image('Phase4/titlestate/b1'));
+    phase4_cdd.scale.set(0.666, 0.666);
+    phase4_cdd.updateHitbox();
+    phase4_cdd.screenCenter(0x01);
+    phase4_cdd.scrollFactor.set(0, 0);
+    phase4_cdd.y += toAdd;
+    addBg(phase4_cdd);
+
+    var beee = new FlxSprite(270, -200);
+    beee.frames = Paths.getSparrowAtlas('Phase4/titlestate/bee');
+    beee.scale.set(0.666, 0.666);
+    beee.animation.addByPrefix("idle", "Symbol 1", 24, true);
+    beee.animation.play("idle");
+    beee.y += toAdd;
+    addBg(beee);
+
+    var w = new FlxSprite(0, 540).loadGraphic(Paths.image('Phase4/titlestate/d'));
+    w.scale.set(0.666, 0.666);
+    w.updateHitbox();
+    w.screenCenter(0x01);
+    w.scrollFactor.set(0, 0);
+    w.y += toAdd;
+    addBg(w);
+
+    var c = new FlxSprite(0, 620).loadGraphic(Paths.image('Phase4/titlestate/fore'));
+    c.scale.set(0.666, 0.666);
+    c.updateHitbox();
+    c.screenCenter(0x01);
+    c.scrollFactor.set(0, 0);
+    c.y += toAdd;
+    addBg(c);
+  }
+
+  function loadNightflaidBackground():Void
+  {
+    // Helper function para criar sprites
+    var createNightflaidSprite = function(spr:String):FlxSprite {
+      var bg = new FlxSprite(-112, 0);
+      if (spr != '') {
+        bg.loadGraphic(Paths.image('nightflaid/' + spr));
+        bg.scale.set(0.27, 0.27);
+        bg.updateHitbox();
+      } else {
+        bg.x += 51;
+        bg.makeGraphic(1388, 720, 0xFFFFFFFF);
+      }
+      addBg(bg);
+      return bg;
+    };
+
+    // Camadas do background
+    createNightflaidSprite('highlights');
+    createNightflaidSprite('darklayer');
+
+    var bgWidth:Float = 2760;
+    var bgHeight:Float = 1429;
+    var darkColor = 0xFF0D0D0D;
+
+    // Camada de cor esquerda
+    nightflaid_leftColor = new FlxSprite(0, 0);
+    nightflaid_leftColor.makeGraphic(1, 1, FlxColor.WHITE);
+    nightflaid_leftColor.setGraphicSize(Std.int(bgWidth / 3), bgHeight);
+    nightflaid_leftColor.updateHitbox();
+    nightflaid_leftColor.screenCenter(0x01);
+    nightflaid_leftColor.x -= 300;
+    nightflaid_leftColor.color = darkColor;
+    nightflaid_leftColor.alpha = 0.5;
+    addBg(nightflaid_leftColor);
+
+    // Camada de cor direita
+    nightflaid_rightColor = new FlxSprite(0, 0);
+    nightflaid_rightColor.makeGraphic(1, 1, FlxColor.WHITE);
+    nightflaid_rightColor.setGraphicSize(Std.int(bgWidth / 3), bgHeight);
+    nightflaid_rightColor.updateHitbox();
+    nightflaid_rightColor.screenCenter(0x01);
+    nightflaid_rightColor.x += 454;
+    nightflaid_rightColor.color = darkColor;
+    nightflaid_rightColor.alpha = 0.5;
+    addBg(nightflaid_rightColor);
+
+    createNightflaidSprite('toplayer');
+    createNightflaidSprite('glow');
+
+    // Raios de luz
+    nightflaid_leftRay = new FlxSprite(-68, 110);
+    nightflaid_leftRay.loadGraphic(Paths.image('nightflaid/lightray'));
+    addBg(nightflaid_leftRay);
+
+    nightflaid_rightRay = new FlxSprite(1122, 110);
+    nightflaid_rightRay.loadGraphic(Paths.image('nightflaid/lightray'));
+    nightflaid_rightRay.flipX = true;
+    addBg(nightflaid_rightRay);
+
+    // Luzes vermelhas
+    nightflaid_redlights = createNightflaidSprite('redlights');
+    nightflaid_redlights.x += 88;
+    nightflaid_redlights.y += 172;
+    nightflaid_redlights.scale.x *= 2.65;
+    nightflaid_redlights.scale.y *= 2.65;
+    nightflaid_redlights.updateHitbox();
   }
 }

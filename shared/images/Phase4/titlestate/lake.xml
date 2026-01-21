@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="lake.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Final_SoulRiver0000" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0001" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0002" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0003" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0004" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0005" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0006" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0007" x="503" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0008" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0009" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0010" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0011" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0012" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0013" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0014" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0015" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0016" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0017" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0018" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0019" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0020" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0021" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0022" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0023" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0024" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0025" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0026" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0027" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0028" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0029" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0030" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0031" x="0" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0032" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0033" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0034" x="0" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0035" x="503" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0036" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0037" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0038" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0039" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0040" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0041" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0042" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0043" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0044" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0045" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0046" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0047" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0048" x="503" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0049" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0050" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0051" x="1006" y="0" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0052" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0053" x="1006" y="449" width="493" height="439"/>
+	<SubTexture name="Final_SoulRiver0054" x="1006" y="449" width="493" height="439"/>
+</TextureAtlas>

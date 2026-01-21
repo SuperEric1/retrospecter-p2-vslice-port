@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Gloww.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="green0000" x="10" y="10" width="101" height="101"/>
+	<SubTexture name="cyan0002" x="121" y="10" width="101" height="101"/>
+</TextureAtlas>

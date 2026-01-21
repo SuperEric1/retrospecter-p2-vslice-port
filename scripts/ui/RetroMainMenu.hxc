@@ -109,6 +109,8 @@ class RetroMainMenu extends MusicBeatState
   {
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
+    //FullScreenScaleMode.removeCutouts;
+
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
@@ -575,6 +577,7 @@ class RetroMainMenu extends MusicBeatState
 
   function playMenuMusic():Void
   {
+    if (FlxG.sound.music != null) return;
     FunkinSound.playMusic('freakyMenu', {
       overrideExisting: true,
       restartTrack: false,

@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bee.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Symbol 10000" x="512" y="0" width="500" height="471" frameX="0" frameY="-2" frameWidth="505" frameHeight="473"/>
+	<SubTexture name="Symbol 10001" x="0" y="0" width="502" height="473" frameX="-3" frameY="0" frameWidth="505" frameHeight="473"/>
+	<SubTexture name="Symbol 10002" x="512" y="481" width="500" height="471" frameX="0" frameY="-2" frameWidth="505" frameHeight="473"/>
+	<SubTexture name="Symbol 10003" x="0" y="483" width="502" height="473" frameX="-3" frameY="0" frameWidth="505" frameHeight="473"/>
+</TextureAtlas>
