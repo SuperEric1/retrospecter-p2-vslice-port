@@ -109,7 +109,7 @@ class RetroMainMenu extends MusicBeatState
   {
     FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
-    //FullScreenScaleMode.removeCutouts;
+    FullScreenScaleMode.removeCutouts();
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
