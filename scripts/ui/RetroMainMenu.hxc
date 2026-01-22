@@ -194,7 +194,7 @@ class RetroMainMenu extends MusicBeatState
       var ogText = FlxG.state.leftWatermarkText.text;
       FlxG.state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
       FlxG.state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
-      FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port v" + retroV + " | FNF " + Constants.VERSION;
+      FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nUnofficial Fan Port v" + retroV + " | FNF " + Constants.VERSION;
       FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
     }
 
