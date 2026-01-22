@@ -1118,10 +1118,10 @@ class RetroTitleState extends MusicBeatState
     'bubbles' => {x: 4, y: 4}
   ];
   var groundPositions:Map<String, Dynamic> = [
-    'ground_L' => {x: 150, y: 550 - 60},
-    'ground_R' => {x: 670, y: 580 - 60},
-    'ground_M' => {x: 400, y: 550 - 60},
-    'bubbles' => {x: 0, y: 630 - 60}
+    'ground_L' => {x: startPoint + 150, y: 550 - 60},
+    'ground_R' => {x: startPoint + 670, y: 580 - 60},
+    'ground_M' => {x: startPoint + 400, y: 550 - 60},
+    'bubbles' => {x: startPoint + 0, y: 630 - 60}
   ];
 
   function loadPhase3Background() {
@@ -1136,7 +1136,7 @@ class RetroTitleState extends MusicBeatState
     var yyy:Float = -100;
     var toAdd:Float = 60;
 
-    var lavaLeft = new FlxSprite(90, yyy - toAdd);
+    var lavaLeft = new FlxSprite(startPoint + 90, yyy - toAdd);
     lavaLeft.frames = Paths.getSparrowAtlas('Phase3/lavaflow_L');
     lavaLeft.animation.addByPrefix('a', "lavaflow_L", 24, true);
     lavaLeft.animation.play('a');
@@ -1144,7 +1144,7 @@ class RetroTitleState extends MusicBeatState
     lavaLeft.updateHitbox();
     addBg(lavaLeft);
 
-    var lavaRight = new FlxSprite(1030, yyy + 50 - toAdd);
+    var lavaRight = new FlxSprite(startPoint + 1030, yyy + 50 - toAdd);
     lavaRight.frames = Paths.getSparrowAtlas('Phase3/lavaflow_R');
     lavaRight.animation.addByPrefix('a', "lavaflow_R", 24, true);
     lavaRight.animation.play('a');
@@ -1165,7 +1165,7 @@ class RetroTitleState extends MusicBeatState
     ground_M.updateHitbox();
     addBg(ground_M);
 
-    var lavaM = new FlxSprite(400, 590 - toAdd);
+    var lavaM = new FlxSprite(startPoint + 400, 590 - toAdd);
     lavaM.frames = Paths.getSparrowAtlas('Phase3/lavarock_M');
     lavaM.animation.addByPrefix('a', "lavarock_M", 24, true);
     lavaM.animation.play('a');
@@ -1178,7 +1178,7 @@ class RetroTitleState extends MusicBeatState
     ground_L.updateHitbox();
     addBg(ground_L);
 
-    var lavaL = new FlxSprite(150, 610 - toAdd);
+    var lavaL = new FlxSprite(startPoint + 150, 610 - toAdd);
     lavaL.frames = Paths.getSparrowAtlas('Phase3/lavarock_L');
     lavaL.animation.addByPrefix('a', "lavarock_L", 24, true);
     lavaL.animation.play('a');
@@ -1191,7 +1191,7 @@ class RetroTitleState extends MusicBeatState
     ground_R.updateHitbox();
     addBg(ground_R);
 
-    var lavaR = new FlxSprite(670, 610 - toAdd);
+    var lavaR = new FlxSprite(startPoint + 670, 610 - toAdd);
     lavaR.frames = Paths.getSparrowAtlas('Phase3/lavarock_R');
     lavaR.animation.addByPrefix('a', "lavarock_R", 24, true);
     lavaR.animation.play('a');
@@ -1204,7 +1204,7 @@ class RetroTitleState extends MusicBeatState
     bubbles.updateHitbox();
     addBg(bubbles);
 
-    var lavaFore = new FlxSprite(0, 660 - toAdd);
+    var lavaFore = new FlxSprite(startPoint + 0, 660 - toAdd);
     lavaFore.frames = Paths.getSparrowAtlas('Phase3/lava_FG');
     lavaFore.animation.addByPrefix('a', "lava_FG", 24, true);
     lavaFore.animation.play('a');
@@ -1212,7 +1212,7 @@ class RetroTitleState extends MusicBeatState
     lavaFore.updateHitbox();
     addBg(lavaFore);
 
-    var fireLeft = new FlxSprite(-3, yy);
+    var fireLeft = new FlxSprite(startPoint + -3, yy);
     fireLeft.frames = Paths.getSparrowAtlas('Phase3/FG_fire');
     fireLeft.animation.addByPrefix('a', "FG_fire", 24, true);
     fireLeft.animation.play('a');
@@ -1220,7 +1220,7 @@ class RetroTitleState extends MusicBeatState
     fireLeft.updateHitbox();
     addBg(fireLeft);
 
-    var fireRight = new FlxSprite(943, yy);
+    var fireRight = new FlxSprite(startPoint + 943, yy);
     fireRight.frames = Paths.getSparrowAtlas('Phase3/FG_fire');
     fireRight.animation.addByPrefix('a', "FG_fire", 24, true);
     fireRight.animation.play('a');
