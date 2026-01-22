@@ -12,6 +12,7 @@ import funkin.play.stage.Bopper;
 import funkin.play.stage.StageProp;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.ui.FullScreenScaleMode;
 import flixel.text.FlxText;
 import funkin.Paths;
 import Std;
@@ -293,7 +294,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(lava_FG, 'lava_FG');
 
         // Foreground fires
-        FG_fire_L = FunkinSprite.create(bg.x, 488); // -175, 488
+        FG_fire_L = FunkinSprite.create(FullScreenScaleMode.gameNotchSize.x - 250, 488); // -175, 488
         FG_fire_L.loadSparrow('Phase3/FG_fire');
         FG_fire_L.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_L.animation.play('anim');
@@ -304,7 +305,7 @@ class WrathPhase3 extends Stage
         PlayState.instance.add(FG_fire_L, 'FG_fire_L');
         spriteMap.set('FG_fire_L', FG_fire_L);
 
-        FG_fire_R = FunkinSprite.create(bg.x + bg.width, 488); //1295, 488
+        FG_fire_R = FunkinSprite.create(bg.x + bg.width - 300, 488); //1295, 488
         FG_fire_R.loadSparrow('Phase3/FG_fire');
         FG_fire_R.animation.addByPrefix('anim', 'FG_fire', 24, true);
         FG_fire_R.animation.play('anim');
