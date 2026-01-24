@@ -43,7 +43,7 @@
       "data": {}
     },
     "noteSplash": {
-      "assetPath": "shared:retroNoteSplashes",
+      "assetPath": "shared:noteSplashes/retroNoteSplashes",
       "alpha": 0.8,
       "offsets": [0, -20],
       "data": {

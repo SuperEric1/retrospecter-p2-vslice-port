@@ -1,0 +1,26 @@
+{
+  "props": [],
+  "cameraZoom": 0.5,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [380, 550],
+      "scale": 1.074,
+      "cameraOffsets": [-430, -300]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-900, 550],
+      "scale": 0.94,
+      "cameraOffsets": [170, -100]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 50],
+      "scale": 0.95,
+      "position": [-90, 110]
+    }
+  },
+  "name": "Pre-Gluttony"
+}

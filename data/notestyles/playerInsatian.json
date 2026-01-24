@@ -1,0 +1,61 @@
+{
+  "version": "1.1.0",
+  "name": "Player Insatian",
+  "author": "",
+  "fallback": "retrospecter",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/player/Notes_Insatian",
+      "scale": 0.7,
+      "data": {
+        "left": { "prefix": "purple" },
+        "down": { "prefix": "blue" },
+        "up": { "prefix": "green" },
+        "right": { "prefix": "red" }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/player/Notes_Insatian",
+      "scale": 0.7,
+      "offsets": [28, 22],
+      "data": {
+        "leftStatic": { "prefix": "arrowLEFT" },
+        "leftPress": { "prefix": "left press0" },
+        "leftConfirm": { "prefix": "left confirm0" },
+        "leftConfirmHold": { "prefix": "left confirm0" },
+        "downStatic": { "prefix": "arrowDOWN" },
+        "downPress": { "prefix": "down press0" },
+        "downConfirm": { "prefix": "down confirm0" },
+        "downConfirmHold": { "prefix": "down confirm0" },
+        "upStatic": { "prefix": "arrowUP" },
+        "upPress": { "prefix": "up press0" },
+        "upConfirm": { "prefix": "up confirm0" },
+        "upConfirmHold": { "prefix": "up confirm 0" },
+        "rightStatic": { "prefix": "arrowRIGHT" },
+        "rightPress": { "prefix": "right press0" },
+        "rightConfirm": { "prefix": "right confirm0" },
+        "rightConfirmHold": { "prefix": "right confirm0" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "NOTE_hold_assets",
+      "scale": 0.7,
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": null,
+      "alpha": 0.8,
+      "offsets": [0, -20],
+      "data": {
+        "enabled": true
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/player/Notes_Insatian",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": false
+      }
+    }
+  }
+}

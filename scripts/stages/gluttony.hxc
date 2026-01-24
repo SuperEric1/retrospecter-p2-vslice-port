@@ -1,0 +1,325 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.Paths;
+
+import supereric.retrospecter.modules.RetroNoteStyles;
+
+class GluttonyStage extends Stage
+{
+  var xAdjust:Float = -2350;
+  var yAdjust:Float = -1100;
+
+  // Castle animation variables
+  var castlePhases:Array<Float> = [];
+  var castleOffsets:Array<Float> = [];
+  var initY:Float = -1250;
+
+  // Cloud pattern
+  var cloudPattern:Array<Int> = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  var cloudSprites:Array<StageProp> = [];
+
+  // Glow variables
+  var glowAlpha:Float = 0.0;
+  var portalGlowAlpha:Float = 1.0;
+  var songStarted:Bool = false;
+
+  // Stage layers
+  var sky:StageProp;
+  var stage:StageProp;
+  var trees:StageProp;
+  var portalRayBg:StageProp;
+  var portalRayFg:StageProp;
+  var fgFog:StageProp;
+
+  // Castle sprites
+  var castles:Array<StageProp> = [];
+  var castleRays:Array<StageProp> = [];
+
+  // Void elements
+  var voidRight:StageProp;
+  var voidGround:StageProp;
+  var voidLeft:StageProp;
+
+  // Food!!!
+  var crimstalker:FunkinSprite;
+
+  var fogShaderTime:Float = 0.0;
+
+  public function new()
+  {
+    super('gluttony');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    songStarted = false;
+
+    //ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.BF, 'playerInsatian']);
+
+    // Create sky
+    sky = makeSprite('sky', 'gluttony/sky', xAdjust, yAdjust);
+    sky.scrollFactor.set(0.5, 0.5);
+
+    // Shuffle cloud pattern
+    shuffleArray(cloudPattern);
+
+    // Create clouds
+    for (i in 0...cloudPattern.length)
+    {
+      var cloudNum = cloudPattern[i];
+      var cloud = makeAnimatedSprite('cloud${i + 1}', 'gluttony/cloud',
+        xAdjust + 700 + (i + 1) * 1200, -500);
+      cloud.animation.addByPrefix('cloud', 'cloud${cloudNum}', 24, true);
+      cloud.animation.play('cloud');
+      cloud.scrollFactor.set(0.5, 0.5);
+      cloudSprites.push(cloud);
+    }
+
+    // Initialize castle animation arrays
+    for (i in 0...8)
+    {
+      castlePhases.push(FlxG.random.float(0, Math.PI));
+      castleOffsets.push(0);
+    }
+
+    // Create castle
+    for (i in 0...8)
+    {
+      var castle = makeAnimatedSprite('castle' + i, 'gluttony/castle_master', xAdjust, initY);
+      castle.animation.addByPrefix('castle', 'castle_' + i + '.png', 1, true);
+      castle.animation.play('castle');
+      castle.scrollFactor.set(0.8, 0.8);
+      castles.push(castle);
+    }
+
+    // Create castle rays (3-7)
+    for (i in 3...8)
+    {
+      var ray = makeAnimatedSprite('castle_ray' + i, 'gluttony/castle_ray_master', xAdjust, initY);
+      ray.animation.addByPrefix('ray', 'castle_'+ i + '_ray', 1, true);
+      ray.animation.play('ray');
+      ray.scrollFactor.set(0.8, 0.8);
+      ray.alpha = 0;
+      castleRays.push(ray);
+    }
+
+    // Void elements
+    voidRight = makeAnimatedSprite('void_r', 'gluttony/Gluttony_void_righttree',
+      xAdjust + 3200, yAdjust + 652);
+    voidRight.animation.addByPrefix('void', 'RightTreeVoid instance 1', 24, true);
+    voidRight.animation.play('void');
+
+    voidGround = makeAnimatedSprite('void_g', 'gluttony/Gluttony_voidground',
+      xAdjust + 380, yAdjust + 1600);
+    voidGround.animation.addByPrefix('void', 'GroundVoid instance 1', 24, true);
+    voidGround.animation.play('void');
+
+    voidLeft = makeAnimatedSprite('void_l', 'gluttony/Gluttony_voidlefttree',
+      xAdjust + 750, yAdjust + 425);
+    voidLeft.animation.addByPrefix('void', 'LeftTreeVoid instance 1', 24, true);
+    voidLeft.animation.play('void');
+
+    // Stage and trees
+    stage = makeSprite('stage', 'gluttony/stage', xAdjust, yAdjust);
+
+    trees = makeSprite('trees', 'gluttony/trees', xAdjust, yAdjust);
+    trees.zIndex = 200; // In front of characters
+
+    // Portal rays
+    portalRayBg = makeSprite('portal_ray_bg', 'gluttony/portal_ray_bg', xAdjust, yAdjust);
+
+    portalRayFg = makeSprite('portal_ray_fg', 'gluttony/portal_ray_fg', xAdjust, yAdjust);
+    portalRayFg.zIndex = 200;
+
+    // Foreground fog
+    fgFog = makeAnimatedSprite('fg_fog', 'gluttony/FG_Mist',
+      xAdjust - 380, yAdjust + 1450);
+    fgFog.animation.addByPrefix('fog', 'FG_mist1', 24, true);
+    fgFog.animation.play('fog');
+    fgFog.zIndex = 200;
+
+    // Crimstalker
+    crimstalker = FunkinSprite.create(xAdjust + 400, yAdjust + 650);
+    crimstalker.loadSparrow('gluttony/crimstalker');
+    crimstalker.animation.addByPrefix('idle', 'idle', 24, false);
+    PlayState.instance.add(crimstalker);
+
+    PlayState.instance.refresh();
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    songStarted = true;
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    var elapsed = event.elapsed;
+
+    // Update castle animations
+    for (i in 0...8)
+    {
+      castlePhases[i] += elapsed;
+      castleOffsets[i] = Math.sin(castlePhases[i] * 0.3) * 70;
+
+      if (castles[i] != null)
+      {
+        castles[i].y = initY + castleOffsets[i];
+      }
+
+      // Update rays (indices 3-7)
+      if (i >= 3 && castleRays[i - 3] != null)
+      {
+        castleRays[i - 3].y = initY + castleOffsets[i];
+      }
+    }
+
+    // Lerp glow effects
+    if (songStarted)
+    {
+      glowAlpha = FlxMath.lerp(glowAlpha, 0.001, 0.025);
+      portalGlowAlpha = FlxMath.lerp(portalGlowAlpha, 0.001, 0.025);
+    }
+
+    // Apply glow to castle rays
+    for (ray in castleRays)
+    {
+      if (ray != null) ray.alpha = glowAlpha;
+    }
+
+    // Apply glow to portal rays
+    if (portalRayBg != null) portalRayBg.alpha = portalGlowAlpha;
+    if (portalRayFg != null) portalRayFg.alpha = portalGlowAlpha;
+
+    // Animate clouds (scrolling)
+    if (!PlayState.instance.isInCutscene && !PlayState.instance.isInDialogue)
+    {
+      for (i in 0...cloudSprites.length)
+      {
+        var cloud = cloudSprites[i];
+        if (cloud != null)
+        {
+          cloud.x -= elapsed * 20;
+
+          // Wrap around
+          if (cloud.x <= -1300 - 1200)
+          {
+            cloud.x = xAdjust + 700 + 10 * 1200;
+          }
+        }
+      }
+    }
+
+    // Update fog shader time if applicable
+    fogShaderTime += elapsed;
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    var beat = event.beat;
+
+    // Portal glow pulse on every 4th beat
+    if (beat % 4 == 0)
+    {
+      portalGlowAlpha = 1.0;
+    }
+
+    // Castle ray glow pulse on beat 2, 6, 10, etc.
+    if (beat % 4 == 2)
+    {
+      glowAlpha = 1.0;
+    }
+
+    // Crimstalker idle animation on every other beat
+    if (beat % 2 == 0 && crimstalker != null)
+    {
+      crimstalker.animation.play('idle', true);
+    }
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    // Character positioning based on type
+    if (charType == CharacterType.BF)
+    {
+      adjustCharacterPosition(character);
+    }
+  }
+
+  function adjustCharacterPosition(character:BaseCharacter):Void
+  {
+    var xx:Float = -100;
+    var yy:Float = -360;
+    var charId = character.characterId;
+
+    // Position adjustments based on character
+    switch (charId)
+    {
+      case 'playable-insatian':
+        character.x -= (xx + 200);
+        character.y += (yy - 260);
+        character.y -= 190;
+
+      case 'bf':
+        character.x -= (100 + xx);
+        character.y += (400 + yy) - 40;
+
+      case 'bf-gluttony':
+        character.x -= (100 + xx);
+        character.y += (310 + yy);
+
+      default:
+    }
+  }
+
+  function makeSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function makeAnimatedSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadSparrow(imagePath);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function shuffleArray(arr:Array<Int>):Void
+  {
+    for (i in 0...arr.length)
+    {
+      var j = FlxG.random.int(0, arr.length - 1);
+      var temp = arr[i];
+      arr[i] = arr[j];
+      arr[j] = temp;
+    }
+  }
+}

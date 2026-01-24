@@ -1,0 +1,168 @@
+package supereric.retrospecter.modules;
+
+import flixel.FlxG;
+import funkin.data.notestyle.NoteStyleRegistry;
+import funkin.FunkinMemory;
+import funkin.mobile.input.ControlsHandler;
+import funkin.modding.module.Module;
+import funkin.play.notes.notekind.NoteKindManager;
+import funkin.play.notes.notestyle.NoteStyle;
+import funkin.play.notes.Strumline;
+import funkin.play.notes.StrumlineNote;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.Preferences;
+import funkin.save.Save;
+import funkin.util.Constants;
+
+class RetroNoteStyles extends Module {
+	public function new() {
+		super("RetroNoteStyles");
+	}
+
+	final mobileArrowsActive:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+
+	// Originally "amplification" from Funkin's source code.
+	final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+
+	var _playerStyle:String = null;
+	var _opponentStyle:String = null;
+	// public var playerStyle(get, set):String = null;
+	// public var opponentStyle(get, set):String = null;
+	var isOppUsingCustomNote:Bool = false;
+
+	public function setStyle(type:CharacterType, name:String):Void {
+		if (type == CharacterType.BF) {
+			_playerStyle = name;
+		} else if (type == CharacterType.DAD) {
+			_opponentStyle = name;
+		}
+	}
+
+	/*function get_playerStyle():String {
+		return _playerStyle;
+	}
+	function set_playerStyle(value:String):String {
+		_playerStyle = value;
+		return _playerStyle;
+	}
+	function get_opponentStyle():String {
+		return _opponentStyle;
+	}
+	function set_opponentStyle(value:String):String {
+		_opponentStyle = value;
+		return _opponentStyle;
+	}*/
+
+	override function onSongLoaded(event) {
+		super.onSongLoaded(event);
+		if (PlayState.instance.playerStrumline.noteStyle.id != 'retrospecter') return;
+		isOppUsingCustomNote = false;
+
+		applyCustomNoteStyles();
+	}
+
+	function applyCustomNoteStyles():Void {
+		var dadCharacterId:String = PlayState.instance.currentStage.getDad().characterId;
+		var boyfriendCharacterId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
+
+		var dadNoteStyle = NoteStyleRegistry.instance.fetchEntry(dadCharacterId);
+		var bfNoteStyle = NoteStyleRegistry.instance.fetchEntry(boyfriendCharacterId);
+
+		if (_opponentStyle != null) {
+			var dadNoteStyle = NoteStyleRegistry.instance.fetchEntry(_opponentStyle);
+			if (dadNoteStyle != null) {
+				isOppUsingCustomNote = true;
+				FunkinMemory.cacheNoteStyle(dadNoteStyle);
+				refreshStrumlineStyle(PlayState.instance.opponentStrumline, _opponentStyle, false);
+			}
+		}
+
+		if (!Save.instance.modOptions.get('retroDefaultNotes') && _playerStyle != null) {
+			var bfNoteStyle = NoteStyleRegistry.instance.fetchEntry(_playerStyle);
+			if (bfNoteStyle != null) {
+				FunkinMemory.cacheNoteStyle(bfNoteStyle);
+				refreshStrumlineStyle(PlayState.instance.playerStrumline, _playerStyle, true);
+			}
+		}
+	}
+
+	public function onNoteHit(event:HitNoteScriptEvent):Void {
+    if (PlayState.instance == null) return;
+
+		// Play splash anims for the opponent if they're using a custom notestyle
+		if (!event.note.noteData.getMustHitNote() && isOppUsingCustomNote) {
+			PlayState.instance.opponentStrumline.playNoteSplash(note.noteData.getDirection());
+		}
+	}
+
+	function refreshStrumlineStyle(targetStrumline:Strumline, styleIdentifier:String, isPlayerSide:Bool):Void {
+		var customStyle:NoteStyle = NoteStyleRegistry.instance.fetchEntry(styleIdentifier)
+			?? NoteStyleRegistry.instance.fetchDefault();
+
+		if (targetStrumline == null) return;
+
+		targetStrumline.noteStyle = customStyle;
+
+		targetStrumline.noteSplashes.clear();
+		targetStrumline.noteHoldCovers.clear();
+
+		rebuildStrumlineNotes(targetStrumline, customStyle);
+		updateExistingNotes(targetStrumline, customStyle);
+
+		if (!isPlayerSide && mobileArrowsActive) {
+			adjustOppStrums();
+		}
+	}
+
+	function rebuildStrumlineNotes(strumline:Strumline, styleData:NoteStyle):Void {
+		for (i in 0...Strumline.KEY_COUNT) {
+			strumline.strumlineNotes.members[i].kill();
+			strumline.strumlineNotes.remove(strumline.strumlineNotes.members[i]);
+
+			var newStrum:StrumlineNote = new StrumlineNote(styleData, strumline.isPlayer, Strumline.DIRECTIONS[i]);
+			newStrum.x = strumline.getXPos(Strumline.DIRECTIONS[i]);
+			newStrum.x += Strumline.INITIAL_OFFSET;
+			newStrum.y = 0;
+
+			styleData.applyStrumlineOffsets(newStrum);
+			strumline.strumlineNotes.add(newStrum);
+		}
+	}
+
+	function updateExistingNotes(strumline:Strumline, styleData:NoteStyle):Void {
+		for (note in strumline.notes) {
+			var noteKindSpecificStyle:NoteStyle = NoteKindManager.getNoteStyle(note.kind, styleData.id)
+				?? styleData;
+
+			note.setupNoteGraphic(noteKindSpecificStyle);
+			note.playNoteAnimation(note.noteData.getDirection());
+
+			if (note.get_isHoldNote()) {
+				updateHoldNote(note, strumline, styleData);
+			}
+
+			strumline.onNoteIncoming.dispatch(note);
+		}
+	}
+
+	function updateHoldNote(note:Dynamic, strumline:Strumline, styleData:NoteStyle):Void {
+		note.holdNoteSprite.setupHoldNoteGraphic(styleData);
+		note.holdNoteSprite.noteStyleOffsets = styleData.getHoldNoteOffsets();
+
+		note.holdNoteSprite.graphicWidth = note.holdNoteSprite.graphic.width / 8 * note.holdNoteSprite.zoom;
+		note.holdNoteSprite.graphicHeight = note.holdNoteSprite.sustainLength * Constants.PIXELS_PER_MS * (strumline.scrollSpeed);
+
+		note.holdNoteSprite.updateHitbox();
+		note.holdNoteSprite.updateClipping();
+
+		note.holdNoteSprite.x = strumline.x;
+		note.holdNoteSprite.x += strumline.getXPos(Strumline.DIRECTIONS[note.noteData.getDirection() % Strumline.KEY_COUNT]);
+		note.holdNoteSprite.x += Strumline.STRUMLINE_SIZE / 2;
+		note.holdNoteSprite.x -= note.holdNoteSprite.graphicWidth / 2;
+	}
+
+	function adjustOppStrums():Void {
+		PlayState.instance.opponentStrumline.enterMiniMode(0.4 * screenRatio);
+	}
+}

@@ -13,7 +13,7 @@
     "isPixel": false,
     "flipX": false,
     "scale": 0.75,
-    "offsets": [-5, 0]
+    "offsets": [15, 0]
   },
   "animations": [
     {

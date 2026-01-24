@@ -1,0 +1,64 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+
+class InsatianCharacter extends SparrowCharacter {
+	function new() {
+		super('insatian');
+	}
+
+	override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+    if (PlayState.instance == null) return;
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+    if (eventKind == "PlayAnimation") {
+      this.animation.finished = true; // mark the animation as finished so the event's anim can play.
+      this.playAnimation(value.anim, true, true); // then force play the animation.
+    }
+  }
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			switch (event.note.noteData.kind)
+			{
+				case "No Animation":
+					return;
+			}
+		}
+		super.onNoteHit(event);
+	}
+
+	public function onUpdate(event:UpdateScriptEvent):Void {
+    super.onUpdate(event);
+		if (PlayState.instance == null) return;
+		for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
+    {
+      if (holdNote == null || !holdNote.alive) continue;
+      // If she is screaming and finishing a hold note OR she missed the note due to lag, play the idle anim again.
+      if (this.animation.curAnim.name == 'scream' && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength <= 3) {
+				playIdleAnim();
+      } else if (this.animation.curAnim.name == 'scream' && holdNote.missedNote) {
+				playIdleAnim();
+			}
+    }
+	}
+
+	function playIdleAnim():Void {
+		this.animation.finished = true;
+		this.animation.play('idle');
+	}
+
+  function onCreate(event) {
+		super.onCreate(event);
+	}
+
+	public function onDestroy(event):Void {
+		super.onDestroy(event);
+	}
+}

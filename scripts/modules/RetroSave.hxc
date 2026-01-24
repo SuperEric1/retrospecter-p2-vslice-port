@@ -40,6 +40,9 @@ class RetroSave extends Module
     if (!save.modOptions.exists("retroCustomMenus"))
       save.modOptions.set("retroCustomMenus", true);
 
+    if (!save.modOptions.exists("retroDefaultNotes"))
+      save.modOptions.set("retroDefaultNotes", true);
+
     save.flush();
   }
 }

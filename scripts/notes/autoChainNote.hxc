@@ -41,7 +41,7 @@ class autoChainNote extends Module {
 			event.note.x += -55;
 			event.note.yOffset += -137;
 
-			event.note.frames = Paths.getSparrowAtlas( 'chainNotes' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/ChainNotes' );
       if (downscroll) {
         event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );

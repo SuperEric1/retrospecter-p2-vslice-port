@@ -743,7 +743,19 @@ class WrathPhase4Stage extends Stage
     currentCameraY = 8220;
     targetCameraY = 8220;
 
+    FlxTween.cancelTweensOf(PlayState.instance.opponentStrumline);
+    FlxTween.cancelTweensOf(PlayState.instance.healthBar);
+    PlayState.instance.opponentStrumline.alpha = 1;
+    PlayState.instance.healthBar.y = healthBarOgPos[1];
+    FlxTween.cancelTweensOf(symbol);
+    FlxTween.cancelTweensOf(black);
+    FlxTween.cancelTweensOf(white);
+    FlxTween.cancelTweensOf(geyserR);
     symbol.alpha = 0;
+    black.alpha = 0;
+    white.alpha = 0;
+    geyserR.alpha = 1;
+    fire.animation.play('d');
     didDaShit = false;
     ssj = false;
     goBackToMyShit = false;

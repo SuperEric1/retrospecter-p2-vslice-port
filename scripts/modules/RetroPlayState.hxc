@@ -173,7 +173,7 @@ class RetroPlayState extends Module {
 
       //PlayState.instance.health -= event.healthChange;
       event.doesNotesplash = false;
-      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (k == 'Hydra') {
@@ -188,7 +188,7 @@ class RetroPlayState extends Module {
 
       // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
-      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (k == 'poison') {
@@ -203,7 +203,7 @@ class RetroPlayState extends Module {
       // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
-      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (k == 'scytheNote') {
@@ -237,7 +237,7 @@ class RetroPlayState extends Module {
       }
       FlxG.sound.play(Paths.sound('noteSounds/Nightflaid'));
       event.doesNotesplash = false;
-      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (k == 'izzyNote') {
@@ -267,7 +267,7 @@ class RetroPlayState extends Module {
       }
 
       scrambleStrumline();
-      if (FlxG.onMobile) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (k == 'spectre') {
@@ -615,7 +615,7 @@ class RetroPlayState extends Module {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
 
       var lockSprite = new FunkinSprite(strum.x, strum.y);
-      lockSprite.frames = Paths.getSparrowAtlas('strumChains');
+      lockSprite.frames = Paths.getSparrowAtlas('notes/strumChains');
 
       var dirName = getDirectionName(i);
       lockSprite.animation.addByPrefix('startLocked' + dirName, 'startLocked' + dirName, 24, false);

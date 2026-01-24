@@ -1036,6 +1036,13 @@ class RetroOptionsState extends Module
       name: "Checkpoints",
       description: "Allows to automatically go back to a certain point of the song when retrying.",
     },
+    /*{
+      id: "retroDefaultNotes",
+      type: OptionType.CHECKBOX,
+      defaultValue: true,
+      name: "Default Notes",
+      description: "Disables noteskins and replaces them with default FNF arrows and colors. (Does not disable hazard note mechanics.)",
+    },*/
     {
       id: "retroShaders",
       type: OptionType.CHECKBOX,

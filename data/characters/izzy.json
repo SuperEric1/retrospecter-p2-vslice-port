@@ -1,97 +1,74 @@
 {
-    "version": "1.0.0",
-    "name": "Izzy",
-    "assetPath": "characters/OtherSins/Izzy",
-    "singTime": 4,
+  "version": "1.0.0",
+  "name": "Izzy",
+  "assetPath": "characters/OtherSins/Izzy",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "izzy",
     "isPixel": false,
-    "scale": 1,
-    "healthIcon": {
-        "id": "izzy",
-        "isPixel": false,
-        "flipX": false,
-        "scale": 0.75
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Izzy Idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
     },
-    "animations": [
-        {
-            "name": "idle",
-            "prefix": "Izzy Idle",
-            "offsets": [
-                0,
-                0
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "idle-alt",
-            "prefix": "Izzy Alt Idle",
-            "offsets": [
-                71,
-                -34
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "wag",
-            "prefix": "Izzy Finger Wag",
-            "offsets": [
-                7,
-                3
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "chuckle",
-            "prefix": "Izzy laugh",
-            "offsets": [
-                7,
-                3
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "singDOWN",
-            "prefix": "Izzy Down Note",
-            "offsets": [
-                -131,
-                -42
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "singUP",
-            "prefix": "Izzy Up Note",
-            "offsets": [
-                140,
-                25
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "singRIGHT",
-            "prefix": "Izzy Right Note",
-            "offsets": [
-                -113,
-                -20
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        },
-        {
-            "name": "singLEFT",
-            "prefix": "Izzy Left Note",
-            "offsets": [
-                250,
-                -30
-            ],
-            "frameRate": 24,
-            "frameIndices": []
-        }
-    ],
-    "flipX": false
+    {
+      "name": "idle-alt",
+      "prefix": "Izzy Alt Idle",
+      "offsets": [71, -34],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "wag",
+      "prefix": "Izzy Finger Wag",
+      "offsets": [7, 3],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "chuckle",
+      "prefix": "Izzy laugh",
+      "offsets": [7, 3],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Izzy Down Note",
+      "offsets": [-131, -42],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "Izzy Up Note",
+      "offsets": [140, 25],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Izzy Right Note",
+      "offsets": [-113, -20],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Izzy Left Note",
+      "offsets": [250, -30],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
 }

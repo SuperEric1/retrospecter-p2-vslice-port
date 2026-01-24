@@ -24,7 +24,7 @@ class hollowNote extends Module {
 		super.onNoteIncoming( event );
 		if ( event.note.noteData.kind == "hollowNotes" )
 		{
-			event.note.frames = Paths.getSparrowAtlas( 'hollowNotes' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/hollowNotes' );
 			event.note.animation.addByPrefix( 'purpleScroll', 'noteLeft' );
 			event.note.animation.addByPrefix( 'blueScroll', 'noteDown' );
 			event.note.animation.addByPrefix( 'greenScroll', 'noteUp' );

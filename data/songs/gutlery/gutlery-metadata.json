@@ -1,0 +1,45 @@
+{
+  "version": "2.2.0",
+  "songName": "Gutlery",
+  "artist": "RetroSpecter & Kamex",
+  "charter": "Chubby & Lily-Clipee-Chan",
+  "looped": false,
+  "offsets": {
+    "instrumental": 0,
+    "altInstrumentals": {},
+    "vocals": {}
+  },
+  "playData": {
+    "previewStart": 0,
+    "previewEnd": 15000,
+    "songVariations": [],
+    "difficulties": ["easy", "normal", "hard"],
+    "characters": {
+      "player": "bf-gluttony",
+      "girlfriend": "gf-gluttony",
+      "opponent": "insatian",
+      "instrumental": "",
+      "altInstrumentals": []
+    },
+    "stage": "gluttony",
+    "album": "insatian",
+    "noteStyle": "retrospecter",
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
+  },
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 200,
+      "n": 4,
+      "d": 4,
+      "bt": [4, 4, 4, 4]
+    }
+  ],
+  "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"
+}

@@ -9,6 +9,7 @@
   "isPixel": false,
   "scale": 1,
   "healthIcon": {
+    "offsets": [-15, 0],
     "id": "ectobf",
     "isPixel": false,
     "flipX": false,

@@ -32,7 +32,7 @@ class spectreNote extends Module {
 			event.note.x += 15;
 			event.note.yOffset += -68;
 
-			event.note.frames = Paths.getSparrowAtlas( 'Notes_Spectre' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/Notes_Spectre' );
 			if (downscroll) {
         event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );

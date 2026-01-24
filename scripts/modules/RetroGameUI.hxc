@@ -111,7 +111,7 @@ class RetroGameUI extends Module {
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP3/bar');
         case 'phase4':
-          defaultScale = [0.4, 0.4];
+          defaultScale = [0.43, 0.43];
           healthBgYOffset = -100;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/retroP4/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/retroP4/bar');
@@ -122,6 +122,12 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+        case 'insatian':
+          defaultScale = [0.45, 0.45];
+          healthBgYOffset = -80;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/insatian/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/insatian/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/insatian/bar');
         case 'sakuromap2-atlas':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
@@ -152,14 +158,14 @@ class RetroGameUI extends Module {
       retroHealthBarFillBG.camera = playState.camHUD;
       retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
       retroHealthBarFillBG.screenCenter(0x01);
-      retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase()); // Cor do oponente
+      retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase(), true); // Cor do oponente
 
       // Configurar o preenchimento da barra (cor do jogador)
       retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
       retroHealthBarFill.camera = playState.camHUD;
       retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
       retroHealthBarFill.screenCenter(0x01);
-      retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase()); // Cor do jogador
+      retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
 
       // Guardar a largura original
       fillOriginalWidth = retroHealthBarFill.frameWidth;
@@ -358,6 +364,13 @@ class RetroGameUI extends Module {
 
     retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
 
+    // Catastrofiend has 2 colors: default and losing.
+    if (PlayState.instance.health > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) {
+      if (PlayState.instance.currentStage.getDad().characterId == 'phase4' && retroHealthBarFillBG.color != getIconColor('phase4-dead')) retroHealthBarFillBG.color = getIconColor('phase4-dead');
+    } else if (PlayState.instance.health < Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) {
+      if (PlayState.instance.currentStage.getDad().characterId == 'phase4' && retroHealthBarFillBG.color != getIconColor('phase4')) retroHealthBarFillBG.color = getIconColor('phase4');
+    }
+
     retroHealthBarOverlay.y = playState.healthBar.y + healthBgYOffset;
     retroHealthBarOverlay.alpha = playState.healthBar.alpha;
     retroHealthBarFill.y = playState.healthBar.y + healthBgYOffset;
@@ -391,61 +404,70 @@ class RetroGameUI extends Module {
     judgement.alpha = 0;
     comboText.alpha = 0;
     if (!PlayState.instance.isBotPlayMode) score.alpha = 0;
+    // i tried
+    if (isPlayerIconAnimated) syncIconAnim(PlayState.instance.iconP1, false);
+    if (isOppIconAnimated) syncIconAnim(PlayState.instance.iconP2, true);
   }
 
-  public function getIconColor(characterId:String) {
+  public function getIconColor(characterId:String, ?updateIconAnim:Bool = false) {
     isOppIconAnimated = false;
     playerIcon = PlayState.instance.iconP1;
     oppIcon = PlayState.instance.iconP2;
     switch (characterId) {
       case 'bf-retrospecter':
-        return 0xFF31b0d1;
+        return getRGB(25, 153, 186);
       case 'bf-wind':
-        return 0xFF31b0d1;
+        return getRGB(25, 153, 186);
       case 'bf-pride':
-        return 0xFF80f5e0;
+        return getRGB(128, 245, 224);
       case 'bf-wrath':
-        if (!isPlayerIconAnimated) {
+        if (!isPlayerIconAnimated && updateIconAnim) {
           isPlayerIconAnimated = true;
           playerIcon.animation.addByPrefix("idle", "neutral", 24, false);
           playerIcon.animation.addByPrefix("winning", "win", 24, false);
           playerIcon.animation.addByPrefix("losing", "lose", 24, false);
           syncIconAnim(playerIcon, false);
         }
-        return 0xFF282d4e;
+        return getRGB(40, 45, 78);
+      case 'bf-gluttony':
+        return getRGB(171, 22, 74);
       case 'bf-lust':
-        return 0xFF6b1b3f;
+        return getRGB(107, 27, 63);
 
       case 'phase1':
-        return 0xFF17d7e3;
+        return getRGB(23, 216, 228);
       case 'phase2':
-        return 0xFF4cff94;
+        return getRGB(76, 255, 148);
       case 'phase3':
-        return 0xFF17d7e3;
+        return getRGB(18, 255, 255);
       case 'phase4':
-        if (!isOppIconAnimated) {
+        if (!isOppIconAnimated && updateIconAnim) {
           isOppIconAnimated = true;
           oppIcon.animation.addByPrefix("idle", "neutral", 24, false);
           oppIcon.animation.addByPrefix("winning", "win", 24, false);
           oppIcon.animation.addByPrefix("losing", "lose", 24, false);
           syncIconAnim(oppIcon, true);
         }
-        return 0xFF17d7e3;
+        return getRGB(18, 255, 255);
+      case 'phase4-dead': // this is for the losing color in onUpdate()
+        return getRGB(118, 118, 118);
       case 'izzy':
-        return 0xFF78fff8;
+        return getRGB(130, 255, 250);
+      case 'insatian':
+        return getRGB(193, 20, 68);
       case 'sakuromap2-atlas':
-        return 0xFFa9328c;
+        return getRGB(169, 50, 140);
       case 'nightflaid_atlas':
         return 0xFFFFFFFF;
       case 'nightflaid_unbeatable':
-        FlxTween.color(PlayState.instance.iconP2, 1, PlayState.instance.iconP2.color, 0xFFA7D6F4, {
-            ease: FlxEase.circOut,
-        });
+        FlxTween.color(PlayState.instance.iconP2, 1, PlayState.instance.iconP2.color, 0xFFA7D6F4, { ease: FlxEase.circOut });
         return updateBarColor(CharacterType.DAD, 0xFFA7D6F4, true);
       default:
         return p2BarColor;
     }
   }
+
+  function getRGB(R:Int, G:Int, B:Int):Void { return FlxColor.fromRGB(R, G, B); }
 
   public function updateBarColor(char:CharacterType, color:FlxColor = p2BarColor, ?tween:Bool = false, ?tweenTime:Float = 1, ?tweenEase:FlxEase = FlxEase.circOut):Void {
     var oppBar = retroHealthBarFillBG;
@@ -467,19 +489,19 @@ class RetroGameUI extends Module {
     health = PlayState.instance.health;
     if (!opp) { // player
       if (health > win) {
-        icon.playAnimation('winning', false, false, 0);
+        icon.playAnimation('winning', true, false);
       } else if (health < lose) {
-        icon.playAnimation('losing', false, false, 0);
+        icon.playAnimation('losing', true, false);
       } else {
-        icon.playAnimation('idle', false, false, 0);
+        icon.playAnimation('idle', true, false);
       }
     } else { // opp
       if (health > win) {
-        icon.playAnimation('losing', false, false, 0);
+        icon.playAnimation('losing', true, false);
       } else if (health < lose) {
-        icon.playAnimation('winning', false, false, 0);
+        icon.playAnimation('winning', true, false);
       } else {
-        icon.playAnimation('idle', false, false, 0);
+        icon.playAnimation('idle', true, false);
       }
     }
   }
@@ -588,16 +610,16 @@ class RetroGameUI extends Module {
 
   override function onSongEvent(event) {
 		super.onSongEvent(event);
-    // Atualizar cor do icone se o personagem mudar.
+    // Atualizar cor do ícone se o personagem mudar.
 		if (event.eventData.eventKind == "RetroChangeCharacter") {
       var target = event.eventData.value.character;
       var characterId = event.eventData.value.newchar.toLowerCase();
 
       if (target == "bf") {
-			  retroHealthBarFill.color = getIconColor(characterId);
+			  retroHealthBarFill.color = getIconColor(characterId, true);
       }
       if (target == "dad") {
-			  retroHealthBarFillBG.color = getIconColor(characterId);
+			  retroHealthBarFillBG.color = getIconColor(characterId, true);
       }
     }
   }

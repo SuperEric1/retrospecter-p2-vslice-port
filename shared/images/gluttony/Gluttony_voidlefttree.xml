@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Gluttony_voidlefttree.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="LeftTreeVoid instance 10000" x="10" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10001" x="10" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10002" x="337" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10003" x="337" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10004" x="664" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10005" x="664" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10006" x="991" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10007" x="991" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10008" x="1318" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10009" x="1318" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10010" x="1645" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10011" x="1645" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10012" x="1972" y="10" width="317" height="555"/>
+	<SubTexture name="LeftTreeVoid instance 10013" x="1972" y="10" width="317" height="555"/>
+</TextureAtlas>

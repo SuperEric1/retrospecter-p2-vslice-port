@@ -37,7 +37,7 @@ class izzyNote extends Module {
 			event.note.x += -59;
 			event.note.yOffset += -65;
 
-			event.note.frames = Paths.getSparrowAtlas( 'Pride_Note_Assets' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/Pride_Note_Assets' );
 			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, false );
 			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, false );
 			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, false );

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="texture.png" width="3204" height="593">
+	<SubTexture name="castle_3_ray" x="1241" y="1" width="517" height="499" frameX="-2686" frameY="-623" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_4_ray" x="2339" y="1" width="864" height="591" rotated="true" frameX="-1959" frameY="-427" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_5_ray" x="403" y="1" width="835" height="407" rotated="true" frameX="-2423" frameY="-278" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_6_ray" x="1" y="1" width="399" height="377" frameX="-1074" frameY="-476" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_7_ray" x="1761" y="1" width="575" height="517" rotated="true" frameX="-1377" frameY="-601" frameWidth="3778" frameHeight="2012"/>
+</TextureAtlas>

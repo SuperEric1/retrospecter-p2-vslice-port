@@ -7,6 +7,7 @@
   "isPixel": false,
   "scale": 1.44,
   "healthIcon": {
+    "offsets": [15, 0],
     "id": "mommy",
     "isPixel": false,
     "flipX": false,

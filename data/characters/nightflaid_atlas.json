@@ -8,6 +8,7 @@
   "scale": 1,
   "danceEvery": 1,
   "healthIcon": {
+    "offsets": [15, 0],
     "id": "nightflaid",
     "isPixel": false,
     "flipX": false,

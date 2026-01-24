@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+-->
+<TextureAtlas imagePath="castle_master.png" width="1465" height="1709">
+	<SubTexture name="castle_0.png" x="1038" y="1141"  width="352" height="328" frameX="-2791" frameY="-1030" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_1.png" x="851" y="1473"  width="305" height="234" frameX="-1974" frameY="-1162" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_2.png" x="1038" y="809"  width="381" height="328" frameX="-2417" frameY="-1058" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_3.png" x="2" y="1030"  width="564" height="577" frameX="-2567" frameY="-550" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_4.png" x="2" y="2"  width="588" height="1024" frameX="-1989" frameY="-214" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_5.png" x="594" y="2"  width="440" height="1206" frameX="-2410" frameY="-53" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_6.png" x="570" y="1212"  width="277" height="388" frameX="-1170" frameY="-435" frameWidth="3778" frameHeight="2012"/>
+	<SubTexture name="castle_7.png" x="1038" y="2"  width="425" height="803" frameX="-1431" frameY="-308" frameWidth="3778" frameHeight="2012"/>
+</TextureAtlas>

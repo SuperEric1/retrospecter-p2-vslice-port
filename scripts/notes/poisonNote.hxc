@@ -42,13 +42,13 @@ class poisonNote extends Module {
 			event.note.yOffset += -70;
 
       if (downscroll) {
-        event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_down' );
+        event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_down' );
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down', 24, false );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up', 24, false );
         event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right', 24, false );
       } else {
-        event.note.frames = Paths.getSparrowAtlas( 'poisonNotes_up' );
+        event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_up' );
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down', 24, false );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up', 24, false );

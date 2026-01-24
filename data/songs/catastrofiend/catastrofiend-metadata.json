@@ -15,7 +15,6 @@
     "songVariations": [],
     "difficulties": ["easy", "normal", "hard"],
     "characters": {
-      "album": "volume1",
       "player": "bf-wind",
       "girlfriend": "gf-wrath",
       "opponent": "phase4",
@@ -39,12 +38,7 @@
       "bpm": 132,
       "n": 4,
       "d": 4,
-      "bt": [
-        4,
-        4,
-        4,
-        4
-      ]
+      "bt": [4, 4, 4, 4]
     }
   ],
   "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"

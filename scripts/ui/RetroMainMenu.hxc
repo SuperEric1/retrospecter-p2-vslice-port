@@ -614,7 +614,7 @@ class RetroMainMenu extends MusicBeatState
 
     if (lastMousePos == null && isExternalInput) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
 
-    // Calcular distância manualmente
+    // Calcular distância
     var dx:Float = currentMouseX - lastMousePos.x;
     var dy:Float = currentMouseY - lastMousePos.y;
     var mouseDist:Float = Math.sqrt(dx * dx + dy * dy);
@@ -675,16 +675,17 @@ class RetroMainMenu extends MusicBeatState
     }
 
     // KEYBOARD/SWIPE HANDLING
+    var controls = PlayerSettings.player1.controls;
 
-    var goLEFT = SwipeUtil.swipeLeft || PlayerSettings.player1.controls.UI_LEFT_P || PlayerSettings.player1.controls.UI_UP_P;
-    var goRIGHT = SwipeUtil.swipeRight || PlayerSettings.player1.controls.UI_RIGHT_P || PlayerSettings.player1.controls.UI_DOWN_P;
+    var goLEFT = SwipeUtil.swipeLeft || controls.UI_LEFT_P || controls.UI_UP_P;
+    var goRIGHT = SwipeUtil.swipeRight || controls.UI_RIGHT_P || controls.UI_DOWN_P;
 
-    var doSELECT = PlayerSettings.player1.controls.ACCEPT_P; // also select if we press enter
-    var goBACK = PlayerSettings.player1.controls.BACK_P;
-    var doIDLE = PlayerSettings.player1.controls.RESET_P;
+    var doSELECT = controls.ACCEPT_P; // also select if we press enter
+    var goBACK = controls.BACK_P;
+    var goMENU = controls.DEBUG_MENU ?? false;
+    var doIDLE = controls.RESET_P;
 
-    if (goLEFT || goRIGHT)
-    {
+    if (goLEFT || goRIGHT) {
       blockMouse = true; // Bloquear movimentos do mouse para não interferir.
       hadInput = true;
 
@@ -713,9 +714,13 @@ class RetroMainMenu extends MusicBeatState
 
     if (goBACK) goBack();
 
+    if (!FlxG.onMobile && goMENU) {
+      persistentUpdate = false;
+      FlxG.state.openSubState(new funkin.ui.debug.DebugMenuSubState());
+    }
+
     // Resetar timer se teve input
-    if (hadInput && hasSelection && !isBusy)
-    {
+    if (hadInput && hasSelection && !isBusy) {
       resetIdleTimer();
     }
 

@@ -6,6 +6,7 @@
   "isPixel": false,
   "scale": 0.6,
   "healthIcon": {
+    "offsets": [15, 0],
     "id": "apocalyptro",
     "isPixel": false,
     "flipX": false,

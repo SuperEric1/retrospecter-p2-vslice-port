@@ -28,6 +28,8 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "izzyNote":
           return;
+        case "insatianNote":
+          return;
         case "No Animation":
           return;
         case "chain":

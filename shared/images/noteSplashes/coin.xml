@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="coin.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="splash0000" x="0" y="555" width="163" height="151" frameX="-52" frameY="-76" frameWidth="274" frameHeight="288"/>
+	<SubTexture name="splash0001" x="247" y="535" width="179" height="187" frameX="-43" frameY="-55" frameWidth="274" frameHeight="288"/>
+	<SubTexture name="splash0002" x="247" y="293" width="218" height="237" frameX="-22" frameY="-28" frameWidth="274" frameHeight="288"/>
+	<SubTexture name="splash0003" x="279" y="0" width="204" height="222" frameX="-33" frameY="-45" frameWidth="274" frameHeight="288"/>
+	<SubTexture name="splash0004" x="0" y="293" width="242" height="257" frameX="-16" frameY="-18" frameWidth="274" frameHeight="288"/>
+	<SubTexture name="splash0005" x="0" y="0" width="274" height="288"/>
+	<SubTexture name="splash0006" x="0" y="0" width="1" height="1" frameX="-91" frameY="-94" frameWidth="274" frameHeight="288"/>
+
+	<SubTexture name="nothing0000" x="0" y="0" width="1" height="1" frameX="-91" frameY="-94" frameWidth="1" frameHeight="1"/>
+</TextureAtlas>

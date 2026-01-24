@@ -7,6 +7,7 @@
   "isPixel": false,
   "scale": 1.444,
   "healthIcon": {
+    "offsets": [15, 0],
     "id": "zerktro",
     "isPixel": false,
     "flipX": false,

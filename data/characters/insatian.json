@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "name": "Insatian",
+  "assetPath": "characters/OtherSins/Insatian",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "insatian",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "cameraOffsets": [280, 100],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Insatian_Idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Insatian_Down",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "Insatian_Up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Insatian_Right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Insatian_Left",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "scream",
+      "prefix": "Insatian_SCREAM",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

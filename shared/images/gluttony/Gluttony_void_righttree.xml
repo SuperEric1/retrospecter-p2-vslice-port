@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Gluttony_void_righttree.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="RightTreeVoid instance 10000" x="10" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10001" x="10" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10002" x="364" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10003" x="364" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10004" x="718" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10005" x="718" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10006" x="1072" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10007" x="1072" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10008" x="1426" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10009" x="1426" y="10" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10010" x="10" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10011" x="10" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10012" x="364" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10013" x="364" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10014" x="718" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10015" x="718" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10016" x="1072" y="475" width="344" height="455"/>
+	<SubTexture name="RightTreeVoid instance 10017" x="1072" y="475" width="344" height="455"/>
+</TextureAtlas>

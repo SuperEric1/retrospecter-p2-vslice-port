@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="FG_mist.png" width="4506" height="8416">
+	<SubTexture name="FG_mist10001" x="1" y="4931" width="4295" height="684" frameX="-55" frameY="-1" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10002" x="1" y="4931" width="4295" height="684" frameX="-55" frameY="-1" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10003" x="1" y="4931" width="4295" height="684" frameX="-55" frameY="-1" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10004" x="1" y="4931" width="4295" height="684" frameX="-55" frameY="-1" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10005" x="1" y="5618" width="4285" height="761" frameX="-44" frameY="-0" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10006" x="1" y="5618" width="4285" height="761" frameX="-44" frameY="-0" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10007" x="1" y="5618" width="4285" height="761" frameX="-44" frameY="-0" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10008" x="1" y="5618" width="4285" height="761" frameX="-44" frameY="-0" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10009" x="1" y="6382" width="4250" height="757" frameX="-43" frameY="-9" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10010" x="1" y="6382" width="4250" height="757" frameX="-43" frameY="-9" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10011" x="1" y="6382" width="4250" height="757" frameX="-43" frameY="-9" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10012" x="1" y="6382" width="4250" height="757" frameX="-43" frameY="-9" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10013" x="1" y="4249" width="4304" height="679" frameX="-72" frameY="-31" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10014" x="1" y="4249" width="4304" height="679" frameX="-72" frameY="-31" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10015" x="1" y="4249" width="4304" height="679" frameX="-72" frameY="-31" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10016" x="1" y="4249" width="4304" height="679" frameX="-72" frameY="-31" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10017" x="1" y="2423" width="4374" height="604" frameX="-87" frameY="-85" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10018" x="1" y="2423" width="4374" height="604" frameX="-87" frameY="-85" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10019" x="1" y="2423" width="4374" height="604" frameX="-87" frameY="-85" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10020" x="1" y="2423" width="4374" height="604" frameX="-87" frameY="-85" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10021" x="1" y="1" width="4504" height="485" frameX="-2" frameY="-99" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10022" x="1" y="1" width="4504" height="485" frameX="-2" frameY="-99" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10023" x="1" y="1" width="4504" height="485" frameX="-2" frameY="-99" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10024" x="1" y="1" width="4504" height="485" frameX="-2" frameY="-99" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10025" x="1" y="1947" width="4406" height="473" frameX="-154" frameY="-135" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10026" x="1" y="1947" width="4406" height="473" frameX="-154" frameY="-135" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10027" x="1" y="1947" width="4406" height="473" frameX="-154" frameY="-135" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10028" x="1" y="1947" width="4406" height="473" frameX="-154" frameY="-135" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10029" x="1" y="979" width="4468" height="465" frameX="-149" frameY="-165" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10030" x="1" y="979" width="4468" height="465" frameX="-149" frameY="-165" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10031" x="1" y="979" width="4468" height="465" frameX="-149" frameY="-165" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10032" x="1" y="979" width="4468" height="465" frameX="-149" frameY="-165" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10033" x="1" y="489" width="4480" height="487" frameX="-141" frameY="-153" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10034" x="1" y="489" width="4480" height="487" frameX="-141" frameY="-153" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10035" x="1" y="489" width="4480" height="487" frameX="-141" frameY="-153" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10036" x="1" y="489" width="4480" height="487" frameX="-141" frameY="-153" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10037" x="1" y="1447" width="4440" height="497" frameX="-139" frameY="-141" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10038" x="1" y="1447" width="4440" height="497" frameX="-139" frameY="-141" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10039" x="1" y="1447" width="4440" height="497" frameX="-139" frameY="-141" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10040" x="1" y="1447" width="4440" height="497" frameX="-139" frameY="-141" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10041" x="1" y="7804" width="4257" height="611" frameX="-251" frameY="-84" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10042" x="1" y="7804" width="4257" height="611" frameX="-251" frameY="-84" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10043" x="1" y="7804" width="4257" height="611" frameX="-251" frameY="-84" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10044" x="1" y="7804" width="4257" height="611" frameX="-251" frameY="-84" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10045" x="1" y="3629" width="4327" height="617" frameX="-170" frameY="-59" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10046" x="1" y="3629" width="4327" height="617" frameX="-170" frameY="-59" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10047" x="1" y="3629" width="4327" height="617" frameX="-170" frameY="-59" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10048" x="1" y="3629" width="4327" height="617" frameX="-170" frameY="-59" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10049" x="1" y="3030" width="4340" height="596" frameX="-64" frameY="-43" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10050" x="1" y="3030" width="4340" height="596" frameX="-64" frameY="-43" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10051" x="1" y="3030" width="4340" height="596" frameX="-64" frameY="-43" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10052" x="1" y="3030" width="4340" height="596" frameX="-64" frameY="-43" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10053" x="1" y="7142" width="4283" height="659" frameX="-106" frameY="-14" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10054" x="1" y="7142" width="4283" height="659" frameX="-106" frameY="-14" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10055" x="1" y="7142" width="4283" height="659" frameX="-106" frameY="-14" frameWidth="4626" frameHeight="771"/>
+	<SubTexture name="FG_mist10056" x="1" y="7142" width="4283" height="659" frameX="-106" frameY="-14" frameWidth="4626" frameHeight="771"/>
+</TextureAtlas>

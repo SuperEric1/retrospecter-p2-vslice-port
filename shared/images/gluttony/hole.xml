@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="hole.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="void0000" x="0" y="0" width="434" height="458"/>
+	<SubTexture name="void0001" x="0" y="0" width="434" height="458"/>
+	<SubTexture name="void0002" x="444" y="0" width="434" height="458"/>
+	<SubTexture name="void0003" x="444" y="0" width="434" height="458"/>
+	<SubTexture name="void0004" x="888" y="0" width="434" height="458"/>
+	<SubTexture name="void0005" x="888" y="0" width="434" height="458"/>
+	<SubTexture name="void0006" x="1332" y="0" width="434" height="458"/>
+	<SubTexture name="void0007" x="1332" y="0" width="434" height="458"/>
+	<SubTexture name="void0008" x="1776" y="0" width="434" height="458"/>
+	<SubTexture name="void0009" x="1776" y="0" width="434" height="458"/>
+	<SubTexture name="void0010" x="2220" y="0" width="434" height="458"/>
+	<SubTexture name="void0011" x="2220" y="0" width="434" height="458"/>
+	<SubTexture name="void0012" x="2664" y="0" width="434" height="458"/>
+	<SubTexture name="void0013" x="2664" y="0" width="434" height="458"/>
+</TextureAtlas>
