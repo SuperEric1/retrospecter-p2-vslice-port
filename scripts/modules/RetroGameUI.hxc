@@ -39,7 +39,8 @@ class RetroGameUI extends Module {
   }
 
   var isRetro:Bool = false;
-  var downscroll = false;
+  var downscroll:Bool = false;
+  var isMobileArrowScheme:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
   var healthBgYOffset:Float = 0;
   // move judgements a little bit to the left on non-mobile or non-arrows scheme
   var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
@@ -72,7 +73,7 @@ class RetroGameUI extends Module {
       if (!isRetro) return;
       if (hasBeenCreated) return;
       downscroll = Preferences.downscroll;
-      if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+      if (isMobileArrowScheme) downscroll = true;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -149,7 +150,7 @@ class RetroGameUI extends Module {
 
       //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
       retroHealthBarOverlay.camera = playState.camHUD;
-      retroHealthBarOverlay.zIndex = 803; //803
+      retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 5; //803
       retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
       retroHealthBarOverlay.screenCenter(0x01);
 
@@ -178,6 +179,9 @@ class RetroGameUI extends Module {
       // Outros
       playState.iconP1.bopEvery = 8;
       playState.iconP2.bopEvery = 8;
+      playState.iconP1.zIndex = retroHealthBarOverlay.zIndex + 2;
+      playState.iconP2.zIndex = retroHealthBarOverlay.zIndex + 1;
+      if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
       playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
 
       playState.refresh();

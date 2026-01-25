@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Gluttony_Note_Assets.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="confirm Down0000" x="0" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Down0001" x="0" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Down0002" x="260" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Down0003" x="260" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Down0004" x="520" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Down0005" x="520" y="0" width="250" height="266" frameX="-10" frameY="-2" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="Down0006" x="780" y="174" width="148" height="165" frameX="-58" frameY="-51" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="static Down0000" x="780" y="349" width="146" height="162" frameX="-58" frameY="-51" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="confirm Left0008" x="0" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Left0009" x="0" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Left0010" x="0" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Left0011" x="0" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Left0012" x="276" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Left0013" x="276" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="Left0014" x="0" y="1070" width="165" height="149" frameX="-49" frameY="-58" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="static Left0000" x="350" y="1070" width="163" height="147" frameX="-51" frameY="-58" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="confirm Up0016" x="0" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Up0017" x="0" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Up0018" x="260" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Up0019" x="260" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Up0020" x="520" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Up0021" x="520" y="276" width="250" height="266" frameX="-10" frameY="0" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="static Up0000" x="696" y="1070" width="146" height="162" frameX="-58" frameY="-52" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="Up0023" x="780" y="0" width="149" height="164" frameX="-58" frameY="-50" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="confirm Right0024" x="552" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Right0025" x="552" y="552" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Right0026" x="276" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Right0027" x="276" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Right0028" x="552" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+	<SubTexture name="confirm Right0029" x="552" y="811" width="266" height="249" frameX="0" frameY="-10" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="Right0030" x="175" y="1070" width="165" height="148" frameX="-48" frameY="-58" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="static Right0000" x="523" y="1070" width="163" height="147" frameX="-48" frameY="-57" frameWidth="266" frameHeight="268"/>
+
+	<SubTexture name="hold_end0000" x="852" y="521" width="49" height="63"/>
+	<SubTexture name="hold_piece0000" x="852" y="594" width="48" height="44"/>
+</TextureAtlas>

@@ -29,7 +29,7 @@ class scytheNote extends Module {
 			event.note.x += -79;
 			event.note.yOffset += -74;
 
-			event.note.frames = Paths.getSparrowAtlas( 'scytheNotes' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/scytheNotes' );
 			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, true );
 			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, true );
 			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, true );

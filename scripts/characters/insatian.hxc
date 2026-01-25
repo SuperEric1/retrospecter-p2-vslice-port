@@ -23,7 +23,6 @@ class InsatianCharacter extends SparrowCharacter {
   }
 
 	function onNoteHit(event:HitNoteScriptEvent) {
-		if (PlayState.instance == null) return;
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
 			switch (event.note.noteData.kind)
 			{
@@ -37,7 +36,9 @@ class InsatianCharacter extends SparrowCharacter {
 	public function onUpdate(event:UpdateScriptEvent):Void {
     super.onUpdate(event);
 		if (PlayState.instance == null) return;
-		for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
+
+		// this is now in the stage scripts for better accruacy
+		/*for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
     {
       if (holdNote == null || !holdNote.alive) continue;
       // If she is screaming and finishing a hold note OR she missed the note due to lag, play the idle anim again.
@@ -46,7 +47,7 @@ class InsatianCharacter extends SparrowCharacter {
       } else if (this.animation.curAnim.name == 'scream' && holdNote.missedNote) {
 				playIdleAnim();
 			}
-    }
+    }*/
 	}
 
 	function playIdleAnim():Void {

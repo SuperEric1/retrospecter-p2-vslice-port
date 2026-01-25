@@ -9,7 +9,7 @@ import funkin.Preferences;
 import funkin.util.Constants;
 import funkin.util.HapticUtil;
 
-class BFRetroCharacter extends MultiSparrowCharacter
+class BFGluttonyCharacter extends MultiSparrowCharacter
 {
   function new()
   {

@@ -9,6 +9,7 @@ import flixel.util.FlxColor;
 import flixel.text.FlxText;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.util.Constants;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
@@ -16,6 +17,8 @@ import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.Paths;
+import funkin.save.Save;
+import haxe.ds.StringMap;
 
 import supereric.retrospecter.modules.RetroNoteStyles;
 
@@ -41,6 +44,7 @@ class GluttonyStage extends Stage
   // Stage layers
   var sky:StageProp;
   var stage:StageProp;
+  var overlay:FunkinSprite;
   var trees:StageProp;
   var portalRayBg:StageProp;
   var portalRayFg:StageProp;
@@ -60,9 +64,29 @@ class GluttonyStage extends Stage
 
   var fogShaderTime:Float = 0.0;
 
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+
+  var strumLineShake:Float = 1;
+  var isRaging:Bool = false;
+  var togglingBeats:Array<Int> = [272, 282, 576, 588, 768, 780];
+  var damageMult:StringMap<String, Float>;
+
+  var weakerShakeTimer:FlxTimer;
+
+  // Armazena as posições padrão dos strums do oponente
+  var defaultOpponentStrumX:Array<Float> = [];
+  var defaultOpponentStrumY:Array<Float> = [];
+  var hasStoredStrums:Bool = false;
+
   public function new()
   {
     super('gluttony');
+
+    damageMult = new StringMap();
+    damageMult.set('easy', 0.5);
+    damageMult.set('normal', 1.0);
+    damageMult.set('hard', 1.25);
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -70,6 +94,9 @@ class GluttonyStage extends Stage
     super.onCreate(event);
 
     songStarted = false;
+    isRaging = false;
+    strumLineShake = 1;
+    hasStoredStrums = false;
 
     //ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.BF, 'playerInsatian']);
 
@@ -161,6 +188,15 @@ class GluttonyStage extends Stage
     crimstalker.animation.addByPrefix('idle', 'idle', 24, false);
     PlayState.instance.add(crimstalker);
 
+    // Create overlay for rage mode
+    overlay = FunkinSprite.create();
+    overlay.makeGraphic(Std.int(FlxG.width * 2), Std.int(FlxG.height * 2), FlxColor.fromRGB(172, 11, 54)); // #AC0B36
+    overlay.scrollFactor.set(0, 0);
+    overlay.screenCenter();
+    overlay.blend = 9; // multiply blend mode
+    overlay.alpha = 0;
+    PlayState.instance.add(overlay);
+
     PlayState.instance.refresh();
   }
 
@@ -168,11 +204,21 @@ class GluttonyStage extends Stage
   {
     super.onSongStart(event);
     songStarted = true;
+
+    if (!hasStoredStrums) storeDefaultStrumPositions();
+
+    // Inicia o timer de shake fraco
+    weakerShakeTimer = new FlxTimer().start(0.05, function(tmr:FlxTimer) {
+      handleStrums();
+    }, 0); // 0 = loop infinito
   }
 
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var elapsed = event.elapsed;
 
@@ -232,11 +278,32 @@ class GluttonyStage extends Stage
 
     // Update fog shader time if applicable
     fogShaderTime += elapsed;
+
+    var dad = PlayState.instance.currentStage.getDad();
+    if (dad != null && dad.animation.curAnim.name != 'idle') {
+      handleStrums();
+    }
+
+    strumLineShake = FlxMath.lerp(strumLineShake, 2, elapsed * 6);
+
+    // Verifica hold notes do oponente
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
+    {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        onOpponentNoteHit(holdNote);
+      }
+    }
+
+    updateIcon();
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var beat = event.beat;
 
@@ -257,6 +324,27 @@ class GluttonyStage extends Stage
     {
       crimstalker.animation.play('idle', true);
     }
+
+    for (activatingBeat in togglingBeats)
+    {
+      if (beat == activatingBeat && PlayState.instance.currentChart.song.id == 'gutlery')
+      {
+        toggleRageMode();
+        moveCameraToOpponent();
+        break;
+      }
+    }
+  }
+
+  override function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+    super.onNoteHit(event);
+
+    if (!event.note.noteData.getMustHitNote())
+    {
+      strumLineShake += 1;
+      onOpponentNoteHit(event.note);
+    }
   }
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
@@ -267,6 +355,119 @@ class GluttonyStage extends Stage
     if (charType == CharacterType.BF)
     {
       adjustCharacterPosition(character);
+    }
+  }
+
+  function storeDefaultStrumPositions():Void
+  {
+    if (PlayState.instance == null) return;
+
+    var opponentStrums = PlayState.instance.opponentStrumline;
+    if (opponentStrums != null) {
+      for (i in 0...4) {
+        var strum = opponentStrums.strumlineNotes.members[i];
+        if (strum != null)
+        {
+          defaultOpponentStrumX.push(strum.x);
+          defaultOpponentStrumY.push(strum.y);
+        }
+      }
+      hasStoredStrums = true;
+    }
+  }
+
+  function toggleRageMode():Void
+  {
+    if (PlayState.instance == null) return;
+
+    var focusPoint:Array<Float> = [275, 175];
+
+    if (!isRaging)
+    {
+      tweens.push(FlxTween.tween(overlay, {alpha: 0.5}, 0.75, {ease: FlxEase.cubeOut}));
+
+      PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom + 0.2, 1, true, FlxEase.quadOut);
+
+      var dad = PlayState.instance.currentStage.getDad();
+      if (dad != null) {
+        dad.cameraFocusPoint.x -= focusPoint[0];
+        dad.cameraFocusPoint.y -= focusPoint[1];
+      }
+    }
+    else
+    {
+      tweens.push(FlxTween.tween(overlay, {alpha: 0}, 0.5, {ease: FlxEase.cubeOut}));
+
+      PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom, 0.5, true, FlxEase.cubeOut);
+
+      var dad = PlayState.instance.currentStage.getDad();
+      if (dad != null) {
+        dad.animation.finished = true;
+		    dad.animation.play('idle');
+        dad.cameraFocusPoint.x += focusPoint[0];
+        dad.cameraFocusPoint.y += focusPoint[1];
+      }
+    }
+
+    isRaging = !isRaging;
+  }
+
+  function moveCameraToOpponent():Void
+  {
+    var dad = PlayState.instance.currentStage.getDad();
+    PlayState.instance.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x, dad.cameraFocusPoint.y);
+  }
+
+  function handleStrums():Void
+  {
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var str = FlxG.random.float(-strumLineShake, strumLineShake);
+    var str2 = FlxG.random.float(-strumLineShake, strumLineShake) / 1.5;
+
+    var opponentStrums = PlayState.instance.opponentStrumline;
+    if (opponentStrums != null)
+    {
+      for (i in 0...4)
+      {
+        var strum = opponentStrums.strumlineNotes.members[i];
+        if (strum != null && i < defaultOpponentStrumX.length)
+        {
+          strum.x = defaultOpponentStrumX[i] + str;
+          strum.y = defaultOpponentStrumY[i] + str2;
+        }
+      }
+    }
+  }
+
+  function updateIcon():Void
+  {
+    if (!isRaging) return;
+    if (PlayState.instance == null) return;
+
+    var iconP2 = PlayState.instance.iconP2;
+    if (iconP2 != null && iconP2.animation != null && iconP2.animation.curAnim != 'losing') {
+      iconP2.animation.play('losing', true);
+    }
+  }
+
+  function onOpponentNoteHit(note:Dynamic):Void
+  {
+    if (PlayState.instance == null) return;
+    if (!isRaging) return;
+
+    // Aplicar shake na câmera
+    var shakeStrength = note.isSustainNote ? 0.003 : 0.005;
+    PlayState.instance.camGame.shake(shakeStrength, 0.1);
+
+    // Aplicar dano ao jogador se mechanics estiver ativo
+    if (PlayState.instance.health > (Constants.HEALTH_MAX / 2) && Save.instance.modOptions.get('retroMechanics') == true)
+    {
+      var difficulty:String = PlayState.instance.currentDifficulty.toLowerCase();
+      var damage = (Constants.HEALTH_MAX * 0.006) * (damageMult.exists(difficulty) ? damageMult.get(difficulty) : 1.0);
+      PlayState.instance.health -= damage;
     }
   }
 
@@ -321,5 +522,67 @@ class GluttonyStage extends Stage
       arr[i] = arr[j];
       arr[j] = temp;
     }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    resetTweens();
+
+    if (weakerShakeTimer != null)
+    {
+      weakerShakeTimer.cancel();
+      weakerShakeTimer = null;
+    }
+  }
+
+  private function resetTweens():Void
+  {
+    for (tween in tweens)
+    {
+      if (tween != null)
+        tween.cancel();
+    }
+    tweens = [];
+    pausedTweens = [];
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = true;
+      }
+    }
+    pausedTweens = [];
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    overlay.alpha = 0;
+    isRaging = false;
+    strumLineShake = 1;
+    hasStoredStrums = false;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
   }
 }

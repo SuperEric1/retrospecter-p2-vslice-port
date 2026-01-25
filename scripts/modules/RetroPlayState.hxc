@@ -3,6 +3,7 @@ import funkin.play.PlayState;
 import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
 import funkin.util.Constants;
+import flixel.math.FlxRandom;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
@@ -20,6 +21,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
+import funkin.ui.FullScreenScaleMode;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.mobile.input.ControlsHandler;
@@ -80,6 +82,15 @@ class RetroPlayState extends Module {
   var hydraBeamTimers:Array<FlxTimer> = [];
   var hydraBeamStates:IntMap<Int> = new IntMap(); // 0 = inativo, 1 = start, 2 = loop, 3 = end
 
+  // Insatian Notes - Sistema de buracos que cobrem a tela
+  var holeSprites:Array<FunkinSprite> = [];
+  var insatianHolesTimer:FlxTimer = null;
+  var insatianNoteDamage:Float = Constants.HEALTH_MAX * 0.33; // 32%
+  var insatianNoteCounter:Int = 0;
+
+  // Misc
+  var currentHealthCap:Float = 0; // also used for the insatian notes.
+
   var hurtNoteVibration:VibrationPreset =
   {
     period: 0.2,
@@ -126,7 +137,7 @@ class RetroPlayState extends Module {
     var hurtNotes = [
       'poison', 'izzyNote', 'chain', 'autoChain',
       'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
-      'spectre',
+      'spectre', 'insatianNote',
       'none'
     ];
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
@@ -152,6 +163,8 @@ class RetroPlayState extends Module {
   if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
     var k = event.note.noteData.kind;
     var noteDir = event.note.noteData.getDirection();
+
+    checkHealthCap(event.note.healthChange);
 
     // Prevenir que notas sejam acertadas em strums bloqueados
     if (isStrumLocked.get(noteDir)) {
@@ -188,6 +201,72 @@ class RetroPlayState extends Module {
 
       // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
+    if (k == 'insatianNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+      event.doesNotesplash = false;
+
+      if (insatianHolesTimer != null) {
+        insatianHolesTimer.active = false;
+        insatianHolesTimer.cancel();
+        insatianHolesTimer = null;
+      }
+
+      if (!PlayState.instance.isPracticeMode) {
+        // Inicializar o sistema de vida máxima caso esteja no valor default
+        if (currentHealthCap <= 0 || currentHealthCap >= Constants.HEALTH_MAX || currentHealthCap == null) {
+          currentHealthCap = Constants.HEALTH_MAX;
+        }
+        // Capar a vida
+        if (currentHealthCap > insatianNoteDamage) currentHealthCap -= insatianNoteDamage;
+      }
+
+      insatianNoteCounter += 1;
+      var holeMin:Int = 2;
+      var holeMax:Int = 10;
+      if (insatianNoteCounter > 1) {
+        var multiplier = FlxG.random.int(2, 4);
+        holeMin += multiplier * insatianNoteCounter;
+        holeMax += multiplier * insatianNoteCounter;
+      }
+
+      for (i in holeMin...holeMax + 1) {
+        var hole = FunkinSprite.create(0, 0);
+        var size = FlxG.random.float(FlxG.height * 0.15, FlxG.height * 0.35);
+        hole.frames = Paths.getSparrowAtlas('gluttony/hole');
+        hole.animation.addByPrefix('idle', 'void', 24, true);
+        hole.animation.play('idle');
+        hole.setGraphicSize(size, size);
+        hole.zIndex = PlayState.instance.playerStrumline.zIndex + 1;
+        hole.updateHitbox();
+        hole.x = FlxG.random.int(FullScreenScaleMode.gameNotchSize.x - 10, FlxG.width - hole.width + 10);
+        hole.y = FlxG.random.int(FullScreenScaleMode.gameNotchSize.y - 10, FlxG.height - hole.height + 20);
+        hole.cameras = [PlayState.instance.camHUD];
+        holeSprites.push(hole);
+        PlayState.instance.add(hole);
+      }
+
+      // Aqui o check de vida ja faz isso entao nao precisa mais
+      // if (PlayState.instance.health > currentHealthCap) PlayState.instance.health = currentHealthCap;
+
+      var baseTime:Float = 6;
+      if (insatianNoteCounter > 1 && insatianNoteCounter <= 4) baseTime += insatianNoteCounter / 1.3;
+
+      insatianHolesTimer = new FlxTimer().start(baseTime, function(tmr:FlxTimer) {
+        if (PlayState.instance == null) {
+          insatianHolesTimer = null;
+          return;
+        }
+        removeInsatianHoles();
+      });
+
+      FlxG.sound.play(Paths.sound('noteSounds/Insatian'));
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
@@ -382,6 +461,38 @@ class RetroPlayState extends Module {
   {
     super.onBeatHit(event);
   }*/
+
+  function removeInsatianHoles(?instant = false):Void {
+    for (hole in holeSprites) {
+      if (instant) {
+        hole.destroy();
+        continue;
+      }
+      FlxTween.cancelTweensOf(hole);
+      tweens.push(FlxTween.tween(hole, {alpha: 0}, 1, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+        hole.destroy();
+      }}));
+    }
+
+    currentHealthCap = 0;
+    insatianNoteCounter = 0;
+
+    holeSprites = [];
+    if (insatianHolesTimer != null) {
+      insatianHolesTimer.cancel();
+      insatianHolesTimer = null;
+    }
+  }
+
+  function checkHealthCap(?healthChange = 0):Void {
+    if (currentHealthCap != null && currentHealthCap > 0) {
+      if (PlayState.instance.health > currentHealthCap) {
+        // Cap the player's health
+        if (healthChange > 0) PlayState.instance.health -= healthChange;
+        else PlayState.instance.health = currentHealthCap;
+      }
+    }
+  }
 
   function scrambleStrumline() {
     if (izzyMechanicTimer != null) { //se acertar uma nota enquanto ja ta com o efeito, resetar strums e o timer pra acontecer novamente
@@ -798,6 +909,16 @@ class RetroPlayState extends Module {
       }
     }
 
+    // Detecção de notas longas sendo pressionadas
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        if (!PlayState.instance.isBotPlayMode) {
+          checkHealthCap();
+        }
+      }
+    }
+
   }
 
   function loadUIElements()
@@ -929,6 +1050,8 @@ class RetroPlayState extends Module {
     /*if (poisonText != null) {
       poisonText.visible = false;
     }*/
+
+    removeInsatianHoles(true);
 
     isDrugged = false;
     if (izzyMechanicTimer != null) {
@@ -1172,49 +1295,66 @@ class RetroPlayState extends Module {
 
     if (!hasCachedTextures) {
       // Notes
-			FunkinMemory.permanentCacheTexture(Paths.image('hollowNotes'));
-			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_down'));
-			FunkinMemory.permanentCacheTexture(Paths.image('PoisonNotes_up'));
-			FunkinMemory.permanentCacheTexture(Paths.image('Pride_Note_Assets'));
-			FunkinMemory.permanentCacheTexture(Paths.image('PoisonArrowHit'));
-			FunkinMemory.permanentCacheTexture(Paths.image('ChainNotes'));
-			FunkinMemory.permanentCacheTexture(Paths.image('strumChains'));
-			FunkinMemory.permanentCacheTexture(Paths.image('HydraNotes'));
-			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam'));
-			FunkinMemory.permanentCacheTexture(Paths.image('scytheNotes'));
-			FunkinMemory.permanentCacheTexture(Paths.image('HeartNotes'));
+      var notesDir:String = 'notes/';
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'hollowNotes', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonNotes_down', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonNotes_up', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'Pride_Note_Assets', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonArrowHit', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'ChainNotes', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'strumChains', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'HydraNotes', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'scytheNotes', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'HeartNotes', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'Notes_Spectre', "shared"));
+			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'SpectreHit', "shared"));
+
+      // Mechanics
+      FunkinMemory.permanentCacheTexture(Paths.image('gluttony/hole', "shared")); // insatian's hole LOL
+      FunkinMemory.permanentCacheTexture(Paths.image('gluttony/munch', "shared"));
+
+      // Sounds
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Insatian", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit1", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit2", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit3", "shared"));
+
+      // Title Screen
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/logo', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/flames', "shared"));
 
       // Main menu
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/credits'));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options'));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side'));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story'));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra'));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst'));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/credits', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst', "shared"));
 
       // Phase 2 - Spectral
-      FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals'));
+      FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals', "shared"));
 
       // Phase 3 - Apocalyptro
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_L'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_R'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris1'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserL'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserM'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserR'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris2'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavabubbles'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lava_FG'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/FG_fire'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_M'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_L'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_R'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_L'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_R'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris1'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserL'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserM'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserR'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris2'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavabubbles'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lava_FG'));
+      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/FG_fire'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_M', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_L', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_R', "shared"));
 
       // Phase 4 - Catastrofiend
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/dragonball'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/insatianVoid'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/nftf'));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/dragonball', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/insatianVoid', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/nftf', "shared"));
 
 			hasCachedTextures = true;
     }

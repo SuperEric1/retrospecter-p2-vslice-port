@@ -41,7 +41,7 @@ class HydraNote extends Module {
 			event.note.x += -45;
 			event.note.yOffset += -265;
 
-			event.note.frames = Paths.getSparrowAtlas( 'HydraNotes' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/HydraNotes' );
       if (downscroll) {
         event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );

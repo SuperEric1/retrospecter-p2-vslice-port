@@ -33,7 +33,7 @@ class sakuNote extends Module {
 			event.note.x += -45;
 			event.note.yOffset += -265;
 
-			event.note.frames = Paths.getSparrowAtlas( 'HeartNotes' );
+			event.note.frames = Paths.getSparrowAtlas( 'notes/HeartNotes' );
       if (downscroll) {
         event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0', 24, false );
         event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0', 24, false );

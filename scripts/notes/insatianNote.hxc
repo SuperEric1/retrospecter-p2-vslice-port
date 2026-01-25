@@ -1,0 +1,69 @@
+import funkin.audio.FunkinSound;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class insatianNote extends Module {
+	public function new() {
+		super("insatianNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "insatianNote" )
+		{
+      var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			event.note.x += -50;
+			event.note.yOffset += -29;
+
+			event.note.frames = Paths.getSparrowAtlas( 'notes/Gluttony_Note_Assets' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left0', 24, false );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down0', 24, false );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up0', 24, false );
+			event.note.animation.addByPrefix( 'redScroll', 'Right0', 24, false );
+
+			var insatianNote:String;
+			switch ( event.note.noteData.data % 4 )
+				{
+					case 0:
+						insatianNote = "purpleScroll";
+					case 1:
+						insatianNote = "blueScroll";
+					case 2:
+						insatianNote = "greenScroll";
+					case 3:
+						insatianNote = "redScroll";
+				}
+
+			event.note.animation.play( insatianNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.kind == "insatianNote" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}
