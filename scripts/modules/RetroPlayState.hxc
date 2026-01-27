@@ -951,7 +951,7 @@ class RetroPlayState extends Module {
     }
 
     // Skill issue check
-    var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? null;
+    var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
     isCh34t1ng = isCh34t1ng.toLowerCase();
     if (isCh34t1ng != null && (isCh34t1ng == "on" || isCh34t1ng == true || isCh34t1ng != "off")) {
       funnyVar = true;
