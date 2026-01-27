@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -35,30 +36,31 @@ class sakuNote extends Module {
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/HeartNotes' );
       if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
       } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
       }
 
 			var sakuNote:String;
 			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						sakuNote = "purpleScroll";
-					case 1:
-						sakuNote = "blueScroll";
-					case 2:
-						sakuNote = "greenScroll";
-					case 3:
-						sakuNote = "redScroll";
-				}
+			{
+				case 0:
+					sakuNote = "purpleScroll";
+				case 1:
+					sakuNote = "blueScroll";
+				case 2:
+					sakuNote = "greenScroll";
+				case 3:
+					sakuNote = "redScroll";
+			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( sakuNote );
 		}
 	}
@@ -67,7 +69,7 @@ class sakuNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "sakuNote" )
+		if ( event.note.noteData.kind == "sakuNote" )
 		{
 			event.cancel();
 			event.stopPropagation();

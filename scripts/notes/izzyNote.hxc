@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -38,24 +39,25 @@ class izzyNote extends Module {
 			event.note.yOffset += -65;
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/Pride_Note_Assets' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, false );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, false );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, false );
-			event.note.animation.addByPrefix( 'redScroll', 'Right', 24, false );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
+			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
 
 			var izzyNote:String;
 			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						izzyNote = "purpleScroll";
-					case 1:
-						izzyNote = "blueScroll";
-					case 2:
-						izzyNote = "greenScroll";
-					case 3:
-						izzyNote = "redScroll";
-				}
+			{
+				case 0:
+					izzyNote = "purpleScroll";
+				case 1:
+					izzyNote = "blueScroll";
+				case 2:
+					izzyNote = "greenScroll";
+				case 3:
+					izzyNote = "redScroll";
+			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( izzyNote );
 		}
 	}
@@ -64,7 +66,7 @@ class izzyNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "izzyNote" )
+		if ( event.note.noteData.kind == "izzyNote" )
 		{
 			event.cancel();
 			event.stopPropagation();

@@ -3,6 +3,7 @@ import funkin.play.character.CharacterType;
 import funkin.play.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import funkin.Paths;
 import funkin.play.stage.Bopper;
 import flixel.group.FlxTypedSpriteGroup;
 import funkin.graphics.FunkinSprite;
@@ -13,45 +14,45 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class GirlfriendWrathCharacter extends SparrowCharacter
 {
+  // TODO: mover tudo isso pra um módulo pq isso ta dando muito problema ao carregar a música e tudo mais.
   function new()
   {
     super('gf-wrath');
   }
 
-  var speaker:StageProp;
+  var speaker:FunkinSprite;
   var refreshed:Bool = false;
 
   var stageOffsets:haxe.ds.StringMap<String, Array<Float>> = [
-    "wrath_phase1" => [-330, -45],
-    "wrath_phase2" => [-330, -45],
-    "wrath_phase3" => [-440, -230],
-    "wrath_phase4" => [-365, -100],
+    "wrath_phase1" => [-235, 20],
+    "wrath_phase2" => [-235, 20],
+    "wrath_phase3" => [-60, 5],
+    "wrath_phase4" => [-175, 10],
   ];
   var defaultOffset:Array<Float> = [0, 0]; // Fallback
 
-  function onCreate(event:ScriptEvent)
+  /*function onSongLoaded(event:ScriptEvent)
   {
-    super.onCreate(event);
+    super.onSongLoaded(event);
+
+    if (speaker != null) return;
 
     // dont add scrollfactor or it will bug and create a massive sprite when restarting the song for some reason
     speaker = FunkinSprite.create(0, 0);
-    speaker.loadSparrow('girlfriends/speaker/wrath');
+    speaker.frames = Paths.getSparrowAtlas('girlfriends/speaker/wrath');
     speaker.animation.addByIndices('idle', 'GF Dancing Beat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8], '', 24, false);
-    speaker.scale = this.scale;
-    speaker.antialiasing = this.antialiasing;
     speaker.x = this.x;
     speaker.y = this.y;
-    speaker.updateHitbox();
   }
 
   function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || speaker == null) return;
     //synchronizeShader();
 
-    speaker.visible = this.visible;
-    speaker.alpha = this.alpha;
+    //speaker.visible = this.visible;
+    //speaker.alpha = this.alpha;
     var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
     var offset:Array<Float> = stageOffsets.exists(currentStage) ? stageOffsets.get(currentStage) : defaultOffset;
 
@@ -59,7 +60,11 @@ class GirlfriendWrathCharacter extends SparrowCharacter
     speaker.y = this.y + offset[1];
 
     if (!refreshed) {
+      speaker.antialiasing = this.antialiasing;
+      speaker.scale.set(this.scale.x, this.scale.y);
+      speaker.scrollFactor.set(this.scrollFactor.x, this.scrollFactor.y);
       speaker.zIndex = this.zIndex - 5;
+      speaker.updateHitbox();speaker.zIndex = this.zIndex - 5;
       PlayState.instance.currentStage.add(speaker);
 
       PlayState.instance.currentStage.refresh();
@@ -76,9 +81,9 @@ class GirlfriendWrathCharacter extends SparrowCharacter
 
     if (event.beat % 2 == 0)
     {
-        if (speaker != null) speaker.animation.play('idle', true);
+        if (speaker != null && speaker?.animation != null) speaker?.animation?.play('idle', true);
     }
-  }
+  }*/
 
   override function dance(force:Bool):Void
   {

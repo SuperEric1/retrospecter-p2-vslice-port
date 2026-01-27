@@ -1,0 +1,97 @@
+{
+  "version": "1.1.0",
+  "name": "Insatian",
+  "author": "Ported by SuperEric",
+  "fallback": "retrospecter",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/Gluttony_Note_Assets",
+      "scale": 0.7,
+      "data": {
+        "left": { "prefix": "Left0" },
+        "down": { "prefix": "Down0" },
+        "up": { "prefix": "Up0" },
+        "right": { "prefix": "Right0" }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/Gluttony_Note_Assets",
+      "scale": 0.7,
+      "offsets": [-13, -10],
+      "data": {
+        "leftStatic": { "prefix": "static Left0" },
+        "leftPress": { "prefix": "static Left0" },
+        "leftConfirm": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0" },
+
+        "downStatic": { "prefix": "static Down0" },
+        "downPress": { "prefix": "static Down0" },
+        "downConfirm": { "prefix": "confirm Down0" },
+        "downConfirmHold": { "prefix": "confirm Down0" },
+
+        "upStatic": { "prefix": "static Up0" },
+        "upPress": { "prefix": "static Up0" },
+        "upConfirm": { "prefix": "confirm Up0" },
+        "upConfirmHold": { "prefix": "confirm Up0" },
+
+        "rightStatic": { "prefix": "static Right0" },
+        "rightPress": { "prefix": "static Right0" },
+        "rightConfirm": { "prefix": "confirm Right0" },
+        "rightConfirmHold": { "prefix": "confirm Right0" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "shared:notes/hold/Gluttony",
+      "scale": 0.7,
+      "offsets": [2, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": "shared:notes/splash/eatmepls",
+      "alpha": 0.8,
+      "offsets": [40, 0],
+      "data": {
+        "enabled": true,
+        "leftSplashes": [
+          { "prefix": "note splash purple 1" }
+        ],
+        "rightSplashes": [
+          { "prefix": "note splash red 1" }
+        ],
+        "upSplashes": [
+          { "prefix": "note splash green 1" }
+        ],
+        "downSplashes": [
+          { "prefix": "note splash blue 1" }
+        ]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Gluttony_cover",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

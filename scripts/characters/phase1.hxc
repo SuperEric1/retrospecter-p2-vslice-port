@@ -16,7 +16,7 @@ class PhaseOneCharacter extends MultiSparrowCharacter {
 	function onNoteHit(event:HitNoteScriptEvent) {
 		if (PlayState.instance == null) return;
 		// aqui a nota nao é um mustHit pois é o dad cantando, entao nao tem relacao com o player
-		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
 			switch (event.note.noteData.kind)
 			{
 				case "hollowNotes":
@@ -26,7 +26,7 @@ class PhaseOneCharacter extends MultiSparrowCharacter {
 			}
 
 			var suffix = isAngry ? 'alt' : '';
-			holdTimer = 0;
+			this.holdTimer = 0;
 			playSingAnimation(event.note.noteData.getDirection(), suffix);
 			return;
 		}

@@ -7,6 +7,7 @@ TODO:
 - [ ] Saku & Schythe notes
 - [ ] Hard Ache and Extirpatient chart fixes
 - [ ] Phase 2 end cutscene
+- [ ] Replace the modified note assets
 - [ ] Acid death
 - [ ] Poison note notesplashes
 - [ ] Intro for options menu

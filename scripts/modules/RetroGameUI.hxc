@@ -11,6 +11,7 @@ import flixel.util.FlxStringUtil;
 import flixel.math.FlxRect;
 import flixel.ui.FlxBar;
 import flixel.ui.FlxBarFillDirection;
+import flixel.group.FlxTypedSpriteGroup;
 import funkin.play.components.HealthIcon;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.NoteSprite;
@@ -42,13 +43,18 @@ class RetroGameUI extends Module {
   var downscroll:Bool = false;
   var isMobileArrowScheme:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
   var healthBgYOffset:Float = 0;
-  // move judgements a little bit to the left on non-mobile or non-arrows scheme
+  // move judgements a little bit to the left on non-mobile/non-arrows scheme
   var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
 
+  // Health Bars
   var retroHealthBar:FlxBar;
   var retroHealthBarOverlay:FunkinSprite;
   var retroHealthBarFill:FunkinSprite;
   var retroHealthBarFillBG:FunkinSprite; // Fundo da barra (cor do oponente)
+  var maxHealthCutOffset:Float = 0; // Offset ajustável para o corte visual (caso precise algum dia)
+  var currentHealthCut:Float = 0; // Porcentagem atual do corte (0 a 1)
+  var healthBarResetTween:FlxTween = null;
+  // var insatianMunch:FunkinSprite;
   var p1BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_GREEN; // bf
   var p2BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_RED; // dad
   var isOppIconAnimated:Bool = false;
@@ -56,10 +62,10 @@ class RetroGameUI extends Module {
   var ogBfId:String;
   var ogDadId:String;
 
+  // Score/HUD elements
   var judgement:FlxText;
   var comboText:FlxText;
   var score:FlxText;
-  // Tweens para controlar as animações
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
@@ -86,12 +92,12 @@ class RetroGameUI extends Module {
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
       var fillDirection:Array<Float, Float> = [1500, 80];
+      cutOffset = 0;
 
       playState.healthBar.y += downscroll ? -17 : 17;
       playState.healthBar.visible = false;
       playState.healthBarBG.y = downscroll ? -17 : 17;
       playState.healthBarBG.visible = false;
-
 
       switch (playStage.getDad().characterId.toLowerCase()) {
         case 'phase1':
@@ -124,11 +130,24 @@ class RetroGameUI extends Module {
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
         case 'insatian':
+          var healthGroup:FlxTypedSpriteGroup;
+
+          healthGroup = new FlxTypedSpriteGroup();
+          healthGroup.cameras = [playState.camHUD];
+          playState.add(healthGroup);
+
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -80;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/insatian/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/insatian/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/insatian/bar');
+          // Create health bar cut sprite for mechanic
+          /*insatianMunch = FunkinSprite.create(playState.healthBar.x, playState.healthBar.y + healthBgYOffset, 'gluttony/munch');
+          insatianMunch.setGraphicSize(Std.int(retroHealthBarOverlay.height - 30));
+          insatianMunch.updateHitbox();
+          insatianMunch.alpha = 0.9;
+          insatianMunch.blend = 4;
+          insatianMunch.cameras = [playState.camHUD];*/
         case 'sakuromap2-atlas':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
@@ -175,12 +194,13 @@ class RetroGameUI extends Module {
       playState.add(retroHealthBarFillBG);
       playState.add(retroHealthBarFill);
       playState.add(retroHealthBarOverlay);
+      /*if (insatianMunch != null) {
+        insatianMunch.zIndex = retroHealthBarOverlay.zIndex;
+        playState.add(insatianMunch);
+      }*/
 
       // Outros
-      playState.iconP1.bopEvery = 8;
-      playState.iconP2.bopEvery = 8;
-      playState.iconP1.zIndex = retroHealthBarOverlay.zIndex + 2;
-      playState.iconP2.zIndex = retroHealthBarOverlay.zIndex + 1;
+      configureIcon(); // setar zindex e tudo mais nos dois icons
       if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
       playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
 
@@ -247,6 +267,7 @@ class RetroGameUI extends Module {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
     if (event.note.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
+      if (event.eventCanceled) return;
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
       if (isNormalNote) updateJudgement('miss', event.score, true);
@@ -364,9 +385,14 @@ class RetroGameUI extends Module {
     var healthPercent:Float = playState.healthLerp / 2.0;
     var newWidth:Float = fillOriginalWidth * healthPercent;
 
-    var clipX:Float = fillOriginalWidth - newWidth; // Cortar barras
-
+    var clipX:Float = fillOriginalWidth - newWidth; // Cortar fill das barras
     retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
+
+    // Isso aqui agora é na função de setCut, não tem pra que estar aqui
+    /*if (currentHealthCut > 0 && (healthBarResetTween == null || !healthBarResetTween.active)) {
+      var maxHealthCutWidth:Float = fillOriginalWidth * currentHealthCut;
+      retroHealthBarOverlay.clipRect = FlxRect.get(maxHealthCutWidth + maxHealthCutOffset, 0, retroHealthBarOverlay.frameWidth - (maxHealthCutWidth + maxHealthCutOffset), retroHealthBarOverlay.frameHeight);
+    }*/
 
     // Catastrofiend has 2 colors: default and losing.
     if (PlayState.instance.health > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) {
@@ -405,6 +431,7 @@ class RetroGameUI extends Module {
     isPlayerIconAnimated = false;
     retroHealthBarFill.color = getIconColor(ogBfId);
     retroHealthBarFillBG.color = getIconColor(ogDadId);
+    if (currentHealthCut > 0) resetHealthBarCut(0);
     judgement.alpha = 0;
     comboText.alpha = 0;
     if (!PlayState.instance.isBotPlayMode) score.alpha = 0;
@@ -509,6 +536,99 @@ class RetroGameUI extends Module {
       }
     }
   }
+
+  public function configureIcon(?icon = 'both', ?bop:Int = 0):Void { // This should not be called every frame because of the playstate refresh
+    var playState = PlayState.instance;
+    var iZIndex = retroHealthBarOverlay.zIndex + 2;
+    var iBopEvery = (bop == 0 || bop == null) ? 8 : bop;
+    var iconLower = icon?.toLowerCase() ?? 'both';
+
+    if (iconLower == 'p1' || iconLower == 'both') {
+      playState.iconP1.bopEvery = iBopEvery;
+      if (playState.iconP1.zIndex != iZIndex + 1) playState.iconP1.zIndex = iZIndex + 1;
+    }
+    if (iconLower == 'p2' || iconLower == 'both') {
+      playState.iconP2.bopEvery = iBopEvery;
+      if (playState.iconP1.zIndex != iZIndex) playState.iconP2.zIndex = iZIndex;
+    }
+    PlayState.instance.refresh();
+  }
+
+  public function setHealthBarCut(cutPercent:Float, ?offset:Float = 0):Void {
+    if (retroHealthBarFillBG == null || retroHealthBarOverlay == null) return;
+    if (healthBarResetTween != null) {
+      healthBarResetTween.cancel();
+      healthBarResetTween = null;
+    }
+
+    currentHealthCut = cutPercent;
+    maxHealthCutOffset = offset;
+
+    // Calcular a largura que deve ser cortada da esquerda
+    var cutWidth:Float = fillOriginalWidth * cutPercent;
+
+    var oppBarXOffset = -65; // Para que a barra fique cortada certinho (antes cortava mais do que deveria)
+    retroHealthBarFillBG.clipRect = FlxRect.get(cutWidth + offset + oppBarXOffset, 0, fillOriginalWidth - (cutWidth + offset), retroHealthBarFillBG.frameHeight);
+
+    retroHealthBarOverlay.clipRect = FlxRect.get(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
+    /// retroHealthBarOverlay.clipRect = FlxRect.get(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
+  }
+
+  public function resetHealthBarCut(?duration:Float = 1.0):Void {
+    if (retroHealthBarFillBG == null || retroHealthBarOverlay == null) return;
+    if (healthBarResetTween != null) {
+      healthBarResetTween.cancel();
+      healthBarResetTween = null;
+    }
+
+    if (duration <= 0) { // Instantâneo
+      currentHealthCut = 0;
+      maxHealthCutOffset = 0;
+      retroHealthBarFillBG.clipRect = null;
+      retroHealthBarOverlay.clipRect = null;
+      healthBarResetTween = null;
+      return;
+    }
+
+    var startCut:Float = currentHealthCut;
+    var dummyObject = {progress: startCut};
+
+    healthBarResetTween = FlxTween.tween(dummyObject, {progress: 0}, duration, {
+      ease: FlxEase.quadOut,
+      onUpdate: function(twn:FlxTween) {
+        if (PlayState.instance == null) {
+          healthBarResetTween.cancel();
+          healthBarResetTween = null;
+          return;
+        }
+        var cutWidth:Float = fillOriginalWidth * dummyObject.progress;
+
+        // Atualizar clips
+        retroHealthBarFillBG.clipRect = FlxRect.get(
+          cutWidth + maxHealthCutOffset,
+          0,
+          fillOriginalWidth - (cutWidth + maxHealthCutOffset) - 10,
+          retroHealthBarFillBG.frameHeight
+        );
+
+        retroHealthBarOverlay.clipRect = FlxRect.get(
+          cutWidth + maxHealthCutOffset,
+          0,
+          retroHealthBarOverlay.frameWidth - (cutWidth + maxHealthCutOffset),
+          retroHealthBarOverlay.frameHeight
+        );
+      },
+      onComplete: function(twn:FlxTween) {
+        // Reset completo, só pra garantir
+        currentHealthCut = 0;
+        maxHealthCutOffset = 0;
+        retroHealthBarFillBG.clipRect = null;
+        retroHealthBarOverlay.clipRect = null;
+        healthBarResetTween = null;
+      }
+    });
+  }
+
   function cancelTweens():Void {
     for (tween in judgementTweens) {
       if (tween != null) tween.cancel();
@@ -621,9 +741,11 @@ class RetroGameUI extends Module {
 
       if (target == "bf") {
 			  retroHealthBarFill.color = getIconColor(characterId, true);
+        configureIcon('p1');
       }
       if (target == "dad") {
-			  retroHealthBarFillBG.color = getIconColor(characterId, true);
+        retroHealthBarFillBG.color = getIconColor(characterId, true);
+        configureIcon('p2');
       }
     }
   }

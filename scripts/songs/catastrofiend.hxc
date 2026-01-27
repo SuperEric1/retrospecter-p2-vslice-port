@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.save.Save;
@@ -26,8 +27,11 @@ class CatastrofiendSong extends Song
   var hasPlayedCutscene:Bool;
   var hasPlayedEndCutscene:Bool;
   var bgSprite:FunkinSprite;
+  var flashMultiply:FunkinSprite;
+  var flashAdd:FunkinSprite;
   var didHide:Bool = false;
   var didShowStrum:Bool = false;
+  var hasCreatedSprites:Bool = false;
 
   // Sistema para rastrear voicelines já tocadas
   var playedVoicelines:IntMap<Int, Bool>;
@@ -39,7 +43,7 @@ class CatastrofiendSong extends Song
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
   var screenShake:Bool = true;
-  var enabledUnderlay:Bool = false; // Set to true if you have underlay sprites
+  var enabledUnderlay:Bool = false;
 
   // Beat timing arrays
   var introBeatTime:Int = 11;
@@ -91,8 +95,8 @@ class CatastrofiendSong extends Song
 
     if (!hasPlayedCutscene)
     {
-      bgSprite = new FunkinSprite(-100, -100);
-      bgSprite.makeSolidColor(2000, 2500, 0xFFFFFFFF);
+      bgSprite = new FunkinSprite(0, 0);
+      bgSprite.makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), 0xFFFFFFFF);
       bgSprite.cameras = [PlayState.instance.camHUD];
       bgSprite.zIndex = 1000000;
       bgSprite.alpha = 1;
@@ -200,6 +204,7 @@ class CatastrofiendSong extends Song
     }
 
     if (event.beat >= 832 && !hasPlayedEndCutscene) {
+      ModuleHandler.getModule('RetroPlayState').scriptCall('funnyFunction', []);
       if (!PlayStatePlaylist.isStoryMode) hasPlayedEndCutscene = true;
 
       if (!hasPlayedEndCutscene)
@@ -320,39 +325,27 @@ class CatastrofiendSong extends Song
     PlayState.instance.camHUD.zoom += 0.035;
 
     // Create flash effects
-    var flashMultiply = FunkinSprite.create();
-    flashMultiply.makeGraphic(5000, 3000, FlxColor.fromRGB(4, 254, 131));
-    flashMultiply.scrollFactor.set(0, 0);
-    flashMultiply.screenCenter();
-    flashMultiply.cameras = [PlayState.instance.camGame];
+    flashMultiply.active = true;
     flashMultiply.alpha = 0.6;
-    flashMultiply.blend = 9; //multiply
-    PlayState.instance.add(flashMultiply);
 
     FlxTween.tween(flashMultiply, {alpha: 0}, 0.35, {
       ease: FlxEase.circOut,
       onComplete: function(t) {
         if (PlayState.instance == null) return;
-        flashMultiply.destroy();
+        // flashMultiply.destroy();
       }
     });
 
     if (flashingLights)
     {
-      var flashAdd = FunkinSprite.create();
-      flashAdd.makeGraphic(5000, 3000, FlxColor.fromRGB(4, 254, 131));
-      flashAdd.scrollFactor.set(0, 0);
-      flashAdd.screenCenter();
-      flashAdd.cameras = [PlayState.instance.camGame];
+      flashAdd.active = true;
       flashAdd.alpha = 0.25;
-      flashAdd.blend = 0;
-      PlayState.instance.add(flashAdd);
 
       FlxTween.tween(flashAdd, {alpha: 0}, 0.5, {
         ease: FlxEase.quadIn,
         onComplete: function(t) {
           if (PlayState.instance == null) return;
-          flashAdd.destroy();
+          // flashAdd.destroy();
         }
       });
     }
@@ -469,6 +462,7 @@ class CatastrofiendSong extends Song
   override function onDestroy(event)
 	{
 		super.onDestroy(event);
+    hasCreatedSprites = false;
 		resetTweens();
 	}
 
@@ -541,6 +535,7 @@ class CatastrofiendSong extends Song
     hasPlayedEndCutscene = false;
     didHide = false;
     didShowStrum = false;
+    flashingLights = Preferences.flashingLights ?? false;
 
     // Resetar o sistema de voicelines
     playedVoicelines = new IntMap();
@@ -550,6 +545,30 @@ class CatastrofiendSong extends Song
     {
       pattern.finished = false;
     }
+
+    if (hasCreatedSprites) return;
+    flashMultiply = FunkinSprite.create(0, 0);
+    flashMultiply.makeGraphic(Std.int(FlxG.width * 4), Std.int(FlxG.height * 4), FlxColor.fromRGB(4, 254, 131));
+    flashMultiply.scrollFactor.set(0, 0);
+    flashMultiply.screenCenter();
+    flashMultiply.alpha = 0;
+    flashMultiply.blend = 9; //multiply
+    flashMultiply.zIndex = 10000;
+    flashMultiply.active = false;
+    PlayState.instance.add(flashMultiply);
+
+    flashAdd = FunkinSprite.create(0, 0);
+    flashAdd.makeGraphic(Std.int(FlxG.width * 4), Std.int(FlxG.height * 4), FlxColor.fromRGB(4, 254, 131));
+    flashAdd.scrollFactor.set(0, 0);
+    flashAdd.screenCenter();
+    flashAdd.alpha = 0;
+    flashAdd.blend = 0;
+    flashAdd.zIndex = 100001;
+    flashAdd.active = false;
+    PlayState.instance.add(flashAdd);
+    //PlayState.instance.refresh();
+
+    hasCreatedSprites = true;
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

@@ -33,7 +33,7 @@ class RemoveNote extends Module {
 		super.onNoteMiss( event );
 		for ( note in PlayState.instance.playerStrumline.notes.members )
 		{
-			if ( event.note.kind == "none" )
+			if ( event.note.noteData.kind == "none" )
 			{
 				event.note.length = 0;
 				event.note.kill();

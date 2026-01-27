@@ -1,3 +1,4 @@
+import flixel.FlxG;
 import funkin.save.Save;
 import funkin.play.PlayState;
 import funkin.modding.module.Module;
@@ -44,5 +45,19 @@ class RetroSave extends Module
       save.modOptions.set("retroDefaultNotes", true);
 
     save.flush();
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
+      FlxG.save.data.BotMode = "off";
+    }
+  }
+
+  public function youThoughtLol():Void {
+    //var skillIssueLine:Array<String> = ['skill issue', 'melted'];
+    //FlxG.save?.data?.BotMode = skillIssueLine[FlxG.random.int(0, skillIssueLine.length - 1)];
+    FlxG.save?.data?.BotMode = 'off';
   }
 }

@@ -14,6 +14,7 @@ import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
 import funkin.ui.FullScreenScaleMode;
 import flixel.text.FlxText;
+import funkin.FunkinMemory;
 import funkin.Paths;
 import Std;
 
@@ -330,6 +331,8 @@ class WrathPhase3 extends Stage
         spriteMap.set('FG_glow', FG_glow);
 
         hasCreatedStage = true;
+
+        FunkinMemory.cacheSound(Paths.sound("sink", "shared"));
     }
 
     override public function onSongLoaded(event:ScriptEvent):Void

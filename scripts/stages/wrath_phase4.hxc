@@ -16,6 +16,7 @@ import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.FunkinMemory;
 import flixel.text.FlxText;
 import funkin.Paths;
 import Std;
@@ -198,9 +199,10 @@ class WrathPhase4Stage extends Stage
     updateWindowsAlpha();
 
     // Create black overlay
-    black = FunkinSprite.create(-1100, -700);
-    black.makeGraphic(4000, 3000, 0xFF000000);
+    black = FunkinSprite.create(0, 0);
+    black.makeGraphic(Std.int(FlxG.width * 4), Std.int(FlxG.height * 4), 0xFF000000);
     black.scrollFactor.set(0, 0);
+    black.screenCenter();
     black.alpha = 0;
     PlayState.instance.add(black, 'black');
 
@@ -227,9 +229,10 @@ class WrathPhase4Stage extends Stage
     PlayState.instance.add(fire, 'fire');
 
     // Create white flash
-    white = FunkinSprite.create(-2000, -1000);
-    white.makeGraphic(5000, 3000, 0xFF04FE83);
+    white = FunkinSprite.create(0, 0);
+    white.makeGraphic(Std.int(FlxG.width * 3), Std.int(FlxG.height * 3), 0xFF04FE83);
     white.scrollFactor.set(0, 0);
+    white.screenCenter();
     white.alpha = 0;
     white.zIndex = bfZIndex + 2;
     PlayState.instance.add(white, 'white');
@@ -252,6 +255,8 @@ class WrathPhase4Stage extends Stage
 
     hasCreatedStage = true;
     PlayState.instance.refresh();
+
+    FunkinMemory.cacheSound(Paths.sound("catastroSFX", "shared"));
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -755,7 +760,7 @@ class WrathPhase4Stage extends Stage
     black.alpha = 0;
     white.alpha = 0;
     geyserR.alpha = 1;
-    fire.animation.play('d');
+    fire.animation.play('nothing');
     didDaShit = false;
     ssj = false;
     goBackToMyShit = false;

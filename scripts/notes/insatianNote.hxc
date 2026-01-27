@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -34,10 +35,10 @@ class insatianNote extends Module {
 			event.note.yOffset += -29;
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/Gluttony_Note_Assets' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left0', 24, false );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down0', 24, false );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up0', 24, false );
-			event.note.animation.addByPrefix( 'redScroll', 'Right0', 24, false );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
+			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
 
 			var insatianNote:String;
 			switch ( event.note.noteData.data % 4 )
@@ -52,6 +53,7 @@ class insatianNote extends Module {
 						insatianNote = "redScroll";
 				}
 
+			// the anim is only 1 frame so no need to put event.note.active = true
 			event.note.animation.play( insatianNote );
 		}
 	}
@@ -60,7 +62,7 @@ class insatianNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "insatianNote" )
+		if ( event.note.noteData.kind == "insatianNote" )
 		{
 			event.cancel();
 			event.stopPropagation();

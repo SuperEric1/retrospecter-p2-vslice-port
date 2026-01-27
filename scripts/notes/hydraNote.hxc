@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -43,15 +44,15 @@ class HydraNote extends Module {
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/HydraNotes' );
       if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
       } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0');
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
       }
 
 			var hydraNote:String;
@@ -67,6 +68,7 @@ class HydraNote extends Module {
 					hydraNote = "redScroll";
 			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( hydraNote );
 		}
 	}
@@ -75,7 +77,7 @@ class HydraNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "Hydra" )
+		if ( event.note.noteData.kind == "Hydra" )
 		{
 			event.cancel();
 			event.stopPropagation();

@@ -97,8 +97,10 @@ class GluttonyStage extends Stage
     isRaging = false;
     strumLineShake = 1;
     hasStoredStrums = false;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
 
-    //ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.BF, 'playerInsatian']);
+    //ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, 'insatian']);
 
     // Create sky
     sky = makeSprite('sky', 'gluttony/sky', xAdjust, yAdjust);
@@ -372,6 +374,8 @@ class GluttonyStage extends Stage
           defaultOpponentStrumY.push(strum.y);
         }
       }
+      defaultOpponentStrumX.push(opponentStrums.x);
+      defaultOpponentStrumY.push(opponentStrums.y);
       hasStoredStrums = true;
     }
   }
@@ -430,7 +434,9 @@ class GluttonyStage extends Stage
     var opponentStrums = PlayState.instance.opponentStrumline;
     if (opponentStrums != null)
     {
-      for (i in 0...4)
+      opponentStrums.x = defaultOpponentStrumX[4] + str;
+      opponentStrums.y = defaultOpponentStrumY[4] + str2;
+      /*for (i in 0...4)
       {
         var strum = opponentStrums.strumlineNotes.members[i];
         if (strum != null && i < defaultOpponentStrumX.length)
@@ -438,7 +444,7 @@ class GluttonyStage extends Stage
           strum.x = defaultOpponentStrumX[i] + str;
           strum.y = defaultOpponentStrumY[i] + str2;
         }
-      }
+      }*/
     }
   }
 
@@ -534,6 +540,10 @@ class GluttonyStage extends Stage
       weakerShakeTimer.cancel();
       weakerShakeTimer = null;
     }
+
+    hasStoredStrums = false;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
   }
 
   private function resetTweens():Void
@@ -581,8 +591,5 @@ class GluttonyStage extends Stage
     overlay.alpha = 0;
     isRaging = false;
     strumLineShake = 1;
-    hasStoredStrums = false;
-    defaultOpponentStrumX = [];
-    defaultOpponentStrumY = [];
   }
 }

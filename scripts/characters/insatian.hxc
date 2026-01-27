@@ -3,6 +3,7 @@ import funkin.play.character.CharacterType;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
+import funkin.modding.module.ModuleHandler;
 
 class InsatianCharacter extends SparrowCharacter {
 	function new() {
@@ -23,7 +24,7 @@ class InsatianCharacter extends SparrowCharacter {
   }
 
 	function onNoteHit(event:HitNoteScriptEvent) {
-		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
 			switch (event.note.noteData.kind)
 			{
 				case "No Animation":
@@ -55,7 +56,34 @@ class InsatianCharacter extends SparrowCharacter {
 		this.animation.play('idle');
 	}
 
-  function onCreate(event) {
+	// Load custom notestyle based on stage.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+		var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+		var dadId:String = PlayState.instance.currentStage.getDad().characterId;
+		var bfId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
+		var stageNoteStyleData:haxe.ds.StringMap<String, Array<String, String>> = [
+			// STAGE | STYLE ID | CHARACTHER TYPE
+			"gluttony" => ['insatian', 'opp'],
+		];
+
+		if (stageNoteStyleData.exists(currentStage)) {
+			data = stageNoteStyleData.get(currentStage);
+			var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : PlayState.instance.playerStrumline;
+
+			if (strum.noteStyle.id == data[0]) return; // already applied.
+
+			if (data[1].toLowerCase() == 'opp' && this.characterId == dadId)
+				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, data[0]]);
+				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+			if (data[1].toLowerCase() == 'player' && this.characterId == bfId)
+				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, data[0]]);
+				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+		}
+	}
+
+	function onCreate(event:ScriptEvent):Void {
 		super.onCreate(event);
 	}
 

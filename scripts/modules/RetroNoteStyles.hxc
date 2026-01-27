@@ -62,7 +62,7 @@ class RetroNoteStyles extends Module {
 		applyCustomNoteStyles();
 	}
 
-	function applyCustomNoteStyles():Void {
+	public function applyCustomNoteStyles():Void {
 		var dadCharacterId:String = PlayState.instance.currentStage.getDad().characterId;
 		var boyfriendCharacterId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
 
@@ -91,8 +91,9 @@ class RetroNoteStyles extends Module {
     if (PlayState.instance == null) return;
 
 		// Play splash anims for the opponent if they're using a custom notestyle
-		if (!event.note.noteData.getMustHitNote() && isOppUsingCustomNote) {
-			PlayState.instance.opponentStrumline.playNoteSplash(note.noteData.getDirection());
+		var noteData = event.note.noteData;
+		if (!noteData.getMustHitNote() && isOppUsingCustomNote) {
+			PlayState.instance.opponentStrumline.playNoteSplash(noteData.getDirection());
 		}
 	}
 
@@ -165,4 +166,12 @@ class RetroNoteStyles extends Module {
 	function adjustOppStrums():Void {
 		PlayState.instance.opponentStrumline.enterMiniMode(0.4 * screenRatio);
 	}
+
+	override function onDestroy(event:ScriptEvent)
+	{
+		super.onDestroy(event);
+		// Resetar estilos para que eles não arrastem pra próxima música se ela não tiver um style setado.
+		_opponentStyle = null;
+		_playerStyle = null;
+  }
 }

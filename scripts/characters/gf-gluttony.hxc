@@ -3,6 +3,7 @@ import funkin.play.character.CharacterType;
 import funkin.play.PlayState;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import funkin.Paths;
 import funkin.play.stage.Bopper;
 import flixel.group.FlxTypedSpriteGroup;
 import funkin.graphics.FunkinSprite;
@@ -13,6 +14,7 @@ import funkin.graphics.adobeanimate.FlxAtlasSprite;
 
 class GirlfriendGluttonyCharacter extends SparrowCharacter
 {
+  // TODO: mover tudo isso pra um módulo pq isso ta dando muito problema ao carregar a música e tudo mais.
   function new()
   {
     super('gf-gluttony');
@@ -22,8 +24,8 @@ class GirlfriendGluttonyCharacter extends SparrowCharacter
   var refreshed:Bool = false;
 
   var stageOffsets:haxe.ds.StringMap<String, Array<Float>> = [
-    "gluttony" => [-225 * 2, -150],
-    "pregluto" => [-225 * 2, -150],
+    "gluttony" => [-210 * 2, -130],
+    "pregluto" => [-210 * 2, -130],
   ];
   var defaultOffset:Array<Float> = [0, 0]; // Fallback
 
@@ -31,21 +33,17 @@ class GirlfriendGluttonyCharacter extends SparrowCharacter
   {
     super.onCreate(event);
 
-    // dont add scrollfactor or it will bug and create a massive sprite when restarting the song for some reason
-    speaker = FunkinSprite.create(0, 0);
-    speaker.loadSparrow('girlfriends/speaker/gluttony');
+    /*speaker = FunkinSprite.create(0, 0);
+    speaker.frames = Paths.getSparrowAtlas('girlfriends/speaker/gluttony');
     speaker.animation.addByIndices('idle', 'GF Dancing Beat', [0, 1, 2, 3, 4], '', 24, false);
-    speaker.scale = this.scale;
-    speaker.antialiasing = this.antialiasing;
     speaker.x = this.x;
-    speaker.y = this.y;
-    speaker.updateHitbox();
+    speaker.y = this.y;*/
   }
 
-  function onUpdate(event:UpdateScriptEvent)
+  /*function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || speaker == null) return;
     //synchronizeShader();
 
     speaker.visible = this.visible;
@@ -57,7 +55,11 @@ class GirlfriendGluttonyCharacter extends SparrowCharacter
     speaker.y = this.y + offset[1];
 
     if (!refreshed) {
+      speaker.antialiasing = this.antialiasing;
+      speaker.scale.set(this.scale.x, this.scale.y);
+      speaker.scrollFactor.set(this.scrollFactor.x, this.scrollFactor.y);
       speaker.zIndex = this.zIndex - 5;
+      speaker.updateHitbox();
       PlayState.instance.currentStage.add(speaker);
 
       PlayState.instance.currentStage.refresh();
@@ -74,9 +76,9 @@ class GirlfriendGluttonyCharacter extends SparrowCharacter
 
     if (event.beat % 2 == 0)
     {
-        if (speaker != null) speaker?.animation?.play('idle', true);
+        if (speaker != null && speaker?.animation != null) speaker?.animation?.play('idle', true);
     }
-  }
+  }*/
 
   override function dance(force:Bool):Void
   {

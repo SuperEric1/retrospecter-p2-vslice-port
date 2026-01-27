@@ -1,0 +1,173 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.PlayState;
+import funkin.modding.module.Module;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.Paths;
+import funkin.play.stage.Bopper;
+import funkin.graphics.shaders.DropShadowShader;
+import flixel.group.FlxTypedSpriteGroup;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.base.ScriptedFlxAtlasSprite;
+import funkin.modding.base.ScriptedFlxSprite;
+import funkin.modding.base.ScriptedFlxSpriteGroup;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.util.ReflectUtil;
+import haxe.ds.StringMap;
+import StringTools;
+
+class RetroGirlfriendHandler extends Module {
+  public function new() {
+    super('RetroGirlfriendHandler');
+  }
+
+  var speaker:StageProp;
+  var path:String = 'girlfriends/speaker/';
+  var speakerPaths:StringMap<String, String> = [
+    "gf-default" => path + 'default',
+    "gf-wrath" => path + 'wrath',
+    "gf-gluttony" => path + 'gluttony',
+  ];
+  var refreshed:Bool = false;
+
+  var defaultOffset:Array<Float> = [0, 0]; // Fallback
+  var stageOffsets:StringMap<String, StringMap<String, Array<Float>>> = [
+    "gf-default" => [
+      "gluttony" => [-260, 110],
+      "pregluto" => [-260, 110],
+      "pride" => [-110, 50],
+    ],
+    "gf-wrath" => [
+      "wrath_phase1" => [-235, 20],
+      "wrath_phase2" => [-235, 20],
+      "wrath_phase3" => [-60, 5],
+      "wrath_phase4" => [-175, 10],
+    ],
+    "gf-gluttony" => [
+      "gluttony" => [-210 * 2, -130],
+      "pregluto" => [-210 * 2, -130],
+    ]
+  ];
+
+  var currentData = null;
+  var girlfriend = null;
+  var createdSpeaker:Bool = false;
+
+  override public function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+    var noteStyle = PlayState.instance.playerStrumline.noteStyle.id.toLowerCase();
+    isRetro = StringTools.startsWith(noteStyle, 'retro') || StringTools.startsWith(noteStyle, 'player');
+    if (!isRetro) return;
+
+    girlfriend = PlayState.instance.currentStage.getGirlfriend();
+    if (!createdSpeaker) {
+      reloadSpeaker();
+      createdSpeaker = true;
+    }
+  }
+
+  public function reloadSpeaker():Void {
+    if (speaker != null) PlayState.instance.remove(speaker);
+    speaker = FunkinSprite.create(0, 0);
+    speaker.frames = Paths.getSparrowAtlas(speakerPaths.get(girlfriend.characterId));
+    switch (girlfriend.characterId) {
+      case 'gf-wrath':
+        speaker.animation.addByIndices('idle', 'GF Dancing Beat', [0, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8], '', 24, false);
+      default:
+        speaker.animation.addByIndices('idle', 'GF Dancing Beat', [0, 1, 2, 3, 4], '', 24, false);
+    }
+    speaker.x = girlfriend.x;
+    speaker.y = girlfriend.y;
+
+    currentData = stageOffsets.get(girlfriend.characterId);
+  }
+
+  override public function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null || speaker == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (event.beat % 2 == 0)
+    {
+      if (speaker != null) speaker?.animation?.play('idle', true);
+    }
+  }
+
+  override public function onUpdate(event:UpdateScriptEvent)
+  {
+    super.onUpdate(event);
+    if (PlayState.instance == null || !createdSpeaker || girlfriend == null) return;
+
+    var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+    var offset:Array<Float> = currentData.exists(currentStage) ? currentData.get(currentStage) : defaultOffset;
+    var targetCoord:Array<String> = [girlfriend.x + offset[0], girlfriend.y + offset[1]];
+
+    if (speaker.x != targetCoord[0])
+      speaker.x = targetCoord[0];
+    if (speaker.y != targetCoord[1])
+      speaker.y = targetCoord[1];
+
+    speaker.visible = girlfriend.visible;
+    speaker.alpha = girlfriend.alpha;
+
+    if (!refreshed && speaker.exists) {
+      speaker.antialiasing = girlfriend.antialiasing;
+      speaker.scale.set(girlfriend.scale.x, girlfriend.scale.y);
+      speaker.scrollFactor.set(girlfriend.scrollFactor.x, girlfriend.scrollFactor.y);
+      speaker.zIndex = girlfriend.zIndex - 5;
+      speaker.updateHitbox();
+      PlayState.instance.currentStage.add(speaker);
+
+      PlayState.instance.currentStage.refresh();
+      //synchronizeShader();
+      refreshed = true;
+    }
+  }
+
+  var speakerShader = null;
+  function synchronizeShader():Void
+  {
+    if (speakerShader == girlfriend.shader) return;
+
+    speakerShader = ReflectUtil.copy();
+    speaker.shader = speakerShader;
+    speakerShader.attachedSprite = speaker;
+
+    speaker.animation.onFrameChange.add(function() {
+      if (speaker.frame == null) return;
+      try {
+        speakerShader.updateFrameInfo(speaker.frame);
+      } catch (e:Dynamic) {
+        throw "Erro: " + e;
+      }
+    });
+  }
+
+  function onSongRetry(event:ScriptEvent)
+	{
+	  super.onSongRetry(event);
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+
+    //reloadSpeaker();
+  }
+
+  function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    createdSpeaker = false;
+    girlfriend = null;
+  }
+
+  override function onDestroy(event:ScriptEvent)
+	{
+		super.onDestroy(event);
+    createdSpeaker = false;
+    refreshed = false;
+    girlfriend = null;
+    speakerShader = null;
+  }
+}

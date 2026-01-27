@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -30,24 +31,25 @@ class scytheNote extends Module {
 			event.note.yOffset += -74;
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/scytheNotes' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left', 24, true );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down', 24, true );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up', 24, true );
-			event.note.animation.addByPrefix( 'redScroll', 'Right', 24, true );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
+			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
 
 			var scytheNote:String;
 			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						scytheNote = "purpleScroll";
-					case 1:
-						scytheNote = "blueScroll";
-					case 2:
-						scytheNote = "greenScroll";
-					case 3:
-						scytheNote = "redScroll";
-				}
+			{
+				case 0:
+					scytheNote = "purpleScroll";
+				case 1:
+					scytheNote = "blueScroll";
+				case 2:
+					scytheNote = "greenScroll";
+				case 3:
+					scytheNote = "redScroll";
+			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( scytheNote, true );
 		}
 	}
@@ -56,7 +58,7 @@ class scytheNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "scytheNote" )
+		if ( event.note.noteData.kind == "scytheNote" )
 		{
 			event.cancel();
 			event.stopPropagation();

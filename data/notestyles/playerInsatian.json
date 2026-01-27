@@ -1,7 +1,7 @@
 {
   "version": "1.1.0",
   "name": "Player Insatian",
-  "author": "",
+  "author": "Ported by SuperEric",
   "fallback": "retrospecter",
   "assets": {
     "note": {
@@ -17,7 +17,7 @@
     "noteStrumline": {
       "assetPath": "shared:notes/player/Notes_Insatian",
       "scale": 0.7,
-      "offsets": [28, 22],
+      "offsets": [26, 0],
       "data": {
         "leftStatic": { "prefix": "arrowLEFT" },
         "leftPress": { "prefix": "left press0" },

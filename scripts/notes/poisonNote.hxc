@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -43,31 +44,32 @@ class poisonNote extends Module {
 
       if (downscroll) {
         event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_down' );
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up0' );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right0' );
       } else {
         event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_up' );
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up0' );
+        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right0' );
       }
 
 			var poisonNote:String;
 			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						poisonNote = "purpleScroll";
-					case 1:
-						poisonNote = "blueScroll";
-					case 2:
-						poisonNote = "greenScroll";
-					case 3:
-						poisonNote = "redScroll";
-				}
+			{
+				case 0:
+					poisonNote = "purpleScroll";
+				case 1:
+					poisonNote = "blueScroll";
+				case 2:
+					poisonNote = "greenScroll";
+				case 3:
+					poisonNote = "redScroll";
+			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( poisonNote );
 		}
 	}
@@ -76,7 +78,7 @@ class poisonNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "poison" )
+		if ( event.note.noteData.kind == "poison" )
 		{
 			event.cancel();
 			event.stopPropagation();

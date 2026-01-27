@@ -1,4 +1,5 @@
 import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
@@ -34,30 +35,31 @@ class spectreNote extends Module {
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/Notes_Spectre' );
 			if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
       } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)', 24, false );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)', 24, false );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)', 24, false );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)', 24, false );
+        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0' );
+        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
+        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
+        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
       }
 
 			var spectreNote:String;
 			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						spectreNote = "purpleScroll";
-					case 1:
-						spectreNote = "blueScroll";
-					case 2:
-						spectreNote = "greenScroll";
-					case 3:
-						spectreNote = "redScroll";
-				}
+			{
+				case 0:
+					spectreNote = "purpleScroll";
+				case 1:
+					spectreNote = "blueScroll";
+				case 2:
+					spectreNote = "greenScroll";
+				case 3:
+					spectreNote = "redScroll";
+			}
 
+			event.note.active = true; // so the anim always plays.
 			event.note.animation.play( spectreNote, true );
 		}
 	}
@@ -66,7 +68,7 @@ class spectreNote extends Module {
 	{
 		super.onNoteMiss( event );
 
-		if ( event.note.kind == "spectre" )
+		if ( event.note.noteData.kind == "spectre" )
 		{
 			event.cancel();
 			event.stopPropagation();

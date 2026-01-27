@@ -48,6 +48,7 @@ class SatisfractureSong extends Song
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
+    PlayState.instance.startTimestamp = 115000; // tests
 
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedInGameCutscene = true;
 
@@ -150,23 +151,25 @@ class SatisfractureSong extends Song
     if (PlayState.instance == null) return;
     if (PlayState.instance.isGameOverState) return;
 
+    var retro = playStage?.getDad();
+    var retroPos:Array<Float> = [
+      retro?.cameraFocusPoint.x,
+      retro?.cameraFocusPoint.y
+    ];
+
     // ENOUGH
     // As animações alt ativam no script do personagem
     if (event.step == 176) { //notas do retro somem
+      playState.cameraFollowPoint.setPosition(retroPos[0] - 350, retroPos[1]);
       tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
     }
     if (event.step == 188) { //enough (o zoom é no chart)
       isDoingEnough = true;
       playState.mayPauseGame = false;
-      var retro = playStage.getDad();
-      var retroPos:Array<Float> = [
-        retro.cameraFocusPoint.x,
-        retro.cameraFocusPoint.y
-      ];
       // desativar controles para nao perder vida sem querer
       // movido pro onghostnotemiss para ter ghost tapping no lugar
       //PlayState.instance.disableKeys = true;
-      playState.tweenCameraToPosition(retroPos[0] - 50, retroPos[1] - 50, 0.1, FlxEase.quadInOut);
+      playState.tweenCameraToPosition(retroPos[0] - 200, retroPos[1] - 100, 0.2, FlxEase.quadOut);
 
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 0.5)  / 1000, {ease: FlxEase.linear}));
     }
@@ -176,6 +179,7 @@ class SatisfractureSong extends Song
     if (event.step == 192) {
       playState.mayPauseGame = true;
       isDoingEnough = false;
+      playState.tweenCameraToPosition(retroPos[0], retroPos[1], 0);
       //PlayState.instance.disableKeys = false;
       PlayState.instance.opponentStrumline.alpha = 1;
       FlxG.camera.flash(0xFFFFFFFF, 0.3);
@@ -183,6 +187,7 @@ class SatisfractureSong extends Song
     if (event.step >= 193 && event.step < 260) { // caso o jogador lague
       playState.mayPauseGame = true;
       isDoingEnough = false;
+      PlayState.instance.playerStrumline.alpha = 1;
       PlayState.instance.opponentStrumline.alpha = 1;
     }
 

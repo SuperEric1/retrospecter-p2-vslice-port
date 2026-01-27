@@ -17,6 +17,7 @@ import funkin.Preferences;
 import funkin.Conductor;
 import funkin.Highscore;
 import funkin.Paths;
+import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
@@ -28,6 +29,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
 import funkin.util.TouchUtil;
 import haxe.ds.IntMap;
+import StringTools;
 
 import openfl.filters.ShaderFilter;
 import funkin.graphics.shaders.WiggleEffectRuntime;
@@ -41,6 +43,8 @@ class RetroPlayState extends Module {
   var isRetro:Bool = false;
   var isDoingVocalThing:Bool = false;
   var isDownscroll:Bool = false;
+
+  var retroGameUI = null;
 
   var tweens = [];
   var pausedTweens = [];
@@ -124,6 +128,13 @@ class RetroPlayState extends Module {
     }
   }
 
+  var hurtNotes = [
+    'poison', 'izzyNote', 'chain', 'autoChain',
+    'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
+    'spectre', 'insatianNote',
+    'none'
+  ];
+
   public function onNoteIncoming(event:NoteScriptEvent) {
     if (PlayState.instance == null) return;
     if (!isRetro) return;
@@ -134,12 +145,6 @@ class RetroPlayState extends Module {
     var k = event.note.noteData.kind;
 
     // Notas que não contam pro score
-    var hurtNotes = [
-      'poison', 'izzyNote', 'chain', 'autoChain',
-      'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
-      'spectre', 'insatianNote',
-      'none'
-    ];
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
         //throw 'epa';
         event.note.scoreable = false; // não dar score/combo ao acertar.
@@ -163,6 +168,7 @@ class RetroPlayState extends Module {
   if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
     var k = event.note.noteData.kind;
     var noteDir = event.note.noteData.getDirection();
+    var isPractice = PlayState.instance.isPracticeMode;
 
     checkHealthCap(event.note.healthChange);
 
@@ -184,9 +190,9 @@ class RetroPlayState extends Module {
       lockStrum(noteDir);
       if (k == 'autoChain') chainText.visible = true;
 
-      //PlayState.instance.health -= event.healthChange;
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
     }
 
     if (k == 'Hydra') {
@@ -199,9 +205,10 @@ class RetroPlayState extends Module {
       playBeamAnimation(noteDir);
       FlxG.sound.play(Paths.sound('noteSounds/hydra'));
 
-      // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      //PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
     }
 
     if (k == 'insatianNote') {
@@ -218,7 +225,7 @@ class RetroPlayState extends Module {
         insatianHolesTimer = null;
       }
 
-      if (!PlayState.instance.isPracticeMode) {
+      if (!isPractice) {
         // Inicializar o sistema de vida máxima caso esteja no valor default
         if (currentHealthCap <= 0 || currentHealthCap >= Constants.HEALTH_MAX || currentHealthCap == null) {
           currentHealthCap = Constants.HEALTH_MAX;
@@ -251,12 +258,18 @@ class RetroPlayState extends Module {
         holeSprites.push(hole);
         PlayState.instance.add(hole);
       }
+      PlayState.instance.refresh(); // make sure the holes zindex are updated.
 
-      // Aqui o check de vida ja faz isso entao nao precisa mais
-      // if (PlayState.instance.health > currentHealthCap) PlayState.instance.health = currentHealthCap;
+      // Cortar a vida do player/aplicar dano
+      checkHealthCap();
+      // Se for o quarto hit, matar o jogador de vez
+      if (insatianNoteCounter >= 4 && !isPractice) PlayState.instance.health -= insatianNoteDamage;
 
       var baseTime:Float = 6;
       if (insatianNoteCounter > 1 && insatianNoteCounter <= 4) baseTime += insatianNoteCounter / 1.3;
+
+      var barCutPercent:Float = 1 - (currentHealthCap / Constants.HEALTH_MAX);
+      if (retroGameUI != null) retroGameUI.scriptCall('setHealthBarCut', [barCutPercent, 0]);
 
       insatianHolesTimer = new FlxTimer().start(baseTime, function(tmr:FlxTimer) {
         if (PlayState.instance == null) {
@@ -279,10 +292,10 @@ class RetroPlayState extends Module {
 
       poisonAmount++;
       updatePoisonCounter();
-      // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('acid'));
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
     }
 
     if (k == 'scytheNote') {
@@ -330,11 +343,13 @@ class RetroPlayState extends Module {
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
       if (solidCameraSprite != null) {
-        solidCameraSprite.makeSolidColor(2000, 2500, 0xFF66FFF7);
+        solidCameraSprite.makeSolidColor(FlxG.width * 4, FlxG.height * 4, 0xFF66FFF7);
       }
 
-      FlxTween.cancelTweensOf(solidCameraSprite);
-      solidCameraSprite.visible = true;
+      if (solidCameraSprite != null) {
+        FlxTween.cancelTweensOf(solidCameraSprite);
+        solidCameraSprite.visible = true;
+      }
 
       if (Preferences.flashingLights) {
         //FlxTween.cancelTweensOf(solidCameraSprite);
@@ -347,6 +362,7 @@ class RetroPlayState extends Module {
 
       scrambleStrumline();
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (funnyVar) funnyHealth(0.23);
     }
 
     if (k == 'spectre') {
@@ -374,6 +390,7 @@ class RetroPlayState extends Module {
         event.cancel();
         event.stopPropagation();
         // don't RETURN or else the custom UI will display as a miss
+        // instead, we'll check if the note is scoreable.
       }
       if (event.note.scoreable) doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
     }
@@ -408,7 +425,8 @@ class RetroPlayState extends Module {
   public override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
+    var noteStyle = PlayState.instance.playerStrumline.noteStyle.id.toLowerCase();
+    isRetro = StringTools.startsWith(noteStyle, 'retro') || StringTools.startsWith(noteStyle, 'player');
     if (!isRetro) return;
 
     isDownscroll = Preferences.downscroll;
@@ -416,6 +434,7 @@ class RetroPlayState extends Module {
 
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
+      retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
       loadChainLockSprites();
@@ -423,6 +442,7 @@ class RetroPlayState extends Module {
       updatePoisonCounter();
       hasLoadedUIElements = true;
     }
+    funnyVar = false;
   }
 
   public override function onSongStart(event:ScriptEvent):Void
@@ -464,6 +484,7 @@ class RetroPlayState extends Module {
 
   function removeInsatianHoles(?instant = false):Void {
     for (hole in holeSprites) {
+      if (hole == null) continue;
       if (instant) {
         hole.destroy();
         continue;
@@ -474,6 +495,7 @@ class RetroPlayState extends Module {
       }}));
     }
 
+    if (retroGameUI != null) retroGameUI.scriptCall('resetHealthBarCut', []);
     currentHealthCap = 0;
     insatianNoteCounter = 0;
 
@@ -859,6 +881,15 @@ class RetroPlayState extends Module {
       poisonText.x = poisonSprite.x + (poisonSprite.width / 2) - (poisonText.width / 2);
       poisonText.y = poisonSprite.y + (poisonSprite.height / 2) - (poisonText.height / 2) + poisonTextYOffset;
       poisonText.alpha = PlayState.instance.healthBar.alpha;
+      var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
+      if (poisonSprite.zIndex != targetZIndex) {
+        poisonSprite.zIndex = targetZIndex;
+        PlayState.instance.refresh();
+      }
+      if (poisonText.zIndex != targetZIndex + 2) {
+        poisonText.zIndex = targetZIndex + 2;
+        PlayState.instance.refresh();
+      }
     }
 
     if (isDrugged) {
@@ -919,6 +950,13 @@ class RetroPlayState extends Module {
       }
     }
 
+    // Skill issue check
+    var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? null;
+    isCh34t1ng = isCh34t1ng.toLowerCase();
+    if (isCh34t1ng != null && (isCh34t1ng == "on" || isCh34t1ng == true || isCh34t1ng != "off")) {
+      funnyVar = true;
+    }
+
   }
 
   function loadUIElements()
@@ -951,7 +989,6 @@ class RetroPlayState extends Module {
     poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
     poisonSprite.animation.play('P2', true);
     poisonSprite.cameras = [PlayState.instance.camHUD];
-    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2;
     poisonSprite.updateHitbox();
     poisonSprite.visible = false;
     poisonSprite.active = false;
@@ -961,15 +998,16 @@ class RetroPlayState extends Module {
     poisonText = new FlxText(0, 0, 0, '0', 1);
     poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
     poisonText.cameras = [PlayState.instance.camHUD];
-    poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
+    // poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
     poisonText.visible = false;
     //poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
     //poisonText.y = PlayState.instance.healthBar.y - 5;
     PlayState.instance.add(poisonText);
 
-    solidCameraSprite = new FunkinSprite(0, 0);
-    solidCameraSprite.makeSolidColor(2000, 2500, 0xFF000000);
+    solidCameraSprite = FunkinSprite.create(0, 0);
+    solidCameraSprite.makeSolidColor(FlxG.width * 1.2, FlxG.height * 1.2, 0xFF000000);
     solidCameraSprite.cameras = [PlayState.instance.camCutscene];
+    solidCameraSprite.screenCenter();
     solidCameraSprite.zIndex = 100000;
     solidCameraSprite.visible = false;
     PlayState.instance.add(solidCameraSprite);
@@ -1060,15 +1098,6 @@ class RetroPlayState extends Module {
       izzyMechanicTimer = null;
     }
 
-    if (solidCameraSprite != null) {
-      // Se ainda estiver na tela, removemos
-      if(PlayState.instance.members.contains(solidCameraSprite)) {
-        PlayState.instance.remove(solidCameraSprite);
-      }
-      solidCameraSprite.destroy(); // Garante a limpeza da memória gráfica
-      solidCameraSprite = null;    // Anula a referência
-    }
-
     if (chainText != null) {
       chainText.visible = false;
     }
@@ -1133,7 +1162,7 @@ class RetroPlayState extends Module {
   function onGameOver(event:ScriptEvent)
   {
     super.onGameOver(event);
-
+    if (izzyMechanicTimer != null) unscrambleStrumline();
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void
@@ -1151,11 +1180,58 @@ class RetroPlayState extends Module {
     }
   }
 
+  var funnyVar:Bool = false;
+  public function funnyFunction():Void {
+    // Punishment for skill issue
+    if (funnyVar == true) {
+      PlayState.instance.songScore = 1;
+      Highscore.tallies.totalNotesHit = 0;
+      Highscore.tallies.shit = Highscore.tallies.sick + Highscore.tallies.good;
+      Highscore.tallies.sick = 0;
+      Highscore.tallies.good = 0;
+      Highscore.tallies.maxCombo = 0;
+
+      PlayState.instance.isPlayerDying = true;
+      PlayState.instance.vocals?.pause();
+      if (FlxG.sound.music != null) FlxG.sound.music.pause();
+      funnyVar = false;
+
+      FlxG.camera.fade(FlxColor.BLACK, 0.5);
+      FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.5,
+      {
+        onComplete: function(_) {
+          FlxG.camera.stopFX();
+          PlayState.instance.currentStage.getBoyfriend().shader = null;
+          PlayState.instance.persistentDraw = false;
+          PlayState.instance.persistentUpdate = false;
+          ModuleHandler.getModule('RetroSave').scriptCall('youThoughtLol', []);
+          PlayState.instance.moveToGameOver();
+          PlayState.instance.disableKeys = false; // for some reason it was disabling the keys after restarting so this fixes it
+        }
+      });
+
+      /*new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+
+      });*/
+      return true;
+    }
+    return false;
+  }
+
+  function funnyHealth(?value = 0.1):Void {
+    PlayState.instance.health -= Constants.HEALTH_MAX * value;
+  }
+
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
     if (!isRetro) return;
     hasLoadedUIElements = false;
+
+    if (funnyFunction()) {
+      event.cancel();
+      return;
+    }
 
     poisonAmount = 0;
     poisonSpriteYOffset = 0;
@@ -1204,6 +1280,9 @@ class RetroPlayState extends Module {
     hasLoadedUIElements = false;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
+    funnyVar = false;
+
+    removeInsatianHoles(true);
 
     var destroySprites = [solidCameraSprite, poisonSprite];
     for (i in 0...2) {
@@ -1290,6 +1369,7 @@ class RetroPlayState extends Module {
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+    funnyVar = false;
     poisonAmount = 0;
     isDrugged = false;
 
@@ -1319,6 +1399,14 @@ class RetroPlayState extends Module {
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit1", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit2", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit3", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/hydra", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/beam", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Nightflaid", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Saku", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("acid", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("scythe", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("clothsSFX", "shared"));
 
       // Title Screen
       FunkinMemory.permanentCacheTexture(Paths.image('ui/logo', "shared"));
