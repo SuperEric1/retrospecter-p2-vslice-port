@@ -39,6 +39,10 @@ class RetroNoteStyles extends Module {
 		}
 	}
 
+	final animatedNoteStyles:Array<String> = [
+		'hydra_down', 'hydra_up'
+	];
+
 	/*function get_playerStyle():String {
 		return _playerStyle;
 	}
@@ -87,7 +91,17 @@ class RetroNoteStyles extends Module {
 		}
 	}
 
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		super.onNoteIncoming(event);
+		if (!event.note.noteData.getMustHitNote()) {
+			if (animatedNoteStyles.contains(PlayState.instance.opponentStrumline.noteStyle.id)) {
+				event.note.active = true; // For the animation to actually play.
+			}
+		}
+
+	}
 	public function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
     if (PlayState.instance == null) return;
 
 		// Play splash anims for the opponent if they're using a custom notestyle
@@ -129,6 +143,8 @@ class RetroNoteStyles extends Module {
 			styleData.applyStrumlineOffsets(newStrum);
 			strumline.strumlineNotes.add(newStrum);
 		}
+		// The little animation of the arrows when starting the song on freeplay
+		strumline.fadeInArrows();
 	}
 
 	function updateExistingNotes(strumline:Strumline, styleData:NoteStyle):Void {

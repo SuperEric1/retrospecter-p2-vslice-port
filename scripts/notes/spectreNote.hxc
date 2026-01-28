@@ -2,11 +2,14 @@ import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
 import funkin.mobile.input.ControlsHandler;
 import funkin.util.HapticUtil;
 import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
@@ -21,6 +24,56 @@ class spectreNote extends Module {
 		super.onCreate(event);
 
 		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
+
+		if (PlayState.instance == null) return;
+		if (event.note.noteData.kind == "spectre" && event.note.noteData.getMustHitNote()) {
+			var downscroll = Preferences.downscroll;
+			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+
+			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
+			splash.frames = Paths.getSparrowAtlas('notes/Notes_Spectre');
+			if (downscroll) {
+        splash.animation.addByPrefix( 'purpleScroll', 'Left(Down)0', 24, false );
+        splash.animation.addByPrefix( 'blueScroll', 'Down(Down)0', 24, false );
+        splash.animation.addByPrefix( 'greenScroll', 'Up(Down)0', 24, false );
+        splash.animation.addByPrefix( 'redScroll', 'Right(Down)0', 24, false );
+      } else {
+        splash.animation.addByPrefix( 'purpleScroll', 'Left(Up)0', 24, false );
+        splash.animation.addByPrefix( 'blueScroll', 'Down(Up)0', 24, false );
+        splash.animation.addByPrefix( 'greenScroll', 'Up(Up)0', 24, false );
+        splash.animation.addByPrefix( 'redScroll', 'Right(Up)0', 24, false );
+      }
+			splash.x -= 25; // these offsets pmo
+			splash.y -= 50;
+			splash.scale.set(event.note.scale.x, event.note.scale.y);
+			splash.cameras = [PlayState.instance.camHUD];
+			splash.zIndex = event.note.zIndex;
+			splash.antialiasing = true;
+			PlayState.instance.add(splash, true);
+			var anim:String;
+			switch (event.note.noteData.data % 4)
+			{
+				case 0:
+					anim = "purpleScroll";
+				case 1:
+					anim = "blueScroll";
+				case 2:
+					anim = "greenScroll";
+				case 3:
+					anim = "redScroll";
+			}
+			splash.animation.play(anim);
+
+			FlxTween.tween(splash, {alpha: 0}, 0.2, {startDelay: 0.3, ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+				if (PlayState.instance == null || splash == null) return;
+				splash.kill();
+				PlayState.instance.remove(splash, true);
+			}});
+		}
 	}
 
 	public override function onNoteIncoming( event:NoteScriptEvent )

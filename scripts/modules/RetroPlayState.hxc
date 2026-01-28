@@ -369,6 +369,10 @@ class RetroPlayState extends Module {
       FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
       event.doesNotesplash = false;
     }
+
+    if (hurtNotes.contains(k) && event.judgement == 'bad') {
+      event.note.visible = false; // So the discolored sprite doesn't appear.
+    }
   } // fim do if de checagem que é nota do player
 
     super('onNoteHit');

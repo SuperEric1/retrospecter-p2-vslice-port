@@ -1,0 +1,111 @@
+{
+  "version": "1.1.0",
+  "name": "Hydra",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/Hydra_Note_StrumAssets",
+      "scale": 0.7,
+      "offsets": [0, -150],
+      "data": {
+        "left": {
+          "prefix": "Downscroll_Hydra Note Left instance 1",
+          "looped": true
+        },
+        "down": {
+          "prefix": "Downscroll_Hydra Note Down instance 1",
+          "looped": true
+        },
+        "up": {
+          "prefix": "Downscroll_Hydra Note Up instance 1",
+          "looped": true
+        },
+        "right": {
+          "prefix": "Downscroll_Hydra Note Right instance 1",
+          "looped": true
+        }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/Hydra_Note_StrumAssets",
+      "scale": 0.7,
+      "offsets": [-13, -90],
+      "data": {
+        "leftStatic": { "prefix": "static hydranote left instance 10000" },
+        "leftPress": { "prefix": "static hydranote left instance 10000" },
+        "leftConfirm": { "prefix": "static hydranote confirm left instance 1" },
+        "leftConfirmHold": { "prefix": "static hydranote confirm left instance 1" },
+
+        "downStatic": { "prefix": "static hydranote down instance 10000" },
+        "downPress": { "prefix": "static hydranote down instance 10000" },
+        "downConfirm": { "prefix": "static hydranote confirm down instance 1" },
+        "downConfirmHold": { "prefix": "static hydranote confirm down instance 1" },
+
+        "upStatic": { "prefix": "static hydranote up instance 10000" },
+        "upPress": { "prefix": "static hydranote up instance 10000" },
+
+        "upConfirm": { "prefix": "static hydranote confirm up instance 1", "offsets": [-50, -400] },
+        "upConfirmHold": { "prefix": "static hydranote confirm up instance 1", "offsets": [-10, -100] },
+
+        "rightStatic": { "prefix": "static hydranote right instance 10000" },
+        "rightPress": { "prefix": "static hydranote right instance 10000" },
+        "rightConfirm": { "prefix": "static hydranote confirm right instance 1" },
+        "rightConfirmHold": { "prefix": "static hydranote confirm right instance 1" }
+      }
+    },
+    "holdNote": {
+      "assetPath": null,
+      "scale": 0.7,
+      "offsets": [2, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": null,
+      "alpha": 0.8,
+      "offsets": [40, 0],
+      "data": {
+        "enabled": true,
+        "leftSplashes": [
+          { "prefix": "note splash purple 1" }
+        ],
+        "rightSplashes": [
+          { "prefix": "note splash red 1" }
+        ],
+        "upSplashes": [
+          { "prefix": "note splash green 1" }
+        ],
+        "downSplashes": [
+          { "prefix": "note splash blue 1" }
+        ]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/gluttony_cover",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": false,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

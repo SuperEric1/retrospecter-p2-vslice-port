@@ -399,10 +399,9 @@ class RetroGameUI extends Module {
 
     // Update main stats text
     statsDisplay.text = 'ACC: ' + accuracyStr + '%\n';
-    if (totalNotesHit <= 0) statsDisplay.text = 'ACC: ?';
     statsDisplay.text += 'MISSES: ' + missed + '\n';
     statsDisplay.text += 'RANK:  '; // we add the rating after
-    // if (isNewHighscore) statsDisplay.text += 'NEW HIGHSCORE!';
+    // if (isNewHighscore) statsDisplay.text += '\nNEW HIGHSCORE!';
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
     statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
     statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;

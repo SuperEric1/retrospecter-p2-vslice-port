@@ -2,6 +2,7 @@ import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
 import funkin.play.character.AnimateAtlasCharacter;
+import funkin.modding.module.ModuleHandler;
 import StringTools;
 
 class PhaseFourCharacter extends AnimateAtlasCharacter
@@ -35,6 +36,21 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
 			}
 		}
 		super.onNoteHit(event);
+	}
+
+  // Load custom notestyle based on stage.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    /*var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+    var strumStyle:String = 'hydra_down';
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    // shit, offsets aren't working for the animations. i'll have to scrap the notestyles.
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);*/
 	}
 
   /*override function onSongRetry()

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Hydra_Note_StrumAssets.png" width="3425" height="4190" spritePadding="3" borderPadding="1">
+	<SubTexture name="Downscroll_Hydra Note Down instance 10000" x="233" y="3136" width="230" height="382" frameX="-11" frameY="-101" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10001" x="2957" y="1573" width="229" height="389" frameX="-14" frameY="-93" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10002" x="2130" y="2087" width="227" height="404" frameX="-13" frameY="-77" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10003" x="2507" y="1" width="221" height="404" frameX="-19" frameY="-71" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10004" x="3195" y="1132" width="227" height="362" frameX="-11" frameY="-115" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10005" x="1864" y="3134" width="229" height="375" frameX="-14" frameY="-99" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10006" x="1145" y="2702" width="229" height="393" frameX="-13" frameY="-81" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10007" x="2204" y="1261" width="225" height="410" frameX="-18" frameY="-63" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10008" x="1606" y="881" width="228" height="432" frameX="-13" frameY="-50" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10009" x="1144" y="947" width="228" height="450" frameX="-13" frameY="-29" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10010" x="913" y="1" width="228" height="470" frameX="-14" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Down instance 10011" x="1" y="1" width="225" height="474" frameX="-15" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10000" x="466" y="3136" width="230" height="382" frameX="-11" frameY="-101" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10001" x="2957" y="1965" width="229" height="389" frameX="-14" frameY="-93" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10002" x="2432" y="1261" width="227" height="404" frameX="-13" frameY="-77" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10003" x="2507" y="408" width="221" height="404" frameX="-19" frameY="-71" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10004" x="3195" y="1497" width="227" height="362" frameX="-11" frameY="-115" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10005" x="2096" y="3134" width="229" height="375" frameX="-14" frameY="-99" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10006" x="1377" y="2695" width="229" height="393" frameX="-13" frameY="-81" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10007" x="2140" y="1674" width="225" height="410" frameX="-18" frameY="-63" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10008" x="1606" y="1316" width="228" height="432" frameX="-13" frameY="-50" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10009" x="1375" y="1" width="228" height="450" frameX="-13" frameY="-29" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10010" x="913" y="474" width="228" height="470" frameX="-14" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Left instance 10011" x="229" y="1" width="225" height="474" frameX="-15" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10000" x="699" y="3122" width="230" height="382" frameX="-11" frameY="-101" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10001" x="2957" y="2357" width="229" height="389" frameX="-14" frameY="-93" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10002" x="2432" y="1668" width="227" height="404" frameX="-13" frameY="-77" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10003" x="2507" y="815" width="221" height="404" frameX="-19" frameY="-71" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10004" x="1398" y="3476" width="227" height="362" frameX="-11" frameY="-115" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10005" x="2328" y="3134" width="229" height="375" frameX="-14" frameY="-99" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10006" x="2360" y="2482" width="229" height="393" frameX="-13" frameY="-81" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10007" x="1902" y="1699" width="225" height="410" frameX="-18" frameY="-63" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10008" x="1" y="1881" width="228" height="432" frameX="-13" frameY="-50" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10009" x="1375" y="454" width="228" height="450" frameX="-13" frameY="-29" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10010" x="913" y="947" width="228" height="470" frameX="-14" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Right instance 10011" x="457" y="1" width="225" height="474" frameX="-15" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10000" x="932" y="3122" width="230" height="382" frameX="-11" frameY="-101" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10001" x="1" y="3136" width="229" height="389" frameX="-14" frameY="-93" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10002" x="2368" y="2075" width="227" height="404" frameX="-13" frameY="-77" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10003" x="1" y="2729" width="221" height="404" frameX="-19" frameY="-71" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10004" x="1165" y="3483" width="227" height="362" frameX="-11" frameY="-115" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10005" x="2560" y="3134" width="229" height="375" frameX="-14" frameY="-99" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10006" x="2037" y="2494" width="229" height="393" frameX="-13" frameY="-81" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10007" x="1" y="2316" width="225" height="410" frameX="-18" frameY="-63" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10008" x="232" y="1881" width="228" height="432" frameX="-13" frameY="-50" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10009" x="1375" y="907" width="228" height="450" frameX="-13" frameY="-29" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10010" x="1" y="955" width="228" height="470" frameX="-14" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Downscroll_Hydra Note Up instance 10011" x="1" y="478" width="225" height="474" frameX="-15" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10000" x="1165" y="3098" width="230" height="382" frameX="-11" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10001" x="2963" y="1" width="229" height="390" frameX="-14" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10002" x="225" y="2729" width="227" height="404" frameX="-13" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10003" x="1141" y="2294" width="221" height="405" frameX="-19" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10004" x="3189" y="1862" width="227" height="362" frameX="-11" frameY="-14" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10005" x="2792" y="3134" width="229" height="374" frameX="-14" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10006" x="1609" y="2585" width="229" height="393" frameX="-13" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10007" x="229" y="2316" width="225" height="410" frameX="-18" frameY="-18" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10008" x="463" y="1868" width="228" height="431" frameX="-13" frameY="-9" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10009" x="1375" y="1360" width="228" height="450" frameX="-13" frameY="-11" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10010" x="232" y="955" width="228" height="470" frameX="-14" frameY="-6" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Down instance 10011" x="229" y="478" width="225" height="474" frameX="-15" frameY="-7" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10000" x="1398" y="3091" width="230" height="382" frameX="-11" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10001" x="2963" y="394" width="229" height="390" frameX="-14" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10002" x="455" y="2729" width="227" height="404" frameX="-13" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10003" x="1365" y="2287" width="221" height="405" frameX="-19" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10004" x="589" y="3521" width="227" height="362" frameX="-11" frameY="-14" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10005" x="3195" y="1" width="229" height="374" frameX="-14" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10006" x="2731" y="1" width="229" height="393" frameX="-13" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10007" x="457" y="2316" width="225" height="410" frameX="-18" frameY="-18" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10008" x="694" y="1868" width="228" height="431" frameX="-13" frameY="-9" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10009" x="1144" y="1400" width="228" height="450" frameX="-13" frameY="-11" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10010" x="463" y="955" width="228" height="470" frameX="-14" frameY="-6" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Left instance 10011" x="457" y="478" width="225" height="474" frameX="-15" frameY="-7" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10000" x="2885" y="2749" width="230" height="382" frameX="-11" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10001" x="2963" y="787" width="229" height="390" frameX="-14" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10002" x="685" y="2715" width="227" height="404" frameX="-13" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10003" x="1589" y="2177" width="221" height="405" frameX="-19" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10004" x="3189" y="2227" width="227" height="362" frameX="-11" frameY="-14" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10005" x="3195" y="378" width="229" height="374" frameX="-14" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10006" x="2731" y="397" width="229" height="393" frameX="-13" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10007" x="685" y="2302" width="225" height="410" frameX="-18" frameY="-18" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10008" x="925" y="1860" width="228" height="431" frameX="-13" frameY="-9" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10009" x="1" y="1428" width="228" height="450" frameX="-13" frameY="-11" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10010" x="1144" y="1" width="228" height="470" frameX="-14" frameY="-6" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Right instance 10011" x="685" y="1" width="225" height="474" frameX="-15" frameY="-7" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10000" x="1631" y="3134" width="230" height="382" frameX="-11" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10001" x="2963" y="1180" width="229" height="390" frameX="-14" frameY="-8" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10002" x="915" y="2715" width="227" height="404" frameX="-13" frameY="-10" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10003" x="1813" y="2177" width="221" height="405" frameX="-19" frameY="-15" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10004" x="1628" y="3519" width="227" height="362" frameX="-11" frameY="-14" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10005" x="3195" y="755" width="229" height="374" frameX="-14" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10006" x="2731" y="793" width="229" height="393" frameX="-13" frameY="-17" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10007" x="913" y="2302" width="225" height="410" frameX="-18" frameY="-18" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10008" x="1156" y="1853" width="228" height="431" frameX="-13" frameY="-9" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10009" x="232" y="1428" width="228" height="450" frameX="-13" frameY="-11" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10010" x="1144" y="474" width="228" height="470" frameX="-14" frameY="-6" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="Hydra Note Up instance 10011" x="685" y="478" width="225" height="474" frameX="-15" frameY="-7" frameWidth="256" frameHeight="496"/>
+	<SubTexture name="hydra hold end instance 10000" x="1111" y="3507" width="50" height="57" frameX="-0" frameY="-0" frameWidth="50" frameHeight="58"/>
+	<SubTexture name="hydra hold piece instance 10000" x="694" y="1380" width="50" height="45" frameX="-0" frameY="-0" frameWidth="50" frameHeight="45"/>
+	<SubTexture name="static hydranote confirm down instance 10000" x="2592" y="2806" width="289" height="295" frameX="-55" frameY="-141" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10001" x="1858" y="3519" width="295" height="334" frameX="-43" frameY="-101" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10002" x="3118" y="2749" width="291" height="363" frameX="-35" frameY="-66" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10003" x="1606" y="1751" width="293" height="423" frameX="-25" frameY="-17" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10004" x="463" y="1428" width="299" height="437" frameX="-14" frameY="-10" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10005" x="1837" y="1279" width="300" height="417" frameX="-9" frameY="-20" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10006" x="2662" y="1222" width="284" height="393" frameX="-10" frameY="-27" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10007" x="694" y="955" width="201" height="217" frameX="-93" frameY="-196" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10008" x="1387" y="1813" width="201" height="217" frameX="-93" frameY="-196" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm down instance 10009" x="694" y="955" width="201" height="217" frameX="-93" frameY="-196" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10000" x="819" y="3507" width="289" height="295" frameX="-55" frameY="-141" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10001" x="2156" y="3512" width="295" height="334" frameX="-43" frameY="-101" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10002" x="3118" y="3115" width="291" height="363" frameX="-35" frameY="-66" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10003" x="1908" y="1" width="293" height="423" frameX="-25" frameY="-17" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10004" x="765" y="1420" width="299" height="437" frameX="-14" frameY="-10" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10005" x="2204" y="1" width="300" height="417" frameX="-9" frameY="-20" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10006" x="2662" y="1618" width="291" height="393" frameX="-10" frameY="-27" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10007" x="1395" y="3841" width="217" height="201" frameX="-84" frameY="-204" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10008" x="2060" y="2890" width="203" height="201" frameX="-98" frameY="-204" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm left instance 10009" x="1395" y="3841" width="217" height="201" frameX="-84" frameY="-204" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10000" x="3050" y="3481" width="289" height="295" frameX="-55" frameY="-141" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10001" x="2454" y="3512" width="295" height="334" frameX="-43" frameY="-101" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10002" x="1" y="3528" width="291" height="363" frameX="-35" frameY="-66" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10003" x="1908" y="427" width="293" height="423" frameX="-25" frameY="-17" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10004" x="1606" y="1" width="299" height="437" frameX="-14" frameY="-10" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10005" x="2204" y="421" width="300" height="417" frameX="-9" frameY="-20" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10006" x="2662" y="2014" width="292" height="393" frameX="-10" frameY="-27" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10007" x="694" y="1175" width="216" height="202" frameX="-86" frameY="-203" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10008" x="1841" y="2890" width="216" height="202" frameX="-86" frameY="-203" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm right instance 10009" x="694" y="1175" width="216" height="202" frameX="-86" frameY="-203" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10000" x="1" y="3894" width="289" height="295" frameX="-55" frameY="-141" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10001" x="2752" y="3512" width="295" height="334" frameX="-43" frameY="-101" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10002" x="295" y="3521" width="291" height="363" frameX="-35" frameY="-66" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10003" x="1908" y="853" width="293" height="423" frameX="-25" frameY="-17" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10004" x="1606" y="441" width="299" height="437" frameX="-14" frameY="-10" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10005" x="2204" y="841" width="300" height="417" frameX="-9" frameY="-20" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10006" x="2598" y="2410" width="284" height="393" frameX="-10" frameY="-27" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10007" x="2266" y="2890" width="201" height="201" frameX="-93" frameY="-210" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10008" x="293" y="3894" width="201" height="201" frameX="-93" frameY="-210" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote confirm up instance 10009" x="2266" y="2890" width="201" height="201" frameX="-93" frameY="-210" frameWidth="359" frameHeight="459"/>
+	<SubTexture name="static hydranote down instance 10000" x="1841" y="2585" width="157" height="179" frameX="-0" frameY="-0" frameWidth="158" frameHeight="179"/>
+	<SubTexture name="static hydranote down instance 10001" x="1387" y="2033" width="158" height="179" frameX="-0" frameY="-0" frameWidth="158" frameHeight="179"/>
+	<SubTexture name="static hydranote left instance 10000" x="497" y="3887" width="178" height="157" frameX="-0" frameY="-0" frameWidth="178" frameHeight="157"/>
+	<SubTexture name="static hydranote left instance 10001" x="678" y="3886" width="178" height="157" frameX="-0" frameY="-0" frameWidth="178" frameHeight="157"/>
+	<SubTexture name="static hydranote right instance 10000" x="859" y="3805" width="178" height="157" frameX="-0" frameY="-0" frameWidth="178" frameHeight="157"/>
+	<SubTexture name="static hydranote right instance 10001" x="859" y="3965" width="178" height="157" frameX="-0" frameY="-0" frameWidth="178" frameHeight="157"/>
+	<SubTexture name="static hydranote up instance 10000" x="1615" y="3884" width="157" height="178" frameX="-0" frameY="-0" frameWidth="158" frameHeight="179"/>
+	<SubTexture name="static hydranote up instance 10001" x="1775" y="3884" width="157" height="178" frameX="-0" frameY="-0" frameWidth="158" frameHeight="179"/>
+</TextureAtlas>

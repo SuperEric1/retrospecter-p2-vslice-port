@@ -2,6 +2,7 @@ import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
 import funkin.util.HapticUtil;
@@ -23,13 +24,44 @@ class poisonNote extends Module {
 		if (PlayState.instance == null) return;
 	}
 
-	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
-		super.onNoteHit(ev);
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
 
 		if (PlayState.instance == null) return;
-		if (!ev.note.noteData.getMustHitNote()) return;
-		if (ev.note.noteData.kind != "poison") return;
-	}*/
+		if (event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote()) {
+			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
+			splash.frames = Paths.getSparrowAtlas('notes/PoisonArrowHit');
+			splash.animation.addByPrefix('purpleScroll', 'Poison Arrow Hit Left0', 24, false);
+			splash.animation.addByPrefix('blueScroll', 'Poison Arrow Hit Down0', 24, false);
+			splash.animation.addByPrefix('greenScroll', 'Poison Arrow Hit Up0', 24, false);
+			splash.animation.addByPrefix('redScroll', 'Poison Arrow Hit Right0', 24, false);
+			splash.x -= 146; // these offsets pmo
+			splash.y -= 80;
+			splash.scale.set(event.note.scale.x, event.note.scale.y);
+			splash.cameras = [PlayState.instance.camHUD];
+			splash.zIndex = event.note.zIndex;
+			splash.antialiasing = true;
+			PlayState.instance.add(splash);
+			var anim:String;
+			switch (event.note.noteData.data % 4)
+			{
+				case 0:
+					anim = "purpleScroll";
+				case 1:
+					anim = "blueScroll";
+				case 2:
+					anim = "greenScroll";
+				case 3:
+					anim = "redScroll";
+			}
+			splash.animation.play(anim);
+
+			splash.animation.finishCallback = function(_name:String) {
+				splash.kill();
+				PlayState.instance.remove(splash, true);
+			};
+		}
+	}
 
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
