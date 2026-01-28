@@ -22,6 +22,7 @@ import funkin.Preferences;
 import funkin.Conductor;
 import funkin.Highscore;
 import funkin.Paths;
+import funkin.save.Save;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
@@ -30,7 +31,10 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
+import funkin.ui.FullScreenScaleMode;
 import funkin.effects.IntervalShake;
+import funkin.play.PlayStatePlaylist;
+import funkin.play.scoring.Scoring;
 
 import supereric.retrospecter.ui.RetroPauseMenu;
 
@@ -41,10 +45,11 @@ class RetroGameUI extends Module {
 
   var isRetro:Bool = false;
   var downscroll:Bool = false;
-  var isMobileArrowScheme:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+  var isMobileArrowScheme:Bool = false;
   var healthBgYOffset:Float = 0;
   // move judgements a little bit to the left on non-mobile/non-arrows scheme
   var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
+  var songLengthEnabled:Bool = true;
 
   // Health Bars
   var retroHealthBar:FlxBar;
@@ -70,6 +75,18 @@ class RetroGameUI extends Module {
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
 
+  // Accuracy/Stats Display
+  var statsDisplay:FlxText;
+  var ratingTextDisplay:FlxText;
+  var currentAccuracy:Float = 0.0;
+
+  // Time Display
+  var timeDisplay:FlxText;
+
+  // Story Mode support (unused rn)
+  var talliesLevel:Tallies;
+  var isStoryMode:Bool = false;
+
   var fillOriginalWidth:Float = 0; // Largura original da barra
   var hasBeenCreated:Bool = false;
 
@@ -79,6 +96,7 @@ class RetroGameUI extends Module {
       if (!isRetro) return;
       if (hasBeenCreated) return;
       downscroll = Preferences.downscroll;
+      isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
       if (isMobileArrowScheme) downscroll = true;
 
       var playState = PlayState.instance;
@@ -87,6 +105,11 @@ class RetroGameUI extends Module {
       ogBfId = playStage.getBoyfriend().characterId.toLowerCase();
       ogDadId = playStage.getDad().characterId.toLowerCase();
 
+      // Check if Story Mode
+      isStoryMode = PlayStatePlaylist.isStoryMode;
+      if (isStoryMode) talliesLevel = Highscore.talliesLevel;
+
+      songLengthEnabled = Save.instance.modOptions.get('retroSongLength') ?? true;
       loadTextElements();
 
       // HEALTH BARS
@@ -209,6 +232,12 @@ class RetroGameUI extends Module {
       hasBeenCreated = true;
   }
 
+  override function onCountdownStart(event:CountdownScriptEvent) {
+    super.onCountdownStart(event);
+    if (!isRetro) return;
+    updateStatsDisplay(true);
+  }
+
   function loadTextElements() {
     var camera = PlayState.instance.camHUD;
     var yPos = PlayState.instance.playerStrumline.y * 1.075;
@@ -244,6 +273,182 @@ class RetroGameUI extends Module {
 
     PlayState.instance.scoreText.alpha = 0;
     PlayState.instance.scoreText.visible = false;
+
+    // Create other stats
+    createStatsDisplay();
+    if (songLengthEnabled) createTimeDisplay();
+  }
+
+  var statsFontSize:Float = FlxG.onMobile ? FlxG.width / 40 : 30;
+  var statsTextMargin:Array<Float> = [60, 30];
+  function createStatsDisplay():Void {
+    var zIndex = 9999;
+    var camera = PlayState.instance.camHUD;
+
+    statsDisplay = new FlxText(0, 0, 0, '', statsFontSize);
+    statsDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    statsDisplay.cameras = [camera];
+    statsDisplay.zIndex = zIndex;
+    statsDisplay.alignment = 'right';
+    statsDisplay.visible = false;
+    statsDisplay.y = statsTextMargin[1];
+    PlayState.instance.add(statsDisplay);
+
+    ratingTextDisplay = new FlxText(0, 20, 0, '', statsFontSize);
+    ratingTextDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    ratingTextDisplay.cameras = [camera];
+    ratingTextDisplay.zIndex = zIndex;
+    ratingTextDisplay.alignment = 'right';
+    ratingTextDisplay.visible = false;
+    PlayState.instance.add(ratingTextDisplay);
+
+    updateStatsDisplay(true);
+  }
+  function createTimeDisplay():Void {
+    var zIndex = 9999;
+
+    timeDisplay = new FlxText(0, 0, 0, '', statsFontSize);
+    timeDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    timeDisplay.cameras = [PlayState.instance.camHUD];
+    timeDisplay.zIndex = zIndex;
+    timeDisplay.visible = false;
+    PlayState.instance.add(timeDisplay);
+
+    updateTimeDisplay();
+  }
+
+  function updateTimeDisplay():Void {
+    if (timeDisplay == null || PlayState.instance == null) return;
+    if (PlayState.instance?.isBotPlayMode) {
+      timeDisplay.visible = false;
+      return;
+    }
+
+    var currentTime:Float = Conductor.instance.songPosition ?? 0.0;
+    var songLength:Float = FlxG.sound?.music?.length ?? 0.0;
+
+    // Clamp to avoid negative values
+    if (currentTime < 0) currentTime = 0;
+    if (currentTime > songLength) currentTime = songLength;
+
+    var currentTimeStr:String = formatTime(currentTime);
+    var totalTimeStr:String = formatTime(songLength);
+
+    timeDisplay.text = 'Time Left\n' + currentTimeStr + '|' + totalTimeStr;
+    var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - timeDisplay.height - statsTextMargin[1];
+    timeDisplay.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
+    timeDisplay.y = targetY;
+    if (currentTime > 0) timeDisplay.visible = true;
+  }
+
+  function formatTime(milliseconds:Float):String {
+    var totalSeconds:Int = Std.int(milliseconds / 1000);
+    var minutes:Int = Std.int(totalSeconds / 60);
+    var seconds:Int = totalSeconds % 60;
+
+    // M:SS
+    return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  }
+
+  function updateStatsDisplay(?hide:Bool = false):Void {
+    if (statsDisplay == null || ratingTextDisplay == null) return;
+    if (PlayState.instance.isBotPlayMode || hide) {
+      statsDisplay.visible = false;
+      ratingTextDisplay.visible = false;
+      return;
+    }
+    statsDisplay.visible = true;
+    ratingTextDisplay.visible = true;
+
+    // Get tallies
+    var tallies = Highscore.tallies;
+    var totalNotes = tallies.totalNotes;
+    var totalNotesHit = tallies.totalNotesHit;
+    var sicks = tallies.sick;
+    var goods = tallies.good;
+    var bads = tallies.bad;
+    var shits = tallies.shit;
+    var missed = tallies.missed;
+    var isNewHighscore = tallies.isNewHighscore;
+
+    // Add Story Mode accumulated stats
+    /*if (isStoryMode && talliesLevel != null) {
+      totalNotes += talliesLevel.totalNotes;
+      totalNotesHit += talliesLevel.totalNotesHit;
+      sicks += talliesLevel.sick;
+      goods += talliesLevel.good;
+      bads += talliesLevel.bad;
+      shits += talliesLevel.shit;
+      missed += talliesLevel.missed;
+    }*/
+
+    // Calculate accuracy
+    if (totalNotesHit > 0) {
+      currentAccuracy = 100 - ((shits + bads + (missed * 2)) / totalNotesHit * 100);
+      currentAccuracy = Math.min(100, Math.max(0, currentAccuracy));
+      //currentAccuracy = Std.int(currentAccuracy);*/
+    } else {
+      currentAccuracy = 0.0;
+    }
+
+    // Get rating color
+    var ratingData = getVanillaRatingData(currentAccuracy, goods);
+
+    // Format accuracy
+    var accuracyStr:String = Std.string(Math.round(currentAccuracy));
+
+    // Update main stats text
+    statsDisplay.text = 'ACC: ' + accuracyStr + '%\n';
+    if (totalNotesHit <= 0) statsDisplay.text = 'ACC: ?';
+    statsDisplay.text += 'MISSES: ' + missed + '\n';
+    statsDisplay.text += 'RANK:  '; // we add the rating after
+    // if (isNewHighscore) statsDisplay.text += 'NEW HIGHSCORE!';
+    var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
+    statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
+    statsDisplay.y = targetY;
+
+    // Update rating text with color
+    ratingTextDisplay.text = ratingData.name;
+    ratingTextDisplay.color = ratingData.color;
+
+    // Position rating text right after "RATING: " label
+    // Calculate the width of "RATING: " in the last line
+    var ratingLabelWidth = statsDisplay.textField.getLineMetrics(2).width;
+    ratingTextDisplay.x = statsDisplay.x + statsDisplay.textField.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
+    ratingTextDisplay.y = statsDisplay.y + (statsFontSize * 2); // 2 lines down
+  }
+
+  function getVanillaRatingData(ratingPercent:Float, goods:Int):{name:String, color:FlxColor} {
+    if (ratingPercent == 100 && goods == 0) {
+      return {name: 'P', color: 0xFFffef5a};
+    }
+    else if (ratingPercent == 100 && goods >= 1) {
+      return {name: 'P', color: 0xFFffa9ff};
+    }
+    else if (ratingPercent >= 90) {
+      return {name: 'E', color: 0xFFffffb8};
+    }
+    else if (ratingPercent >= 80) {
+      return {name: 'G', color: 0xFFe7f2ff};
+    }
+    else if (ratingPercent >= 60) {
+      return {name: 'G', color: 0xFFf4a481};
+    }
+    else {
+      return {name: 'L', color: 0xFF6c8dff};
+    }
+  }
+
+  override public function onBeatHit(event:SongTimeScriptEvent) {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    if (!isRetro) return;
+
+    if (songLengthEnabled) {
+      updateTimeDisplay();
+    }
   }
 
   public function onNoteHit(event:HitNoteScriptEvent):Void {
@@ -258,6 +463,8 @@ class RetroGameUI extends Module {
           var stayDuration:Float = event.note.length / 1000;
           updateJudgement(event.judgement, event.score, event.isComboBreak, true, stayDuration);
         }
+        // Update stats display after note hit
+        updateStatsDisplay();
       }
     }
   }
@@ -270,7 +477,11 @@ class RetroGameUI extends Module {
       if (event.eventCanceled) return;
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
-      if (isNormalNote) updateJudgement('miss', event.score, true);
+      if (isNormalNote) {
+        updateJudgement('miss', event.score, true);
+        // Update stats display after miss
+        updateStatsDisplay();
+      }
 
       // antigo sistema
       /*var k = event.note.noteData.kind;
@@ -285,6 +496,8 @@ class RetroGameUI extends Module {
     if (!isRetro) return;
     if (event.holdNote.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
       updateJudgement('miss', event.score, event.isComboBreak, false);
+      // Update stats display after hold drop
+      updateStatsDisplay();
     }
   }
 
@@ -308,7 +521,8 @@ class RetroGameUI extends Module {
     comboText.x = judgement.x + judgement.width;
 
     if (noteScore > 0) {
-      score.text = PlayState.instance.songScore + noteScore;
+      total = PlayState.instance.songScore;
+      score.text = Std.string(total + noteScore);
     } else score.text = PlayState.instance.songScore;
 
     judgement.visible = true;
@@ -348,6 +562,7 @@ class RetroGameUI extends Module {
     super.onDestroy(event);
     hasBeenCreated = false;
     cancelTweens();
+    currentAccuracy = 0.0;
   }
 
   override public function onCreate(event) {
@@ -380,6 +595,11 @@ class RetroGameUI extends Module {
     if (PlayState.instance.isGameOverState) return;
 
     var playState = PlayState.instance;
+
+    if (statsDisplay.visible == true) updateStatsDisplay(); // so the values are accurate
+    if (songLengthEnabled && timeDisplay != null && timeDisplay.visible) {
+      updateTimeDisplay();
+    }
 
     // ---- Health Bars ----
     var healthPercent:Float = playState.healthLerp / 2.0;
@@ -427,14 +647,27 @@ class RetroGameUI extends Module {
   public function onSongRetry(event) {
     super.onSongRetry(event);
     if (!hasBeenCreated) return;
+    if (!isRetro) return;
+
     isOppIconAnimated = false;
     isPlayerIconAnimated = false;
     retroHealthBarFill.color = getIconColor(ogBfId);
     retroHealthBarFillBG.color = getIconColor(ogDadId);
+
     if (currentHealthCut > 0) resetHealthBarCut(0);
+
     judgement.alpha = 0;
     comboText.alpha = 0;
     if (!PlayState.instance.isBotPlayMode) score.alpha = 0;
+
+    // Reset stats display
+    currentAccuracy = 0.0;
+    updateStatsDisplay(true);
+    if (timeDisplay != null) {
+      timeDisplay.visible = false;
+      updateTimeDisplay();
+    }
+
     // i tried
     if (isPlayerIconAnimated) syncIconAnim(PlayState.instance.iconP1, false);
     if (isOppIconAnimated) syncIconAnim(PlayState.instance.iconP2, true);

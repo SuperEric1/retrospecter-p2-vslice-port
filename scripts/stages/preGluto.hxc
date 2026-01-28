@@ -96,6 +96,7 @@ class PreGluttonyStage extends Stage
     // Create sky
     sky = makeSprite('sky', 'gluttony/sky', xAdjust, yAdjust);
     sky.scrollFactor.set(0.5, 0.5);
+    sky.antialiasing = false;
 
     // Shuffle cloud pattern
     shuffleArray(cloudPattern);
@@ -109,6 +110,7 @@ class PreGluttonyStage extends Stage
       cloud.animation.addByPrefix('cloud', 'cloud${cloudNum}', 24, true);
       cloud.animation.play('cloud');
       cloud.scrollFactor.set(0.5, 0.5);
+      cloud.antialiasing = false;
       cloudSprites.push(cloud);
     }
 
@@ -138,6 +140,7 @@ class PreGluttonyStage extends Stage
       ray.animation.play('ray');
       ray.scrollFactor.set(0.8, 0.8);
       ray.alpha = 0;
+      ray.antialiasing = false;
       castleRays.push(ray);
     }
 
@@ -161,12 +164,14 @@ class PreGluttonyStage extends Stage
     stage = makeSprite('stage', 'gluttony/stage', xAdjust, yAdjust);
 
     trees = makeSprite('trees', 'gluttony/trees', xAdjust, yAdjust);
+    trees.antialiasing = false;
     trees.zIndex = 200; // In front of characters
 
     // Portal rays
     portalRayBg = makeSprite('portal_ray_bg', 'gluttony/portal_ray_bg', xAdjust, yAdjust);
 
     portalRayFg = makeSprite('portal_ray_fg', 'gluttony/portal_ray_fg', xAdjust, yAdjust);
+    portalRayFg.antialiasing = false;
     portalRayFg.zIndex = 200;
 
     // Foreground fog
@@ -174,6 +179,7 @@ class PreGluttonyStage extends Stage
       xAdjust - 380, yAdjust + 1450);
     fgFog.animation.addByPrefix('fog', 'FG_mist1', 24, true);
     fgFog.animation.play('fog');
+    fgFog.antialiasing = false;
     fgFog.zIndex = 200;
 
     // Create overlay for rage mode
@@ -183,6 +189,7 @@ class PreGluttonyStage extends Stage
     overlay.screenCenter();
     overlay.blend = 9; // multiply
     overlay.alpha = 0;
+    overlay.antialiasing = false;
     PlayState.instance.add(overlay);
 
     PlayState.instance.refresh();
@@ -366,6 +373,7 @@ class PreGluttonyStage extends Stage
 
     if (!isRaging)
     {
+      overlay.active = true;
       tweens.push(FlxTween.tween(overlay, {alpha: 0.5}, 0.75, {ease: FlxEase.cubeOut}));
 
       PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom + 0.2, 1, true, FlxEase.quadOut);
@@ -378,7 +386,9 @@ class PreGluttonyStage extends Stage
     }
     else
     {
-      tweens.push(FlxTween.tween(overlay, {alpha: 0}, 0.5, {ease: FlxEase.cubeOut}));
+      tweens.push(FlxTween.tween(overlay, {alpha: 0}, 0.5, {ease: FlxEase.cubeOut, onComplete: function(twn:FlxTween) {
+        overlay.active = false;
+      }}));
 
       PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom, 0.5, true, FlxEase.quadOut);
 
@@ -566,7 +576,9 @@ class PreGluttonyStage extends Stage
   {
     super.onSongRetry(event);
 
+    FlxTween.cancelTweensOf(overlay);
     overlay.alpha = 0;
+    overlay.active = false;
     isRaging = false;
     strumLineShake = 1;
   }

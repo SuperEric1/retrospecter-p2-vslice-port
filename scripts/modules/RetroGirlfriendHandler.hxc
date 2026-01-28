@@ -69,6 +69,8 @@ class RetroGirlfriendHandler extends Module {
 
   public function reloadSpeaker():Void {
     if (speaker != null) PlayState.instance.remove(speaker);
+    currentData = stageOffsets.get(girlfriend.characterId);
+    if (currentData == null) return;
     speaker = FunkinSprite.create(0, 0);
     speaker.frames = Paths.getSparrowAtlas(speakerPaths.get(girlfriend.characterId));
     switch (girlfriend.characterId) {
@@ -79,8 +81,6 @@ class RetroGirlfriendHandler extends Module {
     }
     speaker.x = girlfriend.x;
     speaker.y = girlfriend.y;
-
-    currentData = stageOffsets.get(girlfriend.characterId);
   }
 
   override public function onBeatHit(event:SongTimeScriptEvent):Void
@@ -99,7 +99,7 @@ class RetroGirlfriendHandler extends Module {
   override public function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null || !createdSpeaker || girlfriend == null) return;
+    if (PlayState.instance == null || !createdSpeaker || girlfriend == null || currentData == null) return;
 
     var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
     var offset:Array<Float> = currentData.exists(currentStage) ? currentData.get(currentStage) : defaultOffset;

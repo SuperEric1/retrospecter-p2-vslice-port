@@ -157,7 +157,7 @@ class WrathPhase2Stage extends Stage
       vortex.x = 300; //-100
       vortex.y = -550;
       // Se for story mode, começa invisível
-      if (PlayStatePlaylist.isStoryMode) vortex.alpha = HIDDEN;
+      if (PlayStatePlaylist.isStoryMode) vortex.visible = false;
       PlayState.instance.add(vortex);
 
       // Back rocks
@@ -316,10 +316,7 @@ class WrathPhase2Stage extends Stage
         crystal.scrollFactor.set(0.9, 0.9);
         crystal.animation.play('idle');
 
-        if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) {
-          crystal.alpha = HIDDEN;
-          crystal.y += 1500;
-        }
+        if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) crystal.alpha = HIDDEN;
 
         PlayState.instance.add(crystal);
         crystals.push(crystal);
@@ -338,16 +335,13 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.add(ground);
 
       // Crack
-      var crackOffset = 50;
       crack = FunkinSprite.create(0, 0);
       crack.loadSparrow('wrath/HellCrack');
       crack.animation.addByPrefix('appear', 'HellcrackAppear', 24, false);
       crack.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
-      crack.screenCenter();
+      crack.visible = false;
       crack.active = false;
-      crack.x += 45;
-      crack.y += 405 - 15 + crackOffset;
-
+      // Position it in onUpdate
       if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         crack.animation.play('bop');
         crack.active = true;
@@ -360,13 +354,9 @@ class WrathPhase2Stage extends Stage
         crack_2 = FunkinSprite.create(0, 0);
         crack_2.loadSparrow('wrath/HellCrack_2');
         crack_2.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
-        crack_2 = getNamedProp('HellCrack_2');
-        crack_2.screenCenter();
-        crack_2.active = false;
-        crack_2.x += -100;
-        crack_2.y += 600 + crackOffset;
-        crack_2.alpha = 0;
-        //PlayState.instance.add(crack_2); don't add yet cuz zindex, we do it on onUpdate
+        crack_2.visible = false;
+        // Position it in onUpdate
+        PlayState.instance.add(crack_2);
       }
 
       // Front Rocks
@@ -514,15 +504,18 @@ class WrathPhase2Stage extends Stage
     var songPos = Conductor.instance.songPosition / 1000;
 
     //zindex here is still broken idk how to fix it
-    if (!hasRefreshedProps && crack != null && getDad() != null) {
+    if (hasCreatedStage && !hasRefreshedProps) {
       hasRefreshedProps = true;
 
-      crack.zIndex = getDad().zIndex - 1;
-      PlayState.instance.add(crack);
+      crack.zIndex = getDad().zIndex - 3;
+      crack.x = getGirlfriend().x;
+      crack.y = getBoyfriend().y + 120;
       if (isSpectral && PlayStatePlaylist.isStoryMode && crack_2 != null) {
-        crack_2.zIndex = getDad().zIndex - 1;
-        PlayState.instance.add(crack_2);
+        crack_2.x = getGirlfriend().x - (crack_2.width / 2) + 50;
+        crack_2.y = getBoyfriend().y + 50;
+        crack_2.animation.play('bop');
       }
+      PlayState.instance.add(crack);
       PlayState.instance.refresh();
     }
 
@@ -679,17 +672,17 @@ class WrathPhase2Stage extends Stage
     if (hide) {
       flames.y += 1000;
       if (vortex != null) vortex.visible = false;
-      //if (crack != null) crack.visible = false;
-      if (crack_2 != null) crack_2.visible = false;
-      for (i in 0...crystals.length) {
-        if (crystals[i] == null) continue;
-        crystals[i].alpha = HIDDEN;
-      }
+      if (crack != null) crack.visible = false;
     } else {
       if (vortex != null) vortex.visible = true;
-      for (i in 0...crystals.length) {
-        if (crystals[i] == null) continue;
-        crystals[i].alpha = 1;
+      if (crack != null) {
+        crack.visible = true;
+        crack.animation.play('bop');
+      }
+      for (i in 0...8) {
+        var crystal = crystals[i];
+        if (crystal == null) continue;
+        crystal.alpha = 1;
       }
     }
   }
@@ -779,8 +772,6 @@ class WrathPhase2Stage extends Stage
 
     new FlxTimer().start(4.75, function(tmr) {
       retro.playAnimation('idle', true);
-      //if (crack != null) crack.visible = true;
-      if (crack_2 != null) crack_2.visible = true;
     });
 
     // Cutscene acaba

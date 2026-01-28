@@ -794,7 +794,7 @@ class RetroTitleState extends MusicBeatState
 
   override public function closeSubstate():Void {
     if (event.eventCanceled) return;
-    FullScreenScaleMode.removeCutouts;
+    FullScreenScaleMode.removeCutouts();
 
     super.closeSubState();
   }
