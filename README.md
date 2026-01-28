@@ -9,7 +9,7 @@ TODO:
 - [ ] Phase 2 end cutscene
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Acid death
-- [ ] Poison note notesplashes
+- [X] Poison note notesplashes
 - [ ] Intro for options menu
 - [ ] Hydra note is not pausing when pausing the game
 - [ ] Make the settings work
