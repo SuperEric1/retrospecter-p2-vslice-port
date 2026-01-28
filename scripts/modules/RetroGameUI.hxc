@@ -279,7 +279,7 @@ class RetroGameUI extends Module {
     if (songLengthEnabled) createTimeDisplay();
   }
 
-  var statsFontSize:Float = FlxG.onMobile ? 40 : 30;
+  var statsFontSize:Float = FlxG.onMobile ? 35 : 30;
   var statsTextMargin:Array<Float> = [FlxG.onMobile ? 0 : 60, 30];
   function createStatsDisplay():Void {
     var zIndex = 9999;
