@@ -279,8 +279,8 @@ class RetroGameUI extends Module {
     if (songLengthEnabled) createTimeDisplay();
   }
 
-  var statsFontSize:Float = FlxG.onMobile ? FlxG.width / 40 : 30;
-  var statsTextMargin:Array<Float> = [60, 30];
+  var statsFontSize:Float = FlxG.onMobile ? 40 : 30;
+  var statsTextMargin:Array<Float> = [FlxG.onMobile ? 0 : 60, 30];
   function createStatsDisplay():Void {
     var zIndex = 9999;
     var camera = PlayState.instance.camHUD;
@@ -337,7 +337,7 @@ class RetroGameUI extends Module {
     timeDisplay.text = 'Time Left\n' + currentTimeStr + '|' + totalTimeStr;
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - timeDisplay.height - statsTextMargin[1];
     timeDisplay.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
-    timeDisplay.y = targetY;
+    timeDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + timeDisplay.height / 2;
     if (currentTime > 0) timeDisplay.visible = true;
   }
 
@@ -405,7 +405,7 @@ class RetroGameUI extends Module {
     // if (isNewHighscore) statsDisplay.text += 'NEW HIGHSCORE!';
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
     statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
-    statsDisplay.y = targetY;
+    statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;
 
     // Update rating text with color
     ratingTextDisplay.text = ratingData.name;
