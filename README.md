@@ -3,17 +3,17 @@ A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with 
 
 TODO:
 - [ ] Catastrofiend subtitles
-- [ ] Fix title screen on mobile
+- [X] Fix title screen on mobile
 - [ ] Saku & Schythe notes
 - [ ] Hard Ache and Extirpatient chart fixes
 - [ ] Phase 2 end cutscene
-- [ ] Replace the modified note assets
+- [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Acid death
 - [ ] Poison note notesplashes
 - [ ] Intro for options menu
 - [ ] Hydra note is not pausing when pausing the game
 - [ ] Make the settings work
-- [ ] Song length timer
+- [X] Song length timer
 - [ ] Encode textures to ASTC
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Song info popup at the start of songs
