@@ -60,7 +60,7 @@ class InsatianCharacter extends SparrowCharacter {
 	// TODO: Move this somewhere else.
   function onSongLoaded(event:ScriptEvent):Void {
 		super.onSongLoaded(event);
-		var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+		/*var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
 		var dadId:String = PlayState.instance.currentStage.getDad().characterId;
 		var bfId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
 		var stageNoteStyleData:haxe.ds.StringMap<String, Array<String, String>> = [
@@ -80,7 +80,7 @@ class InsatianCharacter extends SparrowCharacter {
 			if (data[1].toLowerCase() == 'player' && this.characterId == bfId)
 				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, data[0]]);
 				ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
-		}
+		}*/
 	}
 
 	function onCreate(event:ScriptEvent):Void {

@@ -370,8 +370,14 @@ class RetroPlayState extends Module {
       event.doesNotesplash = false;
     }
 
+    if (k == 'sakuNote') {
+      FlxG.sound.play(Paths.sound('noteSounds/Saku'));
+      event.doesNotesplash = false;
+    }
+
     if (hurtNotes.contains(k) && event.judgement == 'bad') {
       event.note.visible = false; // So the discolored sprite doesn't appear.
+      event.note.active = false;
     }
   } // fim do if de checagem que é nota do player
 
@@ -565,7 +571,7 @@ class RetroPlayState extends Module {
         izzyMechanicTimer = null;
         return;
       }
-      if(PlayState.instance.isGameOverState) return;
+      if (PlayState.instance.isGameOverState) return;
       unscrambleStrumline();
     });
   }
@@ -598,12 +604,12 @@ class RetroPlayState extends Module {
 
     // Lógica normal
     for (i in 0...4) {
-        var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-        // Importante: cancelar tweens velhos antes de começar novos no mesmo objeto
-        FlxTween.cancelTweensOf(note);
+      var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+      // Importante: cancelar tweens velhos antes de começar novos no mesmo objeto
+      FlxTween.cancelTweensOf(note);
 
-        tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, 1.5, {ease: FlxEase.quadOut}));
-        tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, 1.5, {ease: FlxEase.quadOut}));
+      tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, 1.5, {ease: FlxEase.quadOut}));
+      tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, 1.5, {ease: FlxEase.quadOut}));
     }
 
     var objects = [

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="button.png">
+	<!-- Created with Adobe Animate version 24.0.3.19 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="button0000" x="694" y="1" width="325" height="248" frameX="-10" frameY="-10" frameWidth="349" frameHeight="272"/>
+	<SubTexture name="button0001" x="1" y="1" width="349" height="272"/>
+	<SubTexture name="button0002" x="353" y="1" width="338" height="242" frameX="-4" frameY="-23" frameWidth="349" frameHeight="272"/>
+	<SubTexture name="text0000" x="353" y="246" width="213" height="68"/>
+	<SubTexture name="text-inverted0000" x="569" y="252" width="213" height="68"/>
+</TextureAtlas>

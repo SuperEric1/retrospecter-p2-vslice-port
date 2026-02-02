@@ -23,6 +23,7 @@ import funkin.Conductor;
 import funkin.Highscore;
 import funkin.Paths;
 import funkin.save.Save;
+import funkin.play.scoring.Scoring;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
@@ -35,6 +36,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.effects.IntervalShake;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring;
+import Math;
 
 import supereric.retrospecter.ui.RetroPauseMenu;
 
@@ -50,6 +52,7 @@ class RetroGameUI extends Module {
   // move judgements a little bit to the left on non-mobile/non-arrows scheme
   var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
   var songLengthEnabled:Bool = true;
+  var isHivemine:Bool = false;
 
   // Health Bars
   var retroHealthBar:FlxBar;
@@ -74,6 +77,10 @@ class RetroGameUI extends Module {
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
+  var hiveminePlayerMoney:FlxText;
+  var hivemineOppMoney:FlxText;
+  var hiveminePlayerMoneyValue:Float = 0;
+  var hivemineOppMoneyValue:Float = 0;
 
   // Accuracy/Stats Display
   var statsDisplay:FlxText;
@@ -122,6 +129,9 @@ class RetroGameUI extends Module {
       playState.healthBarBG.y = downscroll ? -17 : 17;
       playState.healthBarBG.visible = false;
 
+      var isCustomHealthBar:Bool = true;
+      var hivemineTextColor:Bool = null;
+      isHivemine = false;
       switch (playStage.getDad().characterId.toLowerCase()) {
         case 'phase1':
           defaultScale = [0.45, 0.45];
@@ -152,12 +162,25 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+        case 'izzy':
+          defaultScale = [0.4, 0.4];
+          healthBgYOffset = -100;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
+        case 'hivemine':
+          defaultScale = [0.55, 0.55];
+          healthBgYOffset = -65;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/hivemore/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/hivemore/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/hivemore/bar');
+          isHivemine = true;
         case 'insatian':
-          var healthGroup:FlxTypedSpriteGroup;
+          /*var healthGroup:FlxTypedSpriteGroup; testing
 
           healthGroup = new FlxTypedSpriteGroup();
           healthGroup.cameras = [playState.camHUD];
-          playState.add(healthGroup);
+          playState.add(healthGroup);*/
 
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -80;
@@ -190,40 +213,43 @@ class RetroGameUI extends Module {
           return; // nao criar health bar custom
       }
 
-      //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
-      retroHealthBarOverlay.camera = playState.camHUD;
-      retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 5; //803
-      retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
-      retroHealthBarOverlay.screenCenter(0x01);
+      if (isCustomHealthBar) {
+        //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
+        retroHealthBarOverlay.camera = playState.camHUD;
+        retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 5; //803
+        retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBarOverlay.screenCenter(0x01);
 
-      // Configurar o fundo da barra (cor do oponente)
-      retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 2;
-      retroHealthBarFillBG.camera = playState.camHUD;
-      retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
-      retroHealthBarFillBG.screenCenter(0x01);
-      retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase(), true); // Cor do oponente
+        // Configurar o fundo da barra (cor do oponente)
+        retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 2;
+        retroHealthBarFillBG.camera = playState.camHUD;
+        retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBarFillBG.screenCenter(0x01);
+        retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase(), true); // Cor do oponente
 
-      // Configurar o preenchimento da barra (cor do jogador)
-      retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
-      retroHealthBarFill.camera = playState.camHUD;
-      retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
-      retroHealthBarFill.screenCenter(0x01);
-      retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
+        // Configurar o preenchimento da barra (cor do jogador)
+        retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
+        retroHealthBarFill.camera = playState.camHUD;
+        retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
+        retroHealthBarFill.screenCenter(0x01);
+        retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
 
-      // Guardar a largura original
-      fillOriginalWidth = retroHealthBarFill.frameWidth;
+        // Guardar a largura original
+        fillOriginalWidth = retroHealthBarFill.frameWidth;
 
-      // Adicionar na ordem correta: fundo -> preenchimento -> overlay
-      playState.add(retroHealthBarFillBG);
-      playState.add(retroHealthBarFill);
-      playState.add(retroHealthBarOverlay);
-      /*if (insatianMunch != null) {
-        insatianMunch.zIndex = retroHealthBarOverlay.zIndex;
-        playState.add(insatianMunch);
-      }*/
+        // Adicionar na ordem correta: fundo -> preenchimento -> overlay
+        playState.add(retroHealthBarFillBG);
+        playState.add(retroHealthBarFill);
+        playState.add(retroHealthBarOverlay);
+        /*if (insatianMunch != null) {
+          insatianMunch.zIndex = retroHealthBarOverlay.zIndex;
+          playState.add(insatianMunch);
+        }*/
+      }
 
       // Outros
       configureIcon(); // setar zindex e tudo mais nos dois icons
+      if (isHivemine) loadHivemineText(hivemineTextColor);
       if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
       playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
 
@@ -438,6 +464,85 @@ class RetroGameUI extends Module {
     }
   }
 
+  function loadHivemineText(?color:FlxColor = null) {
+    var txtColor = color ?? 0xFFee8044;
+    //if (color != null) txtColor = color;
+    // update the zIndexes when the text gets updated, so it inherits the health bar's zindex.
+    var hiveTextSize = retroHealthBarOverlay.width * 0.013;
+    var hiveTextMarginX = retroHealthBarOverlay.width * 0.115;
+    var hiveTextMarginY = retroHealthBarOverlay.height * 0.3;
+    var hiveTextFieldWidth = retroHealthBarOverlay.width * 0.12;
+
+    hiveminePlayerMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
+    hiveminePlayerMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
+    hiveminePlayerMoney.cameras = [PlayState.instance.camHUD];
+    hiveminePlayerMoney.fieldWidth = hiveTextFieldWidth;
+    //hiveminePlayerMoney.textField.background = true;
+    hiveminePlayerMoney.screenCenter();
+    hiveminePlayerMoney.x += hiveTextMarginX;
+    hiveminePlayerMoney.y = retroHealthBarOverlay.y + (retroHealthBarOverlay.height / 2) - hiveTextMarginY;
+
+    hivemineOppMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
+    hivemineOppMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
+    hivemineOppMoney.cameras = [PlayState.instance.camHUD];
+    hivemineOppMoney.fieldWidth = hiveTextFieldWidth;
+    //hivemineOppMoney.textField.background = true;
+    hivemineOppMoney.screenCenter();
+    hivemineOppMoney.x -= hiveTextMarginX;
+    hivemineOppMoney.y = retroHealthBarOverlay.y + (retroHealthBarOverlay.height / 2) - hiveTextMarginY;
+
+    setHivemineMoney(0); // 0 = default, transforms into 100k
+    updateHivemineText();
+  }
+
+  function updateHivemineText() {
+    if (!hasBeenCreated) return;
+    if (hiveminePlayerMoney == null || hivemineOppMoney == null) return;
+    if (retroHealthBarOverlay == null) return;
+
+    var targetZIndex = retroHealthBarOverlay.zIndex + 1;
+    if (hiveminePlayerMoney.zIndex != targetZIndex) {
+      hiveminePlayerMoney?.zIndex = targetZIndex;
+      PlayState.instance.add(hiveminePlayerMoney);
+      PlayState.instance.refresh(); // refresh to make sure the zindex is applied
+    }
+    if (hivemineOppMoney.zIndex != targetZIndex) {
+      hivemineOppMoney?.zIndex = targetZIndex;
+      PlayState.instance.add(hivemineOppMoney);
+      PlayState.instance.refresh(); // refresh to make sure the zindex is applied
+    }
+
+    var commaSeparated:Bool = true;
+    hiveminePlayerMoney.text = '$ ' + FlxStringUtil.formatMoney(hiveminePlayerMoneyValue, true, commaSeparated);
+    hivemineOppMoney.text = '$ ' + FlxStringUtil.formatMoney(hivemineOppMoneyValue, true, commaSeparated);
+  }
+  public function setHivemineMoney(value:Bool, ?target:String = null) {
+    var valueFinal:Float = 100000;
+    var lTarget:String = target ?? 'both';
+    if (value != 0) valueFinal = value;
+    if (lTarget.toLowerCase() == 'both') {
+      hivemineOppMoneyValue = valueFinal;
+      hiveminePlayerMoneyValue = valueFinal;
+    } else if (lTarget.toLowerCase() == 'player') {
+      hiveminePlayerMoneyValue = valueFinal;
+    } else if (lTarget.toLowerCase() == 'opp') {
+      hivemineOppMoneyValue = valueFinal;
+    }
+    return value;
+  }
+  public function addHivemineMoney(value:Bool, ?target:String = null) {
+    var lTarget:String = target ?? 'both';
+    if (lTarget.toLowerCase() == 'both') {
+      hivemineOppMoneyValue = value;
+      hiveminePlayerMoneyValue = value;
+    } else if (lTarget.toLowerCase() == 'player') {
+      hiveminePlayerMoneyValue = value;
+    } else if (lTarget.toLowerCase() == 'opp') {
+      hivemineOppMoneyValue = value;
+    }
+    return value;
+  }
+
   override public function onBeatHit(event:SongTimeScriptEvent) {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
@@ -477,7 +582,7 @@ class RetroGameUI extends Module {
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
       if (isNormalNote) {
-        updateJudgement('miss', event.score, true);
+        updateJudgement('miss', Scoring.getMissScore(), true);
         // Update stats display after miss
         updateStatsDisplay();
       }
@@ -562,6 +667,7 @@ class RetroGameUI extends Module {
     hasBeenCreated = false;
     cancelTweens();
     currentAccuracy = 0.0;
+    isHivemine = false;
   }
 
   override public function onCreate(event) {
@@ -601,7 +707,7 @@ class RetroGameUI extends Module {
     }
 
     // ---- Health Bars ----
-    var healthPercent:Float = playState.healthLerp / 2.0;
+    var healthPercent:Float = playState.healthLerp / Constants.HEALTH_MAX;
     var newWidth:Float = fillOriginalWidth * healthPercent;
 
     var clipX:Float = fillOriginalWidth - newWidth; // Cortar fill das barras
@@ -628,15 +734,21 @@ class RetroGameUI extends Module {
     retroHealthBarFillBG.alpha = playState.healthBar.alpha;
 
     // ---- Texts ----
-    for (holdNote in playState.playerStrumline.holdNotes.members)
-    {
+    if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
+      var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
+      var moneyIncreaseDecimals = (event.elapsed * 100) / 100;
+      var markiplier = (hiveminePlayerMoneyValue < 0) ? -1 : 1;
+      hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
+      hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
+      updateHivemineText();
+    }
+
+    for (holdNote in playState.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
       // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
-      {
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
         // Update score text.
-        if (!playState.isBotPlayMode)
-        {
+        if (!playState.isBotPlayMode) {
           score.text = PlayState.instance.songScore; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
         }
       }
@@ -650,8 +762,8 @@ class RetroGameUI extends Module {
 
     isOppIconAnimated = false;
     isPlayerIconAnimated = false;
-    retroHealthBarFill.color = getIconColor(ogBfId);
-    retroHealthBarFillBG.color = getIconColor(ogDadId);
+    if (retroHealthBarFill != null) retroHealthBarFill.color = getIconColor(ogBfId);
+    if (retroHealthBarFillBG != null) retroHealthBarFillBG.color = getIconColor(ogDadId);
 
     if (currentHealthCut > 0) resetHealthBarCut(0);
 
@@ -666,6 +778,7 @@ class RetroGameUI extends Module {
       timeDisplay.visible = false;
       updateTimeDisplay();
     }
+    if (isHivemine) setHivemineMoney(0);
 
     // i tried
     if (isPlayerIconAnimated) syncIconAnim(PlayState.instance.iconP1, false);
@@ -718,6 +831,10 @@ class RetroGameUI extends Module {
         return getRGB(130, 255, 250);
       case 'insatian':
         return getRGB(193, 20, 68);
+      case 'hivemine':
+        return getRGB(183, 19, 238);
+      case 'hiveless':
+        return getRGB(175, 102, 206);
       case 'sakuromap2-atlas':
         return getRGB(169, 50, 140);
       case 'nightflaid_atlas':

@@ -1,0 +1,88 @@
+import flixel.addons.display.FlxRuntimeShader;
+import openfl.display.BitmapData;
+
+class RetroBitMapReplaceShader extends FlxRuntimeShader
+{
+  public var replaceBitmap(get, set):BitmapData;
+  public var replaceBitmapRatio(get, set):Array<Float>;
+  public var replaceBitmapOffset(get, set):Array<Float>;
+  public var replaceBitmapScale(get, set):Float;
+  public var debugShowImage(get, set):Bool;
+  public var bitmapAntialiasing(get, set):Bool;
+
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('bitmapReplace')));
+    this.setFloat("replaceBitmapScale", 1.0);
+    this.setFloatArray("replaceBitmapRatio", [1.0, 1.0]);
+    this.setFloatArray("replaceBitmapOffset", [0.0, 0.0]);
+    this.setFloat("debugShowImage", 0.0);
+    this.setFloat("bitmapAntialiasing", 0.0);
+  }
+
+  // replaceBitmap
+  function set_replaceBitmap(val:BitmapData):BitmapData
+  {
+    this.setBitmapData("replaceBitmap", val);
+    return val;
+  }
+  function get_replaceBitmap():BitmapData
+  {
+    return this.getBitmapData("replaceBitmap");
+  }
+
+  // replaceBitmapRatio
+  function set_replaceBitmapRatio(val:Array<Float>):Array<Float>
+  {
+    this.setFloatArray("replaceBitmapRatio", val);
+    return val;
+  }
+  function get_replaceBitmapRatio():Array<Float>
+  {
+    return this.getFloatArray("replaceBitmapRatio");
+  }
+
+  // replaceBitmapOffset
+  function set_replaceBitmapOffset(val:Array<Float>):Array<Float>
+  {
+    this.setFloatArray("replaceBitmapOffset", val);
+    return val;
+  }
+  function get_replaceBitmapOffset():Array<Float>
+  {
+    return this.getFloatArray("replaceBitmapOffset");
+  }
+
+  // replaceBitmapScale
+  function set_replaceBitmapScale(val:Float):Float
+  {
+    this.setFloat("replaceBitmapScale", val);
+    return val;
+  }
+  function get_replaceBitmapScale():Float
+  {
+    return this.getFloat("replaceBitmapScale");
+  }
+
+  // debugShowImage
+  function set_debugShowImage(val:Bool):Bool
+  {
+    this.setFloat("debugShowImage", val ? 1.0 : 0.0);
+    return val;
+  }
+  function get_debugShowImage():Bool
+  {
+    return this.getFloat("debugShowImage") > 0.5;
+  }
+
+  // bitmapAntialiasing
+  function set_bitmapAntialiasing(val:Bool):Bool
+  {
+    this.setFloat("bitmapAntialiasing", val ? 1.0 : 0.0);
+    return val;
+  }
+  function get_bitmapAntialiasing():Bool
+  {
+    return this.getFloat("bitmapAntialiasing") > 0.5;
+  }
+}

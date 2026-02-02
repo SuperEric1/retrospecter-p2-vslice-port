@@ -95,7 +95,7 @@ class RetroNoteStyles extends Module {
 		super.onNoteIncoming(event);
 		if (!event.note.noteData.getMustHitNote()) {
 			if (animatedNoteStyles.contains(PlayState.instance.opponentStrumline.noteStyle.id)) {
-				event.note.active = true; // For the animation to actually play.
+				event.note.active = true; // For the note's animation to actually play.
 			}
 		}
 

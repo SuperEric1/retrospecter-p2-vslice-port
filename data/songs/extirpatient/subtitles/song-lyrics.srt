@@ -1,3 +1,3 @@
 ﻿1
-00:00:00,000 --> 00:00:00,100
-SUBTITLE
+00:00:00,000 --> 00:00:01,100
+<font face="Rythm Of Death" color="#FF001F" size="50px">HAHAHAHA...</font>

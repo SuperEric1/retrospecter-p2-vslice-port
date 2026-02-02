@@ -21,6 +21,7 @@ import funkin.modding.events.StateChangeScriptEvent;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.mobile.input.ControlsHandler;
+import funkin.PlayerSettings;
 import funkin.Paths;
 import Std;
 import Reflect;
@@ -252,6 +253,8 @@ class RetroOptionsState extends Module
 
     if (appIndex == 6) {
       dozirc.animation.play('anims/oops', false, false, true);
+    } else if (appIndex != 6 && dozirc.animation.curAnim.name == 'anims/oops') {
+      dozirc.animation.play('anims/default', false, false, true);
     }
 
     if (appURLs.exists(appIndex)) {
@@ -505,9 +508,12 @@ class RetroOptionsState extends Module
           break; // we found the exit button, stop!!
         }
       }
-      if (!ControlsHandler.usingExternalInputDevice && items.selectedIndex >= items.length - 1)
+      var controls = PlayerSettings.player1.controls;
+      if (((!FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) && items.selectedIndex >= items.length - 1)
       {
-        items.selectItem(0); // Volta para o primeiro item se estiver no EXIT
+        var index:Int = 0;
+        if (controls.UI_UP_P) index = items.length - 2;
+        items.selectItem(index); // Wrap around so we never reach the exit button
       }
 
       var goingBack:Bool = (FlxG.onMobile) ? ReflectUtil.getProperty(codex.currentPage, "goingBack") : false;
@@ -696,7 +702,7 @@ class RetroOptionsState extends Module
     }
   }
 
-  // this only runs after the state is loaded so he original position dont mess with the new one
+  // this only runs after the state is loaded so the original position dont mess with the new one
   function adjustButtons(optionsState:OptionsState):Void
   {
     @:privateAccess {

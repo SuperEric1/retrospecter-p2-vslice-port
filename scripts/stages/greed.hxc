@@ -1,0 +1,98 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.util.Constants;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.Paths;
+import funkin.save.Save;
+import haxe.ds.StringMap;
+
+class GreedStage extends Stage
+{
+  var bgX:Float = -1000;
+  var bgY:Float = -700;
+
+  var glitterPositions:Array<Array<Float>> = [
+    [465, 1833],   // FarLeft
+    [2299, 1811],  // Center
+    [2890, 1800],  // Table
+    [3546, 2200]   // FarRight
+  ];
+
+  var bg:StageProp;
+  var fg:StageProp;
+  var glitterSprites:Array<StageProp> = [];
+
+  public function new()
+  {
+    super('greed');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    bg = makeSprite('bg', 'greed/hivemine_bg', bgX, bgY);
+
+    var glitterNames = ['FarLeft', 'Center', 'Table', 'FarRight'];
+    for (i in 0...glitterPositions.length)
+    {
+      var glitter = makeAnimatedSprite('glitter_' + glitterNames[i], 'greed/Hivemine_GlitterPatch_' + glitterNames[i],
+        bgX + glitterPositions[i][0], bgY + glitterPositions[i][1]);
+      glitter.animation.addByPrefix('glitter', 'Hivemine_GlitterPatch_' + glitterNames[i], 24, true);
+      glitter.animation.play('glitter');
+      glitterSprites.push(glitter);
+    }
+
+    fg = makeSprite('fg', 'greed/hivemine_fg', bgX, bgY);
+    fg.zIndex = 301;
+
+    PlayState.instance.refresh();
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.BF)
+    {
+      character.idleSuffix = '-alt';
+      character.danceEvery = 1;
+    }
+  }
+
+  function makeSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  function makeAnimatedSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadSparrow(imagePath);
+    PlayState.instance.add(sprite, name);
+    return sprite;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    glitterSprites = [];
+  }
+}

@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="gallery.png">
-	<!-- Created with Adobe Animate version 23.0.0.407 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="GALLERYBRIGHT" x="0" y="0" width="668" height="810"/>
-	<SubTexture name="GALLERYDARK" x="673" y="0" width="668" height="810"/>
-</TextureAtlas>

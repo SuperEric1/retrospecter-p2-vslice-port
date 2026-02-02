@@ -9,6 +9,7 @@ import flixel.effects.FlxFlicker;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import funkin.modding.PolymodHandler;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.graphics.frames.FlxAtlasFrames;
@@ -30,6 +31,7 @@ import flixel.math.FlxMath;
 import funkin.mobile.input.ControlsHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.SwipeUtil;
+import StringTools;
 
 class RetroMainMenu extends MusicBeatState
 {
@@ -37,7 +39,6 @@ class RetroMainMenu extends MusicBeatState
 
   var bg:FlxSprite;
   var bgFront:FlxSprite;
-  var magenta:FlxSprite;
   var camFollow:FlxObject;
   var titleText:FlxText;
   var label1:FunkinSprite;
@@ -97,12 +98,23 @@ class RetroMainMenu extends MusicBeatState
     menuNames = [];
     menuClips = [];
 
-    magenta = new FlxSprite();
     camFollow = new FlxObject(0, 0, 1, 1);
     idleTimer = new FlxTimer();
     lastMousePos = FlxPoint.get(0, 0);
 
     FlxG.keys.enabled = true;
+
+    var folderNames:Array<String> = ["retrospecter-p2-vslice-port", "retrospecter-p2-vslice-port-main"];
+    var data:ModMetadata = null;
+
+    for (name in folderNames) {
+      if (data != null) continue;
+      data = PolymodHandler.modFileSystem.getMetadata(name);
+    }
+
+    if (data != null) {
+      retroV = data.modVersion.version?.join(".")?.substr(0, 3) ?? '1.0';
+    }
   }
 
   override function create():Void
@@ -114,7 +126,13 @@ class RetroMainMenu extends MusicBeatState
 
     if (!overrideMusic) playMenuMusic();
 
-    if (FlxG.onMobile) addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
+    if (FlxG.onMobile) {
+      var backBtn = addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
+      backBtn.onConfirmStart.add(function() {
+        canNavigate = false;
+        backBtn.active = true;
+      });
+    }
 
     persistentUpdate = true;
     persistentDraw = true;
@@ -185,16 +203,17 @@ class RetroMainMenu extends MusicBeatState
 
     super.create();
 
-    if (FlxG.mouse.cursor != null && !FlxG.onMobile) {
+    if ((!FlxG.onMobile) || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice) && FlxG.mouse.cursor != null) {
       FlxG.mouse.visible = true;
       FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
     }
 
-    if (FlxG.state.leftWatermarkText != null) {
-      var ogText = FlxG.state.leftWatermarkText.text;
+    var waterMarkText = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port v" + retroV + " | FNF " + Constants.VERSION;
+    if (FlxG.state.leftWatermarkText != null && !StringTools.startsWith(FlxG.state.leftWatermarkText.text, waterMarkText)) {
+      //var ogText = FlxG.state.leftWatermarkText.text;
       FlxG.state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
       FlxG.state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
-      FlxG.state.leftWatermarkText.text = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nUnofficial Fan Port v" + retroV + " | FNF " + Constants.VERSION;
+      FlxG.state.leftWatermarkText.text = waterMarkText;
       FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
     }
 
@@ -612,7 +631,7 @@ class RetroMainMenu extends MusicBeatState
     var currentMouseX:Float = FlxG.mouse.x;
     var currentMouseY:Float = FlxG.mouse.y;
 
-    if (lastMousePos == null && isExternalInput) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
+    if (lastMousePos == null) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
 
     // Calcular distância
     var dx:Float = currentMouseX - lastMousePos.x;
@@ -628,7 +647,7 @@ class RetroMainMenu extends MusicBeatState
     }
 
     // Preparar detecção de input
-    var justPressed:Bool = TouchUtil.justPressed || FlxG.mouse.justPressed;
+    var justPressed:Bool = (TouchUtil.justPressed || FlxG.mouse.justPressed) && !SwipeUtil.justSwipedAny;
     var justReleased:Bool = TouchUtil.justReleased || FlxG.mouse.justReleased;
 
     /*if (FlxG.onMobile && TouchUtil != null && !ControlsHandler.usingExternalInputDevice)
@@ -677,8 +696,8 @@ class RetroMainMenu extends MusicBeatState
     // KEYBOARD/SWIPE HANDLING
     var controls = PlayerSettings.player1.controls;
 
-    var goLEFT = SwipeUtil.swipeLeft || controls.UI_LEFT_P || controls.UI_UP_P;
-    var goRIGHT = SwipeUtil.swipeRight || controls.UI_RIGHT_P || controls.UI_DOWN_P;
+    var goLEFT = SwipeUtil.justSwipedLeft || controls.UI_LEFT_P || controls.UI_UP_P;
+    var goRIGHT = SwipeUtil.justSwipedRight || controls.UI_RIGHT_P || controls.UI_DOWN_P;
 
     var doSELECT = controls.ACCEPT_P; // also select if we press enter
     var goBACK = controls.BACK_P;
@@ -729,6 +748,7 @@ class RetroMainMenu extends MusicBeatState
   function goBack():Void
   {
     trace("BACK: Interact complete.");
+    canNavigate = false;
     rememberedSelectedIndex = selectedIndex;
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 

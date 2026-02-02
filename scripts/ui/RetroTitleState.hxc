@@ -68,6 +68,9 @@ class RetroTitleState extends MusicBeatState
   var logoTweens:Array<FlxTween> = [];
   var teamLogoTweens:Array<FlxTween> = [];
 
+  var flamesShader:ScriptedFlxRuntimeShader;
+  var defaultFlameColorR:FlxColor = 0xEFFFF2;
+  var defaultFlameColorG:FlxColor = 0x86FF9F;
   var defaultFlameColor:FlxColor = 0x61FF88;
 
   // Câmeras
@@ -161,7 +164,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "wrath",
       musicTrack: "Wrath",
-      flameColor: defaultFlameColor,
+      flameColorR: defaultFlameColorR,
+      flameColorG: defaultFlameColorG,
+      flameColorB: defaultFlameColor,
       bgZoom: 0.685
     });
 
@@ -169,7 +174,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "phase2",
       musicTrack: "Wrath",
-      flameColor: defaultFlameColor,
+      flameColorR: defaultFlameColorR,
+      flameColorG: defaultFlameColorG,
+      flameColorB: defaultFlameColor,
       bgZoom: 0.685
     });
 
@@ -177,7 +184,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "phase3",
       musicTrack: "freakyMenu",
-      flameColor: defaultFlameColor,
+      flameColorR: defaultFlameColorR,
+      flameColorG: defaultFlameColorG,
+      flameColorB: defaultFlameColor,
       bgZoom: 1.0
     });
 
@@ -185,7 +194,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "phase4",
       musicTrack: "freakyMenu",
-      flameColor: defaultFlameColor,
+      flameColorR: defaultFlameColorR,
+      flameColorG: defaultFlameColorG,
+      flameColorB: defaultFlameColor,
       bgZoom: 1.001
     });
 
@@ -193,7 +204,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "nightflaid",
       musicTrack: "Nightflaid",
-      flameColor: 0xFF001F,
+      flameColorR: 0xFF001F,
+      flameColorG: 0x000000,
+      flameColorB: 0xFF001F,
       bgZoom: 1.0
     });
 
@@ -201,7 +214,9 @@ class RetroTitleState extends MusicBeatState
     backgrounds.push({
       id: "pride",
       musicTrack: "Pride",
-      flameColor: 0x36FFE9,
+      flameColorR: 0xEFFFFD,
+      flameColorG: 0x86FFF2,
+      flameColorB: 0x36FFE9,
       bgZoom: 0.45
     });
   }
@@ -262,17 +277,30 @@ class RetroTitleState extends MusicBeatState
     logoRetro.visible = false;
     logoRetro.cameras = [mainCamera];
 
-    var color = currentBgConfig != null ? currentBgConfig.flameColor : defaultFlameColor;
+    // FLAMES SHADER
+    var colorR = FlxColor.fromInt(currentBgConfig != null ? currentBgConfig.flameColorR : defaultFlameColorR);
+    var colorG = FlxColor.fromInt(currentBgConfig != null ? currentBgConfig.flameColorG : defaultFlameColorG);
+    var colorB = FlxColor.fromInt(currentBgConfig != null ? currentBgConfig.flameColorB : defaultFlameColor);
+    flamesShader = ScriptedFlxRuntimeShader.init('RetroChannelColorShader');
+    flamesShader.redColor = colorR;
+    flamesShader.greenColor = colorG;
+    flamesShader.blueColor = colorB;
+    // For the upFire shader during the intro, before we skip.
+    var flamesShaderDefault = ScriptedFlxRuntimeShader.init('RetroChannelColorShader');
+    flamesShaderDefault.redColor = FlxColor.fromInt(defaultFlameColorR);
+    flamesShaderDefault.greenColor = FlxColor.fromInt(defaultFlameColorG);
+    flamesShaderDefault.blueColor = FlxColor.fromInt(defaultFlameColor);
 
     upFire = new FlxSprite(0, 0);
-    upFire.frames = Paths.getSparrowAtlas('ui/flames');
+    upFire.frames = Paths.getSparrowAtlas('ui/flames_rgb');
     upFire.animation.addByPrefix('loop', 'upFire0', 24);
     upFire.animation.play('loop');
     upFire.screenCenter();
     upFire.y += logoYOff;
     upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
     upFire.updateHitbox();
-    upFire.color = defaultFlameColor; // Cor do upfire muda depois de pular a intro e mostrar o bg.
+    upFire.shader = flamesShaderDefault;
+    //upFire.color = defaultFlameColor; // Cor do upfire muda depois de pular a intro e mostrar o bg.
     upFire.visible = false;
     upFire.cameras = [mainCamera];
 
@@ -283,7 +311,8 @@ class RetroTitleState extends MusicBeatState
     backFire.y += logoYOff;
     backFire.x = (FlxG.width / 2) - (logoRetro.width / 2);
     backFire.updateHitbox();
-    backFire.color = color;
+    backFire.shader = flamesShader;
+    //backFire.color = colorR;
     backFire.visible = false;
     backFire.cameras = [mainCamera];
 
@@ -297,9 +326,6 @@ class RetroTitleState extends MusicBeatState
     glow.alpha = 0;
     glow.visible = false;
     glow.cameras = [mainCamera];
-
-    add(backFire);
-    add(logoRetro);
 
     titleText = new FlxSprite((FlxG.onMobile ? 50 : 100) + (FullScreenScaleMode.gameCutoutSize.x / 2), FlxG.height * 0.8);
     titleText.frames = Paths.getSparrowAtlas('titleEnter' + (FlxG.onMobile ? '_mobile' : ''));
@@ -317,6 +343,8 @@ class RetroTitleState extends MusicBeatState
     add(blackScreen);
 
     // These are added later so it appears in front of the black screen, making the shadow effect.
+    add(backFire);
+    add(logoRetro);
     add(upFire);
     add(glow);
 
@@ -739,6 +767,8 @@ class RetroTitleState extends MusicBeatState
       glow.alpha = 1;
       glow.visible = true;
       upFire.visible = true;
+      logoRetro.alpha = 0.035;
+      logoRetro.visible = true;
     } else {
       hasShownShadow = false;
       glow.alpha = 0;
@@ -763,8 +793,11 @@ class RetroTitleState extends MusicBeatState
       shadowLogo(true);
       remove(team);
       team.visible = false;
+      logoRetro.alpha = 1;
       logoRetro.visible = true;
-      upFire.color = currentBgConfig != null ? currentBgConfig.flameColor : defaultFlameColor;
+      backFire.visible = true;
+      upFire.shader = flamesShader; // After the intro, change the upFire's shader to match the other flames colors.
+      //upFire.color = currentBgConfig != null ? currentBgConfig.flameColor : defaultFlameColor;
       upFire.visible = true;
       backFire.visible = true;
       glow.visible = true;

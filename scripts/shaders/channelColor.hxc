@@ -1,0 +1,59 @@
+import flixel.addons.display.FlxRuntimeShader;
+import flixel.util.FlxColor;
+
+class RetroChannelColorShader extends FlxRuntimeShader
+{
+  public var redColor(get, set):Dynamic;
+  public var greenColor(get, set):Dynamic;
+  public var blueColor(get, set):Dynamic;
+
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('channelColor')));
+    this.setFloatArray("redColor", [1.0, 0.0, 0.0, 1.0]);
+    this.setFloatArray("greenColor", [0.0, 1.0, 0.0, 1.0]);
+    this.setFloatArray("blueColor", [0.0, 0.0, 1.0, 1.0]);
+  }
+
+  private function intToArray(val:Dynamic):Array<Float>
+  {
+    var intVal:Int = val;
+    var r:Float = ((intVal >> 16) & 0xFF) / 255.0;
+    var g:Float = ((intVal >> 8) & 0xFF) / 255.0;
+    var b:Float = (intVal & 0xFF) / 255.0;
+    return [r, g, b, 1.0];
+  }
+
+  // redColor
+  function set_redColor(val:Dynamic):Dynamic
+  {
+    this.setFloatArray("redColor", intToArray(val));
+    return val;
+  }
+  function get_redColor():Dynamic
+  {
+    return null;
+  }
+
+  // greenColor
+  function set_greenColor(val:Dynamic):Dynamic
+  {
+    this.setFloatArray("greenColor", intToArray(val));
+    return val;
+  }
+  function get_greenColor():Dynamic
+  {
+    return null;
+  }
+
+  // blueColor
+  function set_blueColor(val:Dynamic):Dynamic
+  {
+    this.setFloatArray("blueColor", intToArray(val));
+    return val;
+  }
+  function get_blueColor():Dynamic
+  {
+    return null;
+  }
+}

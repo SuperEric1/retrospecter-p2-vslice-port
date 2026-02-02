@@ -30,19 +30,19 @@ class HardAcheSong extends Song
   public override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    playState = PlayState.instance;
-    var save:Save = Save.instance.modOptions;
-    // load alt inst if suggestive content is disbled
-    if (!save.get("retroSuggestive")) {
-      if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
-      playState.currentInstrumental = 'nolines';
-    }
+
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-
+    playState = PlayState.instance;
+    // load alt inst if suggestive content is disbled
+    if (!Save.instance.modOptions.get('retroSuggestive')) {
+      playState.currentInstrumental = 'nolines';
+      if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
+      //throw 'opa';
+    }
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void

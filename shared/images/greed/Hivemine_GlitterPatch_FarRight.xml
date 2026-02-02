@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="Hivemine_GlitterPatch_FarRight.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0000" x="10" y="10" width="388" height="273" frameX="-29" frameY="-30" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0001" x="408" y="10" width="389" height="269" frameX="-28" frameY="-34" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0002" x="807" y="10" width="389" height="270" frameX="-28" frameY="-34" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0003" x="1206" y="10" width="417" height="275" frameX="0" frameY="-29" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0004" x="1633" y="10" width="367" height="277" frameX="-53" frameY="-29" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0005" x="10" y="297" width="367" height="306" frameX="-53" frameY="0" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0006" x="387" y="297" width="401" height="292" frameX="-51" frameY="-45" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0007" x="798" y="297" width="265" height="197" frameX="-51" frameY="-53" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0008" x="1073" y="297" width="299" height="212" frameX="-49" frameY="-38" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0009" x="1382" y="297" width="306" height="239" frameX="-33" frameY="-43" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0010" x="1698" y="297" width="312" height="174" frameX="-33" frameY="-43" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0011" x="10" y="613" width="313" height="238" frameX="-32" frameY="-21" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0012" x="333" y="613" width="378" height="260" frameX="-32" frameY="-36" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0013" x="721" y="613" width="381" height="263" frameX="-29" frameY="-33" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0014" x="1112" y="613" width="393" height="265" frameX="-19" frameY="-33" frameWidth="452" frameHeight="337"/>
+	<SubTexture name="Hivemine_GlitterPatch_FarRight0015" x="1515" y="613" width="383" height="268" frameX="-29" frameY="-30" frameWidth="452" frameHeight="337"/>
+</TextureAtlas>

@@ -31,8 +31,8 @@ class sakuNote extends Module {
       var downscroll = Preferences.downscroll;
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
-			event.note.x += -45;
-			event.note.yOffset += -265;
+			event.note.x += -75;
+			event.note.yOffset += -225;
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/HeartNotes' );
       if (downscroll) {

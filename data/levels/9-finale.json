@@ -6,10 +6,16 @@
   "background": "#000000",
   "props": [
     {
-      "assetPath": "storymenu/titles/not",
-      "scale": 0.001,
-      "offsets": [0, 0],
-      "animations": []
+      "assetPath": "storymenu/props/retro",
+      "scale": 0.0001,
+      "offsets": [-999, -999],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "Retro IDLE",
+          "frameRate": 24
+        }
+      ]
     },
     {
       "assetPath": "storymenu/props/bf_retro",

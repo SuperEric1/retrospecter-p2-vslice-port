@@ -20,8 +20,6 @@ import funkin.Paths;
 import funkin.save.Save;
 import haxe.ds.StringMap;
 
-import supereric.retrospecter.modules.RetroNoteStyles;
-
 class GluttonyStage extends Stage
 {
   var xAdjust:Float = -2350;

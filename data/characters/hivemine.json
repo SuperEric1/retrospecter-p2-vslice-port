@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "name": "Hivemine",
+  "assetPath": "characters/OtherSins/Hivemine",
+  "renderType": "multisparrow",
+  "startingAnimation": "idle",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.4,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "hivemine",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "hivemine idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "hivemine down",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "hivemine left",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "hivemine up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "hivemine right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "assetPath": "characters/OtherSins/hivemineTalks",
+      "name": "transition",
+      "prefix": "transition",
+      "offsets": [32, 188],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "assetPath": "characters/OtherSins/hivemineTalks",
+      "name": "transition-hold",
+      "prefix": "transition",
+      "offsets": [32, 188],
+      "frameRate": 1,
+      "frameIndices": [202, 202, 202, 202, 202, 202, 202, 202, 202]
+    }
+  ],
+  "flipX": false
+}
