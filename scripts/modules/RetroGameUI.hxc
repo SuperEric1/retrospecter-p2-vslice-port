@@ -124,9 +124,9 @@ class RetroGameUI extends Module {
       var fillDirection:Array<Float, Float> = [1500, 80];
       cutOffset = 0;
 
-      playState.healthBar.y += downscroll ? -17 : 17;
+      playState.healthBar.y += downscroll ? -17 : 0;
       playState.healthBar.visible = false;
-      playState.healthBarBG.y = downscroll ? -17 : 17;
+      playState.healthBarBG.y = downscroll ? -17 : 0;
       playState.healthBarBG.visible = false;
 
       var isCustomHealthBar:Bool = true;

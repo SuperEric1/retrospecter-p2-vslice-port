@@ -4,6 +4,7 @@ import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
 import funkin.util.Constants;
 import flixel.math.FlxRandom;
+import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
@@ -17,6 +18,7 @@ import funkin.Preferences;
 import funkin.Conductor;
 import funkin.Highscore;
 import funkin.Paths;
+import funkin.save.Save;
 import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
@@ -43,6 +45,7 @@ class RetroPlayState extends Module {
   var isRetro:Bool = false;
   var isDoingVocalThing:Bool = false;
   var isDownscroll:Bool = false;
+  var mechanicsEnabled:Bool = true;
 
   var retroGameUI = null;
 
@@ -91,6 +94,19 @@ class RetroPlayState extends Module {
   var insatianHolesTimer:FlxTimer = null;
   var insatianNoteDamage:Float = Constants.HEALTH_MAX * 0.33; // 32%
   var insatianNoteCounter:Int = 0;
+
+  // Hivemine - Mecânicas relacionadas à nossa querida abelha.
+  var hmpActive:Bool = false;
+  var hmpSpeed:Float = 0; // Velocidade padrão que os papéis descem na tela. (decidido de acordo com a dificuldade)
+  // var hmp1:FunkinSprite;
+  // var hmp2:FunkinSprite;
+  // var hmp3:FunkinSprite;
+  // var hmp4:FunkinSprite;
+  var hiveminePapers:Array<FunkinSprite> = [];
+  var hmpAnimating:Bool = false;
+  var hmpTweenAdvance:FlxTween = null;
+  var hmpTweenRetract:FlxTween = null;
+  var hmpCurrentYValue:Float = 0;
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -365,6 +381,24 @@ class RetroPlayState extends Module {
       if (funnyVar) funnyHealth(0.23);
     }
 
+    if (k == 'cashNote') {
+      retractHiveminePapers();
+      FlxG.sound.play(Paths.sound('noteSounds/Coin'));
+      event.doesNotesplash = false;
+    }
+    if (k == 'hivemoreNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      advanceHiveminePapers();
+      FlxG.sound.play(Paths.sound('noteSounds/Take'));
+      event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
     if (k == 'spectre') {
       FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
       event.doesNotesplash = false;
@@ -442,6 +476,8 @@ class RetroPlayState extends Module {
     isDownscroll = Preferences.downscroll;
     if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
 
+    mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
+
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
@@ -469,6 +505,11 @@ class RetroPlayState extends Module {
     ogOppStrumsX = [];
     ogOppStrumsY = [];
     ogOppStrumScales = [];
+
+    // just for testing, this should be done at the song's script.
+    //loadHiveminePapers();
+    //getHiveminePapersSpeed();
+    //toggleHiveminePapers();
 
     // saves new positions
     for (i in 0...4) {
@@ -950,6 +991,55 @@ class RetroPlayState extends Module {
       }
     }
 
+    // Atualizar mecânica dos Hivemine Papers
+    if (hmpActive && hiveminePapers.length > 0) {
+      var len:Int = hiveminePapers.length;
+      var leaderIndex:Int = len - 1;
+      var leader:FunkinSprite = hiveminePapers[leaderIndex];
+
+      // Ponto A (Escondido)
+      var leaderStartY:Float = isDownscroll ? -leader.height : FlxG.height;
+      // Ponto B (Alvo/Limite Final)
+      var leaderEndY:Float = isDownscroll ? 0 : FlxG.height - leader.height;
+      var moveSpeed:Float = hmpSpeed * event.elapsed;
+
+      // Se não estiver animando o líder com um tween, mover ele.
+      if (!hmpAnimating) {
+        if (isDownscroll) {
+            if (leader.y < leaderEndY) {
+                leader.y += moveSpeed;
+                if (leader.y > leaderEndY) leader.y = leaderEndY;
+            }
+        } else {
+            if (leader.y > leaderEndY) {
+                leader.y -= moveSpeed;
+                if (leader.y < leaderEndY) leader.y = leaderEndY;
+            }
+        }
+      }
+
+      var totalDistance:Float = leaderEndY - leaderStartY;
+      var currentDistance:Float = leader.y - leaderStartY;
+      // A porcentagem da posição.
+      var ratio:Float = 0;
+      if (totalDistance != 0) {
+          ratio = currentDistance / totalDistance;
+      }
+
+      // APLICAR PARA O RESTO
+      // Agora posicionamos TODOS os outros papéis baseados nesse 'ratio'
+      // Ignoramos o líder no loop pois já movemos ele acima.
+      for (i in 0...len - 1) {
+        var paper = hiveminePapers[i];
+        if (paper == null) continue;
+        var myStart:Float = isDownscroll ? -paper.height : FlxG.height;
+        var myEnd:Float = isDownscroll ? 0 : FlxG.height - paper.height;
+
+        // "Coloque este papel na posição X% entre o inicio dele e o fim dele"
+        paper.y = FlxMath.lerp(myStart, myEnd, ratio);
+      }
+    }
+
     // Detecção de notas longas sendo pressionadas
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
@@ -1024,6 +1114,122 @@ class RetroPlayState extends Module {
 
     PlayState.instance.refresh();
   }
+  public function loadHiveminePapers():Void {
+    if (!mechanicsEnabled) return;
+    destroyHiveminePapers();
+    var scale:Float = FullScreenScaleMode.gameNotchSize;
+    var flipY:Bool = isDownscroll;
+    var zIndex = PlayState.instance.playerStrumline.zIndex + 2;
+    var yOffset = 0;
+    var path:String = 'greed/papers/';
+
+    //for (i in 0...4) FunkinMemory.cacheTexture(Paths.image(path + 'stack' + i, "shared"));
+
+    for (i in 0...4) {
+      var sprite:FunkinSprite = FunkinSprite.create(0, 0, path + 'stack' + i);
+      sprite.active = true;
+      sprite.setGraphicSize(scale);
+      sprite.updateHitbox();
+      sprite.flipY = flipY;
+      sprite.screenCenter(0x01);
+      sprite.cameras = [PlayState.instance.camHUD];
+      sprite.zIndex = zIndex;
+
+      if (isDownscroll) {
+        sprite.y = -sprite.height - yOffset;
+        //FlxTween.tween(sprite, {y: 0 + (i * 5)}, 1, {ease: FlxEase.quartOut, startDelay: i * 0.2});
+      } else {
+        sprite.y = FlxG.height + yOffset;
+        //FlxTween.tween(sprite, {y: FlxG.height - sprite.height - 0 - (i * 5)}, 1, {ease: FlxEase.quartOut, startDelay: i * 0.2});
+      }
+
+      hiveminePapers.push(sprite);
+      PlayState.instance.add(sprite);
+
+      // if (i == 0) hmp1 = sprite;
+      // if (i == 1) hmp2 = sprite;
+      // if (i == 2) hmp3 = sprite;
+      // if (i == 3) hmp4 = sprite;
+    }
+    PlayState.instance.refresh(); // apply zindexes properly
+  }
+  public function toggleHiveminePapers():Void {
+    if (!mechanicsEnabled) return;
+    if (hmpActive == false) {
+      hmpActive = true;
+    } else {
+      hmpActive = false;
+    }
+  }
+  public function destroyHiveminePapers():Void {
+    hmpActive = false;
+    for (paper in hiveminePapers) {
+      if (paper != null) paper.destroy();
+    }
+    hiveminePapers = [];
+  }
+  public function getHiveminePapersSpeed() {
+    if (PlayState.instance == null) {
+      destroyHiveminePapers();
+      throw "Could not initialize mechanic: PlayState is null!";
+    }
+    var defaultSpeed:Float = 10;
+    var speed:Float = defaultSpeed;
+    switch (PlayState.instance.currentDifficulty.toLowerCase()) {
+      case 'easy':
+        speed = defaultSpeed * 0.9;
+      case 'hard':
+        speed = defaultSpeed * 1.1;
+      default:
+    }
+    hmpSpeed = speed;
+    return speed;
+  }
+  public function advanceHiveminePapers():Void {
+    if (!hmpActive) return;
+
+    // Isso deveria fazer os papéis avançarem mais.
+    //hmpAnimating = true;
+  }
+  public function retractHiveminePapers():Void {
+    if (!hmpActive) return;
+    if (hmpTweenRetract != null && hmpTweenRetract.active) {
+      hmpTweenRetract.cancel();
+      hmpTweenRetract = null;
+    }
+
+    hmpAnimating = true;
+
+    var amount = 50;
+    hmpCurrentYValue += amount;
+
+    var marketplace = isDownscroll ? -1 : 1;
+    var tweenTime:Float = 3;
+    if (hiveminePapers[3] != null) {
+      var paper = hiveminePapers[3]; // Líder
+
+      var maxYOffset:Float = 40;
+      var maxY:Float = isDownscroll ? -paper.height + maxYOffset : FlxG.height - maxYOffset;
+      var targetY = paper.y + (hmpCurrentYValue * marketplace);
+      if ((isDownscroll && targetY < maxY) || (!isDownscroll && targetY > maxY)) {
+        targetY = maxY;
+      }
+
+      FlxTween.cancelTweensOf(paper);
+      hmpTweenRetract = FlxTween.tween(paper, {y: targetY}, tweenTime, {ease: FlxEase.quintOut, onComplete: function(t:FlxTween) {
+        if (PlayState.instance == null) return;
+        hmpAnimating = false;
+        hmpCurrentYValue = 0;
+      }});
+      tweens.push(hmpTweenRetract);
+
+      /*hmpTweenRetract = new FlxTimer().start(tweenTime + 0.02, function(tmr:FlxTimer) {
+        if (PlayState.instance == null) return;
+        hmpAnimating = false;
+        hmpCurrentYValue = 0;
+      });*/
+    }
+  }
 
   function updatePoisonCounter() {
     var oppId:String = PlayState.instance.currentStage.getDad().characterId.toLowerCase();
@@ -1093,6 +1299,12 @@ class RetroPlayState extends Module {
       PlayState.instance.healthBar.x = healthBarOgPos[0];
       PlayState.instance.healthBar.y = healthBarOgPos[1];
     }
+
+    hmpActive = false;
+    hmpSpeed = 0;
+    hmpCurrentYValue = 0;
+    hmpAnimating = false;
+    destroyHiveminePapers();
 
     poisonAmount = 0;
     /*if (poisonText != null) {
@@ -1291,6 +1503,11 @@ class RetroPlayState extends Module {
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
     funnyVar = false;
+    destroyHiveminePapers();
+    hmpActive = false;
+    hmpAnimating = false;
+    hmpSpeed = 0;
+    hmpCurrentYValue = 0;
 
     removeInsatianHoles(true);
 
@@ -1383,6 +1600,12 @@ class RetroPlayState extends Module {
     poisonAmount = 0;
     isDrugged = false;
 
+    FlxG.signals.postGameStart.addOnce(function() {
+      cacheEverything();
+    });
+  }
+
+  function cacheEverything():Void {
     if (!hasCachedTextures) {
       // Notes
       var notesDir:String = 'notes/';
@@ -1402,9 +1625,11 @@ class RetroPlayState extends Module {
 
       // Mechanics
       FunkinMemory.permanentCacheTexture(Paths.image('gluttony/hole', "shared")); // insatian's hole LOL
-      FunkinMemory.permanentCacheTexture(Paths.image('gluttony/munch', "shared"));
+      //FunkinMemory.permanentCacheTexture(Paths.image('gluttony/munch', "shared"));
 
       // Sounds
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Coin", "shared"));
+      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Take", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Insatian", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit1", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit2", "shared"));
@@ -1457,4 +1682,5 @@ class RetroPlayState extends Module {
 			hasCachedTextures = true;
     }
   }
+
 }

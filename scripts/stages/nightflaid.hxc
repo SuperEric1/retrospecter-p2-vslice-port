@@ -89,8 +89,6 @@ class NightflaidStage extends Stage
   var nfUnbeatable:FunkinSprite;
   var midsongVideo:FunkinVideoSprite; // Pre-created video sprite
   var midsongVideoBlackBars:FunkinSprite; // Black bars for video
-  var midsongVideoPath:String = ''; // Path to load later
-  var midsongVideoResyncThreshold:Int = 1000; // Resync threshold in ms
   var midsongVideoPlaying:Bool = false; // Track if video is currently playing
   var midsongVideoLoaded:Bool = false; // Check if video has loaded correcly
   var hasVideoSpriteBeenCreated:Bool = false;
