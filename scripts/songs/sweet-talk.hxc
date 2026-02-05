@@ -695,4 +695,9 @@ class SweetTalkSong extends Song
     super.onGameOver(event);
 
   }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
 }

@@ -8,6 +8,7 @@ import flixel.util.FlxColor;
 import flixel.math.FlxMath;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.FunkinMemory;
 import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
@@ -567,6 +568,8 @@ class CatastrofiendSong extends Song
     flashAdd.active = false;
     PlayState.instance.add(flashAdd);
     //PlayState.instance.refresh();
+
+    FunkinMemory.cacheTexture(Paths.image('characters/BfSkins/wrath_bf', "shared"));
 
     hasCreatedSprites = true;
   }
