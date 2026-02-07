@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
   "name": "Hivemine",
-  "assetPath": "characters/OtherSins/Hivemine",
+  "assetPath": "characters/OtherSins/hivemineTalks",
+  "startingAnimation": "idle",
   "singTime": 4,
   "isPixel": false,
   "scale": 1.4,
@@ -14,39 +15,46 @@
   },
   "animations": [
     {
-      "name": "idle",
-      "prefix": "hivemine idle",
-      "offsets": [0, 0],
-      "frameRate": 24,
-      "frameIndices": []
-    },
-    {
       "name": "singDOWN",
-      "prefix": "hivemine down",
-      "offsets": [0, 0],
+      "prefix": "sa",
+      "offsets": [32, 188],
       "frameRate": 24,
       "frameIndices": []
     },
     {
       "name": "singLEFT",
-      "prefix": "hivemine left",
-      "offsets": [0, 0],
+      "prefix": "ba",
+      "offsets": [32, 188],
       "frameRate": 24,
       "frameIndices": []
     },
     {
       "name": "singUP",
-      "prefix": "hivemine up",
-      "offsets": [0, 0],
+      "prefix": "ca",
+      "offsets": [32, 188],
       "frameRate": 24,
       "frameIndices": []
     },
     {
       "name": "singRIGHT",
-      "prefix": "hivemine right",
-      "offsets": [0, 0],
+      "prefix": "da",
+      "offsets": [32, 188],
       "frameRate": 24,
       "frameIndices": []
+    },
+    {
+      "name": "idle",
+      "prefix": "transition",
+      "offsets": [32, 188],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle-hold",
+      "prefix": "transition",
+      "offsets": [32, 188],
+      "frameRate": 1,
+      "frameIndices": [202, 202, 202, 202, 202, 202, 202, 202, 202]
     }
   ],
   "flipX": false

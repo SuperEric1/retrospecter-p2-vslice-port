@@ -18,7 +18,7 @@ class RetroCredits extends Module {
 		});
 
 		CreditsDataHandler.CREDITS_DATA.entries.unshift({
-			header: "V-Slice Mod Fan Port By",
+			header: "Unofficial V-Slice Port By",
 			body: [
 				{line: "SuperEric"},
 			]

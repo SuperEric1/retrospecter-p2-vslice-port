@@ -107,6 +107,7 @@ class RetroPlayState extends Module {
   var hmpTweenAdvance:FlxTween = null;
   var hmpTweenRetract:FlxTween = null;
   var hmpCurrentYValue:Float = 0;
+  var hmpMaxYOffset:Float = 30;
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -505,11 +506,6 @@ class RetroPlayState extends Module {
     ogOppStrumsX = [];
     ogOppStrumsY = [];
     ogOppStrumScales = [];
-
-    // just for testing, this should be done at the song's script.
-    //loadHiveminePapers();
-    //getHiveminePapersSpeed();
-    //toggleHiveminePapers();
 
     // saves new positions
     for (i in 0...4) {
@@ -1000,23 +996,23 @@ class RetroPlayState extends Module {
       // Ponto A (Escondido)
       var leaderStartY:Float = isDownscroll ? -leader.height : FlxG.height;
       // Ponto B (Alvo/Limite Final)
-      var leaderEndY:Float = isDownscroll ? 0 : FlxG.height - leader.height;
+      var leaderEndY:Float = isDownscroll ? 0 - hmpMaxYOffset : FlxG.height - leader.height + hmpMaxYOffset;
       var moveSpeed:Float = hmpSpeed * event.elapsed;
 
       // Se não estiver animando o líder com um tween, mover ele.
       if (!hmpAnimating) {
-        if (isDownscroll) {
-            if (leader.y < leaderEndY) {
-                leader.y += moveSpeed;
-                if (leader.y > leaderEndY) leader.y = leaderEndY;
-            }
+      if (isDownscroll) {
+          if (leader.y < leaderEndY) {
+            leader.y += moveSpeed;
+            if (leader.y > leaderEndY) leader.y = leaderEndY;
+          }
         } else {
-            if (leader.y > leaderEndY) {
-                leader.y -= moveSpeed;
-                if (leader.y < leaderEndY) leader.y = leaderEndY;
-            }
+          if (leader.y > leaderEndY) {
+            leader.y -= moveSpeed;
+            if (leader.y < leaderEndY) leader.y = leaderEndY;
+          }
         }
-      }
+    }
 
       var totalDistance:Float = leaderEndY - leaderStartY;
       var currentDistance:Float = leader.y - leaderStartY;
@@ -1033,7 +1029,7 @@ class RetroPlayState extends Module {
         var paper = hiveminePapers[i];
         if (paper == null) continue;
         var myStart:Float = isDownscroll ? -paper.height : FlxG.height;
-        var myEnd:Float = isDownscroll ? 0 : FlxG.height - paper.height;
+        var myEnd:Float = isDownscroll ? -hmpMaxYOffset : FlxG.height - paper.height + hmpMaxYOffset;
 
         // "Coloque este papel na posição X% entre o inicio dele e o fim dele"
         paper.y = FlxMath.lerp(myStart, myEnd, ratio);
@@ -1120,7 +1116,7 @@ class RetroPlayState extends Module {
     var scale:Float = FullScreenScaleMode.gameNotchSize;
     var flipY:Bool = isDownscroll;
     var zIndex = PlayState.instance.playerStrumline.zIndex + 2;
-    var yOffset = 0;
+    var yOffset = 20;
     var path:String = 'greed/papers/';
 
     //for (i in 0...4) FunkinMemory.cacheTexture(Paths.image(path + 'stack' + i, "shared"));
@@ -1173,7 +1169,7 @@ class RetroPlayState extends Module {
       destroyHiveminePapers();
       throw "Could not initialize mechanic: PlayState is null!";
     }
-    var defaultSpeed:Float = 10;
+    var defaultSpeed:Float = 3.5;
     var speed:Float = defaultSpeed;
     switch (PlayState.instance.currentDifficulty.toLowerCase()) {
       case 'easy':
@@ -1187,48 +1183,109 @@ class RetroPlayState extends Module {
   }
   public function advanceHiveminePapers():Void {
     if (!hmpActive) return;
+    if (!hmpActive) return;
+    if (hmpTweenRetract != null && hmpTweenRetract.active) return;
+    if (hmpTweenAdvance != null && hmpTweenAdvance.active) {
+        hmpTweenAdvance.cancel();
+        hmpTweenAdvance = null;
+    }
 
-    // Isso deveria fazer os papéis avançarem mais.
-    //hmpAnimating = true;
+    if (hiveminePapers[3] == null) return;
+    var paper = hiveminePapers[3];
+
+    var maxY:Float = isDownscroll ? 0 - hmpMaxYOffset : FlxG.height - paper.height + hmpMaxYOffset;
+    var alreadyAtLimit:Bool = isDownscroll ? (paper.y >= maxY) : (paper.y <= maxY);
+
+    if (alreadyAtLimit) {
+      hmpAnimating = false;
+      hmpCurrentYValue = 0;
+      return;
+    }
+
+    hmpAnimating = true;
+
+    var amount = 20;
+    var marketplace = isDownscroll ? 1 : -1;
+    hmpCurrentYValue += amount;
+    var targetY = paper.y + (hmpCurrentYValue * marketplace);
+
+    if (isDownscroll) {
+        if (targetY > maxY) targetY = maxY;
+    } else {
+        if (targetY < maxY) targetY = maxY;
+    }
+
+    FlxTween.cancelTweensOf(paper);
+    hmpTweenAdvance = FlxTween.tween(paper, {y: targetY}, 2.5, {
+      ease: FlxEase.quintOut,
+      onUpdate: function(t:FlxTween) {
+        if (Math.abs(paper.y - targetY) < 0.2) { // End it early if it's close to fix a time thing
+          paper.y = targetY;
+          t.onComplete(t);
+          t.cancel();
+        }
+      },
+      onComplete: function(t:FlxTween) {
+        hmpAnimating = false;
+        hmpCurrentYValue = 0;
+        hmpTweenAdvance = null;
+      }
+    });
+
+    tweens.push(hmpTweenAdvance);
   }
   public function retractHiveminePapers():Void {
     if (!hmpActive) return;
+    if (hmpTweenAdvance != null && hmpTweenAdvance.active) return;
     if (hmpTweenRetract != null && hmpTweenRetract.active) {
-      hmpTweenRetract.cancel();
-      hmpTweenRetract = null;
+        hmpTweenRetract.cancel();
+        hmpTweenRetract = null;
+    }
+
+    if (hiveminePapers[3] == null) return;
+    var paper = hiveminePapers[3];
+
+    var maxYOffset:Float = 35;
+    var maxY:Float = isDownscroll ? -paper.height + maxYOffset : FlxG.height - maxYOffset;
+    var alreadyAtLimit:Bool = isDownscroll ? (paper.y <= maxY) : (paper.y >= maxY);
+
+    if (alreadyAtLimit) {
+      hmpAnimating = false;
+      hmpCurrentYValue = 0;
+      return;
     }
 
     hmpAnimating = true;
 
     var amount = 50;
-    hmpCurrentYValue += amount;
+    var marketplace = isDownscroll ? 1 : -1;
+    hmpCurrentYValue -= amount;
+    var targetY = paper.y + (hmpCurrentYValue * marketplace);
 
-    var marketplace = isDownscroll ? -1 : 1;
-    var tweenTime:Float = 3;
-    if (hiveminePapers[3] != null) {
-      var paper = hiveminePapers[3]; // Líder
-
-      var maxYOffset:Float = 40;
-      var maxY:Float = isDownscroll ? -paper.height + maxYOffset : FlxG.height - maxYOffset;
-      var targetY = paper.y + (hmpCurrentYValue * marketplace);
-      if ((isDownscroll && targetY < maxY) || (!isDownscroll && targetY > maxY)) {
-        targetY = maxY;
-      }
-
-      FlxTween.cancelTweensOf(paper);
-      hmpTweenRetract = FlxTween.tween(paper, {y: targetY}, tweenTime, {ease: FlxEase.quintOut, onComplete: function(t:FlxTween) {
-        if (PlayState.instance == null) return;
-        hmpAnimating = false;
-        hmpCurrentYValue = 0;
-      }});
-      tweens.push(hmpTweenRetract);
-
-      /*hmpTweenRetract = new FlxTimer().start(tweenTime + 0.02, function(tmr:FlxTimer) {
-        if (PlayState.instance == null) return;
-        hmpAnimating = false;
-        hmpCurrentYValue = 0;
-      });*/
+    if (isDownscroll) {
+        if (targetY < maxY) targetY = maxY;
+    } else {
+        if (targetY > maxY) targetY = maxY;
     }
+
+    FlxTween.cancelTweensOf(paper);
+    hmpTweenRetract = FlxTween.tween(paper, {y: targetY}, 3, {
+      ease: FlxEase.quintOut,
+      onUpdate: function(t:FlxTween) {
+        if (Math.abs(paper.y - targetY) < 0.2) { // End it early if it's close to fix a time thing
+          paper.y = targetY;
+          t.onComplete(t);
+          t.cancel();
+        }
+      },
+      onComplete: function(t:FlxTween) {
+        hmpAnimating = false;
+        hmpCurrentYValue = 0;
+        hmpTweenRetract = null;
+      }
+    });
+
+    tweens.push(hmpTweenRetract);
   }
 
   function updatePoisonCounter() {

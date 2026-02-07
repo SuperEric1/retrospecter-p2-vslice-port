@@ -518,7 +518,7 @@ class RetroMainMenu extends MusicBeatState
     };
 
     var flickerTime:Float = 0.7;
-    if (Preferences.flashingLights) FlxFlicker.flicker(selected, flickerTime, 0.06, true, false, timerCallback);
+    if (Preferences.flashingLights) FlxFlicker.flicker(selected, flickerTime, 0.1, true, false, timerCallback);
     else new FlxTimer().start(flickerTime, timerCallback);
   }
 

@@ -8,6 +8,7 @@ TODO:
 - [ ] Sweet talk difficulties
 - [ ] Phase 2 end cutscene
 - [ ] Acid death
+- [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Intro for options menu
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Hydra note is not pausing when pausing the game

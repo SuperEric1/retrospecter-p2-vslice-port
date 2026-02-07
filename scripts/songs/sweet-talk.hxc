@@ -17,6 +17,7 @@ class SweetTalkSong extends Song
 {
   var tweens:Array<FlxTween> = [];
   var pausedTweens:Array<FlxTween> = [];
+  var retroPlayState = null;
 
   // Flags
   var e:Bool = false;
@@ -75,6 +76,7 @@ class SweetTalkSong extends Song
     hasStoredStrums = false;
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
+    retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
 
     // Camera settings
     disableFocus = true;
@@ -195,7 +197,9 @@ class SweetTalkSong extends Song
 
     // Enable hivemine paper at beat 32
     if (curBeat > 32 && !hmp) {
-      // Set property if needed
+      retroPlayState?.scriptCall('loadHiveminePapers', []);
+      retroPlayState?.scriptCall('getHiveminePapersSpeed', []);
+      retroPlayState?.scriptCall('toggleHiveminePapers', []);
       hmp = true;
     }
 
