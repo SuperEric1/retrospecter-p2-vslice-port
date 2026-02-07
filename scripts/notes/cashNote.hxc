@@ -1,0 +1,112 @@
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import funkin.FunkinMemory;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class cashNote extends Module {
+	public function new() {
+		super("cashNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
+
+		if (PlayState.instance == null) return;
+		if (event.note.noteData.kind == "cashNote" && event.note.noteData.getMustHitNote()) {
+			var dir = event.note.noteData.getDirection();
+			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
+			FunkinMemory.cacheTexture(Paths.image('notes/splash/coin', "shared"));
+			splash.frames = Paths.getSparrowAtlas('notes/splash/coin');
+			splash.animation.addByPrefix('purpleScroll', 'splash0', 24, false);
+			splash.animation.addByPrefix('blueScroll', 'splash0', 24, false);
+			splash.animation.addByPrefix('greenScroll', 'splash0', 24, false);
+			splash.animation.addByPrefix('redScroll', 'splash0', 24, false);
+			splash.scale.set(event.note.scale.x, event.note.scale.y);
+			splash.updateHitbox();
+			splash.x = PlayState.instance.playerStrumline.strumlineNotes.members[dir].x - 10;
+			splash.y = PlayState.instance.playerStrumline.strumlineNotes.members[dir].y - 15;
+			splash.cameras = [PlayState.instance.camHUD];
+			splash.zIndex = event.note.zIndex;
+			splash.antialiasing = true;
+			PlayState.instance.add(splash);
+			var anim:String;
+			switch (event.note.noteData.data % 4)
+			{
+				case 0:
+					anim = "purpleScroll";
+				case 1:
+					anim = "blueScroll";
+				case 2:
+					anim = "greenScroll";
+				case 3:
+					anim = "redScroll";
+			}
+			splash.animation.play(anim);
+
+			splash.animation.finishCallback = function(_name:String) {
+				splash.kill();
+				PlayState.instance.remove(splash, true);
+			};
+		}
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "cashNote" )
+		{
+			event.note.x += 0;
+			event.note.yOffset += 0;
+
+			event.note.frames = Paths.getSparrowAtlas( 'notes/coin' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'idle0' );
+			event.note.animation.addByPrefix( 'blueScroll', 'idle0' );
+			event.note.animation.addByPrefix( 'greenScroll', 'idle0' );
+			event.note.animation.addByPrefix( 'redScroll', 'idle0' );
+
+			var cashNote:String;
+			switch ( event.note.noteData.data % 4 )
+			{
+				case 0:
+					cashNote = "purpleScroll";
+				case 1:
+					cashNote = "blueScroll";
+				case 2:
+					cashNote = "greenScroll";
+				case 3:
+					cashNote = "redScroll";
+			}
+
+			event.note.active = true; // so the anim always plays.
+			event.note.animation.play( cashNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.noteData.kind == "cashNote" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}

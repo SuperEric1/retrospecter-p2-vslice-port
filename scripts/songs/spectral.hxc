@@ -183,7 +183,7 @@ class SpectralSong extends Song
   public function onStepHit(event) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
-    if(ReflectUtil.getClassNameOf(FlxG.state.subState) == 'funkin.play.GameOverSubState') return;
+    if (PlayState.instance.isGameOverState) return;
 
     var objectsToShake = [
       playState.playerStrumline,
@@ -222,6 +222,7 @@ class SpectralSong extends Song
   override function onDestroy(event)
 	{
 		super.onDestroy(event);
+    ogStrumY = null;
 		resetTweens();
 	}
 
@@ -274,7 +275,7 @@ class SpectralSong extends Song
     hasPlayedEndCutscene = false;
     isModcharting = false;
     playState.camHUD.angle = 0;
-    playState.playerStrumline.y = ogStrumY;
+    if (ogStrumY != null) playState.playerStrumline.y = ogStrumY;
   }
 
   function onCreate(event:ScriptEvent):Void
@@ -285,7 +286,12 @@ class SpectralSong extends Song
     isModcharting = false;
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
-    ogStrumY = playState.playerStrumline.y;
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    ogStrumY = PlayState.instance.playerStrumline.y;
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

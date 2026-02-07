@@ -459,8 +459,6 @@ class WrathPhase2Stage extends Stage
   {
     super.onSongLoaded(event);
 
-    if (ogStrumY == 0 || ogStrumY == null) ogStrumY = PlayState.instance.playerStrumline.y;
-
     // Overlay
     if (!hasCreatedStage) {
       overlay = FunkinSprite.create(0, 0);
@@ -476,6 +474,12 @@ class WrathPhase2Stage extends Stage
     }
 
     hasCreatedStage = true;
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    //ogStrumY = PlayState.instance.playerStrumline.y;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -547,6 +551,7 @@ class WrathPhase2Stage extends Stage
     didSakuFadeIn = false;
     runesCanGlow = false;
     rockColor = false;
+    ogStrumY = null;
 
     crystals = [];
     flashySteps = [640, 1024, 1536, 1856];
@@ -655,7 +660,7 @@ class WrathPhase2Stage extends Stage
     hasPlayedInGameCutscene = true;
     isModcharting = false;
     PlayState.instance.camHUD.angle = 0;
-    if (ogStrumY != null || ogStrumY != 0) PlayState.instance.playerStrumline.y = ogStrumY;
+    //if (ogStrumY != null || ogStrumY != 0) PlayState.instance.playerStrumline.y = ogStrumY;
 
     // Reset crystals positions
     for (i in 0...8) {
@@ -664,6 +669,8 @@ class WrathPhase2Stage extends Stage
       crystal.x = crystalPos[i][0];
       crystal.y = crystalPos[i][1];
     }
+
+    //fixRetroPos();
     //FlxG.resetState(); // ummm no
   }
 

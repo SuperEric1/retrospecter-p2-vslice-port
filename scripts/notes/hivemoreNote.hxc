@@ -1,0 +1,112 @@
+import funkin.audio.FunkinSound;
+import funkin.play.notes.notekind.NoteKind;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.util.HapticUtil;
+import flixel.util.FlxTimer;
+import funkin.FunkinMemory;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class hivemoreNote extends Module {
+	public function new() {
+		super("hivemoreNote");
+	}
+
+	function onCreate(event:Dynamic)
+	{
+		super.onCreate(event);
+
+		if (PlayState.instance == null) return;
+	}
+
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
+
+		if (PlayState.instance == null) return;
+		if (event.note.noteData.kind == "hivemoreNote" && event.note.noteData.getMustHitNote()) {
+			var dir = event.note.noteData.getDirection();
+			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
+			FunkinMemory.cacheTexture(Paths.image('notes/splash/bee', "shared"));
+			splash.frames = Paths.getSparrowAtlas('notes/splash/bee');
+			splash.animation.addByPrefix('purpleScroll', 'note splash purple 1', 24, false);
+			splash.animation.addByPrefix('blueScroll', 'note splash blue 1', 24, false);
+			splash.animation.addByPrefix('greenScroll', 'note splash green 1', 24, false);
+			splash.animation.addByPrefix('redScroll', 'note splash red 1', 24, false);
+			splash.scale.set(event.note.scale.x, event.note.scale.y);
+			splash.updateHitbox();
+			splash.x = PlayState.instance.playerStrumline.strumlineNotes.members[dir].x + 10;
+			splash.y = PlayState.instance.playerStrumline.strumlineNotes.members[dir].y + 10;
+			splash.cameras = [PlayState.instance.camHUD];
+			splash.zIndex = event.note.zIndex;
+			splash.antialiasing = true;
+			PlayState.instance.add(splash);
+			var anim:String;
+			switch (event.note.noteData.data % 4)
+			{
+				case 0:
+					anim = "purpleScroll";
+				case 1:
+					anim = "blueScroll";
+				case 2:
+					anim = "greenScroll";
+				case 3:
+					anim = "redScroll";
+			}
+			splash.animation.play(anim);
+
+			splash.animation.finishCallback = function(_name:String) {
+				splash.kill();
+				PlayState.instance.remove(splash, true);
+			};
+		}
+	}
+
+	public override function onNoteIncoming( event:NoteScriptEvent )
+	{
+		super.onNoteIncoming( event );
+		if ( event.note.noteData.kind == "hivemoreNote" )
+		{
+			event.note.x += -43;
+			event.note.yOffset += -25;
+
+			event.note.frames = Paths.getSparrowAtlas( 'notes/Hivemore_Note_Assets' );
+			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
+			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
+			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
+			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
+
+			var hivemoreNote:String;
+			switch ( event.note.noteData.data % 4 )
+			{
+				case 0:
+					hivemoreNote = "purpleScroll";
+				case 1:
+					hivemoreNote = "blueScroll";
+				case 2:
+					hivemoreNote = "greenScroll";
+				case 3:
+					hivemoreNote = "redScroll";
+			}
+
+			event.note.active = true; // so the anim always plays.
+			event.note.animation.play( hivemoreNote );
+		}
+	}
+
+	public override function onNoteMiss( event:NoteScriptEvent )
+	{
+		super.onNoteMiss( event );
+
+		if ( event.note.noteData.kind == "hivemoreNote" )
+		{
+			event.cancel();
+			event.stopPropagation();
+		}
+	}
+}

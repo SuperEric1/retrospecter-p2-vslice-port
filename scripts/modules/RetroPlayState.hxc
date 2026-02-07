@@ -108,6 +108,7 @@ class RetroPlayState extends Module {
   var hmpTweenRetract:FlxTween = null;
   var hmpCurrentYValue:Float = 0;
   var hmpMaxYOffset:Float = 30;
+  var hmpIsAtLimit:Bool = false;
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -148,7 +149,7 @@ class RetroPlayState extends Module {
   var hurtNotes = [
     'poison', 'izzyNote', 'chain', 'autoChain',
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
-    'spectre', 'insatianNote',
+    'spectre', 'insatianNote', "cashNote", "hivemoreNote",
     'none'
   ];
 
@@ -437,7 +438,14 @@ class RetroPlayState extends Module {
         // don't RETURN or else the custom UI will display as a miss
         // instead, we'll check if the note is scoreable.
       }
-      if (event.note.scoreable) doVocalThing(1.2); // efeito de miss nas vocais (caso seja uma nota normal)
+
+      // Matar o jogador se ele errar uma nota enquanto os papéis da hivemine estão no limite.
+      if (event.note.scoreable && hmpIsAtLimit && !PlayState.instance.isPracticeMode) {
+        PlayState.instance.health -= Constants.HEALTH_MAX * 1.05;
+        hmpIsAtLimit = false;
+      }
+
+      if (event.note.scoreable) doVocalThing(1.2); // Efeito de miss nas vocais
     }
 
     super.onNoteMiss(event);
@@ -499,6 +507,11 @@ class RetroPlayState extends Module {
 
     healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
     healthBarBgOgPos = [PlayState.instance.healthBarBG.x, PlayState.instance.healthBarBG.y];
+
+    saveStrumPos();
+  }
+
+  function saveStrumPos():Void {
     // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
     ogStrumsX = [];
     ogStrumsY = [];
@@ -1001,18 +1014,24 @@ class RetroPlayState extends Module {
 
       // Se não estiver animando o líder com um tween, mover ele.
       if (!hmpAnimating) {
-      if (isDownscroll) {
+        if (isDownscroll) {
           if (leader.y < leaderEndY) {
+            hmpIsAtLimit = false;
             leader.y += moveSpeed;
             if (leader.y > leaderEndY) leader.y = leaderEndY;
+          } else if (leader.y >= leaderEndY) {
+            hmpIsAtLimit = true;
           }
         } else {
           if (leader.y > leaderEndY) {
+            hmpIsAtLimit = false;
             leader.y -= moveSpeed;
             if (leader.y < leaderEndY) leader.y = leaderEndY;
+          } else if (leader.y <= leaderEndY) {
+            hmpIsAtLimit = true;
           }
         }
-    }
+      }
 
       var totalDistance:Float = leaderEndY - leaderStartY;
       var currentDistance:Float = leader.y - leaderStartY;
@@ -1186,8 +1205,8 @@ class RetroPlayState extends Module {
     if (!hmpActive) return;
     if (hmpTweenRetract != null && hmpTweenRetract.active) return;
     if (hmpTweenAdvance != null && hmpTweenAdvance.active) {
-        hmpTweenAdvance.cancel();
-        hmpTweenAdvance = null;
+      hmpTweenAdvance.cancel();
+      hmpTweenAdvance = null;
     }
 
     if (hiveminePapers[3] == null) return;
@@ -1210,16 +1229,16 @@ class RetroPlayState extends Module {
     var targetY = paper.y + (hmpCurrentYValue * marketplace);
 
     if (isDownscroll) {
-        if (targetY > maxY) targetY = maxY;
+      if (targetY > maxY) targetY = maxY;
     } else {
-        if (targetY < maxY) targetY = maxY;
+      if (targetY < maxY) targetY = maxY;
     }
 
     FlxTween.cancelTweensOf(paper);
     hmpTweenAdvance = FlxTween.tween(paper, {y: targetY}, 2.5, {
       ease: FlxEase.quintOut,
       onUpdate: function(t:FlxTween) {
-        if (Math.abs(paper.y - targetY) < 0.2) { // End it early if it's close to fix a time thing
+        if (Math.abs(paper.y - targetY) < 0.3) { // End it early if it's close to fix a time thing
           paper.y = targetY;
           t.onComplete(t);
           t.cancel();
@@ -1238,8 +1257,8 @@ class RetroPlayState extends Module {
     if (!hmpActive) return;
     if (hmpTweenAdvance != null && hmpTweenAdvance.active) return;
     if (hmpTweenRetract != null && hmpTweenRetract.active) {
-        hmpTweenRetract.cancel();
-        hmpTweenRetract = null;
+      hmpTweenRetract.cancel();
+      hmpTweenRetract = null;
     }
 
     if (hiveminePapers[3] == null) return;
@@ -1263,16 +1282,16 @@ class RetroPlayState extends Module {
     var targetY = paper.y + (hmpCurrentYValue * marketplace);
 
     if (isDownscroll) {
-        if (targetY < maxY) targetY = maxY;
+      if (targetY < maxY) targetY = maxY;
     } else {
-        if (targetY > maxY) targetY = maxY;
+      if (targetY > maxY) targetY = maxY;
     }
 
     FlxTween.cancelTweensOf(paper);
     hmpTweenRetract = FlxTween.tween(paper, {y: targetY}, 3, {
       ease: FlxEase.quintOut,
       onUpdate: function(t:FlxTween) {
-        if (Math.abs(paper.y - targetY) < 0.2) { // End it early if it's close to fix a time thing
+        if (Math.abs(paper.y - targetY) < 0.3) { // End it early if it's close to fix a time thing
           paper.y = targetY;
           t.onComplete(t);
           t.cancel();
@@ -1284,8 +1303,9 @@ class RetroPlayState extends Module {
         hmpTweenRetract = null;
       }
     });
-
     tweens.push(hmpTweenRetract);
+
+    hmpIsAtLimit = false;
   }
 
   function updatePoisonCounter() {
@@ -1359,6 +1379,7 @@ class RetroPlayState extends Module {
 
     hmpActive = false;
     hmpSpeed = 0;
+    hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
     hmpAnimating = false;
     destroyHiveminePapers();
@@ -1564,6 +1585,7 @@ class RetroPlayState extends Module {
     hmpActive = false;
     hmpAnimating = false;
     hmpSpeed = 0;
+    hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
 
     removeInsatianHoles(true);
@@ -1597,6 +1619,14 @@ class RetroPlayState extends Module {
     }
     hydraBeamSprites = [];
     hydraBeamTimers = [];
+
+    // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
+    ogStrumsX = [];
+    ogStrumsY = [];
+    ogPlayerStrumScales = [];
+    ogOppStrumsX = [];
+    ogOppStrumsY = [];
+    ogOppStrumScales = [];
 
 		resetTweens();
 	}
@@ -1666,36 +1696,49 @@ class RetroPlayState extends Module {
     if (!hasCachedTextures) {
       // Notes
       var notesDir:String = 'notes/';
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'hollowNotes', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonNotes_down', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonNotes_up', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'Pride_Note_Assets', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'PoisonArrowHit', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'ChainNotes', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'strumChains', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'HydraNotes', "shared"));
+      var notesToCache:Array<String> = [
+        'hollowNotes',
+        'PoisonNotes_down',
+        'PoisonNotes_up',
+        'Pride_Note_Assets',
+        'Hivemore_Note_Assets',
+        'PoisonArrowHit',
+        'ChainNotes',
+        'strumChains',
+        'HydraNotes',
+        'scytheNotes',
+        'HeartNotes',
+        'Notes_Spectre',
+        'SpectreHit',
+        'coin'
+      ];
+      for (noteName in notesToCache) {
+        FunkinMemory.permanentCacheTexture(Paths.image(notesDir + noteName, "shared"));
+      }
 			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'scytheNotes', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'HeartNotes', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'Notes_Spectre', "shared"));
-			FunkinMemory.permanentCacheTexture(Paths.image(notesDir + 'SpectreHit', "shared"));
 
       // Mechanics
       FunkinMemory.permanentCacheTexture(Paths.image('gluttony/hole', "shared")); // insatian's hole LOL
       //FunkinMemory.permanentCacheTexture(Paths.image('gluttony/munch', "shared"));
 
       // Sounds
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Coin", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Take", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Insatian", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit1", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit2", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/ChainHit3", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/hydra", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/beam", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Nightflaid", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/Saku", "shared"));
-      FunkinMemory.permanentCacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
+      var noteSoundsDir:String = 'noteSounds/';
+      var noteSoundsToCache:Array<String> = [
+        'Coin',
+        'Take',
+        'Insatian',
+        'ChainHit1',
+        'ChainHit2',
+        'ChainHit3',
+        'hydra',
+        'beam',
+        'Nightflaid',
+        'Saku',
+        'SpectreArrow',
+      ];
+      for (soundName in noteSoundsToCache) {
+        FunkinMemory.permanentCacheSound(Paths.sound(noteSoundsDir + soundName, "shared"));
+      }
       FunkinMemory.permanentCacheSound(Paths.sound("acid", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("scythe", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("clothsSFX", "shared"));

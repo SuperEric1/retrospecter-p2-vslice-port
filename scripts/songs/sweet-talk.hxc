@@ -7,6 +7,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.graphics.FunkinSprite;
@@ -18,6 +19,7 @@ class SweetTalkSong extends Song
   var tweens:Array<FlxTween> = [];
   var pausedTweens:Array<FlxTween> = [];
   var retroPlayState = null;
+  var isMobile = false;
 
   // Flags
   var e:Bool = false;
@@ -77,6 +79,7 @@ class SweetTalkSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
+    isMobile = var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     // Camera settings
     disableFocus = true;
@@ -246,7 +249,19 @@ class SweetTalkSong extends Song
 
     // Strum animations (beat 352+)
     if (curBeat >= 352 && modcharts && hasStoredStrums) {
-      for (i in 0...4) {
+      var playerStrum = playState.playerStrumline;
+      var opponentStrum = playState.opponentStrumline;
+
+      var xOffset = 20 * Math.sin(songPosition / 800);
+
+      if (playerStrum != null) {
+        playerStrum.x = defaultPlayerStrumX[4] + xOffset;
+      }
+      if (opponentStrum != null) {
+        opponentStrum.x = defaultOpponentStrumX[4] + xOffset;
+      }
+
+      /*for (i in 0...4) {
         var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
         var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
@@ -258,7 +273,7 @@ class SweetTalkSong extends Song
         if (opponentStrum != null) {
           opponentStrum.x = defaultOpponentStrumX[i] + xOffset;
         }
-      }
+      }*/
     }
   }
 
@@ -444,8 +459,30 @@ class SweetTalkSong extends Song
   function hugNotes():Void
   {
     if (!modcharts || !hasStoredStrums) return;
+    var playerStrum = playState.playerStrumline;
+    var opponentStrum = playState.opponentStrumline;
 
-    for (i in 0...4) {
+    if (playerStrum != null) {
+      if (!isMobile) {
+        playerStrum.x = defaultPlayerStrumX[4] - 30;
+        tweens.push(FlxTween.tween(playerStrum, {x: defaultPlayerStrumX[4]}, 0.4, {ease: FlxEase.quadOut}));
+      } else {
+        playerStrum.y = defaultPlayerStrumY[4] + 10;
+        tweens.push(FlxTween.tween(playerStrum, {y: defaultPlayerStrumY[4]}, 0.4, {ease: FlxEase.quadOut}));
+      }
+    }
+
+    if (opponentStrum != null) {
+      if (!isMobile) {
+        opponentStrum.x = defaultOpponentStrumX[4] + 30;
+        tweens.push(FlxTween.tween(opponentStrum, {x: defaultOpponentStrumX[4]}, 0.4, {ease: FlxEase.quadOut}));
+      } else {
+        opponentStrum.y = defaultOpponentStrumY[4] + 10;
+        tweens.push(FlxTween.tween(opponentStrum, {y: defaultOpponentStrumY[4]}, 0.4, {ease: FlxEase.quadOut}));
+      }
+    }
+
+    /*for (i in 0...4) {
       var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
       var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
@@ -458,7 +495,7 @@ class SweetTalkSong extends Song
         opponentStrum.x = defaultOpponentStrumX[i] + 30;
         tweens.push(FlxTween.tween(opponentStrum, {x: defaultOpponentStrumX[i]}, 0.4, {ease: FlxEase.quadOut}));
       }
-    }
+    }*/
   }
 
   function pulseNotes():Void
@@ -521,7 +558,26 @@ class SweetTalkSong extends Song
   function resetNote(time:Float, ignoreX:Bool):Void
   {
     if (!modcharts || !hasStoredStrums) return;
+    var playerStrum = playState.playerStrumline;
+    var opponentStrum = playState.opponentStrumline;
+    FlxTween.cancelTweensOf(playerStrum);
+    FlxTween.cancelTweensOf(opponentStrum);
+    if (!ignoreX) {
+      if (playerStrum != null) {
+        tweens.push(FlxTween.tween(playerStrum, {x: defaultPlayerStrumX[4]}, time, {ease: FlxEase.sineOut}));
+      }
+      if (opponentStrum != null) {
+        tweens.push(FlxTween.tween(opponentStrum, {x: defaultOpponentStrumX[4]}, time, {ease: FlxEase.sineOut}));
+      }
+    }
+    if (playerStrum != null) {
+      tweens.push(FlxTween.tween(playerStrum, {y: defaultPlayerStrumY[4]}, time, {ease: FlxEase.sineOut}));
+    }
+    if (opponentStrum != null) {
+      tweens.push(FlxTween.tween(opponentStrum, {y: defaultOpponentStrumY[4]}, time, {ease: FlxEase.sineOut}));
+    }
 
+    // Reset individual strum notes too
     for (i in 0...4) {
       var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
       var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
@@ -613,6 +669,7 @@ class SweetTalkSong extends Song
           defaultOpponentStrumX.push(strum.x);
           defaultOpponentStrumY.push(strum.y);
         }
+
       }
       if (playerStrums != null) {
         var strum = playerStrums.strumlineNotes.members[i];
@@ -622,6 +679,10 @@ class SweetTalkSong extends Song
         }
       }
     }
+    defaultOpponentStrumX.push(opponentStrums.x);
+    defaultOpponentStrumY.push(opponentStrums.y);
+    defaultPlayerStrumX.push(playerStrums.x);
+    defaultPlayerStrumY.push(playerStrums.y);
   }
 
   function resetFlags():Void

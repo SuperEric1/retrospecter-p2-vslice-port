@@ -128,10 +128,10 @@ class RetroMainMenu extends MusicBeatState
 
     if (FlxG.onMobile) {
       var backBtn = addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
-      backBtn.onConfirmStart.add(function() {
+      /*backBtn.onConfirmStart.add(function() {
         canNavigate = false;
         backBtn.active = true;
-      });
+      });*/
     }
 
     persistentUpdate = true;
