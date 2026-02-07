@@ -7,13 +7,13 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.FunkinMemory;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
-import funkin.Preferences;
 
 class ExtirpatientSong extends Song
 {
@@ -131,6 +131,9 @@ class ExtirpatientSong extends Song
 
     // Reset flags
     resetFlags();
+
+    // Cache 80sNightflaid character
+    FunkinMemory.cacheTexture(Paths.image('characters/others/80sNightflaid', "shared"));
   }
 
   public override function onSongStart(event:ScriptEvent):Void

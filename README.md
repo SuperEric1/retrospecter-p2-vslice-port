@@ -7,6 +7,7 @@ TODO:
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Sweet talk difficulties
 - [ ] Phase 2 end cutscene
+- [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
 - [ ] Acid death
 - [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Intro for options menu
