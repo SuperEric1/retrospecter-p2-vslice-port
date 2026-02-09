@@ -17,6 +17,9 @@ class poisonNote extends Module {
 		super("poison");
 	}
 
+	var noteFramesUp = Paths.getSparrowAtlas('notes/PoisonNotes_up');
+	var noteFramesDown = Paths.getSparrowAtlas('notes/PoisonNotes_down');
+
 	function onCreate(event:Dynamic)
 	{
 		super.onCreate(event);
@@ -28,6 +31,7 @@ class poisonNote extends Module {
 		super.onNoteHit(event);
 
 		if (PlayState.instance == null) return;
+		if (event.eventCanceled) return;
 		if (event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote()) {
 			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
 			splash.frames = Paths.getSparrowAtlas('notes/PoisonArrowHit');
@@ -66,7 +70,7 @@ class poisonNote extends Module {
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
 		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "poison" )
+		if ( event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote() )
 		{
       var downscroll = Preferences.downscroll;
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
@@ -75,13 +79,13 @@ class poisonNote extends Module {
 			event.note.yOffset += -70;
 
       if (downscroll) {
-        event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_down' );
+        event.note.frames = noteFramesDown;
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left0' );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down0' );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up0' );
         event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right0' );
       } else {
-        event.note.frames = Paths.getSparrowAtlas( 'notes/poisonNotes_up' );
+        event.note.frames = noteFramesUp;
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left0' );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down0' );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up0' );
@@ -106,11 +110,11 @@ class poisonNote extends Module {
 		}
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
+	public override function onNoteMiss(event:NoteScriptEvent)
 	{
-		super.onNoteMiss( event );
+		super.onNoteMiss(event);
 
-		if ( event.note.noteData.kind == "poison" )
+		if (event.note.noteData.kind == "poison")
 		{
 			event.cancel();
 			event.stopPropagation();

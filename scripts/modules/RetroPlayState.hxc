@@ -29,6 +29,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
+import funkin.play.PlayStatePlaylist;
 import funkin.util.TouchUtil;
 import haxe.ds.IntMap;
 import StringTools;
@@ -37,14 +38,17 @@ import openfl.filters.ShaderFilter;
 import funkin.graphics.shaders.WiggleEffectRuntime;
 import funkin.graphics.shaders.WiggleEffectType;
 
+import supereric.retrospecter.modules.RetroLanguage;
+
 class RetroPlayState extends Module {
   public function new() {
-    super('RetroPlayState');
+    super('RetroPlayState', 120);
   }
 
   var isRetro:Bool = false;
   var isDoingVocalThing:Bool = false;
   var isDownscroll:Bool = false;
+  var isMobile:Bool = false;
   var mechanicsEnabled:Bool = true;
 
   var retroGameUI = null;
@@ -109,6 +113,9 @@ class RetroPlayState extends Module {
   var hmpCurrentYValue:Float = 0;
   var hmpMaxYOffset:Float = 30;
   var hmpIsAtLimit:Bool = false;
+  var hmpInstructionText:FlxText;
+  var hmpInstructionTween:FlxTween = null;
+  var hmpInstructionPlayed:Bool = false;
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -385,6 +392,14 @@ class RetroPlayState extends Module {
 
     if (k == 'cashNote') {
       retractHiveminePapers();
+      if (!hmpInstructionPlayed && PlayStatePlaylist.isStoryMode) {
+        hmpInstructionPlayed = true;
+        hmpInstructionText.visible = true;
+        FlxTween.tween(hmpInstructionText, {alpha: 0.6}, 1.5, {ease: FlxEase.quadIn});
+        new FlxTimer().start(4, function(tmr:FlxTimer) {
+          hmpInstructionText.visible = false;
+        });
+      }
       FlxG.sound.play(Paths.sound('noteSounds/Coin'));
       event.doesNotesplash = false;
     }
@@ -484,6 +499,7 @@ class RetroPlayState extends Module {
 
     isDownscroll = Preferences.downscroll;
     if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
 
@@ -932,6 +948,13 @@ class RetroPlayState extends Module {
       PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
     }
 
+    // Winning plus icon animation (for characters that have it, like zerktro)
+    if (PlayState.instance.health < 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus') {
+      if (PlayState.instance.iconP2.hasAnimation('winningPlus')) {
+        PlayState.instance.iconP2.animation.play('winningPlus');
+      }
+    }
+
     if (poisonSprite?.active && poisonSprite?.visible && poisonSprite != null && poisonText != null && PlayState.instance.iconP1 != null) {
       poisonSprite.x = PlayState.instance.iconP1.x + 15;
       poisonSprite.y = (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset;
@@ -1065,6 +1088,11 @@ class RetroPlayState extends Module {
       }
     }
 
+    /*for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive) continue;
+        note.alpha = 0.6;
+    }*/
+
     // Skill issue check
     var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
     isCh34t1ng = isCh34t1ng.toLowerCase();
@@ -1078,7 +1106,6 @@ class RetroPlayState extends Module {
   {
     var scoreTxt = PlayState.instance.scoreText;
     var strum = PlayState.instance.playerStrumline;
-    var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     chainText = new FlxText(0, 0, 0, '', 60);
     chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), isMobile ? 35 : strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
@@ -1090,10 +1117,10 @@ class RetroPlayState extends Module {
     if (isDownscroll) {
       chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
     } else chainText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height + 10;
-    chainText.scrollFactor.set(scoreTxt.scrollFactor.x, scoreTxt.scrollFactor.y);
-    chainText.zIndex = strum.strumlineNotes.members[3] + 1;
+    chainText.scrollFactor.set(0, 0);
+    chainText.zIndex = strum.strumlineNotes.members[3].zIndex + 1;
     chainText.cameras = [PlayState.instance.camHUD];
-    chainText.text = 'MASH TO BREAK FREE';
+    chainText.text = RetroLanguage.t('instruction.chainNote', 'MASH TO BREAK FREE');
     chainText.visible = false;
     PlayState.instance.add(chainText);
 
@@ -1166,6 +1193,26 @@ class RetroPlayState extends Module {
       // if (i == 2) hmp3 = sprite;
       // if (i == 3) hmp4 = sprite;
     }
+
+    var strum = PlayState.instance.playerStrumline;
+    hmpInstructionText = new FlxText(0, 0, 0, '', 60);
+    hmpInstructionText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), isMobile ? 35 : strum.width / 12, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    hmpInstructionText.borderSize = 1.5;
+    hmpInstructionText.bold = true;
+    hmpInstructionText.fieldWidth = strum.width - 10;
+    if (!isMobile) {
+      hmpInstructionText.x = strum.x + (strum.width / 2) - (hmpInstructionText.width / 2);
+    }
+    if (isDownscroll) {
+      hmpInstructionText.y = true ? (FlxG.height / 2) + (FlxG.height / 7) : strum.strumlineNotes.members[0].y - hmpInstructionText.height - 10;
+    } else hmpInstructionText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height;
+    hmpInstructionText.scrollFactor.set(0, 0);
+    hmpInstructionText.zIndex = strum.zIndex + 40;
+    hmpInstructionText.cameras = [PlayState.instance.camHUD];
+    hmpInstructionText.text = RetroLanguage.t('instruction.coinNote', 'COLLECT COINS TO EARN MORE MONEY!');
+    hmpInstructionText.visible = false;
+    PlayState.instance.add(hmpInstructionText);
+
     PlayState.instance.refresh(); // apply zindexes properly
   }
   public function toggleHiveminePapers():Void {
@@ -1382,6 +1429,7 @@ class RetroPlayState extends Module {
     hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
     hmpAnimating = false;
+    hmpInstructionPlayed = false;
     destroyHiveminePapers();
 
     poisonAmount = 0;
@@ -1587,6 +1635,7 @@ class RetroPlayState extends Module {
     hmpSpeed = 0;
     hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
+    hmpInstructionPlayed = false;
 
     removeInsatianHoles(true);
 

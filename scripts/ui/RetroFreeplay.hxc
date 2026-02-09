@@ -1,0 +1,266 @@
+import funkin.modding.module.Module;
+import funkin.ui.freeplay.FreeplayState;
+import funkin.ui.freeplay.BGScrollingText;
+import funkin.util.ReflectUtil;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.FunkinMemory;
+import haxe.ds.StringMap;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+import openfl.filters.ShaderFilter;
+import Std;
+
+class RetroFreeplay extends Module {
+
+  var songConfig:StringMap<BackingCardTexts> = new StringMap();
+
+  var prevSongId:String = '';
+  var prevWeekId:String = '';
+  var curBgImage:String = '';
+  var isInFreeplay:Bool = false;
+  var isFirstTime:Bool = true;
+  var tmpBg:FunkinSprite;
+
+  var defaultTexts:BackingCardTexts = null;
+  var defaultAlbumAngle:Float = 0.0;
+
+  public function new() {
+    super('RetroFreeplay', 1000, {
+      state: FreeplayState
+    });
+
+    var bgPath = 'freeplay/backgrounds/';
+
+    songConfig.set('1-wrath', {
+      bgImage: bgPath + 'wrath_blur',
+      funnyScroll: 'TEST TEXT',
+    });
+    songConfig.set('2-wrath_extras', {
+      bgImage: bgPath + 'wrath_blur',
+    });
+
+    songConfig.set('3-pride', {
+      bgImage: bgPath + 'pride_blur',
+    });
+    songConfig.set('4-pride_extras', {
+      bgImage: bgPath + 'pride_blur',
+    });
+
+    songConfig.set('5-gluttony', {
+      bgImage: bgPath + 'gluttony_blur',
+    });
+    songConfig.set('6-gluttony_extras', {
+      bgImage: bgPath + 'gluttony_blur',
+    });
+
+    songConfig.set('7-greed', {
+      bgImage: bgPath + 'greed_blur',
+    });
+    songConfig.set('8-greed_extras', {
+      bgImage: bgPath + 'greed_blur',
+    });
+
+
+    songConfig.set('waitkeeper', {
+      bgImage: bgPath + 'pnim',
+    });
+    songConfig.set('rageweeper', {
+      bgImage: bgPath + 'pnim',
+    });
+    songConfig.set('extirpatient', {
+      bgImage: bgPath + 'death',
+    });
+    songConfig.set('hexerpatient', {
+      bgImage: bgPath + 'death',
+    });
+    songConfig.set('extiraging', {
+      bgImage: bgPath + 'death',
+    });
+  }
+
+  public override function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {
+    super.onFreeplayIntroDone(event);
+
+    isInFreeplay = true;
+    cacheDefaultTexts();
+  }
+
+  public override function onFreeplayClose(event:FreeplayScriptEvent):Void {
+    super.onFreeplayClose(event);
+    isInFreeplay = false;
+    prevSongId = '';
+    prevWeekId = '';
+    curBgImage = '';
+    defaultTexts = null;
+    defaultAlbumAngle = 0.0;
+  }
+
+  function cacheDefaultTexts():Void {
+    if (defaultTexts != null) return;
+    if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
+
+    var freeplayState:FreeplayState = FlxG.state;
+
+    try {
+      @:privateAccess {
+        var backingCard = freeplayState.backingCard;
+        if (backingCard == null) return;
+        var styleData = freeplayState.styleData;
+
+        var funnyScroll = backingCard.funnyScroll;
+
+        if (funnyScroll != null && funnyScroll.text != 'SPECIAL SPECIAL') {
+          defaultTexts = {
+            bgColor: -1,
+            bgImage: styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey(),
+            funnyScroll: funnyScroll.text,
+            moreWays: backingCard.moreWays?.text,
+            txtNuts: backingCard.txtNuts?.text,
+            funnyScroll2: backingCard.funnyScroll2?.text,
+            moreWays2: backingCard.moreWays2?.text,
+            funnyScroll3: backingCard.funnyScroll3?.text
+          };
+        }
+
+        //defaultAlbumAngle = freeplayState.albumRoll.angle;
+      }
+    } catch (e:Dynamic) {
+      trace('[RetroFreeplay] Error caching default texts: ' + e);
+    }
+  }
+
+  public override function onCapsuleSelected(event:CapsuleScriptEvent):Void {
+    super.onCapsuleSelected(event);
+    if (!isInFreeplay) return;
+    if (event.capsule.freeplayData == null) return;
+
+    var data = event.capsule.freeplayData.idAndVariation.split(':') ?? null;
+    var curSongId:String = data[0] ?? '';
+    var curVariation:String = data[1] ?? '';
+    var curWeekId:String = event.capsule.freeplayData.levelId ?? '';
+
+    if (curSongId != prevSongId) {
+      updateBackingCardTexts(curSongId, curVariation, curWeekId);
+      prevSongId = curSongId;
+      prevWeekId = curWeekId;
+    }
+  }
+
+  function updateBackingCardTexts(curSongId:String, ?variation:String, ?curWeekId:String):Void {
+    if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
+
+    var freeplayState:FreeplayState = FlxG.state;
+
+    try {
+      @:privateAccess {
+        var backingCard = freeplayState.backingCard;
+        if (backingCard == null) return;
+        var styleData = freeplayState.styleData;
+
+        var customTexts:BackingCardTexts = songConfig.get(curSongId);
+        if (customTexts == null && curWeekId != '' && curWeekId != null) {
+          customTexts = songConfig.get(curWeekId);
+        }
+
+        var textsToApply:BackingCardTexts;
+        var usingDefault:Bool = false;
+
+        if (customTexts != null) {
+          textsToApply = {
+            bgColor: customTexts.bgColor ?? -1,
+            bgImage: customTexts.bgImage ?? (styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey()),
+            funnyScroll: customTexts.funnyScroll ?? defaultTexts?.funnyScroll,
+            moreWays: customTexts.moreWays ?? defaultTexts?.moreWays,
+            txtNuts: customTexts.txtNuts ?? defaultTexts?.txtNuts,
+            funnyScroll2: customTexts.funnyScroll2 ?? defaultTexts?.funnyScroll2,
+            moreWays2: customTexts.moreWays2 ?? defaultTexts?.moreWays2,
+            funnyScroll3: customTexts.funnyScroll3 ?? defaultTexts?.funnyScroll3
+          };
+        } else {
+          // Voltar totalmente ao padrão
+          cacheDefaultTexts(); // tentar cachear novamente caso ainda não tenhamos conseguido antes
+          textsToApply = defaultTexts;
+          usingDefault = true;
+        }
+
+        if (textsToApply != null) {
+          if (textsToApply.funnyScroll != null && backingCard.funnyScroll != null && backingCard.funnyScroll.text != textsToApply.funnyScroll) backingCard.funnyScroll.updateText(textsToApply.funnyScroll);
+          if (textsToApply.moreWays != null && backingCard.moreWays != null && backingCard.moreWays.text != textsToApply.moreWays) backingCard.moreWays.updateText(textsToApply.moreWays);
+          if (textsToApply.txtNuts != null && backingCard.txtNuts != null && backingCard.txtNuts.text != textsToApply.txtNuts) backingCard.txtNuts.updateText(textsToApply.txtNuts);
+          if (textsToApply.funnyScroll2 != null && backingCard.funnyScroll2 != null && backingCard.funnyScroll2.text != textsToApply.funnyScroll2) backingCard.funnyScroll2.updateText(textsToApply.funnyScroll2);
+          if (textsToApply.moreWays2 != null && backingCard.moreWays2 != null && backingCard.moreWays2.text != textsToApply.moreWays2) backingCard.moreWays2.updateText(textsToApply.moreWays2);
+          if (textsToApply.funnyScroll3 != null && backingCard.funnyScroll3 != null && backingCard.funnyScroll3.text != textsToApply.funnyScroll3) backingCard.funnyScroll3.updateText(textsToApply.funnyScroll3);
+
+          if (isFirstTime) {
+            FlxTween.cancelTweensOf(freeplayState.backingImage);
+            freeplayState.backingImage.color = -1;
+            freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+
+            /*new FlxTimer().start(0.1, function(tmr:FlxTimer) {
+              freeplayState.albumRoll.skipIntro();
+              freeplayState.albumRoll.showStars();
+              defaultAlbumAngle = freeplayState.albumRoll.angle;
+            });*/
+          }
+
+          /*if (!usingDefault) {
+            freeplayState.albumRoll.angle = -10;
+          } else freeplayState.albumRoll.angle = defaultAlbumAngle;*/
+
+          /*var targetColor:Int = (textsToApply.bgColor != null && textsToApply.bgColor != -1) ? textsToApply.bgColor : -1;
+          if (targetColor != freeplayState.backingImage.color) {
+            FlxTween.cancelTweensOf(freeplayState.backingImage);
+            FlxTween.color(freeplayState.backingImage, 0.33, freeplayState.backingImage.color, targetColor, {ease: FlxEase.quadOut,
+              onUpdate: function(_) {
+                freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+              },
+            });
+          }*/
+
+          var targetImg:String = textsToApply.bgImage;
+          if (targetImg != null && targetImg != curBgImage) {
+            curBgImage = targetImg;
+            freeplayState.backingImage.loadTextureAsync(Paths.image(targetImg));
+            FlxTween.cancelTweensOf(freeplayState.backingImage);
+
+            if (targetImg != styleData.getBgAssetKey()) {
+              //freeplayState.backingImage.setGraphicSize(0, FlxG.height + 1);
+              FunkinMemory.cacheTexture(Paths.image(targetImg));
+
+              freeplayState.backingImage.color = -1;
+              freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+              FlxTween.color(freeplayState.backingImage, 0.25, freeplayState.backingImage.color, FlxColor.fromString('#d1d1d1'), {ease: FlxEase.quadOut,
+                onUpdate: function(_) {
+                  freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+                },
+              });
+            } else {
+              FlxTween.color(freeplayState.backingImage, 0.25, freeplayState.backingImage.color, -1, {ease: FlxEase.quadOut,
+                onUpdate: function(_) {
+                  freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+                },
+              });
+            }
+          }
+        }
+      }
+      isFirstTime = false;
+    } catch (e:Dynamic) {
+      throw('[RetroFreeplay] Error updating texts: ' + e);
+    }
+  }
+}
+
+typedef BackingCardTexts = {
+  @:optional var bgColor:Int;
+  @:optional var funnyScroll:String;
+  @:optional var moreWays:String;
+  @:optional var txtNuts:String;
+  @:optional var funnyScroll2:String;
+  @:optional var moreWays2:String;
+  @:optional var funnyScroll3:String;
+}

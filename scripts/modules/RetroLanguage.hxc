@@ -1,0 +1,268 @@
+package supereric.retrospecter.modules;
+
+import flixel.FlxG;
+import funkin.Preferences;
+import funkin.Paths;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import openfl.Assets;
+import haxe.ds.StringMap;
+//import haxe.Json;
+import StringTools;
+
+class RetroLanguage extends Module
+{
+  public static var instance:RetroLanguage;
+
+  private static var translations:StringMap<String, String> = new StringMap();
+  private static var currentLanguage:String = "en_US";
+
+  private static var isLoaded:Bool = false;
+
+  public function new()
+  {
+    super("RetroLanguage", 100);
+    instance = this;
+  }
+
+  override public function onCreate(event) {
+    super.onCreate(event);
+    // Iniciar o módulo apenas no create pra ter certeza que o save foi inicializado.
+    initLanguage();
+  }
+
+  override public function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    updateSubtitles();
+  }
+
+  public static function initLanguage():Void
+  {
+    if (!Save.instance.modOptions.exists("retroLanguage")) {
+      Save.instance.modOptions.set("retroLanguage", "en_US");
+      Save.instance.flush();
+    }
+
+    var savedLang = Save.instance.modOptions.get("retroLanguage");
+    if (savedLang != null) {
+      currentLanguage = savedLang;
+    }
+
+    loadTranslations();
+  }
+
+  /**
+   * Carrega as traduções do arquivo TXT da linguagem atual
+   */
+  private static function loadTranslations():Void
+  {
+    translations = new StringMap();
+
+    var translationPath:String = Paths.txt('lang/' + currentLanguage);
+
+    if (!Assets.exists(translationPath))
+    {
+      throw('AVISO: ' + currentLanguage + ' não encontrado. Tentando en_US.');
+      translationPath = Paths.txt('lang/en_US');
+
+      if (!Assets.exists(translationPath)) {
+        throw('No translations found. This shouldn\'t happen!');
+        isLoaded = false;
+        return;
+      }
+    }
+
+    try
+    {
+      var fileContent:String = Assets.getText(translationPath);
+      var lines:Array<String> = fileContent.split('\n');
+
+      for (line in lines)
+      {
+        line = StringTools.trim(line);
+        if (line == '' || line.charAt(0) == '#') continue;
+
+        var separatorIndex:Int = line.indexOf('=');
+        if (separatorIndex == -1) continue;
+
+        var key:String = StringTools.trim(line.substring(0, separatorIndex));
+        var value:String = StringTools.trim(line.substring(separatorIndex + 1));
+
+        if (value.length >= 2 && value.charAt(0) == '"' && value.charAt(value.length - 1) == '"') {
+          value = value.substring(1, value.length - 1);
+        }
+
+        value = processEscapeChars(value);
+        translations.set(key, value);
+      }
+
+      isLoaded = true;
+      // trace('[RetroLanguage] Carregado: ' + currentLanguage + ' (' + getTranslationCount() + ' chaves)');
+    }
+    catch (e:Dynamic)
+    {
+      throw('[RetroLanguage] ERRO ao ler arquivo: ' + e);
+      isLoaded = false;
+    }
+  }
+
+  /**
+   * Processa caracteres de escape no texto (\n, \t, etc)
+   */
+  private static function processEscapeChars(text:String):String
+  {
+    // Otimização: Só processa se tiver barra invertida
+    if (text.indexOf('\\') == -1) return text;
+    text = StringTools.replace(text, '\\n', '\n');
+    text = StringTools.replace(text, '\\t', '\t');
+    text = StringTools.replace(text, '\\"', '"');
+    text = StringTools.replace(text, '\\\\', '\\');
+    return text;
+  }
+
+  /**
+   * Traduz uma chave para o idioma atual
+   * @param chave Chave da tradução
+   * @param chaveFallback Texto alternativo caso a chave não seja encontrada (opcional)
+   * @return Texto traduzido ou fallback
+   */
+  public static function translate(chave:String, ?chaveFallback:String):String
+  {
+    // Proteção absoluta contra Null Reference
+    if (translations == null) return chaveFallback != null ? chaveFallback : chave;
+
+    if (translations.exists(chave)) {
+      return translations.get(chave);
+    }
+
+    return chaveFallback != null ? chaveFallback : chave;
+  }
+
+  /**
+   * Atalho para translate()
+   */
+  public static function t(chave:String, ?chaveFallback:String):String
+  {
+    return translate(chave, chaveFallback);
+  }
+
+  /**
+   * Traduz uma chave e substitui placeholders {0}, {1}, etc pelos argumentos fornecidos
+   * @param chave Chave da tradução
+   * @param values Argumentos para substituir os placeholders
+   * @return Texto traduzido com placeholders substituídos
+   */
+  public static function translateFormat(chave:String, values:Array<Dynamic>):String
+  {
+    var rawText:String = translate(chave);
+
+    var finalText:String = "" + rawText;
+
+    if (values != null && values.length > 0) {
+      for (i in 0...values.length) {
+        // Converte o valor para string explicitamente antes de usar
+        var val:String = Std.string(values[i]);
+        finalText = StringTools.replace(finalText, '{' + i + '}', val);
+      }
+    }
+
+    return finalText;
+  }
+
+  /**
+   * Atalho para translateFormat()
+   */
+  public static inline function tf(chave:String, values:Array<Dynamic>):String
+  {
+    return translateFormat(chave, values);
+  }
+
+  /**
+   * Atualiza a linguagem e recarrega as traduções
+   * @param newLanguage Código da nova linguagem (ex: "pt_BR", "en_US")
+   */
+  public static function updateLanguage(newLanguage:String):Void
+  {
+    if (newLanguage == currentLanguage) return;
+    currentLanguage = newLanguage;
+
+    if (Save.instance.modOptions != null) {
+      Save.instance.modOptions.set("retroLanguage", newLanguage);
+      Save.instance.flush();
+    }
+
+    loadTranslations();
+  }
+
+  /**
+   * Retorna a linguagem atual
+   */
+  public static function getCurrentLanguage():String
+  {
+    return currentLanguage;
+  }
+
+  /**
+   * Atualiza os subtitles da música para usar a linguagem atual
+   */
+  public static function updateSubtitles():Void
+  {
+    if (PlayState.instance == null || currentLanguage == "en_US") return;
+
+    if (Preferences.subtitles)
+    {
+      var level:PlayState = PlayState.instance;
+
+      // Nome base do arquivo
+      var fileName:String = 'song-lyrics';
+      var songFolder:String = 'songs/' + level.currentSong.id + '/subtitles/';
+
+      if (level.currentVariation != Constants.DEFAULT_VARIATION)
+      {
+        fileName += '-' + level.currentVariation;
+      }
+
+      fileName += '-' + currentLanguage;
+
+      // Aqui na função de assignSubtitles, se o arquivo não existir, vai continuar usando o padrão.
+      if (level.subtitles != null) level.subtitles.assignSubtitles(songFolder + fileName, FlxG.sound.music);
+
+      // throw('\n[RetroLanguage] Carregando legenda em ' + currentLanguage + ' no caminho: ' + songFolder + fileName);
+    }
+  }
+
+  /**
+   * Retorna todas as chaves de tradução disponíveis
+   */
+  public static function getAllKeys():Array<String>
+  {
+    var keys:Array<String> = [];
+    for (key in translations.keys())
+    {
+      keys.push(key);
+    }
+    return keys;
+  }
+
+  /**
+   * Verifica se uma chave de tradução existe
+   */
+  public static function hasKey(chave:String):Bool
+  {
+    return translations.exists(chave);
+  }
+
+  /**
+   * Retorna o número total de traduções carregadas
+   */
+  public static function getTranslationCount():Int
+  {
+    var count:Int = 0;
+    for (key in translations.keys()) count++;
+    return count;
+  }
+}

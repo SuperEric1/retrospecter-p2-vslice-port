@@ -24,32 +24,8 @@ import funkin.play.PlayStatePlaylist;
 import funkin.Paths;
 import StringTools;
 
-/**
- * Nightflaid Stage - Dynamic multi-character boss rush stage with color-changing shaders
- *
- * SHADER IMPLEMENTATION NEEDED:
- * This stage requires a custom shader system called "NightflaidShaderHandler" with:
- * - Left and right side color management
- * - Color tweening (gradual color transitions)
- * - Side swapping (swap left/right colors)
- * - Lighting toggle
- *
- * Additional shader effects needed:
- * - ReflectionShader: Creates reflection effect for characters
- * - VCRBorder: Adds VCR-style border effect
- * - NTSCFilter: Adds NTSC/analog TV distortion effect
- *
- * CUSTOM CAMERAS:
- * The original implementation uses multiple custom cameras:
- * - camCharacters: For character reflections
- * - camVideo: For special "unbeatable" sequence with VCR effects
- *
- * GAMEPLAY MECHANICS:
- * This stage supports multiple opponent characters that switch mid-song:
- * - Each character has unique health bar colors and visual effects
- * - Some characters have special mechanics (shake, screen effects, note drain)
- * - Special "80sNightflaid" transformation sequence with unique visuals
- */
+import supereric.retrospecter.modules.RetroLanguage;
+
 class NightflaidStage extends Stage
 {
   var xAdjust:Float = -300;
@@ -107,17 +83,17 @@ class NightflaidStage extends Stage
   var spookieText:FlxText;
   var staticSprite:FunkinSprite;
   var staticTexts:Array<String> = [
-    'RESULTS PENDING',
+    /*'RESULTS PENDING',
     'TESTS INCONCLUSIVE',
     'REQUIRES MORE\n DATA',
     "SHE'S SAFE",
     "STAY A LITTLE LONGER,\n WON'T YOU?",
     "CHEATING DEATH OR\n CHEATING LIFE?",
     "CONTACTING MIGHTFLAID",
-    "INTRIGUING SPECIMEN"
+    "INTRIGUING SPECIMEN"*/
   ];
   var rareTexts:Array<String> = [
-    "WAR'S ALWAYS THE SAME",
+    //"WAR'S ALWAYS THE SAME",
   ];
   var staticRemoveTimer:FlxTimer;
 
@@ -271,6 +247,14 @@ class NightflaidStage extends Stage
 
     hasCreatedStage = true;
     PlayState.instance.refresh();
+
+    // Save static texts
+    staticTexts = [];
+    rareTexts = [];
+    for (i in 1...9) {
+      staticTexts.push(RetroLanguage.t('nightflaid.static.text.' + i));
+    }
+    rareTexts.push(RetroLanguage.t('nightflaid.static.rareText.1'));
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -533,7 +517,7 @@ class NightflaidStage extends Stage
     spookieText.borderSize = 3;
     spookieText.antialiasing = false;
     spookieText.alpha = 0.3;
-    spookieText.camera = PlayState.instance.camHUD;
+    spookieText.cameras = [PlayState.instance.camHUD];
     spookieText.screenCenter();
     spookieText.visible = false;
     PlayState.instance.add(spookieText);

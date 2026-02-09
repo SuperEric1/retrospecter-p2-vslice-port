@@ -30,7 +30,8 @@ class spectreNote extends Module {
 		super.onNoteHit(event);
 
 		if (PlayState.instance == null) return;
-		if (event.note.noteData.kind == "spectre" && event.note.noteData.getMustHitNote()) {
+		if (event.eventCanceled) return;
+		if (event.note.noteData.kind == "spectre" && event.note.noteData.getMustHitNote() ) {
 			var downscroll = Preferences.downscroll;
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 

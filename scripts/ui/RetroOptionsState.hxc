@@ -26,6 +26,8 @@ import funkin.Paths;
 import Std;
 import Reflect;
 
+import supereric.retrospecter.modules.RetroLanguage;
+
 class RetroOptionsState extends Module
 {
   var canUpdate:Bool = false;
@@ -83,7 +85,9 @@ class RetroOptionsState extends Module
 
   public function new()
   {
-    super("RetroOptionsState");
+    super("RetroOptionsState", 1000, {
+      state: OptionsState
+    });
     //setupSave(); // this is done in RetroSave.hxc
   }
 
@@ -291,6 +295,7 @@ class RetroOptionsState extends Module
   {
     if (Std.isOfType(event.targetState, OptionsState))
     {
+      initRetroOptions(); // refresh the options (for the translations to work)
       hasAddedOptions = false; // add the options again!
       canUpdate = Save.instance.modOptions.get('retroCustomMenus'); // to determine if the menu will build/update. we update this variable once the state changes to not cause any bugs with onUpdate.
 
@@ -384,6 +389,8 @@ class RetroOptionsState extends Module
             function(key:String, value:Dynamic) {
               Save.instance.modOptions.set(option.id, value);
               Save.instance.flush();
+
+              if (option.id == "retroLanguage") RetroLanguage.updateLanguage(value);
             },
             option.defaultEnumKey != null ? option.defaultEnumKey : "None"
           );
@@ -834,6 +841,15 @@ class RetroOptionsState extends Module
     var doesTextChangeBop:Bool = true; // desativar se o texto muda de acordo com a opção, para não ficar boppando
     var save:Save = Save.instance.modOptions;
 
+    var currentID:String = "";
+
+    for (opt in retroOptions) { // for the custom options
+      if (opt.name.toUpperCase() == nameUpper) {
+        currentID = opt.id;
+        break;
+      }
+    }
+
     if (nameUpper == 'DOWNSCROLL') animName = Preferences.downscroll ? 'anims/down' : 'anims/up';
     else if (nameUpper == 'NAUGHTYNESS' && Preferences.naughtyness) animName = 'anims/evil';
     else if (nameUpper == 'STRUMLINE BACKGROUND') dozircShadow.alpha = Preferences.strumlineBackgroundOpacity / 100;
@@ -858,26 +874,38 @@ class RetroOptionsState extends Module
     else if (nameUpper == 'FLASHING LIGHTS' && Preferences.flashingLights) animName = 'anims/glasses';
     else if (nameUpper == 'LAUNCH IN FULLSCREEN') animName = Preferences.autoFullscreen ? 'anims/signAlone' : 'anims/signSmol';
     else if (nameUpper == 'PAUSE ON UNFOCUS' && Preferences.autoPause) animName = 'anims/pause';
+
     // custom
-    else if (nameUpper == 'NOTE MECHANICS') animName = save.get("retroMechanics") ? 'anims/online' : 'anims/offline';
-    else if (nameUpper == 'SHADERS') animName = save.get("retroShaders") ? 'anims/glow' : 'anims/low';
-    else if (nameUpper == 'SCREEN SHAKE' && save.get("retroShake")) {
+    else if (currentID == 'retroLanguage') {
+      animName = 'anims/signAlone';
+      signText.visible = true;
+      switch (Save.instance.modOptions.get("retroLanguage") ?? "en_US") {
+        case "pt_BR":
+          signText.text = 'OI';
+        default:
+          signText.text = "HI";
+      }
+    }
+    else if (currentID == 'retroMechanics') animName = save.get("retroMechanics") ? 'anims/online' : 'anims/offline';
+    else if (currentID == 'retroShaders') animName = save.get("retroShaders") ? 'anims/glow' : 'anims/low';
+    else if (currentID == 'retroShake' && save.get("retroShake")) {
       animName = 'anims/shake';
     }
-    else if (nameUpper == 'SONG LENGTH TIMER') animName = save.get("retroSongLength") ? 'anims/booba' : 'anims/clock';
-    else if (nameUpper == 'SUGGESTIVE CONTENT' && save.get("retroSuggestive")) animName = 'anims/oops';
-    else if (nameUpper == 'MODCHARTS') {
+    else if (currentID == 'retroSongLength') animName = save.get("retroSongLength") ? 'anims/booba' : 'anims/clock';
+    else if (currentID == 'retroSuggestive' && save.get("retroSuggestive")) animName = 'anims/oops';
+
+    else if (currentID == 'retroModcharts') {
       animName = 'anims/signAlone';
       signArrows.visible = true;
       if (save.get("retroModcharts")) {
-        signArrows.animation.play("shake");
+          signArrows.animation.play("shake");
       } else signArrows.animation.play("idle");
     }
-    else if (nameUpper == 'TRANSFORM HAZARD NOTES') {
+    else if (currentID == 'retroNotesTransform') {
       animName = 'anims/signAlone';
       signArrows.visible = true;
       if (save.get("retroNotesTransform")) {
-        signArrows.animation.play("hazard-off");
+          signArrows.animation.play("hazard-off");
       } else signArrows.animation.play("hazard");
     }
 
@@ -911,10 +939,12 @@ class RetroOptionsState extends Module
       curText = signText.text;
       dozirc.animation.play(animName, false, false, true);
 
-      // offsets & confis
+      // offsets & configs
+      // do not mess with those (i hate offsets)
       var defaultOffsetX:Float = 83;
       switch (animName) {
-        case 'anims/pause': dozirc.x = dozircX + defaultOffsetX;
+        case 'anims/default': signArrows.visible = false; // Force so it doesn't stay after leaving the page
+        case 'anims/pause': dozirc.x = dozircX + defaultOffsetX + 9;
         case 'anims/cpu': dozirc.x = dozircX + defaultOffsetX + 50;
         case 'anims/gpu': dozirc.x = dozircX + defaultOffsetX + 74;
         case 'anims/glow': dozirc.x = dozircX + defaultOffsetX + 207;
@@ -1005,121 +1035,138 @@ class RetroOptionsState extends Module
     debugText.visible = true;
   }
 
-  var retroOptions:Array<CustomOption> = [
-    {
-      name: "Vs. RetroSpecter",
-      description: "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)",
-      id: "retroPrefsTitle",
-      type: OptionType.ENUM,
-      enumValues: [" " => null],
-      defaultEnumKey: " "
-    },
-    {
-      id: "retroModcharts",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Modcharts",
-      description: "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)",
-    },
-    {
-      id: "retroMechanics",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Note Mechanics",
-      description: "Toggles hazard note mechanics for all songs that use them.",
-    },
-    {
-      id: "retroNotesTransform",
-      type: OptionType.CHECKBOX,
-      defaultValue: false,
-      name: "Transform Hazard Notes",
-      description: "Transforms hazard notes into normal notes. Note Mechanics needs to be toggled on for this option to work.",
-    },
-    {
-      id: "retroCheckpoints",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Checkpoints",
-      description: "Allows to automatically go back to a certain point of the song when retrying.",
-    },
-    /*{
-      id: "retroDefaultNotes",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Default Notes",
-      description: "Disables noteskins and replaces them with default FNF arrows and colors. (Does not disable hazard note mechanics.)",
-    },*/
-    {
-      id: "retroShaders",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Shaders",
-      description: "Toggles shaders for certain sprites and events.\n(Disabling recommended for lower-end phones.)",
-    },
-    {
-      id: "retroShake",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Screen Shake",
-      description: "Shakes Screen during certain events. (ie. Zerktro's singing.)",
-    },
-    {
-      id: "retroSongLength",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Song Length Timer",
-      description: "When enabled, display the song length in the corner of the screen during gameplay. (Not recommended for Story Mode.)",
-    },
-    {
-      id: "retroSuggestive",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Suggestive Content",
-      description: "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song.",
-    },
-    {
-      id: "retroCustomMenus",
-      type: OptionType.CHECKBOX,
-      defaultValue: true,
-      name: "Custom Menus",
-      description: "Enables the mod's custom menus. Disable this if you want the original FNF menus back.",
-    },
+  var retroOptions:Array<CustomOption> = [];
+  function initRetroOptions():Void
+  {
+    RetroLanguage.updateLanguage(Save.instance.modOptions.get("retroLanguage") ?? "en_US"); // update the language in case the menu loads before the language module (which happens when we hot reload the menu)
+    retroOptions = [
+      {
+        name: "Vs. RetroSpecter",
+        description: RetroLanguage.t("options.mod_desc"),
+        id: "retroPrefsTitle",
+        type: OptionType.ENUM,
+        enumValues: [" " => null],
+        defaultEnumKey: " "
+      },
+      {
+        id: "retroLanguage",
+        type: OptionType.ENUM,
+        name: RetroLanguage.t("options.language"),
+        description: RetroLanguage.t("options.language.desc"),
+        enumValues: [
+          "en_US" => "en_US",
+          "pt_BR" => "pt_BR",
+        ],
+        defaultValue: Save.instance.modOptions.get("retroLanguage") ?? "en_US",
+        defaultEnumKey: Save.instance.modOptions.get("retroLanguage") ?? "en_US"
+      },
+      {
+        id: "retroModcharts",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.modcharts"),
+        description: RetroLanguage.t("options.modcharts.desc"),
+      },
+      {
+        id: "retroMechanics",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.mechanics"),
+        description: RetroLanguage.t("options.mechanics.desc"),
+      },
+      {
+        id: "retroNotesTransform",
+        type: OptionType.CHECKBOX,
+        defaultValue: false,
+        name: RetroLanguage.t("options.transform_notes"),
+        description: RetroLanguage.t("options.transform_notes.desc"),
+      },
+      {
+        id: "retroCheckpoints",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.checkpoints"),
+        description: RetroLanguage.t("options.checkpoints.desc"),
+      },
+      /*{
+        id: "retroDefaultNotes",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.default_notes"),
+        description: RetroLanguage.t("options.default_notes.desc"),
+      },*/
+      {
+        id: "retroShaders",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.shaders"),
+        description: RetroLanguage.t("options.shaders.desc"),
+      },
+      {
+        id: "retroShake",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.shake"),
+        description: RetroLanguage.t("options.shake.desc"),
+      },
+      {
+        id: "retroSongLength",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.song_timer"),
+        description: RetroLanguage.t("options.song_timer.desc"),
+      },
+      {
+        id: "retroSuggestive",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.suggestive"),
+        description: RetroLanguage.t("options.suggestive.desc"),
+      },
+      {
+        id: "retroCustomMenus",
+        type: OptionType.CHECKBOX,
+        defaultValue: true,
+        name: RetroLanguage.t("options.custom_menus"),
+        description: RetroLanguage.t("options.custom_menus.desc"),
+      },
 
 
-    /* Template options
-    {
-      name: "Note Splash Opacity",
-      description: "Adjust note splash transparency",
-      id: "noteSplashOpacity",
-      type: OptionType.PERCENTAGE,
-      defaultValue: 100,
-      min: 0,
-      max: 100
-    },
-    {
-      name: "Scroll Speed",
-      description: "Adjust note scroll speed",
-      id: "scrollSpeed",
-      type: OptionType.NUMBER,
-      defaultValue: 1.0,
-      min: 0.5,
-      max: 3.0,
-      step: 0.1,
-      precision: 2
-    },
-    {
-      name: "Note Hit Sound",
-      description: "Sound effect when hitting notes",
-      id: "noteHitSound",
-      type: OptionType.ENUM,
-      enumValues: [
-        "None" => "none",
-        "Ping Pong" => "pingpong",
-        "Hitsound" => "hitsound"
-      ],
-      defaultEnumKey: "None"
-    }*/
-  ];
+      /* Template options
+      {
+        name: "Note Splash Opacity",
+        description: "Adjust note splash transparency",
+        id: "noteSplashOpacity",
+        type: OptionType.PERCENTAGE,
+        defaultValue: 100,
+        min: 0,
+        max: 100
+      },
+      {
+        name: "Scroll Speed",
+        description: "Adjust note scroll speed",
+        id: "scrollSpeed",
+        type: OptionType.NUMBER,
+        defaultValue: 1.0,
+        min: 0.5,
+        max: 3.0,
+        step: 0.1,
+        precision: 2
+      },
+      {
+        name: "Note Hit Sound",
+        description: "Sound effect when hitting notes",
+        id: "noteHitSound",
+        type: OptionType.ENUM,
+        enumValues: [
+          "None" => "none",
+          "Ping Pong" => "pingpong",
+          "Hitsound" => "hitsound"
+        ],
+        defaultEnumKey: "None"
+      }*/
+    ];
+  }
 }
 
 typedef CustomOption = {

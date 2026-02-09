@@ -39,6 +39,7 @@ import funkin.play.scoring.Scoring;
 import Math;
 
 import supereric.retrospecter.ui.RetroPauseMenu;
+import supereric.retrospecter.modules.RetroLanguage;
 
 class RetroGameUI extends Module {
   public function new() {
@@ -360,7 +361,7 @@ class RetroGameUI extends Module {
     var currentTimeStr:String = formatTime(currentTime);
     var totalTimeStr:String = formatTime(songLength);
 
-    timeDisplay.text = 'Time Left\n' + currentTimeStr + '|' + totalTimeStr;
+    timeDisplay.text = RetroLanguage.t('stats.timeLeft', 'Time Left') + '\n' + currentTimeStr + '|' + totalTimeStr;
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - timeDisplay.height - statsTextMargin[1];
     timeDisplay.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
     timeDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + timeDisplay.height / 2;
@@ -424,9 +425,10 @@ class RetroGameUI extends Module {
     var accuracyStr:String = Std.string(Math.round(currentAccuracy));
 
     // Update main stats text
-    statsDisplay.text = 'ACC: ' + accuracyStr + '%\n';
-    statsDisplay.text += 'MISSES: ' + missed + '\n';
-    statsDisplay.text += 'RANK:  '; // we add the rating after
+    //statsDisplay.text = ' \n';
+    statsDisplay.text = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
+    statsDisplay.text += RetroLanguage.tf('stats.misses', [missed]) + '\n';
+    statsDisplay.text += RetroLanguage.t('stats.rating', 'RANK:') + '  '; // we add the rating after. the two spaces are important
     // if (isNewHighscore) statsDisplay.text += '\nNEW HIGHSCORE!';
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
     statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
@@ -648,17 +650,17 @@ class RetroGameUI extends Module {
   function getJudgement(judgement:String):{text:String, color:FlxColor} {
     switch (judgement) {
       case 'sick':
-        return {text: 'SICK!! ', color: 0xFFffec44}; // #ffec44ff
+        return {text: RetroLanguage.t('judgement.sick', 'SICK!!') + ' ', color: 0xFFffec44}; // #ffec44ff
       case 'good':
-        return {text: 'GOOD! ', color: 0xFF2457ff}; // #2457ffff
+        return {text: RetroLanguage.t('judgement.good', 'GOOD!') + ' ', color: 0xFF2457ff}; // #2457ffff
       case 'bad':
-        return {text: 'BAD ', color: 0xFFff4949}; // #ff4949ff
+        return {text: RetroLanguage.t('judgement.bad', 'BAD') + ' ', color: 0xFFff4949}; // #ff4949ff
       case 'shit':
-        return {text: 'SHIT ', color: 0xFFafaeae}; // #afaeaeff
+        return {text: RetroLanguage.t('judgement.shit', 'SHIT') + ' ', color: 0xFFafaeae}; // #afaeaeff
       case 'miss':
-        return {text: 'MISS ', color: 0xFFe90606}; // #e90606ff
+        return {text: RetroLanguage.t('judgement.miss', 'MISS') + ' ', color: 0xFFe90606}; // #e90606ff
       default:
-        return {text: '', color: 0xFFFFFF};
+        return {text: '?', color: 0xFFFFFF};
     }
   }
 
@@ -755,6 +757,32 @@ class RetroGameUI extends Module {
     }
   }
 
+  /*public function onStepHit(curStep:Int):Void
+  {
+    // Make the icons bop.
+    if (isPlayerIconAnimated) bopIcon(PlayState.instance.iconP1, curStep);
+    if (isOppIconAnimated) bopIcon(PlayState.instance.iconP2, curStep);
+  }
+
+  function bopIcon(icon, curStep) {
+    if (icon.bopEvery != 0 && curStep % icon.bopEvery == 0)
+    {
+      throw 'opa';
+      icon.bopTween?.cancel();
+      setGraphicSize(Std.int(icon.width + (HealthIcon.HEALTH_ICON_SIZE * icon.size.x * HealthIcon.BOP_SCALE)), 0);
+      icon.bopTween = FlxTween.num(icon.width + (HealthIcon.HEALTH_ICON_SIZE * icon.size.x * HealthIcon.BOP_SCALE), HEALTH_ICON_SIZE * icon.size.x,
+        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> icon.bopTween = null}, value -> {
+          setGraphicSize(Std.int(value), 0);
+          // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
+          icon.updateHitbox();
+          icon.updatePosition();
+        });
+      // Ensure the icon is positioned correctly after updating the hitbox.
+      icon.updateHitbox();
+      icon.updatePosition();
+    }
+  }*/
+
   public function onSongRetry(event) {
     super.onSongRetry(event);
     if (!hasBeenCreated) return;
@@ -813,6 +841,14 @@ class RetroGameUI extends Module {
       case 'phase1':
         return getRGB(23, 216, 228);
       case 'phase2':
+        if (!isOppIconAnimated && updateIconAnim) {
+          isOppIconAnimated = true;
+          oppIcon.animation.addByPrefix("idle", "neutral", 0, false);
+          oppIcon.animation.addByPrefix("winning", "win", 0, false);
+          oppIcon.animation.addByPrefix("winningPlus", "pluswin", 0, false);
+          oppIcon.animation.addByPrefix("losing", "lose", 0, false);
+          syncIconAnim(oppIcon, true);
+        }
         return getRGB(76, 255, 148);
       case 'phase3':
         return getRGB(18, 255, 255);
@@ -875,6 +911,8 @@ class RetroGameUI extends Module {
       } else {
         icon.playAnimation('idle', true, false);
       }
+      // workaround for the animated icon to bop.
+      if (isPlayerIconAnimated) PlayState.instance.iconP1.isLegacyStyle = true;
     } else { // opp
       if (health > win) {
         icon.playAnimation('losing', true, false);
@@ -883,6 +921,8 @@ class RetroGameUI extends Module {
       } else {
         icon.playAnimation('idle', true, false);
       }
+      // workaround for the animated icon to bop.
+      if (isOppIconAnimated) PlayState.instance.iconP2.isLegacyStyle = true;
     }
   }
 
@@ -895,10 +935,12 @@ class RetroGameUI extends Module {
     if (iconLower == 'p1' || iconLower == 'both') {
       playState.iconP1.bopEvery = iBopEvery;
       if (playState.iconP1.zIndex != iZIndex + 1) playState.iconP1.zIndex = iZIndex + 1;
+      if (isPlayerIconAnimated) PlayState.instance.iconP1.isLegacyStyle = true; // workaround for the animated icon to bop.
     }
     if (iconLower == 'p2' || iconLower == 'both') {
       playState.iconP2.bopEvery = iBopEvery;
-      if (playState.iconP1.zIndex != iZIndex) playState.iconP2.zIndex = iZIndex;
+      if (playState.iconP2.zIndex != iZIndex) playState.iconP2.zIndex = iZIndex;
+      if (isOppIconAnimated) PlayState.instance.iconP2.isLegacyStyle = true; // workaround for the animated icon to bop.
     }
     PlayState.instance.refresh();
   }

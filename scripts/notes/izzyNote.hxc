@@ -33,7 +33,7 @@ class izzyNote extends Module {
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
 		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "izzyNote" )
+		if ( event.note.noteData.kind == "izzyNote" && event.note.noteData.getMustHitNote() )
 			{
 			event.note.x += -59;
 			event.note.yOffset += -65;

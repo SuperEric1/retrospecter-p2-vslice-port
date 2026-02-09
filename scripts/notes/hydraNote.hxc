@@ -16,6 +16,8 @@ class HydraNote extends Module {
 		super("Hydra");
 	}
 
+	var noteFrames = Paths.getSparrowAtlas('notes/HydraNotes');
+
 	function onCreate(event:Dynamic)
 	{
 		super.onCreate(event);
@@ -31,18 +33,18 @@ class HydraNote extends Module {
 		if (ev.note.noteData.kind != "Hydra") return;
 	}*/
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
+	public override function onNoteIncoming(event:NoteScriptEvent)
 	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "Hydra" )
+		super.onNoteIncoming(event);
+		if (event.note.noteData.kind == "Hydra" && event.note.noteData.getMustHitNote())
 		{
       var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+			if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
 
 			event.note.x += -45;
 			event.note.yOffset += -265;
 
-			event.note.frames = Paths.getSparrowAtlas( 'notes/HydraNotes' );
+			event.note.frames = noteFrames;
       if (downscroll) {
         event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
         event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
@@ -73,11 +75,11 @@ class HydraNote extends Module {
 		}
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
+	public override function onNoteMiss(event:NoteScriptEvent)
 	{
-		super.onNoteMiss( event );
+		super.onNoteMiss(event);
 
-		if ( event.note.noteData.kind == "Hydra" )
+		if (event.note.noteData.kind == "Hydra")
 		{
 			event.cancel();
 			event.stopPropagation();

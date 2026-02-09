@@ -382,6 +382,7 @@ class ExtirpatientSong extends Song
     // Beat 580: Start scythe2 movement
     if (curBeat == 580) {
       scytheActive = true;
+      scythe2.visible = true;
     }
 
     // Stop scythe2 movement
@@ -407,6 +408,7 @@ class ExtirpatientSong extends Song
 
     // Scythe appears and clashes
     if (curBeat == 588 && scythe != null) {
+      scythe.visible = true;
       FlxTween.tween(scythe, {
         y: isDownScroll ? playState.healthBar.y + 70 : playState.healthBar.y - 160,
         angle: isDownScroll ? -205 : 25,
@@ -1427,6 +1429,7 @@ class ExtirpatientSong extends Song
     // Cleanup warning arrows
     warningArrows = [];
 
+    resetFlags();
     resetTweens();
   }
 
@@ -1468,6 +1471,16 @@ class ExtirpatientSong extends Song
     super.onSongRetry(event);
 
     resetFlags();
+    FlxTween.cancelTweensOf(scythe);
+    FlxTween.cancelTweensOf(scythe2);
+    scythe.visible = false;
+    scythe2.visible = false;
+    scythe.colorTransform.redOffset = 0;
+    scythe.colorTransform.blueOffset = 0;
+    scythe.colorTransform.greenOffset = 0;
+    scythe2.colorTransform.redOffset = 0;
+    scythe2.colorTransform.blueOffset = 0;
+    scythe2.colorTransform.greenOffset = 0;
 
     if (PlayState.instance != null) {
       if (PlayState.instance.playerStrumline != null)

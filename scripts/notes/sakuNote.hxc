@@ -26,7 +26,7 @@ class sakuNote extends Module {
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
 		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "sakuNote" )
+		if ( event.note.noteData.kind == "sakuNote" && event.note.noteData.getMustHitNote() )
 		{
       var downscroll = Preferences.downscroll;
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;

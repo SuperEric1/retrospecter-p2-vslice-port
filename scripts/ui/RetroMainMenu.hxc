@@ -87,10 +87,9 @@ class RetroMainMenu extends MusicBeatState
 
   public function new(?_overrideMusic:Bool)
   {
-    super();
+    super('RetroMainMenu');
 
-    if (_overrideMusic != null)
-      overrideMusic = _overrideMusic;
+    if (_overrideMusic != null) overrideMusic = _overrideMusic;
 
     menuItems = [];
     menuCallbacks = [];

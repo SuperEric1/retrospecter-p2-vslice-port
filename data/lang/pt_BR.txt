@@ -1,0 +1,62 @@
+# Arquivo de tradução - Português Brasileiro (pt_BR)
+# Formato: chave = "valor"
+# Linhas começando com # são comentários e serão ignoradas
+# Use \n para quebra de linha e \" para aspas dentro do texto
+
+# - JOGABILIDADE -
+stats.accuracy = "PRECISÃO: {0}%"
+stats.misses = "ERROS: {0}"
+stats.rating = "RANK:"
+stats.timeLeft = "Tempo Rest."
+
+judgement.sick = "MASSA!!"
+judgement.good = "BOA!"
+judgement.bad = "RUIM"
+judgement.shit = "MERDA"
+judgement.miss = "ERROU"
+
+instruction.chainNote = "AMASSE PARA SE LIBERTAR"
+instruction.coinNote = "COLETE MOEDAS PARA GANHAR MAIS DINHEIRO!"
+
+nightflaid.static.text.1 = "RESULTADOS PENDENTES"
+nightflaid.static.text.2 = "TESTES INCONCLUSIVOS"
+nightflaid.static.text.3 = "REQUER MAIS\n DADOS"
+nightflaid.static.text.4 = "ELA É SEGURA"
+nightflaid.static.text.5 = "FIQUE UM POUCO MAIS,\n NÃO VAI?"
+nightflaid.static.text.6 = "ENGANANDO A MORTE OU\n ENGANANDO A VIDA?"
+nightflaid.static.text.7 = "CONTATANDO MIGHTFLAID"
+nightflaid.static.text.8 = "ESPÉCIME INTRIGANTE"
+nightflaid.static.rareText.1 = "WAR É SEMPRE O MESMO"
+
+# - OPÇÕES -
+options.mod_desc = "Abaixo, você pode customizar sua experiência de jogo no port.\nFan port por SuperEric (youtube.com/@super_eric)"
+
+options.language = "Idioma"
+options.language.desc = "Escolha o idioma do mod. Essa opção também muda os subtítulos! (Saia das opções para aplicar)"
+
+options.modcharts = "Modcharts"
+options.modcharts.desc = "Ativa os modcharts.\n(Setas do strumline tremendo, girando, movendo, etc.)"
+
+options.mechanics = "Mecanicas de Notas"
+options.mechanics.desc = "Ativa as mecânicas das notas perigosas para todas as músicas que as usam."
+
+options.transform_notes = "Transformar Notas"
+options.transform_notes.desc = "Transforma notas perigosas em notas normais. \"Mecânicas de Notas\" precisa estar ativado para esta opção funcionar."
+
+options.checkpoints = "Checkpoints"
+options.checkpoints.desc = "Permite voltar automaticamente para um certo ponto da música ao tentar novamente."
+
+options.shaders = "Shaders"
+options.shaders.desc = "Ativa shaders para certos sprites e eventos.\n(Desabilitar recomendado para celulares menos potentes.)"
+
+options.shake = "Tremor de Tela"
+options.shake.desc = "Treme a tela durante certos eventos. (ex: Zerktro cantando.)"
+
+options.song_timer = "Tempo da Musica"
+options.song_timer.desc = "Quando ativado, mostra o tempo da música no canto da tela. (Não recomendado para Modo História.)"
+
+options.suggestive = "Conteudo Sugestivo"
+options.suggestive.desc = "Quando desativado, certos detalhes/animações sugestivas serão removidos da música final da Sakuroma."
+
+options.custom_menus = "Menus Customizados"
+options.custom_menus.desc = "Ativa os menus customizados do mod. Desative isso se quiser os menus originais do FNF de volta."

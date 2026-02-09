@@ -7,7 +7,7 @@ class RetroSave extends Module
 {
   public function new()
   {
-    super("RetroSave");
+    super("RetroSave", 500);
     setupSave();
   }
 

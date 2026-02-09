@@ -44,6 +44,10 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "spectre":
           return;
+        case "cashNote":
+          return;
+        case "hivemoreNote":
+          return;
         case "Hey!": // this is in some charts, it's an animation note
           this.animation.finished = true;
           this.playAnimation('hey', true, true);
