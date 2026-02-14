@@ -16,6 +16,7 @@ import funkin.graphics.FunkinCamera;
 import funkin.ui.MusicBeatState;
 import funkin.util.TouchUtil;
 import funkin.ui.title.TitleState;
+import funkin.mobile.input.ControlsHandler;
 import funkin.save.Save;
 import funkin.audio.FunkinSound;
 import funkin.FunkinMemory;
