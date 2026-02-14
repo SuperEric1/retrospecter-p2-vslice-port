@@ -536,15 +536,15 @@ class RetroMainMenu extends MusicBeatState
 
   function goToFreeplay():Void
   {
-    var stateFunc:Dynamic = function():FlxState {
-      return new FreeplayState();
+    var stateFunc:Dynamic = function():Void {
+      openSubState(new FreeplayState());
     };
     FlxTransitionableState.skipNextTransIn = true;
-    FlxTransitionableState.skipNextTransOut = false;
+    FlxTransitionableState.skipNextTransOut = true;
 
     FreeplayState.CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
 
-    startExitState(stateFunc);
+    startExitState(stateFunc, true);
   }
 
   function goToOptions():Void
@@ -563,7 +563,7 @@ class RetroMainMenu extends MusicBeatState
     startExitState(stateFunc);
   }
 
-  function startExitState(state:Dynamic):Void
+  function startExitState(state:Dynamic, ?customFunction:Bool):Void
   {
     if (isExiting) return;
 
@@ -574,9 +574,14 @@ class RetroMainMenu extends MusicBeatState
     persistentDraw = false;
 
     var targetState = state;
+    var isCustomFunction:Bool = customFunction;
     var tweenCallback:Dynamic = function(_:FlxTween) {
       if (FlxG.mouse.cursor != null) FlxG.mouse.visible = false;
-      FlxG.switchState(targetState);
+      if (!isCustomFunction) {
+        FlxG.switchState(targetState);
+      } else {
+        targetState();
+      }
     };
 
     bgFront = new FlxSprite();
@@ -587,10 +592,15 @@ class RetroMainMenu extends MusicBeatState
     bgFront.updateHitbox();
     insert(1000, bgFront);
 
-    FlxTween.tween(bgFront, {alpha: 1}, 0.15, {
-      ease: FlxEase.cubicIn,
-      onComplete: tweenCallback
-    });
+    var transitionTime:Float = 0.15;
+    //if (!isCustomFunction) {
+      FlxTween.tween(bgFront, {alpha: 1}, transitionTime, {
+        ease: FlxEase.cubicIn,
+        onComplete: tweenCallback
+      });
+    /*} else {
+      new FlxTimer().start(transitionTime, tweenCallback);
+    }*/
   }
 
   function playMenuMusic():Void

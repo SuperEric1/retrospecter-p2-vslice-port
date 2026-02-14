@@ -60,3 +60,22 @@ options.suggestive.desc = "When disabled, certain suggestive details/animations 
 
 options.custom_menus = "Custom Menus"
 options.custom_menus.desc = "Enables the mod's custom menus. Disable this if you want the original FNF menus back."
+
+# - MISC -
+warnings.language_select.title = "LANGUAGE SELECTION"
+warnings.language_select.desc = "Select your preferred language below.\nThe entire mod experience, including <y>all text<y>, <y>menus<y>, and <y>dialogs<y>, will be translated accordingly.\nYour choice will be remembered, and you can always change it in the <y>Options menu<y>."
+
+warnings.generic.title = "DISCLAIMER"
+warnings.generic.desc = "This is a <y>fan-made<y> mobile port of Vs. RetroSpecter - Part Two: Infernadise.\nTeam Respec owns the Infernadise universe and the original mod.\n\n Infernadise is also not tied to any actual religions or beliefs. Demons are just cool.\n\n Also, this mod contains <y>flashing lights/images<y>\n(which can be <y>disabled<y> in the options)."
+
+warnings.suggestive.title = "SUGGESTIVE CONTENT WARNING"
+warnings.suggestive.desc = "Sakuroma's final song has <m>very suggestive<m> poses, voice lines, and elements in the background.\n\nWould you like to <m>keep<m> these <m>enabled<m> or <m>disable<m> them? (This can be changed in the options menu at any point.)"
+warnings.button_text_keep = "KEEP ENABLED"
+warnings.button_text_disable = "DISABLE"
+
+warnings.continue_text = "I UNDERSTAND AND WISH TO CONTINUE"
+warnings.proceed_text = "PROCEED"
+warnings.dont_show_again = "DON'T SHOW THIS DISCLAIMER AGAIN"
+
+titlescreen.not_associated.1 = "NOT ASSOCIATED"
+titlescreen.not_associated.2 = "WITH"

@@ -3,9 +3,12 @@ import flixel.FlxSprite;
 import flixel.util.FlxColor;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
+import funkin.ui.options.OptionsState;
 import funkin.ui.title.TitleState;
 import funkin.ui.title.AttractState;
+import funkin.ui.MusicBeatState;
 import funkin.modding.base.ScriptedMusicBeatState;
+import funkin.modding.base.ScriptedMusicBeatSubState;
 import funkin.modding.module.Module;
 import funkin.save.Save;
 import Std;
@@ -18,11 +21,20 @@ class RetroUIManager extends Module
   }
 
   public static var titleInitialized:Bool = false;
+  private static var disableNextTransition:Bool = false;
 
   var backBg:FlxSprite = null;
 
+  override public function onCreate(event:ScriptEvent) {
+    super.onCreate(event);
+    FlxG.signals.postGameStart.addOnce(function() {
+      Save.instance.modOptions.set('retroTitleWarningsPlayed', false);
+      Save.instance.flush();
+    });
+  }
+
   // Redirect to custom states/menus
-  function onStateChangeEnd(event:StateChangeScriptEvent)
+  override public function onStateChangeEnd(event:StateChangeScriptEvent)
   {
     super.onStateChangeEnd(event);
     if (!Save.instance.modOptions.get('retroCustomMenus')) return;
@@ -30,13 +42,24 @@ class RetroUIManager extends Module
 
     if (Std.isOfType(targetState, TitleState))
     {
+      if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
+      var save = Save.instance.modOptions;
+      // Here we should first open the RetroTitleWarnings state if there's warnings to play based on the saved values in the save.
+      if (!titleInitialized && !save.get('retroTitleWarningsPlayed') && (!save.get('retroTitleDisclaimerLanguage') || !save.get('retroTitleDisclaimer') || !save.get('retroTitleDisclaimerSuggestive'))) {
+        save.set('retroTitleWarningsPlayed', true);
+        Save.instance.flush();
+        disableNextTransition = true;
+        FlxG.switchState(ScriptedMusicBeatState.init("RetroTitleWarnings"));
+        return;
+      }
+
       if (!titleInitialized) {
-        // make sure it resets once we reopen or reload the game (since modules stay active between states and only resets on reload.)
-        Save.instance.modOptions.set('retroTitleIntroPlayed', false);
+        // Make sure it resets once we reopen or reload the game (since modules stay active between states and only reset on reload.)
+        save.set('retroTitleIntroPlayed', false);
         Save.instance.flush();
         titleInitialized = true;
       }
-      if (FlxG.sound.music != null) FlxG.sound.music.stop();
       FlxG.switchState(ScriptedMusicBeatState.init("RetroTitleState"));
     }
     else if (Std.isOfType(targetState, MainMenuState))
@@ -47,19 +70,35 @@ class RetroUIManager extends Module
       backBg.screenCenter();
       backBg.scrollFactor.set(0, 0);
       targetState.insert(50, backBg);
+      disableNextTransition = true;
       FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+    }
+    else if (Std.isOfType(targetState, OptionsState))
+    {
+      if (FlxG.sound.music != null) FlxG.sound.music.stop();
+      var save = Save.instance.modOptions;
+      // save.set('retroTitleWarningsPlayed', null);
+      // Since the warnings are only reset once we fully reopen the game, if the player opens the options menu and doesn't have the value saved, it means he just opened the mod for the first time!
+      if (!save.get('retroTitleWarningsPlayed') && (!save.get('retroTitleDisclaimerLanguage') || !save.get('retroTitleDisclaimer') || !save.get('retroTitleDisclaimerSuggestive'))) {
+        save.set('retroTitleWarningsPlayed', true);
+        Save.instance.flush();
+        disableNextTransition = true;
+        FlxG.switchState(ScriptedMusicBeatState.init("RetroTitleWarnings"));
+        return;
+      }
     }
   }
 
-  function onStateChangeBegin(event:StateChangeScriptEvent)
+  override public function onStateChangeBegin(event:StateChangeScriptEvent)
   {
     super.onStateChangeBegin(event);
     if (!Save.instance.modOptions.get('retroCustomMenus')) return;
     var targetState = event.targetState;
 
-    if (Std.isOfType(targetState, MainMenuState))
+    if (disableNextTransition)
     {
       FlxTransitionableState.skipNextTransIn = true;
+      disableNextTransition = false;
     }
   }
 }

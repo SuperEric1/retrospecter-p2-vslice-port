@@ -60,3 +60,22 @@ options.suggestive.desc = "Quando desativado, certos detalhes/animações sugest
 
 options.custom_menus = "Menus Customizados"
 options.custom_menus.desc = "Ativa os menus customizados do mod. Desative isso se quiser os menus originais do FNF de volta."
+
+# - MISC -
+warnings.language_select.title = "SELEÇÃO DE IDIOMA"
+warnings.language_select.desc = "Selecione seu idioma preferido abaixo.\nToda a experiência do mod, incluindo <y>todos os textos<y>, <y>menus<y> e <y>diálogos<y>, será traduzida de acordo.\nSua escolha será lembrada e você sempre pode alterá-la no <y>menu de Opções<y>."
+
+warnings.generic.title = "AVISO"
+warnings.generic.desc = "Este é um port mobile <y>feito por fã<y> do mod Vs. RetroSpecter - Parte Dois: Infernadise.\nTeam Respec é dona do universo Infernadise e o mod original.\n\nInfernadise também não está vinculada a nenhuma religião ou crença real. Demônios são só legais.\n\nAlém disso, este mod contém <y>luzes/imagens piscantes<y>\n(que podem ser <y>desativadas<y> nas opções)."
+
+warnings.suggestive.title = "AVISO DE CONTEÚDO SUGESTIVO"
+warnings.suggestive.desc = "A música final da Sakuroma tem <m>poses muito sugestivas<m>, falas e elementos de fundo.\n\nVocê gostaria de <m>manter<m> estes <m>ativados<m> ou <m>desativar<m>? (Isso pode ser alterado no menu de opções a qualquer momento.)"
+warnings.button_text_keep = "MANTER ATIVO"
+warnings.button_text_disable = "DESATIVAR"
+
+warnings.continue_text = "EU ENTENDO E DESEJO CONTINUAR"
+warnings.proceed_text = "PROSSEGUIR"
+warnings.dont_show_again = "NÃO EXIBA ESTE AVISO NOVAMENTE"
+
+titlescreen.not_associated.1 = "NÃO ASSOCIADO"
+titlescreen.not_associated.2 = "COM"

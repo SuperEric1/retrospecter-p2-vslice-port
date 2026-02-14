@@ -17,9 +17,6 @@ class poisonNote extends Module {
 		super("poison");
 	}
 
-	var noteFramesUp = Paths.getSparrowAtlas('notes/PoisonNotes_up');
-	var noteFramesDown = Paths.getSparrowAtlas('notes/PoisonNotes_down');
-
 	function onCreate(event:Dynamic)
 	{
 		super.onCreate(event);
@@ -79,13 +76,13 @@ class poisonNote extends Module {
 			event.note.yOffset += -70;
 
       if (downscroll) {
-        event.note.frames = noteFramesDown;
+        event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left0' );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down0' );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up0' );
         event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right0' );
       } else {
-        event.note.frames = noteFramesUp;
+        event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_up');
         event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left0' );
         event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down0' );
         event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up0' );

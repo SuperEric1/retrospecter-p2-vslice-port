@@ -41,6 +41,8 @@ import flixel.addons.display.FlxRuntimeShader;
 import funkin.modding.base.ScriptedFlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 
+import supereric.retrospecter.modules.RetroLanguage;
+
 import funkin.ui.title.TitleState;
 
 typedef BackgroundConfig =
@@ -259,7 +261,7 @@ class RetroTitleState extends MusicBeatState
       }
     }
 
-    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width + 2, FlxG.height, FlxColor.BLACK);
+    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
     bg.screenCenter();
     bg.visible = false;
     bg.cameras = [mainCamera];
@@ -428,7 +430,7 @@ class RetroTitleState extends MusicBeatState
 
     if (FlxG.sound.music != null) Conductor.instance.update(FlxG.sound.music.time);
 
-    var pressedEnter:Bool = FlxG.keys.justPressed.ENTER;
+    var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || ((!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) && FlxG.mouse.justPressed);
     if (FlxG.onMobile) {
       if (TouchUtil.justReleased && !SwipeUtil.justSwipedAny) pressedEnter = true;
     }
@@ -451,7 +453,6 @@ class RetroTitleState extends MusicBeatState
       bumpLogo();
 
       new FlxTimer().start(2, function(tmr:FlxTimer) {
-
         moveToMainMenu();
       });
     }
@@ -596,7 +597,7 @@ class RetroTitleState extends MusicBeatState
             case 3:
               deleteCoolText();
             case 4:
-              createCoolText(['Not associated', 'with']);
+              createCoolText([RetroLanguage.t('titlescreen.not_associated.1', 'Not associated'), RetroLanguage.t('titlescreen.not_associated.2', 'with')]);
               if (team != null) {
                 team.angle = 180;
                 team.visible = true;

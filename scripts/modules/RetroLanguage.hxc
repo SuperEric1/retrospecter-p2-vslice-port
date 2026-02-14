@@ -66,11 +66,11 @@ class RetroLanguage extends Module
 
     if (!Assets.exists(translationPath))
     {
-      throw('AVISO: ' + currentLanguage + ' não encontrado. Tentando en_US.');
+      trace('AVISO: ' + currentLanguage + ' nao encontrado. Tentando en_US.');
       translationPath = Paths.txt('lang/en_US');
 
       if (!Assets.exists(translationPath)) {
-        throw('No translations found. This shouldn\'t happen!');
+        throw('[RetroLanguage] No translations found. This shouldn\'t happen!');
         isLoaded = false;
         return;
       }
@@ -105,7 +105,7 @@ class RetroLanguage extends Module
     }
     catch (e:Dynamic)
     {
-      throw('[RetroLanguage] ERRO ao ler arquivo: ' + e);
+      throw('[RetroLanguage] ERROR reading translation file: ' + e);
       isLoaded = false;
     }
   }
@@ -115,7 +115,7 @@ class RetroLanguage extends Module
    */
   private static function processEscapeChars(text:String):String
   {
-    // Otimização: Só processa se tiver barra invertida
+    // Só processa se tiver barra invertida
     if (text.indexOf('\\') == -1) return text;
     text = StringTools.replace(text, '\\n', '\n');
     text = StringTools.replace(text, '\\t', '\t');
@@ -132,7 +132,6 @@ class RetroLanguage extends Module
    */
   public static function translate(chave:String, ?chaveFallback:String):String
   {
-    // Proteção absoluta contra Null Reference
     if (translations == null) return chaveFallback != null ? chaveFallback : chave;
 
     if (translations.exists(chave)) {

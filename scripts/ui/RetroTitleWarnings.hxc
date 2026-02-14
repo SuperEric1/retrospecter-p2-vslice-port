@@ -1,0 +1,916 @@
+//package supereric.retrospecter.ui;
+
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.text.FlxTextFormat;
+import flixel.text.FlxTextFormatMarkerPair;
+import funkin.graphics.FunkinSprite;
+import funkin.graphics.FunkinCamera;
+import funkin.ui.MusicBeatState;
+import funkin.util.TouchUtil;
+import funkin.ui.title.TitleState;
+import funkin.save.Save;
+import funkin.audio.FunkinSound;
+import funkin.FunkinMemory;
+import funkin.Paths;
+
+import supereric.retrospecter.modules.RetroLanguage;
+
+class RetroTitleWarnings extends MusicBeatState
+{
+  private var DEFAULT_FONT:String = 'Kenyan Coffee Rg.otf';
+  private var TWEEN_DURATION:Float = 0.3;
+  private var SOUND_VOLUME:Float = 0.7;
+
+  private var LANGUAGES:Array<String> = [
+    "en_US", "pt_BR", "es_ES"//, "fr_FR", "de_DE", "it_IT", "ru_RU"
+  ];
+  private var LANGUAGE_NAMES:Array<String> = [
+    "English", "Português (Brasil)"//, "Español", "Français", "Deutsch", "Italiano", "Русский"
+  ];
+
+  private var COLOR_YELLOW:FlxColor = FlxColor.YELLOW;
+  private var COLOR_MAGENTA:FlxColor = FlxColor.fromString('#FF55FF');
+  private var COLOR_RED:FlxColor = FlxColor.fromString('#FF5555');
+
+  private var disclaimerQueue:Array<String> = [];
+  private var currentIndex:Int = 0;
+  private var disableInput:Bool = false;
+  private var textMarkupPairs:Array<{text:FlxText, formats:Array<FlxTextFormatMarkerPair>}> = [];
+
+  // Geral
+  private var allTexts:Array<FlxText>     = [];
+  private var allSprites:Array<FlxSprite> = [];
+  private var continueText:FlxText;
+  private var continueTextHover:FlxText;
+  private var continueTextHoverTween:FlxTween;
+  private var disclaimerSprites:Array<FunkinSprite> = [];
+  private var fadeSprite:FunkinSprite;
+
+  // CheckBox
+  private var checkboxBase:FlxSprite;
+  private var checkboxCheckmark:FlxSprite;
+  private var checkboxLabel:FlxText;
+  private var checkboxLabelHover:FlxText;
+  private var checkboxLabelTween:FlxTween;
+  private var checkboxVisible:Bool = false;
+  private var checkboxChecked:Bool = false;
+  private var checkboxX:Float = 0;
+  private var checkboxY:Float = 0;
+
+  // Seleção de idioma
+  private var languageTexts:Array<FlxText> = [];
+  private var selectedLanguageIndex:Int = 0;
+  private var languageTitleText:FlxText = null;
+  private var languageBodyText:FlxText = null;
+  private var langCheckBases:Array<FlxSprite> = [];
+  private var langCheckMarks:Array<FlxSprite> = [];
+  private var langItemXs:Array<Float> = [];
+  private var langItemYs:Array<Float> = [];
+  private var langRows:Int = 0;
+  private var langCols:Int = 0;
+  private var LANG_MAX_PER_COL:Int = 5;
+
+  // Conteúdo sugestivo
+  private var enableButton:FlxText;
+  private var disableButton:FlxText;
+  private var enableButtonHover:FlxText;
+  private var disableButtonHover:FlxText;
+  private var enableButtonTween:FlxTween;
+  private var disableButtonTween:FlxTween;
+  private var suggestiveEnabled:Bool = true;
+
+  public function new() {
+    super('RetroTitleWarnings');
+  }
+
+  override function create():Void {
+    super.create();
+
+    var bg = FunkinSprite.create(0, 0);
+    bg.makeSolidColor(FlxG.width, FlxG.height, FlxColor.BLACK);
+    add(bg);
+
+    if ((!FlxG.onMobile) || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice) && FlxG.mouse.cursor != null) {
+      FlxG.mouse.visible = true;
+      FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
+    }
+
+    setupDisclaimerQueue();
+    showNextDisclaimer();
+
+    FunkinMemory.cacheSound(Paths.sound('confirmMenu'));
+  }
+
+  private function setupDisclaimerQueue():Void {
+    var save = Save.instance.modOptions;
+    disclaimerQueue = [];
+
+    if (!save.get('retroTitleDisclaimerLanguage')) disclaimerQueue.push('language');
+    if (!save.get('retroTitleDisclaimer')) disclaimerQueue.push('general');
+    if (!save.get('retroTitleDisclaimerSuggestive')) disclaimerQueue.push('suggestive');
+
+    if (disclaimerQueue.length == 0) goToTitleState();
+  }
+
+  private function showNextDisclaimer():Void {
+    if (currentIndex >= disclaimerQueue.length) {
+      goToTitleState();
+      return;
+    }
+
+    clearUI();
+
+    var disclaimerType = disclaimerQueue[currentIndex++];
+    disableInput = true;
+    continueText = null;
+
+    fadeSprite = FunkinSprite.create(0, 0);
+    fadeSprite.makeSolidColor(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
+    fadeSprite.alpha = 0;
+
+    switch (disclaimerType) {
+      case 'language': showLanguageDisclaimer();
+      case 'general': showGeneralDisclaimer();
+      case 'suggestive': showSuggestiveDisclaimer();
+    }
+
+    add(fadeSprite);
+    allSprites.push(fadeSprite);
+  }
+
+  private function proceed():Void {
+    if (currentIndex <= 0 || currentIndex > disclaimerQueue.length) return;
+
+    var disclaimerType = disclaimerQueue[currentIndex - 1];
+    var save = Save.instance.modOptions;
+
+    switch (disclaimerType) {
+      case 'language':
+        save.set('retroLanguage', LANGUAGES[selectedLanguageIndex]);
+        save.set('retroTitleDisclaimerLanguage', true);
+
+      case 'general':
+        if (checkboxChecked) save.set('retroTitleDisclaimer', true);
+
+      case 'suggestive':
+        save.set('retroSuggestive', suggestiveEnabled);
+        if (checkboxChecked) save.set('retroTitleDisclaimerSuggestive', true);
+    }
+
+    Save.instance.flush();
+    //FunkinSound.playOnce(Paths.sound('confirmMenu'), SOUND_VOLUME);
+    showNextDisclaimer();
+  }
+
+  private function proceedIn(time):Void {
+    new FlxTimer().start(time, function(tmr:FlxTimer) {
+      proceed();
+    });
+  }
+
+  private function goToTitleState():Void {
+    FlxG.switchState(new TitleState());
+  }
+
+  // Avisos
+
+  private function showLanguageDisclaimer():Void {
+    RetroLanguage.updateLanguage('en_US'); // Forçar inglês
+
+    fadeSprite.alpha = 1;
+    FlxTween.tween(fadeSprite, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+    selectedLanguageIndex = 0;
+
+    languageTitleText = addTitle(RetroLanguage.t('warnings.language_select.title', 'LANGUAGE SELECTION'), 55, 70, FlxColor.WHITE);
+    languageTitleText.alpha = 0;
+    FlxTween.tween(languageTitleText, {alpha: 1}, 0.4, {startDelay: 0.1, ease: FlxEase.quadIn});
+
+    var body = RetroLanguage.t('warnings.language_select.desc');
+    languageBodyText = createBodyText(0, languageTitleText.y + languageTitleText.height + 10, 0, body, 27);
+    add(languageBodyText);
+    allTexts.push(languageBodyText);
+
+    var n = LANGUAGES.length;
+    langCols = (n <= LANG_MAX_PER_COL) ? 1 : Math.ceil(n / LANG_MAX_PER_COL);
+    langRows = Math.ceil(n / langCols);
+
+    var itemH:Float = 56;
+    var colW:Float = 300;
+    var checkSize:Int = 25;
+    var innerSize:Int = checkSize + 3;
+    var gap:Float = 10;
+    var fontSize:Int = 45;
+
+    var totalW = langCols * colW;
+    var startX = (FlxG.width - totalW) / 2;
+    var startY = (FlxG.height - (langRows * itemH)) / 2 + 25;
+
+    // Centraliza verticalmente colunas que têm menos items que a maior
+    var colOffsetY:Array<Float> = [];
+    for (c in 0...langCols) {
+      var itemsInCol = Std.int(Math.min(langRows, n - c * langRows));
+      colOffsetY.push(((langRows - itemsInCol) * itemH) / 2);
+    }
+
+    langCheckBases = [];
+    langCheckMarks = [];
+    langItemXs = [];
+    langItemYs = [];
+    languageTexts = [];
+
+    var animOffY:Float = 45;
+
+    for (i in 0...n) {
+      var col = Std.int(i / langRows);
+      var row = i % langRows;
+      var itemX = startX + col * colW;
+      var itemY = startY + colOffsetY[col] + row * itemH;
+      var isSelected:Bool = (i == 0);
+
+      var lText = new FlxText(itemX, itemY, 0, LANGUAGE_NAMES[i]);
+      lText.setFormat(Paths.font(DEFAULT_FONT), fontSize,
+        isSelected ? COLOR_YELLOW : FlxColor.WHITE,
+        "left", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+      lText.borderSize = 2;
+      lText.alpha = 0;
+      add(lText);
+      allTexts.push(lText);
+      languageTexts.push(lText);
+
+      var cBase = FunkinSprite.create(0, 0, 'ui/menu/circle');
+      cBase.setGraphicSize(checkSize);
+      cBase.updateHitbox();
+      lText.x += (cBase.width / 2);
+      cBase.x = lText.x - cBase.width - gap;
+      cBase.y = lText.y + lText.height / 2 - cBase.height / 2;
+      cBase.alpha = 0;
+      add(cBase);
+      allSprites.push(cBase);
+      langCheckBases.push(cBase);
+      var cMark = FunkinSprite.create(0, 0, 'ui/menu/circleBlack');
+      cMark.setGraphicSize(innerSize);
+      cMark.updateHitbox();
+      cMark.x = cBase.x + cBase.width  / 2 - cMark.width  / 2;
+      cMark.y = cBase.y + cBase.height / 2 - cMark.height / 2;
+      cMark.alpha   = 0;
+      cMark.visible = isSelected;
+      add(cMark);
+      allSprites.push(cMark);
+      langCheckMarks.push(cMark);
+
+      var finalTextY:Float = lText.y;
+      var finalBaseY:Float = cBase.y;
+      var finalMarkY:Float = cMark.y;
+
+      langItemXs.push(cBase.x);
+      langItemYs.push(itemY);
+
+      // Aplicar offset
+      lText.y += animOffY;
+      cBase.y += animOffY;
+      cMark.y += animOffY;
+
+      // Anim de entrada
+      var delay:Float = i * 0.065 + 0.3;
+      var targetAlpha:Float = isSelected ? 1.0 : 0.55;
+
+      FlxTween.tween(cBase,  {alpha: targetAlpha, y: finalBaseY}, 0.38, {startDelay: delay, ease: FlxEase.backOut});
+      FlxTween.tween(lText,  {alpha: targetAlpha, y: finalTextY}, 0.38, {startDelay: delay, ease: FlxEase.backOut});
+      if (isSelected)
+        FlxTween.tween(cMark, {alpha: 1.0, y: finalMarkY}, 0.38, {startDelay: delay, ease: FlxEase.backOut});
+      else
+        FlxTween.tween(cMark, {y: finalMarkY}, 0.38, {startDelay: delay, ease: FlxEase.backOut});
+    }
+
+    createContinueText(FlxG.height - 120, RetroLanguage.t('warnings.proceed_text'));
+    continueText.alpha = 0;
+    continueTextHover.alpha = 0;
+    var allInDelay:Float = (n - 1) * 0.065 + 0.3 + 0.38 + 0.12;
+    FlxTween.tween(continueText, {alpha: 1}, 0.3, {
+      startDelay: allInDelay,
+      ease: FlxEase.quadIn,
+      onComplete: function(_) { disableInput = false; }
+    });
+  }
+
+  private function proceedLanguageDisclaimer():Void {
+    disableInput = true;
+    var n = LANGUAGES.length;
+
+    if (continueText != null) {
+      FlxTween.cancelTweensOf(continueText);
+      FlxTween.tween(continueText, {alpha: 0}, 0.18, {ease: FlxEase.quadIn});
+    }
+    if (continueTextHover != null) {
+      FlxTween.cancelTweensOf(continueTextHover);
+      FlxTween.tween(continueTextHover, {alpha: 0}, 0.18, {ease: FlxEase.quadIn});
+    }
+
+    // idiomas não selecionados são animados primeiro
+    var fadeDelay:Float = 0;
+    for (i in 0...n) {
+      if (i == selectedLanguageIndex) continue;
+      var d = fadeDelay;
+      fadeDelay += 0.032;
+      if (i < languageTexts.length  && languageTexts[i]  != null)
+        FlxTween.tween(languageTexts[i],  {alpha: 0, y: languageTexts[i].y  - 20}, 0.2, {startDelay: d, ease: FlxEase.quadIn});
+      if (i < langCheckBases.length && langCheckBases[i] != null)
+        FlxTween.tween(langCheckBases[i], {alpha: 0, y: langCheckBases[i].y - 20}, 0.2, {startDelay: d, ease: FlxEase.quadIn});
+      if (i < langCheckMarks.length && langCheckMarks[i] != null && langCheckMarks[i].visible)
+        FlxTween.tween(langCheckMarks[i], {alpha: 0}, 0.2, {startDelay: d, ease: FlxEase.quadIn});
+    }
+
+    // tempo para o último item não-selecionado terminar de sair
+    var highlightStart:Float = (n > 1) ? (n - 2) * 0.032 + 0.22 : 0.1;
+
+    // então, animar o idioma selecionado
+    var sel = selectedLanguageIndex;
+    var selText = (sel < languageTexts.length)  ? languageTexts[sel]  : null;
+    var selBase = (sel < langCheckBases.length) ? langCheckBases[sel] : null;
+    var selMark = (sel < langCheckMarks.length) ? langCheckMarks[sel] : null;
+
+    if (selText != null) {
+      FlxTween.tween(selText, {x: selText.x + (selText.width / 4)}, 0.5, {ease: FlxEase.expoOut});
+      FlxTween.tween(selText, {alpha: 1}, 0.08, {startDelay: highlightStart, onComplete: function(_) {
+        FunkinSound.playOnce(Paths.sound('confirmMenu'), SOUND_VOLUME);
+      }});
+      if (selBase != null) FlxTween.tween(selBase, {alpha: 1}, 0.08, {startDelay: highlightStart});
+
+      FlxTween.tween(selText.scale,  {x: 1.25, y: 1.25}, 0.24, {startDelay: highlightStart, ease: FlxEase.backOut});
+      if (selBase != null) FlxTween.tween(selBase.scale,  {x: 1.45, y: 1.45}, 0.24, {startDelay: highlightStart, ease: FlxEase.backOut});
+      if (selMark != null && selMark.visible) {
+        FlxTween.tween(selMark.scale, {x: 1.25, y: 1.25}, 0.24, {startDelay: highlightStart, ease: FlxEase.backOut});
+      }
+
+      // Contrair
+      FlxTween.tween(selText.scale,  {x: 1.15, y: 1.15}, 0.34, {startDelay: highlightStart + 0.27, ease: FlxEase.quadOut});
+      if (selBase != null) FlxTween.tween(selBase.scale,  {x: 1.15, y: 1.15}, 0.34, {startDelay: highlightStart + 0.27, ease: FlxEase.quadOut});
+
+      new FlxTimer().start(highlightStart + 0.06, function(_) {
+        if (selText != null) selText.color = FlxColor.fromString('#b8ff66');
+      });
+    }
+
+    var blackFadeStart:Float = highlightStart + 0.5;
+    FlxTween.tween(fadeSprite, {alpha: 1}, 1, {
+      startDelay: blackFadeStart,
+      ease: FlxEase.quadIn,
+      onComplete: function(_) { proceedIn(0.5); }
+    });
+  }
+
+  private function showGeneralDisclaimer():Void {
+    disableInput = true;
+    fadeSprite.alpha = 1;
+    FlxTween.tween(fadeSprite, {alpha: 0}, 1, { ease: FlxEase.quadIn });
+
+    var title = addTitle(RetroLanguage.t('warnings.generic.title'), 50, 72, FlxColor.RED);
+
+    var body = RetroLanguage.t('warnings.generic.desc');
+    var bodyText = createBodyText(0, 200, 0, body, 27);
+
+    var baseSize = 220;
+    var retro = FunkinSprite.create(FlxG.width / 2 + 160, 0, 'ui/disclaimer/retrodisclaimer');
+    retro.setGraphicSize(baseSize);
+    disclaimerSprites.push(retro);
+    disclaimerSprites.push(FunkinSprite.create(retro.x + 210, retro.y + 20, 'ui/disclaimer/wifedisclaimer'));
+    disclaimerSprites[1].setGraphicSize(baseSize + 10);
+    disclaimerSprites.push(FunkinSprite.create(retro.x + 210, retro.y + 300, 'ui/disclaimer/izzydisclaimer'));
+    disclaimerSprites[2].setGraphicSize(baseSize + 30);
+
+    var atro = FunkinSprite.create(FlxG.width / 2 - 380, 0, 'ui/disclaimer/atrodisclaimer');
+    atro.setGraphicSize(baseSize + 10);
+    disclaimerSprites.push(FunkinSprite.create(atro.x - 250, atro.y + 300, 'ui/disclaimer/dozydisclaimer'));
+    disclaimerSprites[3].setGraphicSize(baseSize + 30);
+    disclaimerSprites.push(FunkinSprite.create(atro.x - 222, atro.y - 3, 'ui/disclaimer/insatiandisclaimer'));
+    disclaimerSprites[4].setGraphicSize(baseSize + 70);
+    disclaimerSprites.push(atro);
+
+    var baseDelay = 0.3;
+    for (sprite in disclaimerSprites) {
+      var i = disclaimerSprites.indexOf(sprite);
+
+      sprite.antialiasing = false;
+      sprite.alpha = 0;
+      add(sprite);
+      allSprites.push(sprite);
+
+      FlxTween.tween(sprite, {alpha: 1}, 0.4, { startDelay: i * 0.2 + baseDelay, ease: FlxEase.quadIn });
+    }
+
+    title.alpha = 0;
+    bodyText.alpha = 0;
+
+    add(bodyText);
+    allTexts.push(bodyText);
+
+    FlxTween.tween(title, {alpha: 1}, 0.3, { ease: FlxEase.quadIn });
+    FlxTween.tween(bodyText, {alpha: 1}, 0.3, { ease: FlxEase.quadIn });
+
+    createContinueText(bodyText.y + bodyText.height + 50);
+    createCheckbox(continueText.y + continueText.height + 5);
+
+    var otherTextDelay = 1.6;
+    continueText.alpha = 0;
+    checkboxLabel.alpha = 0;
+    checkboxBase.alpha = 0;
+    checkboxCheckmark.alpha = 0;
+    FlxTween.tween(continueText, {alpha: 1}, 0.3, { startDelay: otherTextDelay, ease: FlxEase.quadIn, onComplete: function(_) {
+      disableInput = false;
+    }});
+    FlxTween.tween(checkboxLabel, {alpha: 1}, 0.3, { startDelay: otherTextDelay + 0.5, ease: FlxEase.quadIn });
+    FlxTween.tween(checkboxBase, {alpha: 1}, 0.3, { startDelay: otherTextDelay + 0.5, ease: FlxEase.quadIn });
+    FlxTween.tween(checkboxCheckmark, {alpha: 1}, 0.3, { startDelay: otherTextDelay + 0.5, ease: FlxEase.quadIn });
+  }
+
+  private function proceedGeneralDisclaimer():Void {
+    disableInput = true;
+    var tweenTime = 0.5;
+    var easing:FlxEase = FlxEase.quadIn;
+
+    FlxTween.tween(fadeSprite, {alpha: 1}, tweenTime + 0.5, { ease: FlxEase.quadOut, onComplete: function(_) {
+      proceed();
+    }});
+
+    FlxTween.tween(disclaimerSprites[0], {y: -disclaimerSprites[0].height * 2}, tweenTime, { ease: easing });
+    FlxTween.tween(disclaimerSprites[1], {x: FlxG.width + disclaimerSprites[1].width, y: -disclaimerSprites[1].height}, 0.3, { ease: easing });
+    FlxTween.tween(disclaimerSprites[2], {x: FlxG.width + disclaimerSprites[1].width}, tweenTime, { ease: easing });
+
+    FlxTween.tween(disclaimerSprites[3], {x: (FlxG.width + disclaimerSprites[1].width) * -1}, tweenTime, { ease: easing });
+    FlxTween.tween(disclaimerSprites[4], {x: (FlxG.width + disclaimerSprites[1].width) * -1, y: -disclaimerSprites[4].height}, tweenTime, { ease: easing });
+    FlxTween.tween(disclaimerSprites[5], {y: -disclaimerSprites[0].height * 2}, tweenTime, { ease: easing });
+
+  }
+
+  private function showSuggestiveDisclaimer():Void {
+    var title = addTitle(RetroLanguage.t('warnings.suggestive.title', 'SUGGESTIVE CONTENT WARNING'), 50, 72, COLOR_MAGENTA);
+
+    var body = RetroLanguage.t('warnings.suggestive.desc');
+
+    var bodyText = createBodyText(0, 180, 0, body, 30);
+
+    var tweenTime:Float = 1.3;
+    var saku = FunkinSprite.create(0, FlxG.height, 'ui/disclaimer/sakudisclaimer');
+    saku.setGraphicSize(1200);
+    saku.updateHitbox();
+    saku.screenCenter(0x01);
+    saku.y += saku.height;
+    saku.antialiasing = false;
+    add(saku);
+    allSprites.push(saku);
+    disclaimerSprites.push(saku);
+
+    var hearts = FunkinSprite.create(0, FlxG.height, 'ui/disclaimer/hearts');
+    hearts.screenCenter(0x01);
+    //hearts.setGraphicSize(1000);
+    hearts.y -= hearts.height - 5;
+    hearts.alpha = 0;
+    hearts.antialiasing = false;
+    add(hearts);
+    disclaimerSprites.push(hearts);
+    allSprites.push(hearts);
+
+    FlxTween.tween(saku, {y: FlxG.height - (saku.height * 0.8)}, tweenTime, { ease: FlxEase.elasticInOut });
+    FlxTween.tween(hearts, {alpha: 1}, 0.3, { startDelay: tweenTime + 0.1, ease: FlxEase.quadIn });
+
+    title.alpha = 0;
+    bodyText.alpha = 0;
+    add(bodyText);
+    allTexts.push(bodyText);
+
+    createChoiceButtons(bodyText.y + bodyText.height + 50);
+    createCheckbox(enableButton.y + enableButton.height + 5);
+    enableButton.alpha = 0;
+    disableButton.alpha = 0;
+    checkboxLabel.alpha = 0;
+    checkboxBase.alpha = 0;
+    checkboxCheckmark.alpha = 0;
+    var startAt = tweenTime + 1.4;
+    FlxTween.tween(title, {alpha: 1}, 0.3, { startDelay: startAt - 0.4, ease: FlxEase.quadIn });
+    FlxTween.tween(bodyText, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn, onComplete: function(_) {
+      disableInput = false;
+    }});
+    FlxTween.tween(enableButton, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn });
+    FlxTween.tween(disableButton, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn });
+    FlxTween.tween(checkboxLabel, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn });
+    FlxTween.tween(checkboxBase, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn });
+    FlxTween.tween(checkboxCheckmark, {alpha: 1}, 0.1, { startDelay: startAt, ease: FlxEase.quadIn });
+  }
+
+  private function proceedSuggestiveDisclaimer():Void {
+    disableInput = true;
+    var tweenTime = 1.2;
+    var easing:FlxEase = FlxEase.elasticInOut;
+
+    FlxTween.tween(fadeSprite, {alpha: 1}, 0.4, { startDelay: tweenTime, ease: FlxEase.quadOut, onComplete: function(_) {
+      proceed();
+    }});
+
+    FlxTween.tween(disclaimerSprites[0], {y: FlxG.height + 100}, tweenTime, { ease: easing });
+    FlxTween.tween(disclaimerSprites[1], {y: FlxG.height + 100}, tweenTime, { ease: easing });
+  }
+
+  private function addTitle(label:String, y:Float, size:Int, color:FlxColor):FlxText {
+    var title = new FlxText(0, y, FlxG.width, label);
+    title.setFormat(Paths.font(DEFAULT_FONT), size, color, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    title.borderSize = 3;
+    add(title);
+    allTexts.push(title);
+    return title;
+  }
+
+  private function createBodyText(x:Float, y:Float, width:Float, text:String, size:Int = 24, align:String):FlxText {
+    var result = new FlxText(x, y, width == 0 ? FlxG.width : width, "");
+    result.setFormat(Paths.font(DEFAULT_FONT), size, FlxColor.WHITE, align != null ? align : "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    result.borderSize = 2;
+    if (x == 0) result.screenCenter(0x01);
+
+    var markupFormats:Array<FlxTextFormatMarkerPair> = [
+      new FlxTextFormatMarkerPair(new FlxTextFormat(COLOR_YELLOW), '<y>'),
+      new FlxTextFormatMarkerPair(new FlxTextFormat(COLOR_MAGENTA), '<m>'),
+      new FlxTextFormatMarkerPair(new FlxTextFormat(COLOR_RED), '<r>'),
+      new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.CYAN), '<c>'),
+      new FlxTextFormatMarkerPair(new FlxTextFormat(FlxColor.LIME), '<g>'),
+    ];
+
+    // Registrar par de texto e formatação no array
+    textMarkupPairs.push({text: result, formats: markupFormats});
+
+    result.applyMarkup(text, markupFormats);
+    return result;
+  }
+
+  private function updateMarkup(textObj:FlxText, newText:String):Void {
+    if (textObj == null) return;
+
+    // Procurar a formatação registrada pra este texto
+    for (pair in textMarkupPairs) {
+      if (pair.text == textObj) {
+        textObj.text = "";
+        textObj.applyMarkup(newText, pair.formats);
+        return;
+      }
+    }
+
+    // Se não encontrar no array, apenas atualiza o texto
+    textObj.text = newText;
+  }
+
+  private function createCheckbox(yPos:Float, ?text):Void {
+    checkboxVisible = true;
+    checkboxChecked = false;
+    checkboxY = yPos;
+
+    checkboxLabel = new FlxText(0, checkboxY + 5, 0, RetroLanguage.t('warnings.dont_show_again'));
+    checkboxLabel.setFormat(Paths.font(DEFAULT_FONT), 35, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    checkboxLabel.screenCenter(0x01);
+    checkboxLabel.borderSize = 1.5;
+    add(checkboxLabel);
+    allTexts.push(checkboxLabel);
+
+    checkboxBase = FunkinSprite.create(0, checkboxY, 'ui/menu/circle');
+    //checkboxBase.makeGraphic(32, 32, FlxColor.WHITE);
+    checkboxBase.setGraphicSize(24);
+    checkboxLabel.x += (checkboxBase.width / 2);
+    checkboxBase.x = checkboxLabel.x - checkboxBase.width;
+    checkboxBase.y = checkboxLabel.y + (checkboxLabel.height / 2) - (checkboxBase.height / 2);
+    //checkboxBase.antialiasing = false;
+    add(checkboxBase);
+    allSprites.push(checkboxBase);
+    checkboxX = checkboxBase.x;
+
+    checkboxCheckmark = FunkinSprite.create(0, checkboxY, 'ui/menu/circleBlack');
+    //checkboxCheckmark.makeGraphic(32, 32, FlxColor.GREEN);
+    checkboxCheckmark.setGraphicSize(24);
+    checkboxCheckmark.x = checkboxBase.x + (checkboxBase.width / 2) - (checkboxCheckmark.width / 2);
+    checkboxCheckmark.y = checkboxBase.y + (checkboxBase.height / 2) - (checkboxCheckmark.height / 2);
+    checkboxCheckmark.visible = false;
+    add(checkboxCheckmark);
+    allSprites.push(checkboxCheckmark);
+
+    checkboxLabelHover = new FlxText(checkboxLabel.x, checkboxLabel.y, 0, checkboxLabel.text);
+    checkboxLabelHover.setFormat(Paths.font(DEFAULT_FONT), 35, FlxColor.BLACK, "center", FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+    checkboxLabelHover.borderSize = 1.5;
+    checkboxLabelHover.alpha = 0;
+    add(checkboxLabelHover);
+    allTexts.push(checkboxLabelHover);
+  }
+
+  private function createChoiceButtons(y:Float):Void {
+    var buttonY = y;
+
+    enableButton = makeButton(RetroLanguage.t('warnings.button_text_keep', 'KEEP ENABLED'), buttonY, FlxColor.WHITE, FlxColor.BLACK);
+    enableButton.screenCenter(0x01);
+
+    disableButton = makeButton(RetroLanguage.t('warnings.button_text_disable', 'DISABLE'), buttonY, FlxColor.WHITE, FlxColor.BLACK);
+    disableButton.screenCenter(0x01);
+
+    var padding:Float = 30;
+    enableButton.x -= disableButton.width - padding;
+    disableButton.x = enableButton.x + enableButton.width + (disableButton.width / 2);
+
+    enableButtonHover = makeButton(enableButton.text, buttonY, FlxColor.fromString('#9d239f'), FlxColor.WHITE);
+    enableButtonHover.x = enableButton.x;
+    enableButtonHover.alpha = 0;
+
+    disableButtonHover = makeButton(disableButton.text, buttonY, FlxColor.fromString('#9d239f'), FlxColor.WHITE);
+    disableButtonHover.x = disableButton.x;
+    disableButtonHover.alpha = 0;
+
+    suggestiveEnabled = true;
+  }
+
+  private function makeButton(label:String, y:Float, color:FlxColor, borderColor:FlxColor):FlxText {
+    var btn = new FlxText(0, y, 0, label);
+    btn.setFormat(Paths.font(DEFAULT_FONT), 55, color, "center", FlxTextBorderStyle.OUTLINE, borderColor);
+    btn.borderSize = 3;
+    add(btn);
+    allTexts.push(btn);
+    return btn;
+  }
+
+  private function createContinueText(y:Float, ?label:String):Void {
+    continueText = new FlxText(0, y, FlxG.width, label == null ? RetroLanguage.t('warnings.continue_text', 'CONTINUE') : label);
+    continueText.setFormat(Paths.font(DEFAULT_FONT), 52, FlxColor.WHITE, "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    continueText.borderSize = 2;
+    add(continueText);
+    allTexts.push(continueText);
+
+    continueTextHover = new FlxText(continueText.x, continueText.y, continueText.fieldWidth, continueText.text);
+    continueTextHover.setFormat(Paths.font(DEFAULT_FONT), 52, FlxColor.BLACK, "center", FlxTextBorderStyle.OUTLINE, FlxColor.WHITE);
+    continueTextHover.borderSize = 2;
+    continueTextHover.alpha = 0;
+    add(continueTextHover);
+    allTexts.push(continueTextHover);
+  }
+
+  private function clearUI():Void {
+    for (text in allTexts) {
+      if (text != null) {
+        FlxTween.cancelTweensOf(text);
+        remove(text);
+        text.destroy(); }
+    }
+    allTexts = [];
+
+    for (sprite in allSprites) {
+      if (sprite != null) {
+        FlxTween.cancelTweensOf(sprite);
+        remove(sprite);
+        sprite.destroy();
+      }
+    }
+    allSprites = [];
+    disclaimerSprites = [];
+
+    checkboxBase = null;
+    checkboxCheckmark = null;
+    checkboxLabel = null;
+    checkboxVisible = false;
+    checkboxChecked = false;
+
+    langCheckBases = [];
+    langCheckMarks = [];
+    langItemXs = [];
+    langItemYs = [];
+    languageTexts = [];
+  }
+
+  override function update(elapsed:Float):Void {
+    super.update(elapsed);
+    if (disableInput) return;
+
+    var accepted:Bool = controls.ACCEPT;
+    var back:Bool = controls.BACK;
+
+    if (FlxG.keys.justPressed.ENTER) accepted = true;
+
+    if (!accepted && FlxG.keys.justPressed.HOME) {
+      currentIndex = disclaimerQueue.length;
+      proceed();
+      return;
+    }
+
+    if (accepted) {
+      if (currentIndex > 0) {
+        switch (disclaimerQueue[currentIndex - 1]) {
+          case 'language': proceedLanguageDisclaimer();
+          case 'general': proceedGeneralDisclaimer();
+          case 'suggestive': proceedSuggestiveDisclaimer();
+          default: proceed();
+        }
+      }
+      return;
+    }
+
+    if (currentIndex > 0) {
+      switch (disclaimerQueue[currentIndex - 1]) {
+        case 'language':   updateLanguageInput();
+        case 'suggestive': updateSuggestiveInput();
+      }
+    }
+
+    updateCheckboxInteraction();
+    updateContinueInteraction();
+
+    if (checkboxVisible && FlxG.keys.justPressed.SPACE) toggleCheckbox();
+  }
+
+  private function updateLanguageInput():Void {
+    var n = LANGUAGES.length;
+
+    var moveUp    = controls.UI_UP_P || FlxG.keys.justPressed.W;
+    var moveDown  = controls.UI_DOWN_P || FlxG.keys.justPressed.S;
+    var moveLeft  = controls.UI_LEFT_P || FlxG.keys.justPressed.A;
+    var moveRight = controls.UI_RIGHT_P || FlxG.keys.justPressed.D;
+
+    var newIdx = selectedLanguageIndex;
+
+    if (moveUp) newIdx = (selectedLanguageIndex - 1 + n) % n;
+    if (moveDown) newIdx = (selectedLanguageIndex + 1) % n;
+
+    if (langCols > 1) {
+      if (moveLeft && newIdx == selectedLanguageIndex) {
+        newIdx = selectedLanguageIndex - langRows;
+        if (newIdx < 0) newIdx += n;
+        if (newIdx >= n) newIdx = n - 1;
+      }
+      if (moveRight && newIdx == selectedLanguageIndex) {
+        newIdx = selectedLanguageIndex + langRows;
+        if (newIdx >= n) newIdx -= n;
+      }
+    } else {
+      if (moveLeft && newIdx == selectedLanguageIndex) newIdx = (selectedLanguageIndex - 1 + n) % n;
+      if (moveRight && newIdx == selectedLanguageIndex) newIdx = (selectedLanguageIndex + 1) % n;
+    }
+
+    if (newIdx != selectedLanguageIndex) changeLanguage(newIdx);
+
+    if (FlxG.mouse.justPressed || (FlxG.onMobile && TouchUtil.justPressed)) {
+      for (i in 0...n) {
+        if (isOverLangItem(i)) {
+          if (i != selectedLanguageIndex) changeLanguage(i);
+          break;
+        }
+      }
+    }
+  }
+
+  // Verifica se o cursor/toque está sobre a área do item de idioma i.
+  private function isOverLangItem(i:Int):Bool {
+    if (i >= langItemXs.length || i >= languageTexts.length || languageTexts[i] == null) return false;
+
+    var checkW:Float = (i < langCheckBases.length && langCheckBases[i] != null) ? langCheckBases[i].width : 26;
+    var iw:Float = checkW + 10 + languageTexts[i].width + 10;
+    var ih:Float = 56;
+    var input = (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) ? TouchUtil.touch : FlxG.mouse;
+
+    return input.x >= langItemXs[i] && input.x <= langItemXs[i] + iw
+        && input.y >= langItemYs[i] && input.y <= langItemYs[i] + ih;
+  }
+
+  private function updateSuggestiveInput():Void {
+    if (justClicked(enableButton)) {
+      suggestiveEnabled = true;
+      proceedSuggestiveDisclaimer();
+    } else if (justClicked(disableButton)) {
+      suggestiveEnabled = false;
+      proceedSuggestiveDisclaimer();
+    }
+
+    enableButtonTween = tweenButtonAlpha(enableButton, enableButtonHover, enableButtonTween);
+    disableButtonTween = tweenButtonAlpha(disableButton, disableButtonHover, disableButtonTween);
+  }
+
+  private function updateCheckboxInteraction():Void {
+    if (!checkboxVisible) return;
+
+    var isHoveringCheck = isOverCheckbox();
+    var targetAlpha:Float = isHoveringCheck ? 1.0 : 0.0;
+
+    if (checkboxLabelHover.alpha != targetAlpha) {
+      if (checkboxLabelTween != null) checkboxLabelTween.cancel();
+      checkboxLabelTween = FlxTween.tween(checkboxLabelHover, {alpha: targetAlpha}, TWEEN_DURATION, {ease: FlxEase.quartOut});
+    }
+
+    if ((FlxG.onMobile && TouchUtil.justPressed) || FlxG.mouse.justPressed) {
+      if (isHoveringCheck) {
+        toggleCheckbox();
+      }
+    }
+  }
+
+  private function toggleCheckbox():Void {
+    checkboxChecked = !checkboxChecked;
+    checkboxCheckmark.visible = checkboxChecked;
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.5);
+  }
+
+  private function updateContinueInteraction():Void {
+    if (continueText == null) return;
+
+    if (justClicked(continueText)) {
+      if (currentIndex > 0) {
+        switch (disclaimerQueue[currentIndex - 1]) {
+          case 'language': proceedLanguageDisclaimer();
+          case 'general':  proceedGeneralDisclaimer();
+          default: proceed();
+        }
+      }
+      return;
+    }
+
+    continueTextHoverTween = tweenButtonAlpha(continueText, continueTextHover, continueTextHoverTween);
+  }
+
+  private function justClicked(obj:FlxSprite):Bool {
+    if (obj == null || !obj.visible) return false;
+
+    if (FlxG.mouse.justPressed && FlxG.mouse.overlaps(obj)) return true;
+    if (FlxG.onMobile && TouchUtil.justPressed && TouchUtil.overlapsComplex(obj)) return true;
+
+    return false;
+  }
+
+  private function isHovering(sprite:FlxSprite):Bool {
+    if (sprite == null || !sprite.visible) return false;
+    return (FlxG.isMobile && TouchUtil.overlapsComplex(sprite)) || FlxG.mouse.overlaps(sprite);
+  }
+
+  private function tweenButtonAlpha(button:FlxText, hoverButton:FlxText, currentTween:FlxTween):FlxTween {
+    if (button == null || hoverButton == null) return null;
+
+    var isOver = isHovering(button);
+
+    var currentAlpha = hoverButton.alpha;
+    var targetAlpha:Float = isOver ? 1.0 : 0.0;
+
+    if (currentAlpha != targetAlpha) {
+      if (currentTween != null) currentTween.cancel();
+      return FlxTween.tween(hoverButton, {alpha: targetAlpha}, TWEEN_DURATION, {ease: FlxEase.quartOut});
+    }
+  }
+
+  private function isOverCheckbox():Bool {
+    if (!checkboxVisible) return false;
+
+    var hx = checkboxX - 10;
+    var hy = checkboxY - 10;
+    var hw = 32 + checkboxLabel.width + 60;
+    var hh = 52;
+
+    var mouse = (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) ? TouchUtil.touch : FlxG.mouse;
+
+    if (mouse.x >= hx && mouse.x <= hx + hw &&
+        mouse.y >= hy && mouse.y <= hy + hh) return true;
+
+    return false;
+  }
+
+  private function changeLanguage(newIndex:Int):Void {
+    selectedLanguageIndex = newIndex;
+    updateLanguageDisplay();
+
+    RetroLanguage.updateLanguage(LANGUAGES[selectedLanguageIndex]);
+
+    if (languageTitleText != null) {
+      languageTitleText.text = RetroLanguage.t('warnings.language_select.title', 'SELECT YOUR LANGUAGE');
+    }
+    if (languageBodyText != null) {
+      updateMarkup(languageBodyText, RetroLanguage.t('warnings.language_select.desc'));
+    }
+    if (continueText != null) {
+      continueText.text = RetroLanguage.t('warnings.proceed_text');
+      if (continueTextHover != null) continueTextHover.text = RetroLanguage.t('warnings.proceed_text');
+    }
+
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), SOUND_VOLUME);
+  }
+
+  private function updateLanguageDisplay():Void {
+    for (i in 0...LANGUAGES.length) {
+      if (i >= languageTexts.length || languageTexts[i] == null) continue;
+      var isSelected:Bool   = (i == selectedLanguageIndex);
+      var targetAlpha:Float = isSelected ? 1.0 : 0.55;
+
+      languageTexts[i].color = isSelected ? COLOR_YELLOW : FlxColor.WHITE;
+      languageTexts[i].alpha = targetAlpha;
+
+      if (i < langCheckBases.length && langCheckBases[i] != null)
+        langCheckBases[i].alpha = targetAlpha;
+
+      if (i < langCheckMarks.length && langCheckMarks[i] != null) {
+        langCheckMarks[i].visible = isSelected;
+        langCheckMarks[i].alpha   = isSelected ? 1.0 : 0.0;
+      }
+    }
+  }
+}
