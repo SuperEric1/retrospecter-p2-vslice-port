@@ -122,10 +122,10 @@ class RetroPlayState extends Module {
 
   var hurtNoteVibration:VibrationPreset =
   {
-    period: 0.2,
+    period: 0,
     duration: 0.2,
-    amplitude: 1,
-    sharpness: 1
+    amplitude: 0.7,
+    sharpness: 0
   };
 
   override function onCountdownStart(event:CountdownScriptEvent):Void
