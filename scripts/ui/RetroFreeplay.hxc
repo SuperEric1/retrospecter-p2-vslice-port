@@ -259,7 +259,7 @@ class RetroFreeplay extends Module {
           trace('curBgImage: ' + curBgImage);
           if (targetImg != null && targetImg != curBgImage) {
             curBgImage = targetImg;
-            freeplayState.backingImage.loadTextureAsync(Paths.image(targetImg));
+            freeplayState.backingImage.loadGraphic(Paths.image(targetImg));
             FlxTween.cancelTweensOf(freeplayState.backingImage);
 
             if (targetImg != styleData.getBgAssetKey()) {
