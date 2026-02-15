@@ -397,6 +397,7 @@ class RetroMainMenu extends MusicBeatState
     }
     updateLabel(null);
     idleTimer.cancel();
+    if (lastTouchedIndex != -1) HapticUtil.vibrate(0, 0.03, 0.005, 0);
     lastTouchedIndex = -1; // Reset touch state
   }
 
@@ -435,6 +436,7 @@ class RetroMainMenu extends MusicBeatState
       menuItems[i].animation.play(isThisSelected ? 'bright' : 'dark');
       if (isThisSelected) updateLabel(menuNames[i]);
       updateItemClip(i, isThisSelected);
+      HapticUtil.vibrate(0, 0.03, 0.005, 0);
     }
 
     var selected = menuItems[selectedIndex];
@@ -521,6 +523,7 @@ class RetroMainMenu extends MusicBeatState
     var callback:Dynamic = menuCallbacks[selectedIndex];
 
     FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    HapticUtil.vibrate(0, 0.045, 0.005, 0);
 
     var timerType = Preferences.flashingLights ? FlxFlicker : FlxTimer;
     var timerCallback:Dynamic = function(_:timerType) {
