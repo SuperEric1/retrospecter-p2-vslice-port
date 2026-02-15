@@ -6,6 +6,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import funkin.Preferences;
 import funkin.FunkinMemory;
 import haxe.ds.StringMap;
 import flixel.FlxG;
@@ -29,7 +30,7 @@ class RetroFreeplay extends Module {
   var defaultAlbumAngle:Float = 0.0;
 
   public function new() {
-    super('RetroFreeplay', 1000, {
+    super('RetroFreeplay', 5, {
       state: FreeplayState
     });
 
@@ -84,9 +85,30 @@ class RetroFreeplay extends Module {
 
   public override function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {
     super.onFreeplayIntroDone(event);
-
+    var freeplay:FreeplayState = FlxG.state.subState;
     isInFreeplay = true;
     cacheDefaultTexts();
+    trace('Freeplay intro done');
+
+    // initial update
+    prevSongId = '';
+    prevWeekId = '';
+    curBgImage = '';
+    if (freeplay.currentCapsule.freeplayData == null) {
+      updateBackingCardTexts('', '', '');
+      return;
+    }
+
+    var data = freeplay?.currentCapsule?.freeplayData?.idAndVariation?.split(':') ?? null;
+    var curSongId:String = data[0] ?? '';
+    var curVariation:String = data[1] ?? '';
+    var curWeekId:String = freeplay?.currentCapsule?.freeplayData?.levelId ?? '';
+
+    if (curSongId != prevSongId) {
+      updateBackingCardTexts(curSongId, curWeekId, curVariation);
+      prevSongId = curSongId;
+      prevWeekId = curWeekId;
+    }
   }
 
   public override function onFreeplayClose(event:FreeplayScriptEvent):Void {
@@ -101,9 +123,9 @@ class RetroFreeplay extends Module {
 
   function cacheDefaultTexts():Void {
     if (defaultTexts != null) return;
-    if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
+    //if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
 
-    var freeplayState:FreeplayState = FlxG.state;
+    var freeplayState:FreeplayState = FlxG.state.subState;
 
     try {
       @:privateAccess {
@@ -136,24 +158,32 @@ class RetroFreeplay extends Module {
   public override function onCapsuleSelected(event:CapsuleScriptEvent):Void {
     super.onCapsuleSelected(event);
     if (!isInFreeplay) return;
-    if (event.capsule.freeplayData == null) return;
+    if (event.capsule.freeplayData == null) {
+      updateBackingCardTexts('', '', '');
+      prevSongId = '';
+      prevWeekId = '';
+      return;
+    }
 
-    var data = event.capsule.freeplayData.idAndVariation.split(':') ?? null;
+    var data = event.capsule?.freeplayData?.idAndVariation?.split(':') ?? null;
     var curSongId:String = data[0] ?? '';
     var curVariation:String = data[1] ?? '';
-    var curWeekId:String = event.capsule.freeplayData.levelId ?? '';
+    var curWeekId:String = event.capsule?.freeplayData?.levelId ?? '';
+
+    trace(curSongId + ' - ' + curVariation + ' - ' + curWeekId);
+    trace(prevSongId + ' - ' + prevWeekId);
 
     if (curSongId != prevSongId) {
-      updateBackingCardTexts(curSongId, curVariation, curWeekId);
+      updateBackingCardTexts(curSongId, curWeekId, curVariation);
       prevSongId = curSongId;
       prevWeekId = curWeekId;
     }
   }
 
-  function updateBackingCardTexts(curSongId:String, ?variation:String, ?curWeekId:String):Void {
-    if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
+  function updateBackingCardTexts(curSongId:String, curWeekId:String, ?variation:String):Void {
+    //if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
 
-    var freeplayState:FreeplayState = FlxG.state;
+    var freeplayState:FreeplayState = FlxG.state.subState;
 
     try {
       @:privateAccess {
@@ -164,6 +194,7 @@ class RetroFreeplay extends Module {
         var customTexts:BackingCardTexts = songConfig.get(curSongId);
         if (customTexts == null && curWeekId != '' && curWeekId != null) {
           customTexts = songConfig.get(curWeekId);
+          trace('usando config da semana');
         }
 
         var textsToApply:BackingCardTexts;
@@ -186,6 +217,8 @@ class RetroFreeplay extends Module {
           textsToApply = defaultTexts;
           usingDefault = true;
         }
+        trace(customTexts);
+        trace(textsToApply);
 
         if (textsToApply != null) {
           if (textsToApply.funnyScroll != null && backingCard.funnyScroll != null && backingCard.funnyScroll.text != textsToApply.funnyScroll) backingCard.funnyScroll.updateText(textsToApply.funnyScroll);
@@ -222,6 +255,8 @@ class RetroFreeplay extends Module {
           }*/
 
           var targetImg:String = textsToApply.bgImage;
+          trace('targetImg: ' + targetImg);
+          trace('curBgImage: ' + curBgImage);
           if (targetImg != null && targetImg != curBgImage) {
             curBgImage = targetImg;
             freeplayState.backingImage.loadTextureAsync(Paths.image(targetImg));
@@ -231,8 +266,10 @@ class RetroFreeplay extends Module {
               //freeplayState.backingImage.setGraphicSize(0, FlxG.height + 1);
               FunkinMemory.cacheTexture(Paths.image(targetImg));
 
-              freeplayState.backingImage.color = -1;
-              freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+              if (Preferences.flashingLights) {
+                freeplayState.backingImage.color = -1;
+                freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+              }
               FlxTween.color(freeplayState.backingImage, 0.25, freeplayState.backingImage.color, FlxColor.fromString('#d1d1d1'), {ease: FlxEase.quadOut,
                 onUpdate: function(_) {
                   freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
@@ -257,6 +294,7 @@ class RetroFreeplay extends Module {
 
 typedef BackingCardTexts = {
   @:optional var bgColor:Int;
+  @:optional var bgImage:String;
   @:optional var funnyScroll:String;
   @:optional var moreWays:String;
   @:optional var txtNuts:String;

@@ -5,12 +5,24 @@
     "homepage": "https://github.com/SuperEric1/retrospecter-p2-vslice-port",
     "contributors": [
       {
+        "name": "Team Respec",
+        "role": "Original dev team, owns Infernadise and the original mod",
+        "url": "https://gamebanana.com/mods/317366"
+      },
+      {
         "name": "SuperEric",
-        "role": "Mod porter, programmer",
+        "role": "Port Developer",
         "url": "https://youtube.com/@super_eric"
       }
     ],
+    "metadata": {
+      "debug": "false",
+      "reset_warns": "false"
+    },
+
+    "‼ TO THE SCRIPT KIDDIES: IF THERE'S A NEW BASE GAME UPDATE, *DO NOT* REUPLOAD THIS MOD INTO GAMEBANANA, OR ELSE IT WILL BE TAKEN DOWN AS A REUPLOAD AND RULE VIOLATION. I DON'T WANT MY CODE FROM THIS MOD TO BE USED IN REUPLOADS OF IT. PLEASE WAIT FOR THE MOD TO BE UPDATED! THANKS.": true,
     "api_version": "0.8.0",
     "mod_version": "1.0.0",
+
     "license": "Apache-2.0"
 }

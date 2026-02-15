@@ -6,6 +6,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxTimerManager;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import funkin.util.HapticUtil;
@@ -66,6 +67,7 @@ class RetroTitleState extends MusicBeatState
   var curWacky:Array<String> = [];
   var lastBeat:Int = 0;
   var swagShader:ColorSwap;
+  var skipIntroTimer:FlxTimerManager;
 
   var logoTweens:Array<FlxTween> = [];
   var teamLogoTweens:Array<FlxTween> = [];
@@ -241,6 +243,12 @@ class RetroTitleState extends MusicBeatState
 
     persistentUpdate = true;
 
+    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
+    bg.screenCenter();
+    bg.visible = false;
+    bg.cameras = [mainCamera];
+    //add(bg);
+
     if (currentBgConfig != null)
     {
       bgCam.zoom = currentBgConfig.bgZoom;
@@ -261,20 +269,14 @@ class RetroTitleState extends MusicBeatState
       }
     }
 
-    var bg:FunkinSprite = new FunkinSprite(-1).makeSolidColor(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
-    bg.screenCenter();
-    bg.visible = false;
-    bg.cameras = [mainCamera];
-    //add(bg);
-
     var logoYOff = -30;
     logoRetro = new FlxSprite(0, 0);
     logoRetro.frames = Paths.getSparrowAtlas('ui/logo');
     logoRetro.animation.addByPrefix('loop', 'logo0', 24);
     logoRetro.animation.play('loop');
     logoRetro.screenCenter();
-    logoRetro.y += logoYOff;
-    logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
+    //logoRetro.y += logoYOff;
+    //logoRetro.x = (FlxG.width / 2) - (logoRetro.width / 2);
     logoRetro.updateHitbox();
     logoRetro.visible = false;
     logoRetro.cameras = [mainCamera];
@@ -298,8 +300,8 @@ class RetroTitleState extends MusicBeatState
     upFire.animation.addByPrefix('loop', 'upFire0', 24);
     upFire.animation.play('loop');
     upFire.screenCenter();
-    upFire.y += logoYOff;
-    upFire.x = (FlxG.width / 2) - (logoRetro.width / 2) - 2;
+    upFire.y = logoRetro.y;
+    upFire.x = logoRetro.x;
     upFire.updateHitbox();
     upFire.shader = flamesShaderDefault;
     //upFire.color = defaultFlameColor; // Cor do upfire muda depois de pular a intro e mostrar o bg.
@@ -309,10 +311,8 @@ class RetroTitleState extends MusicBeatState
     backFire = upFire.clone();
     backFire.animation.addByPrefix('loop', 'backFire0', 24);
     backFire.animation.play('loop');
-    backFire.screenCenter();
-    backFire.y += logoYOff;
-    backFire.x = (FlxG.width / 2) - (logoRetro.width / 2);
-    backFire.updateHitbox();
+    backFire.y = logoRetro.y;
+    backFire.x = logoRetro.x;
     backFire.shader = flamesShader;
     //backFire.color = colorR;
     backFire.visible = false;
@@ -322,8 +322,8 @@ class RetroTitleState extends MusicBeatState
     glow.animation.addByPrefix('loop', 'glow0', 1);
     glow.animation.play('loop');
     glow.screenCenter();
-    glow.y += logoYOff;
-    glow.x = (FlxG.width / 2) - (logoRetro.width / 2);
+    glow.y = logoRetro.y;
+    glow.x = logoRetro.x;
     glow.updateHitbox();
     glow.alpha = 0;
     glow.visible = false;
@@ -337,6 +337,7 @@ class RetroTitleState extends MusicBeatState
     titleText.updateHitbox();
     titleText.visible = false;
     titleText.cameras = [mainCamera];
+    titleText.alpha = 0; // i'm too lazy to remove the references from the rest of the code so we're gonna hide it this way
     add(titleText);
 
     blackScreen = bg.clone();
@@ -377,6 +378,8 @@ class RetroTitleState extends MusicBeatState
 
     if (!initialized) initialized = true;
     hasIntroStarted = true;
+
+    //if (hasPlayedIntro) skipIntro();
   }
 
   function addBg(obj:Dynamic):Void
@@ -440,23 +443,30 @@ class RetroTitleState extends MusicBeatState
     }
 
     if (pressedEnter && transitioning && skippedIntro) {
-      moveToMainMenu();
+      // it should let you skip if you spam enter but the original mod doesn't let you, so it's disabled.
+      //moveToMainMenu();
     }
 
     if (pressedEnter && !transitioning && skippedIntro)
     {
       if (FlxG.sound.music != null) FlxG.sound.music.onComplete = null;
       titleText.animation.play('press');
-      mainCamera.flash(FlxColor.WHITE, 1.8);
+      mainCamera.flash(FlxColor.WHITE, 0.7, null, true);
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
       bumpLogo();
 
-      new FlxTimer().start(2, function(tmr:FlxTimer) {
-        moveToMainMenu();
+      skipIntroTimer = new FlxTimerManager();
+      new FlxTimer(skipIntroTimer).start(1, function(tmr:FlxTimer) {
+        mainCamera.fade(0xFF000000, 0.2, false, moveToMainMenu, true);
       });
+      /*new FlxTimer(skipIntroTimer).start(2, function(tmr:FlxTimer) {
+        moveToMainMenu();
+      });*/
     }
     if (pressedEnter && !skippedIntro && initialized) skipIntro();
+
+    if (skipIntroTimer != null) skipIntroTimer.update(elapsed);
 
     /*if ((FlxG.sound.music?.volume ?? 1.0) < 0.8 && initialized) {
       FlxG.sound.music.volume += 0.5 * elapsed;
@@ -526,6 +536,10 @@ class RetroTitleState extends MusicBeatState
     {
       attractTimer.cancel();
       attractTimer = null;
+    }
+    if (skipIntroTimer != null)
+    {
+      skipIntroTimer.clear();
     }
 
     FunkinMemory.purgeCache();
@@ -724,11 +738,11 @@ class RetroTitleState extends MusicBeatState
 
   function bumpLogo():Void {
     cancelTweens();
-    var backDelay = transitioning ? 0.35 : 0;
+    var backDelay = transitioning ? 0.15 : 0;
     var crochet = (Conductor.instance.stepLengthMs * 4) / 1000;
     var objects:Array<FlxSprite> = [logoRetro, backFire, upFire, glow];
-    var baseScale:Float = 0.85;
-    var bumpScale:Float = 0.87;
+    var baseScale:Float = 1; // 0.85
+    var bumpScale:Float = 1.023; // 0.87
     for (obj in objects) {
       obj.scale.x = baseScale;
       obj.scale.y = baseScale;
@@ -737,8 +751,8 @@ class RetroTitleState extends MusicBeatState
           ease: FlxEase.quartOut,
           onComplete: function(twn:FlxTween) {
             logoTweens.push(
-              FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, crochet + backDelay, { // 0.3
-                ease: FlxEase.cubicOut
+              FlxTween.tween(obj.scale, {x: baseScale, y: baseScale}, crochet + backDelay, { // 0.35
+                ease: FlxEase.quadOut
               })
             );
           }
@@ -772,8 +786,8 @@ class RetroTitleState extends MusicBeatState
       logoRetro.visible = true;
     } else {
       hasShownShadow = false;
-      glow.alpha = 0;
-      glow.visible = false;
+      //glow.alpha = 0;
+      //glow.visible = false;
       upFire.visible = false;
     }
   }
@@ -802,6 +816,7 @@ class RetroTitleState extends MusicBeatState
       upFire.visible = true;
       backFire.visible = true;
       glow.visible = true;
+      glow.alpha = 1;
       titleText.visible = true;
       blackScreen.visible = false;
 

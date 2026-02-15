@@ -16,6 +16,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.FunkinMemory;
 import funkin.util.Constants;
 import funkin.util.TouchUtil;
+import funkin.util.HapticUtil;
 import funkin.graphics.FunkinCamera;
 import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
@@ -32,6 +33,9 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.ui.title.TitleState;
 import funkin.util.SwipeUtil;
 import StringTools;
+
+import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroSave;
 
 class RetroMainMenu extends MusicBeatState
 {
@@ -103,10 +107,9 @@ class RetroMainMenu extends MusicBeatState
 
     FlxG.keys.enabled = true;
 
-    var folderNames:Array<String> = ["retrospecter-p2-vslice-port", "retrospecter-p2-vslice-port-main"];
     var data:ModMetadata = null;
 
-    for (name in folderNames) {
+    for (name in RetroSave.folderNames) {
       if (data != null) continue;
       data = PolymodHandler.modFileSystem.getMetadata(name);
     }
@@ -207,13 +210,23 @@ class RetroMainMenu extends MusicBeatState
       FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
     }
 
+    var state = FlxG.state;
     var waterMarkText = "Vs. RetroSpecter - Part Two: Infernadise (V-SLICE)\nFan Port v" + retroV + " | FNF " + Constants.VERSION;
-    if (FlxG.state.leftWatermarkText != null && !StringTools.startsWith(FlxG.state.leftWatermarkText.text, waterMarkText)) {
+    if (state.leftWatermarkText != null && !StringTools.startsWith(FlxG.state.leftWatermarkText.text, waterMarkText)) {
       //var ogText = FlxG.state.leftWatermarkText.text;
-      FlxG.state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
-      FlxG.state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
-      FlxG.state.leftWatermarkText.text = waterMarkText;
-      FlxG.state.leftWatermarkText.y = FlxG.height - FlxG.state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
+      state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
+      state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
+      state.leftWatermarkText.text = waterMarkText;
+      state.leftWatermarkText.y = FlxG.height - state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
+    }
+    if (state.rightWatermarkText != null && RetroSave.isDebug()) {
+      state.rightWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
+      state.rightWatermarkText.size = 40;
+      state.rightWatermarkText.text = 'DEBUG BUILD';
+      state.rightWatermarkText.color = FlxColor.YELLOW;
+      state.rightWatermarkText.x = FlxG.width - state.rightWatermarkText.width - 5;
+      state.rightWatermarkText.y = FlxG.height - state.rightWatermarkText.height - 5;
+      state.rightWatermarkText.visible = true;
     }
 
     // Inicializar posição do mouse
@@ -271,7 +284,7 @@ class RetroMainMenu extends MusicBeatState
     var hitbox = new FlxObject(0, 0, clipW * item.scale.x, clipH * item.scale.y);
     hitbox.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
     menuHitboxes.push(hitbox);
-    add(hitbox); // Adicionado ao estado para processar scrollFactor corretamente
+    add(hitbox);
 
     menuItems.push(item);
     menuCallbacks.push(callback);
@@ -539,8 +552,7 @@ class RetroMainMenu extends MusicBeatState
     var stateFunc:Dynamic = function():Void {
       openSubState(new FreeplayState());
     };
-    FlxTransitionableState.skipNextTransIn = true;
-    FlxTransitionableState.skipNextTransOut = true;
+    FlxTransitionableState.skipNextTransIn = false;
 
     FreeplayState.CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
 
@@ -552,6 +564,10 @@ class RetroMainMenu extends MusicBeatState
     var stateFunc:Dynamic = function():FlxState {
       return new funkin.ui.options.OptionsState();
     };
+
+    FunkinMemory.cacheSound(Paths.sound('menus/boot'));
+    FlxTransitionableState.skipNextTransIn = true;
+
     startExitState(stateFunc);
   }
 
@@ -761,7 +777,12 @@ class RetroMainMenu extends MusicBeatState
     rememberedSelectedIndex = selectedIndex;
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
 
-    FlxG.switchState(() -> new TitleState());
+    TitleState.initialized = false; // TitleState does a flash when it is initialized, making the screen appear white when going to the custom title (because it takes a while to load the sprites). So we disable this.
+    var fallbackFunc:Dynamic = function():Void {
+      FlxG.switchState(() -> new TitleState());
+    };
+
+    FlxG.camera.fade(0xFF000000, 0.1, false, fallbackFunc, true);
   }
 
   override function destroy():Void

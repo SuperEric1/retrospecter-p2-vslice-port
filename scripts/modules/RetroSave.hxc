@@ -1,14 +1,70 @@
+package supereric.retrospecter.modules;
+
 import flixel.FlxG;
 import funkin.save.Save;
 import funkin.play.PlayState;
+import funkin.modding.PolymodHandler;
 import funkin.modding.module.Module;
 
 class RetroSave extends Module
 {
+  public static final folderNames:Array<String> = ["retrospecter-p2-vslice-port", "retrospecter-p2-vslice-port-main"];
+
+  // needs to be string in order to work idk why
+  public static var debug:String = "false";
+  private static var resetWarns:String = "false";
+  private static var _initialized:Bool = false;
+
+  public static function isDebug():Bool {
+    if (!_initialized) initStatic();
+    //trace(debug);
+    return debug == "true";
+  }
+  public static function isResetWarns():Bool {
+    if (!_initialized) initStatic();
+    return resetWarns == "true";
+  }
+
+  public static function initStatic():Void {
+    if (_initialized) return;
+
+    var data:ModMetadata = null;
+    for (name in folderNames) {
+      if (data != null) break;
+      // Tenta pegar o metadata via Polymod
+      data = PolymodHandler.modFileSystem.getMetadata(name);
+    }
+
+    if (data != null) {
+      debug = data.metadata?.get("debug") ?? "false";
+      resetWarns = data.metadata?.get("reset_warns") ?? "false";
+    }
+
+    _initialized = true;
+    trace("[RetroSave] Debug mode carregado: " + debug);
+  }
+
   public function new()
   {
     super("RetroSave", 1);
+
+    initStatic();
     setupSave();
+  }
+
+  override public function onCreate(event) {
+    super.onCreate(event);
+    FlxG.signals.postGameStart.addOnce(function() {
+      resetOneTimeFlags();
+    });
+
+    if (isDebug()) {
+      resetOneTimeFlags();
+    }
+
+    if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
+      FlxG.save.data.BotMode = "off";
+    }
   }
 
   function setupSave():Void {
@@ -46,22 +102,27 @@ class RetroSave extends Module
 
 
     // Warnings / Pre title state
-    if (!save.modOptions.exists("retroTitleDisclaimerLanguage")) // first disclaimer, language selection
+    if (!save.modOptions.exists("retroTitleDisclaimerLanguage") || isResetWarns()) {
+      // first disclaimer, language selection
       save.modOptions.set("retroTitleDisclaimerLanguage", false);
-    if (!save.modOptions.exists("retroTitleDisclaimer")) // second disclaimer, basic
+    }
+    if (!save.modOptions.exists("retroTitleDisclaimer") || isResetWarns()) {
+      // second disclaimer, basic
       save.modOptions.set("retroTitleDisclaimer", false);
-    if (!save.modOptions.exists("retroTitleDisclaimerSuggestive")) // third disclaimer, suggestive warning
+    }
+    if (!save.modOptions.exists("retroTitleDisclaimerSuggestive") || isResetWarns()) {
+      // third disclaimer, suggestive warning
       save.modOptions.set("retroTitleDisclaimerSuggestive", false);
+    }
 
     save.flush();
   }
 
-  function onCreate(event:ScriptEvent):Void
-  {
-    super.onCreate(event);
-    if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
-      FlxG.save.data.BotMode = "off";
-    }
+  function resetOneTimeFlags():Void {
+    var save:Save = Save.instance;
+    save.modOptions.set('retroTitleWarningsPlayed', false);
+    save.modOptions.set('retroOptionsIntroPlayed', false);
+    save.flush();
   }
 
   public function youThoughtLol():Void {

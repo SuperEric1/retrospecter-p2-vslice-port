@@ -63,7 +63,7 @@ options.custom_menus.desc = "Ativa os menus customizados do mod. Desative isso s
 
 # - MISC -
 warnings.language_select.title = "SELEÇÃO DE IDIOMA"
-warnings.language_select.desc = "Selecione seu idioma preferido abaixo.\nToda a experiência do mod, incluindo <y>todos os textos<y>, <y>menus<y> e <y>diálogos<y>, será traduzida de acordo.\nSua escolha será lembrada e você sempre pode alterá-la no <y>menu de Opções<y>."
+warnings.language_select.desc = "Selecione seu idioma preferido abaixo.\nToda a experiência do mod, incluindo <y>todos os textos<y>, <y>menus<y> e <y>diálogos<y>, será traduzida de acordo.\nSua escolha será lembrada e você sempre pode alterá-la no menu de opções."
 
 warnings.generic.title = "AVISO"
 warnings.generic.desc = "Este é um port mobile <y>feito por fã<y> do mod Vs. RetroSpecter - Parte Dois: Infernadise.\nTeam Respec é dona do universo Infernadise e o mod original.\n\nInfernadise também não está vinculada a nenhuma religião ou crença real. Demônios são só legais.\n\nAlém disso, este mod contém <y>luzes/imagens piscantes<y>\n(que podem ser <y>desativadas<y> nas opções)."

@@ -3,10 +3,11 @@
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxSprite;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
 import flixel.text.FlxText;
 import flixel.text.FlxTextBorderStyle;
 import flixel.text.FlxTextFormat;
@@ -14,8 +15,9 @@ import flixel.text.FlxTextFormatMarkerPair;
 import funkin.graphics.FunkinSprite;
 import funkin.graphics.FunkinCamera;
 import funkin.ui.MusicBeatState;
-import funkin.util.TouchUtil;
 import funkin.ui.title.TitleState;
+import funkin.util.TouchUtil;
+import funkin.util.HapticUtil;
 import funkin.mobile.input.ControlsHandler;
 import funkin.save.Save;
 import funkin.audio.FunkinSound;
@@ -31,7 +33,7 @@ class RetroTitleWarnings extends MusicBeatState
   private var SOUND_VOLUME:Float = 0.7;
 
   private var LANGUAGES:Array<String> = [
-    "en_US", "pt_BR", "es_ES"//, "fr_FR", "de_DE", "it_IT", "ru_RU"
+    "en_US", "pt_BR"//, "es_ES", "fr_FR", "de_DE", "it_IT", "ru_RU"
   ];
   private var LANGUAGE_NAMES:Array<String> = [
     "English", "Português (Brasil)"//, "Español", "Français", "Deutsch", "Italiano", "Русский"
@@ -65,6 +67,7 @@ class RetroTitleWarnings extends MusicBeatState
   private var checkboxChecked:Bool = false;
   private var checkboxX:Float = 0;
   private var checkboxY:Float = 0;
+  private var checkboxHitbox:FlxSprite;
 
   // Seleção de idioma
   private var languageTexts:Array<FlxText> = [];
@@ -75,6 +78,7 @@ class RetroTitleWarnings extends MusicBeatState
   private var langCheckMarks:Array<FlxSprite> = [];
   private var langItemXs:Array<Float> = [];
   private var langItemYs:Array<Float> = [];
+  private var langItemHitboxes:Array<FlxSprite> = [];
   private var langRows:Int = 0;
   private var langCols:Int = 0;
   private var LANG_MAX_PER_COL:Int = 5;
@@ -190,7 +194,7 @@ class RetroTitleWarnings extends MusicBeatState
     FlxTween.tween(fadeSprite, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
     selectedLanguageIndex = 0;
 
-    languageTitleText = addTitle(RetroLanguage.t('warnings.language_select.title', 'LANGUAGE SELECTION'), 55, 70, FlxColor.WHITE);
+    languageTitleText = addTitle(RetroLanguage.t('warnings.language_select.title', 'LANGUAGE SELECTION'), 55, 70, FlxColor.CYAN);
     languageTitleText.alpha = 0;
     FlxTween.tween(languageTitleText, {alpha: 1}, 0.4, {startDelay: 0.1, ease: FlxEase.quadIn});
 
@@ -273,6 +277,14 @@ class RetroTitleWarnings extends MusicBeatState
 
       langItemXs.push(cBase.x);
       langItemYs.push(itemY);
+
+      // Hitbox
+      var checkW:Float = cBase.width;
+      var iw:Float = checkW + 10 + lText.width + 10;
+      var ih:Float = 56;
+      var hitbox = new FlxObject(cBase.x - 5, itemY - 10, Std.int(iw), Std.int(ih));
+      add(hitbox);
+      langItemHitboxes.push(hitbox);
 
       // Aplicar offset
       lText.y += animOffY;
@@ -603,6 +615,13 @@ class RetroTitleWarnings extends MusicBeatState
     checkboxLabelHover.alpha = 0;
     add(checkboxLabelHover);
     allTexts.push(checkboxLabelHover);
+
+    var hx = checkboxBase.x - 10;
+    var hy = checkboxBase.y - 10;
+    var hw = 32 + checkboxLabel.width + 60;
+    var hh = 52;
+    checkboxHitbox = new FlxObject(hx, hy, Std.int(hw), Std.int(hh));
+    add(checkboxHitbox);
   }
 
   private function createChoiceButtons(y:Float):Void {
@@ -671,6 +690,20 @@ class RetroTitleWarnings extends MusicBeatState
     }
     allSprites = [];
     disclaimerSprites = [];
+
+    if (checkboxHitbox != null) {
+      remove(checkboxHitbox);
+      checkboxHitbox.destroy();
+      checkboxHitbox = null;
+    }
+
+    for (hitbox in langItemHitboxes) {
+      if (hitbox != null) {
+        remove(hitbox);
+        hitbox.destroy();
+      }
+    }
+    langItemHitboxes = [];
 
     checkboxBase = null;
     checkboxCheckmark = null;
@@ -767,15 +800,10 @@ class RetroTitleWarnings extends MusicBeatState
 
   // Verifica se o cursor/toque está sobre a área do item de idioma i.
   private function isOverLangItem(i:Int):Bool {
-    if (i >= langItemXs.length || i >= languageTexts.length || languageTexts[i] == null) return false;
+    if (i >= langItemHitboxes.length || langItemHitboxes[i] == null) return false;
 
-    var checkW:Float = (i < langCheckBases.length && langCheckBases[i] != null) ? langCheckBases[i].width : 26;
-    var iw:Float = checkW + 10 + languageTexts[i].width + 10;
-    var ih:Float = 56;
-    var input = (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) ? TouchUtil.touch : FlxG.mouse;
-
-    return input.x >= langItemXs[i] && input.x <= langItemXs[i] + iw
-        && input.y >= langItemYs[i] && input.y <= langItemYs[i] + ih;
+    return (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice && TouchUtil.overlapsComplex(langItemHitboxes[i]))
+        || (FlxG.mouse.overlaps(langItemHitboxes[i]));
   }
 
   private function updateSuggestiveInput():Void {
@@ -861,19 +889,10 @@ class RetroTitleWarnings extends MusicBeatState
   }
 
   private function isOverCheckbox():Bool {
-    if (!checkboxVisible) return false;
+    if (!checkboxVisible || checkboxHitbox == null) return false;
 
-    var hx = checkboxX - 10;
-    var hy = checkboxY - 10;
-    var hw = 32 + checkboxLabel.width + 60;
-    var hh = 52;
-
-    var mouse = (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) ? TouchUtil.touch : FlxG.mouse;
-
-    if (mouse.x >= hx && mouse.x <= hx + hw &&
-        mouse.y >= hy && mouse.y <= hy + hh) return true;
-
-    return false;
+    return (FlxG.onMobile && !ControlsHandler.usingExternalInputDevice && TouchUtil.overlapsComplex(checkboxHitbox))
+        || (FlxG.mouse.overlaps(checkboxHitbox));
   }
 
   private function changeLanguage(newIndex:Int):Void {

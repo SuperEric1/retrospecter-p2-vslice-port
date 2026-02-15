@@ -21,6 +21,7 @@ import funkin.modding.events.StateChangeScriptEvent;
 import funkin.mobile.ui.FunkinBackButton;
 import funkin.graphics.adobeanimate.FlxAtlasSprite;
 import funkin.mobile.input.ControlsHandler;
+import flixel.addons.transition.FlxTransitionableState;
 import funkin.PlayerSettings;
 import funkin.Paths;
 import Std;
@@ -47,10 +48,12 @@ class RetroOptionsState extends Module
   var backBgAlpha:Float = 0.4;
   var taskbar:FlxSprite;
   var backBg:FlxSprite;
+  var introBg:FlxSprite;
   var dozirc:FlxAtlasSprite;
   var dozircShadow:FlxAtlasSprite;
   var overlay:FlxSprite;
   var windozText:FlxText;
+  var windozIntroText:FlxText;
   var signText:FlxText;
   var signArrows:FunkinSprite;
   var browser:FunkinSprite;
@@ -105,6 +108,10 @@ class RetroOptionsState extends Module
     backBg.scrollFactor.set(0, 0);
     backBg.visible = false;
 
+    introBg = new FlxSprite(0, 0);
+    introBg.loadGraphic(Paths.image(bgPath));
+    introBg.setGraphicSize(Std.int(FlxG.width * 1.05));
+
     dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozirc.setGraphicSize(Std.int(dozirc.width * 1));
     dozirc.animation.play('anims/default', false, false, true);
@@ -132,6 +139,8 @@ class RetroOptionsState extends Module
     windozText.fieldWidth = FlxG.width;
     windozText.screenCenter(0x01);
     windozText.y = 560;
+    windozIntroText = windozText.clone();
+    windozIntroText.y = introBg.height * 0.8;
 
     signText = new FlxText(0, 0, 0, 'TEST', 1);
     signText.setFormat(Paths.font('DS-DIGIB.TTF'), 150, 0xFF7df1ef, 'center');
@@ -318,6 +327,10 @@ class RetroOptionsState extends Module
         state.add(browserText);
         state.add(browserIcon);
         state.add(overlay);
+        state.add(introBg);
+        introBg.kill();
+        state.add(windozIntroText);
+        windozIntroText.kill();
         state.add(fade);
         if (debugText != null) state.add(debugText);
         FlxG.mouse.visible = true;
@@ -327,11 +340,40 @@ class RetroOptionsState extends Module
           var backButton = ReflectUtil.getProperty(state.optionsCodex.currentPage, "backButton");
           backButton?.alpha = 0.25;
         }
-        playMenuMusic();
+        fade.alpha = 1;
+        FlxTween.tween(fade, {alpha: 0}, 1, { ease: FlxEase.quadOut });
+        if (!Save.instance.modOptions.get('retroOptionsIntroPlayed')) {
+          doIntro();
+        } else {
+          playMenuMusic();
+        }
         hasBuilt = true;
         isShuttingDown = false;
       }
     }
+  }
+
+  function doIntro():Void {
+    var delay:Float = 1.5;
+    var easeType:FlxEase = FlxEase.quadInOut;
+
+    if (!introBg.alive) introBg.revive();
+    if (!windozIntroText.alive) windozIntroText.revive();
+
+    FlxG.mouse.visible = false;
+    Save.instance.modOptions.set('retroOptionsIntroPlayed', true);
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    FunkinSound.playOnce(Paths.sound('menus/boot'), 1);
+
+    FlxTween.tween(introBg, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
+      playMenuMusic();
+      FlxG.mouse.visible = true;
+      introBg.kill();
+    }});
+    FlxTween.tween(windozIntroText, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
+      playMenuMusic();
+      windozIntroText.kill();
+    }});
   }
 
   function createPreferences(state:OptionsState):Void {
@@ -347,6 +389,8 @@ class RetroOptionsState extends Module
             function(value:Bool) {
               Save.instance.modOptions.set(option.id, value);
               Save.instance.flush();
+
+              if (option.id == "retroCustomMenus" && value == false) FlxG.mouse.visible = false;
             },
             Save.instance.modOptions.get(option.id, option.defaultValue),
             option.available != null ? option.available : true
