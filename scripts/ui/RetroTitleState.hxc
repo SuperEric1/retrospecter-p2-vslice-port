@@ -31,6 +31,7 @@ import openfl.net.NetStream;
 import funkin.Preferences;
 import funkin.Conductor;
 import funkin.util.Constants;
+import funkin.mobile.input.ControlsHandler;
 import funkin.ui.freeplay.FreeplayState;
 import funkin.save.Save;
 import funkin.util.TouchUtil;
