@@ -62,6 +62,8 @@ class WrathPhase4Stage extends Stage
   var geyserM:StageProp;
   var geyserR:StageProp;
   var gateFront:StageProp;
+  var sectionOneSprites:Array<FunkinSprite> = [];
+  var sectionTwoSprites:Array<FunkinSprite> = [];
 
   // Overlay and effects
   var black:StageProp;
@@ -93,6 +95,7 @@ class WrathPhase4Stage extends Stage
   var bloh:Bool = false;
   var showingPlayerStrums:Bool = false;
   var focusInDad:Bool = false;
+  var loadedPart:Int = 0;
 
   // Geyser physics
   var gaysar_t:Float = 0;
@@ -133,16 +136,22 @@ class WrathPhase4Stage extends Stage
     sky = makeSprite('sky', -1600, -1000, 1.2, 0.1, 0.1);
     sky.scale.set(2.4, 1.2);
     skies = makeSprite('skies', -1600, -8000, 1.3, 0.1, 0.1);
+    sectionTwoSprites.push(sky);
+    sectionTwoSprites.push(skies);
 
     // Create walls and mountains
     farWalls = makeSprite('farWalls', 400, 100, 1.15, 0.15, 0.12);
+    sectionOneSprites.push(farWalls);
     mountains = makeSprite('mountains', -1600, -300, 1.15, 0.18, 0.15);
+   sectionTwoSprites.push(mountains);
 
     // Create izzy tower
     var izzyX = 720;
     var izzyY = -1100;
     izzyTower = makeSprite('izzyTower', izzyX, izzyY, 1, 0.2, 0.1);
     izzyCloud = makeSprite('izzyCloud', izzyX + 1400, izzyY + 59, 1, 0.2, 0.1, 'cloud');
+    sectionTwoSprites.push(izzyTower);
+    sectionTwoSprites.push(izzyCloud);
 
     // Create dozirc
     var dozircX = -1200;
@@ -151,12 +160,18 @@ class WrathPhase4Stage extends Stage
     dozirc = makeSprite('dozirc', dozircX - 200, dozircY - 500, 0.9, 0.2, 0.175);
     dozirc_Lights = makeSprite('dozirc_Lights', dozircX + 130, dozircY + 330, 0.9, 0.2, 0.175, 'lights');
     soulriver = makeSprite('soulriver', dozircX, dozircY + 590, 0.9, 0.25, 0.175, 'anim');
+    sectionTwoSprites.push(dozirc);
+    sectionTwoSprites.push(dozirc_Lights);
+    sectionTwoSprites.push(soulriver);
 
     // Create insatian void
     insatianVoid = makeSprite('insatianVoid', 2850, 150, 1.2, 0.25, 0.175, 'void');
+    insatianVoid.antialiasing = false;
+    sectionTwoSprites.push(insatianVoid);
 
     // Create hivemine
     hivemine = makeSprite('hivemine', 800, -900, 0.7, 0.275, 0.18, 'anim');
+    sectionTwoSprites.push(hivemine);
 
     // Create buildings
     var cityX = 600;
@@ -169,22 +184,34 @@ class WrathPhase4Stage extends Stage
     windowsR = makeSprite('windowsR', cityX + 2050, cityY + 900, 1.2, 0.375, 0.25, null, 'windowsL');
     buildingsR.flipX = true;
     windowsR.flipX = true;
+    sectionTwoSprites.push(backBuildings);
+    sectionTwoSprites.push(buildingsL);
+    sectionTwoSprites.push(windowsL);
+    sectionTwoSprites.push(buildingsR);
+    sectionTwoSprites.push(windowsR);
 
     sakuTower = makeSprite('sakuTower', cityX + 450, cityY - 500, 1.666, 0.45, 0.3);
+    sectionTwoSprites.push(sakuTower);
 
     // Create front buildings
     buildingsFront = makeSprite('buildingsFront', cityX + 660, cityY + 800, 1.12, 0.5, 0.33);
     windowsFront = makeSprite('windowsFront', cityX + 690, cityY + 980, 1.12, 0.5, 0.33);
+    sectionTwoSprites.push(buildingsFront);
+    sectionTwoSprites.push(windowsFront);
 
     // Create smoke
     smoke = makeSprite('smoke', -560, 600, 2, 0.5, 0.33);
+    sectionTwoSprites.push(smoke);
 
     // Create close buildings
     buildingsClose = makeSprite('buildingsClose', -560, 900, 1.25, 0.6, 0.45);
     dows = makeSprite('dows', -560, 900, 1.25, 0.6, 0.45);
+    sectionTwoSprites.push(buildingsClose);
+    sectionTwoSprites.push(dows);
 
     // Create city gates
     citygates = makeSprite('citygates', -500, 0, 1.5, 0.7, 0.7);
+    sectionOneSprites.push(citygates);
 
     // Create grounds
     prefix = 'Phase3/';
@@ -252,11 +279,38 @@ class WrathPhase4Stage extends Stage
     // Create gate front
     gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
     gateFront.zIndex = 1000;
+    sectionOneSprites.push(gateFront);
 
     hasCreatedStage = true;
     PlayState.instance.refresh();
 
     FunkinMemory.cacheSound(Paths.sound("catastroSFX", "shared"));
+    loadSectionTwo(true);
+  }
+  
+  function loadSectionOne(?hide:Bool = false):Void {
+     //loadedPart = 1;
+     if (!hide) {
+        for (spr in sectionOneSprites) {
+           if (!spr.alive) spr.revive();
+        }
+     } else {
+        for (spr in sectionOneSprites) {
+           if (spr.alive) spr.kill();
+        }
+     }
+  }
+  
+  function loadSectionTwo(?hide:Bool = false):Void {
+     if (!hide) {
+        for (spr in sectionTwoSprites) {
+           if (!spr.alive) spr.revive();
+        }
+     } else {
+        for (spr in sectionTwoSprites) {
+           if (spr.alive) spr.kill();
+        }
+     }
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -388,6 +442,7 @@ class WrathPhase4Stage extends Stage
         }
 
         if (curStep >= 1760 && !ssj) {
+          loadSectionTwo();
           FlxG.sound.play(Paths.sound('catastroSFX'));
           ssj = true;
           fire.visible = true;
@@ -460,6 +515,7 @@ class WrathPhase4Stage extends Stage
       // I WILL BE YOUR END!!
       if (curStep >= 2496 && !hideIt) {
         hideIt = true;
+        loadSectionOne(true);
           var elements = [
           PlayState.instance.healthBar,
           PlayState.instance.opponentStrumline,
@@ -742,6 +798,8 @@ class WrathPhase4Stage extends Stage
   {
     super.onSongRetry(event);
     if (PlayState.instance == null) return;
+    loadSectionTwo(true);
+    loadSectionOne();
 
     bfPositionY = 8220;
     bfPositionX = 4270;
