@@ -456,6 +456,7 @@ class RetroTitleState extends MusicBeatState
       FunkinSound.playOnce(Paths.sound('confirmMenu'), 0.7);
       transitioning = true;
       bumpLogo();
+      HapticUtil.vibrate(0.1, 0.5, 0.5);
 
       skipIntroTimer = new FlxTimerManager();
       new FlxTimer(skipIntroTimer).start(1, function(tmr:FlxTimer) {
@@ -575,6 +576,7 @@ class RetroTitleState extends MusicBeatState
     t.cameras = [mainCamera];
     add(t);
     textSprites.push(t);
+    HapticUtil.vibrate();
   }
 
   function deleteCoolText():Void
