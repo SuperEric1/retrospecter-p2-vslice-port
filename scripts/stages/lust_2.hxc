@@ -52,6 +52,7 @@ class LustStage extends Stage
 
     // Background
     bg = makeSprite('bg', 'Background', bgX, bgY);
+    bg.antialiasing = false;
 
     // Get suggestive setting
     var suggestiveEnabled = Save.instance.modOptions.get('retroSuggestive');
@@ -59,12 +60,15 @@ class LustStage extends Stage
 
     // Hooks (sex toys or SFW)
     hooks = makeAnimSprite('hooks', hooksAnim, bgX, bgY);
+    hooks.antialiasing = false;
 
     // Chairs
     chairs = makeAnimSprite('chairs', 'BG chairs', bgX, bgY);
+    chairs.antialiasing = false;
 
     // Tables
     tables = makeAnimSprite('tables', 'BG tables', bgX, bgY);
+    tables.antialiasing = false;
 
     // Bar
     bar = makeAnimSprite('bar', 'Barr', bgX, bgY);
@@ -74,10 +78,12 @@ class LustStage extends Stage
 
     // Dance floor
     dfloor = makeAnimSprite('dfloor', 'Dance floor', bgX, bgY);
+    dfloor.antialiasing = false;
 
     // Heart lights
     heart = makeAnimSprite('heart', 'Heart', bgX, bgY);
     heart.animation.curAnim.curFrame = 0;
+    heart.antialiasing = false;
 
     // Foreground bottom
     fgBottom = makeAnimSprite('FG_Bottom', 'FG_Bottom', bgX, bgY);
@@ -90,10 +96,12 @@ class LustStage extends Stage
 
     // Foreground cages
     fgCages = makeAnimSprite('FG_cages', 'FG_cages', bgX, bgY);
+    fgCages.antialiasing = false;
 
     // Foreground curtains (above boyfriend)
     fgCurtains = makeAnimSprite('FG_curtains', 'FG_curtains', bgX, bgY);
     fgCurtains.zIndex = getBoyfriend() != null ? getBoyfriend().zIndex + 1 : 200;
+    fgCurtains.antialiasing = false;
 
     hasCreatedStage = true;
     PlayState.instance.refresh();

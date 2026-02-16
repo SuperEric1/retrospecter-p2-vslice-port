@@ -400,6 +400,7 @@ class RetroPlayState extends Module {
           hmpInstructionText.visible = false;
         });
       }
+      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), 31446]);
       FlxG.sound.play(Paths.sound('noteSounds/Coin'));
       event.doesNotesplash = false;
     }
@@ -411,6 +412,7 @@ class RetroPlayState extends Module {
       }
 
       advanceHiveminePapers();
+      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), -62893]);
       FlxG.sound.play(Paths.sound('noteSounds/Take'));
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);

@@ -52,16 +52,14 @@ class SweetTalkSong extends Song
   var defaultOpponentStrumY:Array<Float> = [];
   var defaultPlayerStrumX:Array<Float> = [];
   var defaultPlayerStrumY:Array<Float> = [];
+  var ogPlayerStrumScales:Array<Float> = [];
+  var ogOppStrumScales:Array<Float> = [];
 
   // Camera variables
   var disableFocus:Bool = true;
   var stopYouBastard:Bool = true;
   var flash:FunkinSprite;
 
-  // HUD alpha shader simulation
-  var hudAlpha:Float = 0;
-
-  // Song position tracking
   var songPosition:Float = 0;
 
   var playState:PlayState;
@@ -137,8 +135,7 @@ class SweetTalkSong extends Song
     if (playState.startTimestamp <= 1000) {
       new FlxTimer().start(0.1, function(tmr) {
         focusIn(1060, 150, 0.8, false);
-        hudAlpha = 0;
-        playState.camHUD.alpha = hudAlpha;
+        playState.camHUD.alpha = 0;
       });
     }
 
@@ -507,13 +504,21 @@ class SweetTalkSong extends Song
       var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
       if (playerStrum != null) {
-        playerStrum.scale.set(0.8, 0.8);
-        tweens.push(FlxTween.tween(playerStrum.scale, {x: 0.6942, y: 0.6942}, 0.35, {ease: FlxEase.cubeOut}));
+        FlxTween.cancelTweensOf(playerStrum.scale);
+        var baseScaleX = ogPlayerStrumScales[i * 2];
+        var baseScaleY = ogPlayerStrumScales[(i * 2) + 1];
+
+        playerStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        tweens.push(FlxTween.tween(playerStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
 
       if (opponentStrum != null) {
-        opponentStrum.scale.set(0.8, 0.8);
-        tweens.push(FlxTween.tween(opponentStrum.scale, {x: 0.6942, y: 0.6942}, 0.35, {ease: FlxEase.cubeOut}));
+        FlxTween.cancelTweensOf(opponentStrum.scale);
+        var baseScaleX = ogOppStrumScales[i * 2];
+        var baseScaleY = ogOppStrumScales[(i * 2) + 1];
+
+        opponentStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        tweens.push(FlxTween.tween(opponentStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
     }
   }
@@ -529,15 +534,22 @@ class SweetTalkSong extends Song
       var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
       var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
-      // Scale animation
       if (playerStrum != null) {
-        playerStrum.scale.set(0.8, 0.8);
-        tweens.push(FlxTween.tween(playerStrum.scale, {x: 0.6942, y: 0.6942}, 0.7, {ease: FlxEase.quadOut}));
+        FlxTween.cancelTweensOf(playerStrum.scale);
+        var baseScaleX = ogPlayerStrumScales[i * 2];
+        var baseScaleY = ogPlayerStrumScales[(i * 2) + 1];
+
+        playerStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        tweens.push(FlxTween.tween(playerStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.7, {ease: FlxEase.quadOut}));
       }
 
       if (opponentStrum != null) {
-        opponentStrum.scale.set(0.8, 0.8);
-        tweens.push(FlxTween.tween(opponentStrum.scale, {x: 0.6942, y: 0.6942}, 0.7, {ease: FlxEase.quadOut}));
+        FlxTween.cancelTweensOf(opponentStrum.scale);
+        var baseScaleX = ogOppStrumScales[i * 2];
+        var baseScaleY = ogOppStrumScales[(i * 2) + 1];
+
+        opponentStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        tweens.push(FlxTween.tween(opponentStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.7, {ease: FlxEase.quadOut}));
       }
 
       // Random position offset
@@ -668,6 +680,8 @@ class SweetTalkSong extends Song
         if (strum != null) {
           defaultOpponentStrumX.push(strum.x);
           defaultOpponentStrumY.push(strum.y);
+          ogOppStrumScales.push(strum.scale.x);
+          ogOppStrumScales.push(strum.scale.y);
         }
 
       }
@@ -676,6 +690,8 @@ class SweetTalkSong extends Song
         if (strum != null) {
           defaultPlayerStrumX.push(strum.x);
           defaultPlayerStrumY.push(strum.y);
+          ogPlayerStrumScales.push(strum.scale.x);
+          ogPlayerStrumScales.push(strum.scale.y);
         }
       }
     }

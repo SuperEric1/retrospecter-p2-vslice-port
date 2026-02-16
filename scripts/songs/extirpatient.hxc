@@ -382,6 +382,7 @@ class ExtirpatientSong extends Song
     // Beat 580: Start scythe2 movement
     if (curBeat == 580) {
       scytheActive = true;
+      if (!scythe2.alive) scythe2.revive();
       scythe2.visible = true;
     }
 
@@ -408,6 +409,7 @@ class ExtirpatientSong extends Song
 
     // Scythe appears and clashes
     if (curBeat == 588 && scythe != null) {
+      if (!scythe.alive) scythe.revive();
       scythe.visible = true;
       FlxTween.tween(scythe, {
         y: isDownScroll ? playState.healthBar.y + 70 : playState.healthBar.y - 160,
@@ -471,7 +473,9 @@ class ExtirpatientSong extends Song
         FlxTween.tween(scythe2, {
           y: isDownScroll ? -150 : 400,
           alpha: -0.1
-        }, 0.75, {ease: FlxEase.sineOut});
+        }, 0.75, {ease: FlxEase.sineOut, onComplete: function (_) {
+          scythe2.kill();
+        }});
 
         if (scythe2.colorTransform != null) {
           FlxTween.tween(scythe2.colorTransform, {
@@ -487,7 +491,9 @@ class ExtirpatientSong extends Song
           y: playState.healthBar.y + (isDownScroll ? -260 : -70),
           alpha: -0.1,
           angle: isDownScroll ? -95 : -85
-        }, 0.75, {ease: FlxEase.sineOut});
+        }, 0.75, {ease: FlxEase.sineOut, onComplete: function (_) {
+          scythe2.kill();
+        }});
 
         scythe.offset.x = -25;
 
@@ -942,7 +948,9 @@ class ExtirpatientSong extends Song
     scythe.updateHitbox();
     scythe.origin.y = scythe.height;
     scythe.zIndex = playState.iconP1.zIndex + 5;
+    scythe.antialiasing = false;
     PlayState.instance.add(scythe);
+    scythe.kill();
 
     // Initial color tween
     if (scythe.colorTransform != null) {
@@ -964,7 +972,9 @@ class ExtirpatientSong extends Song
     scythe2.flipX = !isDownScroll;
     scythe2.angle = -90;
     scythe2.zIndex = 10000;
+    scythe2.antialiasing = false;
     PlayState.instance.add(scythe2);
+    scythe2.kill();
   }
 
   function scytheClash():Void

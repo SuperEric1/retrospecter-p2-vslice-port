@@ -483,6 +483,7 @@ class RetroGameUI extends Module {
     hiveminePlayerMoney.screenCenter();
     hiveminePlayerMoney.x += hiveTextMarginX;
     hiveminePlayerMoney.y = retroHealthBarOverlay.y + (retroHealthBarOverlay.height / 2) - hiveTextMarginY;
+    hiveminePlayerMoney.antialiasing = false;
 
     hivemineOppMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
     hivemineOppMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
@@ -492,6 +493,7 @@ class RetroGameUI extends Module {
     hivemineOppMoney.screenCenter();
     hivemineOppMoney.x -= hiveTextMarginX;
     hivemineOppMoney.y = retroHealthBarOverlay.y + (retroHealthBarOverlay.height / 2) - hiveTextMarginY;
+    hivemineOppMoney.antialiasing = false;
 
     setHivemineMoney(0); // 0 = default, transforms into 100k
     updateHivemineText();
@@ -535,14 +537,35 @@ class RetroGameUI extends Module {
   public function addHivemineMoney(value:Bool, ?target:String = null) {
     var lTarget:String = target ?? 'both';
     if (lTarget.toLowerCase() == 'both') {
-      hivemineOppMoneyValue = value;
-      hiveminePlayerMoneyValue = value;
+      hivemineOppMoneyValue += value;
+      hiveminePlayerMoneyValue += value;
     } else if (lTarget.toLowerCase() == 'player') {
-      hiveminePlayerMoneyValue = value;
+      hiveminePlayerMoneyValue += value;
     } else if (lTarget.toLowerCase() == 'opp') {
-      hivemineOppMoneyValue = value;
+      hivemineOppMoneyValue += value;
     }
     return value;
+  }
+  public function spawnHivemineMoney(direction:Int, amount:Float) {
+    var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
+    addHivemineMoney(amount, 'player');
+
+    var txt = new FlxText(strum.x, 0, 0, '+0', 23);
+    txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    txt.cameras = [PlayState.instance.camHUD];
+    txt.text = amount >= 0 ? '+' + Std.string(amount) : Std.string(amount);
+    txt.x = strum.x + (strum.width / 2) - (txt.fieldWidth / 2);
+    txt.y = (strum.y + (strum.height / 2) - (txt.height / 2)) + (downscroll ? -10 : 10);
+    txt.zIndex = strum.zIndex + 10;
+    txt.antialiasing = false;
+    PlayState.instance.add(txt);
+
+    var marketplace:Int = downscroll ? -1 : 1;
+    FlxTween.tween(txt, {y: txt.y + (150 * marketplace)}, 0.5, {ease: FlxEase.cubicInOut, onComplete: function(_) {
+      if (PlayState.instance == null || txt == null) return;
+      txt.destroy();
+    }});
+    FlxTween.tween(txt, {alpha: 0}, 0.2, {startDelay: 0.3});
   }
 
   override public function onBeatHit(event:SongTimeScriptEvent) {

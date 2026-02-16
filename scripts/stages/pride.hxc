@@ -62,6 +62,7 @@ class prideStage extends Stage
       stichShader.angle = 120;
       stichShader.distance = 15;
       stichShader.threshold = -1;
+      stichShader.antialiasAmt = 0;
       getNamedProp('stich').shader = stichShader;
       getNamedProp('stich').antialiasing = false;
       stichShader.attachedSprite = getNamedProp('stich');
@@ -140,6 +141,7 @@ class prideStage extends Stage
       rim.color = shaderColor;
       character.shader = rim;
       rim.attachedSprite = character;
+      rim.antialiasAmt = 0;
     }
 
     switch (charType)

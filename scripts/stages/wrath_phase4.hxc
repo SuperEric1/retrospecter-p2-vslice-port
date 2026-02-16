@@ -62,17 +62,18 @@ class WrathPhase4Stage extends Stage
   var geyserM:StageProp;
   var geyserR:StageProp;
   var gateFront:StageProp;
+
   var sectionOneSprites:Array<FunkinSprite> = [];
   var sectionTwoSprites:Array<FunkinSprite> = [];
+  var sectionThreeSprites:Array<FunkinSprite> = [];
+  var lowerSectionTwoSprites:Array<FunkinSprite> = [];
 
-  // Overlay and effects
   var black:StageProp;
   var overlay:StageProp;
   var fire:StageProp;
   var white:StageProp;
   var symbol:StageProp;
 
-  // Position variables
   var bfPositionY:Float = 8220;
   var bfPositionX:Float = 4270;
   var toGo:Float = 0;
@@ -80,10 +81,9 @@ class WrathPhase4Stage extends Stage
   var ogCamFollowPos:Array<Float> = [];
   var healthBarOgPos:Array<Float> = [];
 
-  // Camera smoothing variables
   var targetCameraY:Float = 0;
   var currentCameraY:Float = 0;
-  var cameraLerpSpeed:Float = 0.08; // Velocidade base de interpolação
+  var cameraLerpSpeed:Float = 0.08;
 
   // State flags
   var didDaShit:Bool = false;
@@ -97,7 +97,6 @@ class WrathPhase4Stage extends Stage
   var focusInDad:Bool = false;
   var loadedPart:Int = 0;
 
-  // Geyser physics
   var gaysar_t:Float = 0;
   var gaysar_t2:Float = 0.21;
   var gayM_m:Float = 2;
@@ -123,55 +122,76 @@ class WrathPhase4Stage extends Stage
     super.onCreate(event);
     if (hasCreatedStage) return;
 
-    // Create vortex animation
+    // Create vortex
     vortex = FunkinSprite.create(600, -7850);
     vortex.loadSparrow('wrath/Vortex');
     vortex.animation.addByPrefix('spin', 'Vortex0', 24, true);
     vortex.animation.play('spin');
     vortex.scale.set(8, 4);
     vortex.scrollFactor.set(0.1, 0.1);
+    vortex.antialiasing = false;
     PlayState.instance.add(vortex, 'vortex');
+    sectionThreeSprites.push(vortex);
 
     // Create skies
     sky = makeSprite('sky', -1600, -1000, 1.2, 0.1, 0.1);
     sky.scale.set(2.4, 1.2);
+    sky.antialiasing = false;
     skies = makeSprite('skies', -1600, -8000, 1.3, 0.1, 0.1);
+    skies.antialiasing = false;
     sectionTwoSprites.push(sky);
+    sectionThreeSprites.push(sky);
     sectionTwoSprites.push(skies);
+    sectionThreeSprites.push(skies);
 
     // Create walls and mountains
     farWalls = makeSprite('farWalls', 400, 100, 1.15, 0.15, 0.12);
-    sectionOneSprites.push(farWalls);
+    farWalls.antialiasing = false;
+    sectionTwoSprites.push(farWalls);
+    sectionThreeSprites.push(farWalls);
     mountains = makeSprite('mountains', -1600, -300, 1.15, 0.18, 0.15);
-   sectionTwoSprites.push(mountains);
+    mountains.antialiasing = false;
+    sectionTwoSprites.push(mountains);
 
     // Create izzy tower
     var izzyX = 720;
     var izzyY = -1100;
     izzyTower = makeSprite('izzyTower', izzyX, izzyY, 1, 0.2, 0.1);
+    izzyTower.antialiasing = false;
     izzyCloud = makeSprite('izzyCloud', izzyX + 1400, izzyY + 59, 1, 0.2, 0.1, 'cloud');
+    izzyCloud.antialiasing = false;
     sectionTwoSprites.push(izzyTower);
     sectionTwoSprites.push(izzyCloud);
+    sectionThreeSprites.push(izzyTower);
+    sectionThreeSprites.push(izzyCloud);
 
     // Create dozirc
     var dozircX = -1200;
     var dozircY = 200;
     dozirc_Smoke = makeSprite('dozirc_Smoke', dozircX - 110 - 300 - 20, dozircY - 685 - 1120, 0.9, 0.2, 0.175, 'smoke');
+    dozirc_Smoke.antialiasing = false;
     dozirc = makeSprite('dozirc', dozircX - 200, dozircY - 500, 0.9, 0.2, 0.175);
     dozirc_Lights = makeSprite('dozirc_Lights', dozircX + 130, dozircY + 330, 0.9, 0.2, 0.175, 'lights');
+    dozirc_Lights.antialiasing = false;
     soulriver = makeSprite('soulriver', dozircX, dozircY + 590, 0.9, 0.25, 0.175, 'anim');
+    soulriver.antialiasing = false;
     sectionTwoSprites.push(dozirc);
     sectionTwoSprites.push(dozirc_Lights);
+    sectionTwoSprites.push(dozirc_Smoke);
+    lowerSectionTwoSprites.push(dozirc_Lights);
     sectionTwoSprites.push(soulriver);
 
     // Create insatian void
     insatianVoid = makeSprite('insatianVoid', 2850, 150, 1.2, 0.25, 0.175, 'void');
     insatianVoid.antialiasing = false;
+    lowerSectionTwoSprites.push(insatianVoid);
     sectionTwoSprites.push(insatianVoid);
 
     // Create hivemine
     hivemine = makeSprite('hivemine', 800, -900, 0.7, 0.275, 0.18, 'anim');
+    hivemine.antialiasing = false;
     sectionTwoSprites.push(hivemine);
+    sectionThreeSprites.push(hivemine);
 
     // Create buildings
     var cityX = 600;
@@ -180,8 +200,10 @@ class WrathPhase4Stage extends Stage
     backBuildings = makeSprite('backBuildings', cityX - 300, cityY + 400, 1.1, 0.3, 0.2);
     buildingsL = makeSprite('buildingsL', cityX - ae, cityY + 800, 1.2, 0.375, 0.25);
     windowsL = makeSprite('windowsL', cityX - ae + 50, cityY + 900, 1.2, 0.375, 0.25);
+    windowsL.antialiasing = false;
     buildingsR = makeSprite('buildingsR', cityX + 1900, cityY + 800, 1.2, 0.375, 0.25, null, 'buildingsL');
     windowsR = makeSprite('windowsR', cityX + 2050, cityY + 900, 1.2, 0.375, 0.25, null, 'windowsL');
+    windowsR.antialiasing = false;
     buildingsR.flipX = true;
     windowsR.flipX = true;
     sectionTwoSprites.push(backBuildings);
@@ -189,6 +211,11 @@ class WrathPhase4Stage extends Stage
     sectionTwoSprites.push(windowsL);
     sectionTwoSprites.push(buildingsR);
     sectionTwoSprites.push(windowsR);
+    lowerSectionTwoSprites.push(backBuildings);
+    lowerSectionTwoSprites.push(buildingsL);
+    lowerSectionTwoSprites.push(windowsL);
+    lowerSectionTwoSprites.push(buildingsR);
+    lowerSectionTwoSprites.push(windowsR);
 
     sakuTower = makeSprite('sakuTower', cityX + 450, cityY - 500, 1.666, 0.45, 0.3);
     sectionTwoSprites.push(sakuTower);
@@ -196,11 +223,13 @@ class WrathPhase4Stage extends Stage
     // Create front buildings
     buildingsFront = makeSprite('buildingsFront', cityX + 660, cityY + 800, 1.12, 0.5, 0.33);
     windowsFront = makeSprite('windowsFront', cityX + 690, cityY + 980, 1.12, 0.5, 0.33);
+    windowsFront.antialiasing = false;
     sectionTwoSprites.push(buildingsFront);
     sectionTwoSprites.push(windowsFront);
 
     // Create smoke
     smoke = makeSprite('smoke', -560, 600, 2, 0.5, 0.33);
+    smoke.antialiasing = false;
     sectionTwoSprites.push(smoke);
 
     // Create close buildings
@@ -211,6 +240,7 @@ class WrathPhase4Stage extends Stage
 
     // Create city gates
     citygates = makeSprite('citygates', -500, 0, 1.5, 0.7, 0.7);
+    citygates.antialiasing = false;
     sectionOneSprites.push(citygates);
 
     // Create grounds
@@ -253,6 +283,7 @@ class WrathPhase4Stage extends Stage
     fire.animation.addByPrefix('d', 'd', 39, true);
     fire.animation.play('nothing');
     fire.zIndex = bfZIndex + 1;
+    fire.antialiasing = false;
     PlayState.instance.add(fire, 'fire');
 
     // Create white flash
@@ -262,6 +293,7 @@ class WrathPhase4Stage extends Stage
     white.screenCenter();
     white.alpha = 0;
     white.zIndex = bfZIndex + 2;
+    white.antialiasing = false;
     PlayState.instance.add(white, 'white');
 
     // Create symbol
@@ -273,6 +305,7 @@ class WrathPhase4Stage extends Stage
     symbol.animation.play('nothing');
     symbol.scale.set(1, 1);
     symbol.zIndex = 801;
+    symbol.antialiasing = false;
     symbol.screenCenter();
     PlayState.instance.add(symbol, 'symbol');
 
@@ -284,32 +317,66 @@ class WrathPhase4Stage extends Stage
     hasCreatedStage = true;
     PlayState.instance.refresh();
 
-    FunkinMemory.cacheSound(Paths.sound("catastroSFX", "shared"));
+    loadedPart = 0;
     loadSectionTwo(true);
+    loadSectionThree(true);
+
+    //loadDebugElements();
+
+    FunkinMemory.cacheSound(Paths.sound("catastroSFX", "shared"));
   }
-  
+
   function loadSectionOne(?hide:Bool = false):Void {
-     //loadedPart = 1;
      if (!hide) {
         for (spr in sectionOneSprites) {
            if (!spr.alive) spr.revive();
         }
+        trace('loaded section 1 sprites');
      } else {
         for (spr in sectionOneSprites) {
            if (spr.alive) spr.kill();
         }
+        trace('unloaded section 1 sprites');
      }
   }
-  
+
   function loadSectionTwo(?hide:Bool = false):Void {
      if (!hide) {
         for (spr in sectionTwoSprites) {
            if (!spr.alive) spr.revive();
         }
+        trace('loaded section 2 sprites');
      } else {
         for (spr in sectionTwoSprites) {
            if (spr.alive) spr.kill();
         }
+        trace('unloaded section 2 sprites');
+     }
+  }
+  function unloadLowerSectionTwo(?hide:Bool = false):Void {
+     if (!hide) {
+        for (spr in lowerSectionTwoSprites) {
+           if (!spr.alive) spr.revive();
+        }
+     } else {
+        for (spr in lowerSectionTwoSprites) {
+           if (spr.alive) spr.kill();
+        }
+        trace('unloaded lower section sprites');
+     }
+  }
+
+  function loadSectionThree(?hide:Bool = false):Void {
+     if (!hide) {
+        for (spr in sectionThreeSprites) {
+           if (!spr.alive) spr.revive();
+        }
+        trace('loaded section 3 sprites');
+     } else {
+        for (spr in sectionThreeSprites) {
+           if (spr.alive) spr.kill();
+        }
+        trace('unloaded section 3 sprites');
      }
   }
 
@@ -434,6 +501,8 @@ class WrathPhase4Stage extends Stage
           FlxTween.tween(getGirlfriend(), {alpha: 0}, 1.5, {ease: FlxEase.quadOut});
           // geyserR zIndex is messed up for some reason so we need to hide it too
           FlxTween.tween(geyserR, {alpha: 0}, 1.5, {ease: FlxEase.quadOut});
+
+          gateFront.kill();
         }
 
         if (curStep >= 1784) {
@@ -512,10 +581,33 @@ class WrathPhase4Stage extends Stage
         izzyCloud.y += 0.05;
         izzyTower.y += 0.05;
       }
+      // Optimization thingies
+      if (curStep >= 2475 && loadedPart < 1) {
+        loadedPart = 1;
+        unloadLowerSectionTwo(true);
+        loadSectionOne(true);
+      }
+      if (curStep >= 2475 && loadedPart < 2) {
+        loadedPart = 2;
+        loadSectionOne(true);
+        loadSectionTwo(true);
+        loadSectionThree();
+        sakuTower.revive();
+      }
+      if (curStep >= 2770 && loadedPart < 3) {
+        loadedPart = 3;
+        hivemine.kill();
+        izzyTower.kill();
+        izzyCloud.kill();
+        sakuTower.kill();
+        dozirc.kill();
+        dozirc_Lights.kill();
+        dozirc_Smoke.kill();
+      }
+
       // I WILL BE YOUR END!!
       if (curStep >= 2496 && !hideIt) {
         hideIt = true;
-        loadSectionOne(true);
           var elements = [
           PlayState.instance.healthBar,
           PlayState.instance.opponentStrumline,
@@ -580,7 +672,7 @@ class WrathPhase4Stage extends Stage
     }
 
     hiveTime += 0.012;
-    hivemine.offset.y = Math.sin(hiveTime * Math.PI / 6) * 30;
+    if (hivemine.alive) hivemine.offset.y = Math.sin(hiveTime * Math.PI / 6) * 30;
 
     windowAlpha = Math.max(0, windowAlpha - 0.0125/1.5);
 
@@ -730,10 +822,10 @@ class WrathPhase4Stage extends Stage
 
   function updateWindowsAlpha():Void
   {
-    windowsL.alpha = windowAlpha;
-    windowsR.alpha = windowAlpha;
-    windowsFront.alpha = windowAlpha;
-    dows.alpha = windowAlpha;
+    if (windowsL.alive) windowsL.alpha = windowAlpha;
+    if (windowsR.alive) windowsR.alpha = windowAlpha;
+    if (windowsFront.alive) windowsFront.alpha = windowAlpha;
+    if (dows.alive) dows.alpha = windowAlpha;
   }
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
@@ -798,8 +890,6 @@ class WrathPhase4Stage extends Stage
   {
     super.onSongRetry(event);
     if (PlayState.instance == null) return;
-    loadSectionTwo(true);
-    loadSectionOne();
 
     bfPositionY = 8220;
     bfPositionX = 4270;
@@ -828,6 +918,11 @@ class WrathPhase4Stage extends Stage
     bloh = false;
     showingPlayerStrums = false;
     focusInDad = false;
+
+    loadedPart = 0;
+    loadSectionOne();
+    loadSectionTwo(true);
+    loadSectionThree(true);
   }
 
   override function onDestroy(event)

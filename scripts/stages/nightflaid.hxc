@@ -154,22 +154,27 @@ class NightflaidStage extends Stage
 
     // Create background layers
     N_hls = makeSprite('N_hls', 'nightflaid/highlights', bgX, bgY);
+    N_hls.antialiasing = false;
     N_drk = makeSprite('N_drk', 'nightflaid/darklayer' + alt, bgX, bgY);
+    N_drk.antialiasing = false;
 
     // Color layers (behind the bg, used to color the ground & other things in the toplayer)
     N_clrLeft = FunkinSprite.create(bgX, bgY);
     N_clrLeft.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
     N_clrLeft.color = 0xFF0d0d0d;
     PlayState.instance.add(N_clrLeft, 'N_clrLeft');
+    N_clrLeft.antialiasing = false;
 
     N_clrRight = FunkinSprite.create(bgX + bgWidth, bgY);
     N_clrRight.makeGraphic(Std.int(bgWidth), Std.int(bgHeight), FlxColor.WHITE);
     N_clrRight.color = 0xFF0d0d0d;
+    N_clrRight.antialiasing = false;
     PlayState.instance.add(N_clrRight, 'N_clrRight');
 
     setupGradientStripes();
 
     N_top = makeSprite('N_top', 'nightflaid/toplayer' + alt, bgX, bgY);
+    N_top.antialiasing = false;
     //N_top.visible = false;
 
     // Scale color layers to match top layer
@@ -185,6 +190,7 @@ class NightflaidStage extends Stage
     // Glow top
     N_glt = makeSprite('N_glt', 'nightflaid/glowTop' + alt, 140 + xAdjust, -1280 + yAdjust);
     N_glt.scale.set(2.65, 2.65);
+    N_glt.antialiasing = false;
     N_glt.updateHitbox();
 
     // Red lights
@@ -195,11 +201,13 @@ class NightflaidStage extends Stage
     // Light rays
     N_lt1 = makeSprite('N_lt1', 'nightflaid/lightray', -1340 + xAdjust, -765 + yAdjust);
     N_lt1.scale.set(2.65, 2.65);
+    N_lt1.antialiasing = false;
     N_lt1.updateHitbox();
 
     N_lt2 = makeSprite('N_lt2', 'nightflaid/lightray', 2900 + xAdjust, -765 + yAdjust);
     N_lt2.scale.set(2.65, 2.65);
     N_lt2.flipX = true;
+    N_lt2.antialiasing = false;
     N_lt2.updateHitbox();
 
     // Cover sprite (black screen overlay)
@@ -211,6 +219,7 @@ class NightflaidStage extends Stage
     coverSpr.alpha = 0;
     coverSpr.visible = false;
     coverSpr.zIndex = 10000;
+    coverSpr.antialiasing = false;
     PlayState.instance.add(coverSpr, 'coverSpr');
 
     initializeMidsongVideo(); // Create video sprite early
@@ -222,6 +231,7 @@ class NightflaidStage extends Stage
     unbeatableBG.scale.set(150, 150);
     unbeatableBG.updateHitbox();
     unbeatableBG.alpha = 0;
+    unbeatableBG.antialiasing = false;
     // no need to add cuz makesprite already does that
 
     // Red flash (tricky)
@@ -231,7 +241,9 @@ class NightflaidStage extends Stage
     flash.blend = 9;
     flash.visible = false;
     flash.active = false;
+    flash.antialiasing = false;
     PlayState.instance.add(flash, 'redFlash');
+    flash.kill();
 
     // White screen flash
     whiteScreen = FunkinSprite.create(0, 0);
@@ -240,7 +252,8 @@ class NightflaidStage extends Stage
     whiteScreen.updateHitbox();
     whiteScreen.screenCenter();
     whiteScreen.alpha = 0;
-    whiteScreen.camera = PlayState.instance.camHUD;
+    whiteScreen.cameras = [PlayState.instance.camHUD];
+    whiteScreen.antialiasing = false;
     PlayState.instance.add(whiteScreen, 'whiteScreen');
 
     setupStaticElements();
@@ -383,9 +396,11 @@ class NightflaidStage extends Stage
       stripe.x = (bgX + bgWidth) + (i * stripeSpacing);
       stripe.y = 0 + yAdjust;
       stripe.visible = false;
+      stripe.antialiasing = false;
 
       PlayState.instance.add(stripe);
       gradientStripes.push(stripe);
+      stripe.kill();
     }
   }
 
@@ -394,6 +409,7 @@ class NightflaidStage extends Stage
     stripesActive = true;
     for (stripe in gradientStripes)
     {
+      if (!stripe.alive) stripe.revive();
       stripe.visible = true;
     }
   }
@@ -509,7 +525,9 @@ class NightflaidStage extends Stage
     staticSprite.antialiasing = false;
     staticSprite.camera = PlayState.instance.camHUD;
     staticSprite.visible = false;
+    staticSprite.antialiasing = false;
     PlayState.instance.add(staticSprite);
+    staticSprite.kill();
 
     var size = !FlxG.onMobile ? 75 : 85;
     spookieText = new FlxText(0, 0, 0, 'MADNESS', size);
@@ -536,6 +554,7 @@ class NightflaidStage extends Stage
   {
     if (staticSprite == null || spookieText == null) return;
 
+    if (!staticSprite.alive) staticSprite.revive();
     staticSprite.visible = true;
     spookieText.visible = true;
 
@@ -551,6 +570,7 @@ class NightflaidStage extends Stage
     }
     updateStaticText(textToShow);
 
+    if (!flash.alive) flash.revive();
     flash.active = true;
     flash.alpha = 0.75;
     flash.visible = true;
@@ -560,6 +580,7 @@ class NightflaidStage extends Stage
       onComplete: function(twn:FlxTween) {
         flash.visible = false;
         flash.active = false;
+        flash.kill();
       }
     });
 
@@ -567,6 +588,7 @@ class NightflaidStage extends Stage
     staticRemoveTimer.start(duration, function(tmr:FlxTimer) {
       staticSprite.visible = false;
       spookieText.visible = false;
+      staticSprite.kill();
     });
   }
 

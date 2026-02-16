@@ -135,6 +135,7 @@ class WrathPhase2Stage extends Stage
       sky.screenCenter();
       sky.x += wrathXAdjust;
       sky.y += wrathYAdjust + 250;
+      sky.antialiasing = false;
       PlayState.instance.add(sky);
 
       // Gates
@@ -145,6 +146,7 @@ class WrathPhase2Stage extends Stage
       gates.screenCenter();
       gates.x += wrathXAdjust - 0; // - 555
       gates.y += wrathYAdjust - 150 - 105;
+      gates.antialiasing = false;
       PlayState.instance.add(gates);
 
       // Vortex (backgroundLevel > 1)
@@ -156,6 +158,7 @@ class WrathPhase2Stage extends Stage
       vortex.scrollFactor.set(0.5, 0.5);
       vortex.x = 300; //-100
       vortex.y = -550;
+      vortex.antialiasing = false;
       // Se for story mode, começa invisível
       if (PlayStatePlaylist.isStoryMode) vortex.visible = false;
       PlayState.instance.add(vortex);
@@ -167,6 +170,7 @@ class WrathPhase2Stage extends Stage
       backrocks1.screenCenter();
       backrocks1.x += wrathXAdjust - 1350;
       backrocks1.y += wrathYAdjust + 80;
+      backrocks1.antialiasing = false;
       PlayState.instance.add(backrocks1);
 
       backrocks2 = FunkinSprite.create(0, 0);
@@ -175,6 +179,7 @@ class WrathPhase2Stage extends Stage
       backrocks2.screenCenter();
       backrocks2.x += wrathXAdjust + 925; //725
       backrocks2.y += wrathYAdjust + 65;
+      backrocks2.antialiasing = false;
       PlayState.instance.add(backrocks2);
 
       // Gems
@@ -188,6 +193,7 @@ class WrathPhase2Stage extends Stage
       gem1.x += wrathXAdjust - 600 - 410;
       gem1.y += wrathYAdjust - 500 - 30;
       gem1.animation.play('green');
+      gem1.antialiasing = false;
       PlayState.instance.add(gem1);
 
       gem2 = FunkinSprite.create(0, 0);
@@ -200,6 +206,7 @@ class WrathPhase2Stage extends Stage
       gem2.x += wrathXAdjust - 200 - 630;
       gem2.y += wrathYAdjust - 150 - 150;
       gem2.animation.play('green');
+      gem2.antialiasing = false;
       PlayState.instance.add(gem2);
 
       // Flames (backgroundLevel > 1)
@@ -212,6 +219,7 @@ class WrathPhase2Stage extends Stage
       flames.x += wrathXAdjust - 250;
       flames.y += wrathYAdjust + 200;
       flames.animation.play('greenFlame');
+      flames.antialiasing = false;
       PlayState.instance.add(flames);
 
       // Flames change (se flashingLights estiver ativo)
@@ -226,6 +234,7 @@ class WrathPhase2Stage extends Stage
         flamesChange.y += wrathYAdjust + 200;
         flamesChange.alpha = HIDDEN;
         flamesChange.animation.play('blueFlame');
+        flamesChange.antialiasing = false;
         PlayState.instance.add(flamesChange);
       }
 
@@ -237,6 +246,7 @@ class WrathPhase2Stage extends Stage
       caveL.x += wrathXAdjust - 317;
       caveL.y += wrathYAdjust + 81;
       caveL.flipX = true;
+      caveL.antialiasing = false;
       PlayState.instance.add(caveL);
 
       // Runes Left (backgroundLevel > 1)
@@ -251,6 +261,7 @@ class WrathPhase2Stage extends Stage
       runesL.x += wrathXAdjust - 686 - runesOffset[0];
       runesL.y += wrathYAdjust + 450 - runesOffset[1];
       runesL.scale.set(0.53, 0.53);
+      runesL.antialiasing = false;
       PlayState.instance.add(runesL);
 
       // Glow Left
@@ -264,6 +275,7 @@ class WrathPhase2Stage extends Stage
         glowL.y += wrathYAdjust + 450 - runesOffset[1];
         glowL.scale.set(0.53, 0.53);
         glowL.alpha = 0;
+        glowL.antialiasing = false;
         PlayState.instance.add(glowL);
 
         if (i == 1) glowL1 = glowL;
@@ -277,6 +289,7 @@ class WrathPhase2Stage extends Stage
       caveR.screenCenter();
       caveR.x += wrathXAdjust + 126 - 1.5;
       caveR.y += wrathYAdjust + 25;
+      caveR.antialiasing = false;
       PlayState.instance.add(caveR);
 
       // Runes Right (backgroundLevel > 1)
@@ -288,6 +301,7 @@ class WrathPhase2Stage extends Stage
       runesR.x += wrathXAdjust + 1246 + 115 - runesOffset[0];
       runesR.y += wrathYAdjust + -120 + 325 - runesOffset[1];
       runesR.scale.set(0.65, 0.65);
+      runesR.antialiasing = false;
       PlayState.instance.add(runesR);
 
       // Glow Right
@@ -300,6 +314,7 @@ class WrathPhase2Stage extends Stage
         glowR.y += wrathYAdjust + -120 + 325 - runesOffset[1];
         glowR.scale.set(0.65, 0.65);
         glowR.alpha = 0;
+        glowR.antialiasing = false;
         PlayState.instance.add(glowR);
 
         if (i == 1) glowR1 = glowR;
@@ -315,6 +330,7 @@ class WrathPhase2Stage extends Stage
         crystal.y = crystalPos[i][1];
         crystal.scrollFactor.set(0.9, 0.9);
         crystal.animation.play('idle');
+        crystal.antialiasing = false;
 
         if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) crystal.alpha = HIDDEN;
 
@@ -341,6 +357,7 @@ class WrathPhase2Stage extends Stage
       crack.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
       crack.visible = false;
       crack.active = false;
+      crack.antialiasing = false;
       // Position it in onUpdate
       if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         crack.animation.play('bop');
@@ -355,6 +372,7 @@ class WrathPhase2Stage extends Stage
         crack_2.loadSparrow('wrath/HellCrack_2');
         crack_2.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
         crack_2.visible = false;
+        crack_2.antialiasing = false;
         // Position it in onUpdate
         PlayState.instance.add(crack_2);
       }
@@ -413,6 +431,7 @@ class WrathPhase2Stage extends Stage
     rim.color = 0xFF1ab635; // #1ab635ff
     character.shader = rim;
     rim.attachedSprite = character;
+    rim.antialiasAmt = 0;
 
     switch (charType)
     {

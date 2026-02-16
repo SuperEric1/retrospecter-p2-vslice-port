@@ -46,6 +46,7 @@ class GreedStage extends Stage
     super.onCreate(event);
 
     bg = makeSprite('bg', 'greed/hivemine_bg', bgX, bgY);
+    bg.antialiasing = false;
 
     var glitterNames = ['FarLeft', 'Center', 'Table', 'FarRight'];
     for (i in 0...glitterPositions.length)
@@ -54,10 +55,12 @@ class GreedStage extends Stage
         bgX + glitterPositions[i][0], bgY + glitterPositions[i][1]);
       glitter.animation.addByPrefix('glitter', 'Hivemine_GlitterPatch_' + glitterNames[i], 24, true);
       glitter.animation.play('glitter');
+      glitter.antialiasing = false;
       glitterSprites.push(glitter);
     }
 
     fg = makeSprite('fg', 'greed/hivemine_fg', bgX, bgY);
+    fg.antialiasing = false;
     fg.zIndex = 301;
 
     PlayState.instance.refresh();
@@ -71,6 +74,10 @@ class GreedStage extends Stage
     {
       character.idleSuffix = '-alt';
       character.danceEvery = 1;
+    }
+    if (charType == CharacterType.GF)
+    {
+      character.antialiasing = false;
     }
   }
 
