@@ -1258,8 +1258,10 @@ class NightflaidStage extends Stage
     switch (charType)
     {
       case CharacterType.BF:
-        character.idleSuffix = '-alt';
-        character.danceEvery = 1;
+        if (getBoyfriend().characterId == 'bf-retrospecter') {
+          character.idleSuffix = '-alt';
+          character.danceEvery = 1;
+        }
 
       case CharacterType.GF:
         character.antialiasing = false;

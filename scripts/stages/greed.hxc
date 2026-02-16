@@ -72,8 +72,10 @@ class GreedStage extends Stage
 
     if (charType == CharacterType.BF)
     {
-      character.idleSuffix = '-alt';
-      character.danceEvery = 1;
+      if (getBoyfriend().characterId == 'bf-retrospecter') {
+        character.idleSuffix = '-alt';
+        character.danceEvery = 1;
+      }
     }
     if (charType == CharacterType.GF)
     {

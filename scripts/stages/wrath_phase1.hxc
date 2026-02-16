@@ -99,8 +99,10 @@ class wrathPhaseOneStage extends Stage
       case CharacterType.BF:
         rim.angle = 90;
         //rim.threshold = 0.3;
-        character.idleSuffix = '-alt';
-        character.danceEvery = 1;
+        if (getBoyfriend().characterId == 'bf-retrospecter') {
+          character.idleSuffix = '-alt';
+          character.danceEvery = 1;
+        }
 
         character.animation.onFrameChange.add(function() {
           if (getBoyfriend() != null)
