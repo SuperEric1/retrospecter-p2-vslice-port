@@ -111,6 +111,7 @@ class RetroOptionsState extends Module
     introBg = new FlxSprite(0, 0);
     introBg.loadGraphic(Paths.image(bgPath));
     introBg.setGraphicSize(Std.int(FlxG.width * 1.05));
+    introBg.screenCenter();
 
     dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozirc.setGraphicSize(Std.int(dozirc.width * 1));
