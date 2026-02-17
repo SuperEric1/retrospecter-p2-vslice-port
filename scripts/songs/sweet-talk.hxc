@@ -14,6 +14,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroPlayState;
+
 class SweetTalkSong extends Song
 {
   var tweens:Array<FlxTween> = [];
@@ -131,13 +133,13 @@ class SweetTalkSong extends Song
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
 
-    // Initial camera focus
-    if (playState.startTimestamp <= 1000) {
+    // Initial camera focus (actually, we should do this in onCountdownStart.)
+    /*if (playState.startTimestamp <= 1000) {
       new FlxTimer().start(0.1, function(tmr) {
         focusIn(1060, 150, 0.8, false);
         playState.camHUD.alpha = 0;
       });
-    }
+    }*/
 
     //playState.cameraSpeed = 0.5;
     //playState.camZoomingMult = 0.5;
@@ -146,6 +148,30 @@ class SweetTalkSong extends Song
     // Skip arrow start tween if modcharts enabled
     if (modcharts) {
       // This would be handled in the engine
+    }
+  }
+
+  public override function onCountdownStart(event:ScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+    if (PlayState.instance.startTimestamp <= 1000) {
+      // Initial camera focus
+      focusIn(1060, 150, 0.8, false);
+
+      PlayState.instance.healthBar.alpha = 0;
+      PlayState.instance.iconP1.alpha = 0;
+      PlayState.instance.iconP2.alpha = 0;
+      for (i in 0...4) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        FlxTween.cancelTweensOf(strum, ["alpha"]);
+        strum.alpha = 0;
+
+        strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        FlxTween.cancelTweensOf(strum, ["alpha"]);
+        strum.alpha = 0;
+      }
+      PlayState.instance.playerStrumline.alpha = 0;
+      PlayState.instance.opponentStrumline.alpha = 0;
     }
   }
 
@@ -337,7 +363,12 @@ class SweetTalkSong extends Song
     // HUD fade in
     if (beat >= 24 && !hudShow && playState.startTimestamp <= 1000) {
       hudShow = true;
-      tweens.push(FlxTween.tween(playState.camHUD, {alpha: 1}, 1, { ease: FlxEase.quadOut }));
+      var time:Float = 1;
+      var easing:FlxEase = FlxEase.quadOut;
+      //tweens.push(FlxTween.tween(playState.camHUD, {alpha: 1}, time, { ease: easing }));
+      tweens.push(FlxTween.tween(playState.healthBar, {alpha: 1}, time, { ease: easing }));
+      tweens.push(FlxTween.tween(playState.iconP1, {alpha: 1}, time, { ease: easing }));
+      tweens.push(FlxTween.tween(playState.iconP2, {alpha: 1}, time, { ease: easing }));
     }
 
     // Initial strum show (opponent - beat 28)

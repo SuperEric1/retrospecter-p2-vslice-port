@@ -1,3 +1,5 @@
+package supereric.retrospecter.modules;
+
 import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.modding.module.Module;
@@ -119,6 +121,8 @@ class RetroPlayState extends Module {
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
+  var forceNotesAlpha:Float = null; // used for the spectre note to make the notes fade with time. null = off, 0-1 = the note alpha to apply.
+  var minNoteAlpha:Float = 0; // used to limit the forceNotesAlpha value.
 
   var hurtNoteVibration:VibrationPreset =
   {
@@ -168,6 +172,17 @@ class RetroPlayState extends Module {
       event.note.angle = 0;
     }
     var k = event.note.noteData.kind;
+
+    var alwaysVisible:Array<String> = ['spectre'];
+    var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
+    var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
+    if (targetAlpha == 1) targetAlpha = strum.alpha;
+    if (forceNotesAlpha != null) targetAlpha = forceNotesAlpha; // for the spectre note mechanic
+    if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisible.contains(k)) {
+      event.note.alpha = targetAlpha;
+      if (event.note.isHoldNote) event.note.holdNoteSprite.alpha = targetAlpha;
+    }
+    if (alwaysVisible.contains(k)) event.note.alpha = 1; // sempre visíveis.
 
     // Notas que não contam pro score
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
@@ -263,7 +278,7 @@ class RetroPlayState extends Module {
       var holeMin:Int = 2;
       var holeMax:Int = 10;
       if (insatianNoteCounter > 1) {
-        var multiplier = FlxG.random.int(2, 4);
+        var multiplier = FlxG.random.int(2, 4) * (insatianNoteCounter / 2);
         holeMin += multiplier * insatianNoteCounter;
         holeMax += multiplier * insatianNoteCounter;
       }
@@ -280,6 +295,7 @@ class RetroPlayState extends Module {
         hole.x = FlxG.random.int(FullScreenScaleMode.gameNotchSize.x - 10, FlxG.width - hole.width + 10);
         hole.y = FlxG.random.int(FullScreenScaleMode.gameNotchSize.y - 10, FlxG.height - hole.height + 20);
         hole.cameras = [PlayState.instance.camHUD];
+        hole.antialiasing = false;
         holeSprites.push(hole);
         PlayState.instance.add(hole);
       }
@@ -498,6 +514,8 @@ class RetroPlayState extends Module {
     var noteStyle = PlayState.instance.playerStrumline.noteStyle.id.toLowerCase();
     isRetro = StringTools.startsWith(noteStyle, 'retro') || StringTools.startsWith(noteStyle, 'player');
     if (!isRetro) return;
+
+    if (!hasCachedTextures) cacheEverything(); // cache things here instead of when the game opens.
 
     isDownscroll = Preferences.downscroll;
     if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
@@ -939,6 +957,21 @@ class RetroPlayState extends Module {
     });
   }
 
+  // Failed attempt to sync the notes alpha. it's better to do in onNoteIncoming
+  /*public static function syncNotesAlpha(strumline, time:Float, easing:FlxEase):Void {
+    for (note in strumline.notes.members) {
+      if (note == null) continue;
+      FlxTween.cancelTweensOf(note, ["alpha"]);
+      var targetAlpha = strumline.strumlineNotes.members[note.noteData.getDirection()].alpha;
+      if (time <= 0 || time == null || easing == null) {
+        note.alpha = targetAlpha;
+        continue;
+      }
+
+      tweens.push(FlxTween.tween(note, {alpha: targetAlpha}, time, {ease: easing}));
+    }
+  }*/
+
   public function onUpdate(event:UpdateScriptEvent):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
@@ -1090,10 +1123,40 @@ class RetroPlayState extends Module {
       }
     }
 
+    /*var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
+    var cover = event.note.holdNoteSprite.cover;
+    var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
+    //if (targetAlpha == 1) targetAlpha = strum.alpha;
+    if (event.note.isHoldNote && cover.alpha != targetAlpha) {
+      cover.alpha = targetAlpha;
+    }*/
+
     /*for (note in PlayState.instance.playerStrumline.notes.members) {
       if (note == null || !note.alive) continue;
-        note.alpha = 0.6;
+      var cover = holdNote.holdNoteSprite.cover;
+      var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
+      if (cover.alpha != targetAlpha) {
+        cover.alpha = targetAlpha;
+      }
     }*/
+
+    // Update hold covers so they match the actual opacity of the notes because they are really weird sometimes
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote) {
+        var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
+        var cover = holdNote.cover;
+        if (cover.alpha != targetAlpha) cover.alpha = targetAlpha;
+      }
+    }
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote) {
+        var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
+        var cover = holdNote.cover;
+        if (cover.alpha != targetAlpha) cover.alpha = targetAlpha;
+      }
+    }
 
     // Skill issue check
     var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
@@ -1435,6 +1498,7 @@ class RetroPlayState extends Module {
     destroyHiveminePapers();
 
     poisonAmount = 0;
+    if (forceNotesAlpha != null) forceNotesAlpha = 1; // reset to default alpha
     /*if (poisonText != null) {
       poisonText.visible = false;
     }*/
@@ -1630,6 +1694,7 @@ class RetroPlayState extends Module {
     hasLoadedUIElements = false;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
+    forceNotesAlpha = null;
     funnyVar = false;
     destroyHiveminePapers();
     hmpActive = false;
@@ -1739,7 +1804,17 @@ class RetroPlayState extends Module {
     isDrugged = false;
 
     FlxG.signals.postGameStart.addOnce(function() {
-      cacheEverything();
+      // Title Screen
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/logo', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/flames', "shared"));
+
+      // Main menu
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/credits', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst', "shared"));
     });
   }
 
@@ -1794,41 +1869,8 @@ class RetroPlayState extends Module {
       FunkinMemory.permanentCacheSound(Paths.sound("scythe", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("clothsSFX", "shared"));
 
-      // Title Screen
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/logo', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/flames', "shared"));
-
-      // Main menu
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/credits', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst', "shared"));
-
       // Phase 2 - Spectral
-      FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals', "shared"));
-
-      // Phase 3 - Apocalyptro
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/bg'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_L'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavaflow_R'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris1'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserL'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserM'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/geyserR'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/debris2'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavabubbles'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lava_FG'));
-      // FunkinMemory.permanentCacheTexture(Paths.image('Phase3/FG_fire'));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_M', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_L', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase3/lavarock_R', "shared"));
-
-      // Phase 4 - Catastrofiend
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/dragonball', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/insatianVoid', "shared"));
-      FunkinMemory.permanentCacheTexture(Paths.image('Phase4/nftf', "shared"));
+      //FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals', "shared"));
 
 			hasCachedTextures = true;
     }

@@ -227,6 +227,7 @@ class RetroGameUI extends Module {
         retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFillBG.screenCenter(0x01);
         retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase(), true); // Cor do oponente
+        retroHealthBarFillBG.antialiasing = false;
 
         // Configurar o preenchimento da barra (cor do jogador)
         retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
@@ -234,6 +235,7 @@ class RetroGameUI extends Module {
         retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFill.screenCenter(0x01);
         retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
+        retroHealthBarFill.antialiasing = false;
 
         // Guardar a largura original
         fillOriginalWidth = retroHealthBarFill.frameWidth;
@@ -510,11 +512,13 @@ class RetroGameUI extends Module {
       PlayState.instance.add(hiveminePlayerMoney);
       PlayState.instance.refresh(); // refresh to make sure the zindex is applied
     }
+    if (hiveminePlayerMoney.alpha != retroHealthBarOverlay.alpha) hiveminePlayerMoney.alpha = retroHealthBarOverlay.alpha;
     if (hivemineOppMoney.zIndex != targetZIndex) {
       hivemineOppMoney?.zIndex = targetZIndex;
       PlayState.instance.add(hivemineOppMoney);
       PlayState.instance.refresh(); // refresh to make sure the zindex is applied
     }
+    if (hivemineOppMoney.alpha != retroHealthBarOverlay.alpha) hivemineOppMoney.alpha = retroHealthBarOverlay.alpha;
 
     var commaSeparated:Bool = true;
     hiveminePlayerMoney.text = '$ ' + FlxStringUtil.formatMoney(hiveminePlayerMoneyValue, true, commaSeparated);
@@ -751,20 +755,22 @@ class RetroGameUI extends Module {
       if (PlayState.instance.currentStage.getDad().characterId == 'phase4' && retroHealthBarFillBG.color != getIconColor('phase4')) retroHealthBarFillBG.color = getIconColor('phase4');
     }
 
-    retroHealthBarOverlay.y = playState.healthBar.y + healthBgYOffset;
-    retroHealthBarOverlay.alpha = playState.healthBar.alpha;
-    retroHealthBarFill.y = playState.healthBar.y + healthBgYOffset;
-    retroHealthBarFill.alpha = playState.healthBar.alpha;
-    retroHealthBarFillBG.y = playState.healthBar.y + healthBgYOffset;
-    retroHealthBarFillBG.alpha = playState.healthBar.alpha;
+    var targetBarY = playState.healthBar.y + healthBgYOffset;
+    var targetBarAlpha = playState.healthBar.alpha;
+    if (retroHealthBarOverlay.y != targetBarY) retroHealthBarOverlay.y = targetBarY;
+    if (retroHealthBarOverlay.alpha != targetBarAlpha) retroHealthBarOverlay.alpha = targetBarAlpha;
+    if (retroHealthBarFill.y != targetBarY) retroHealthBarFill.y = targetBarY;
+    if (retroHealthBarFill.alpha != targetBarAlpha) retroHealthBarFill.alpha = targetBarAlpha;
+    if (retroHealthBarFillBG.y != targetBarY) retroHealthBarFillBG.y = targetBarY;
+    if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
     // ---- Texts ----
     if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
       var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
       var moneyIncreaseDecimals = (event.elapsed * 100) / 100;
       var markiplier = (hiveminePlayerMoneyValue < 0) ? -1 : 1;
-      hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
-      hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
+      hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
+      hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
       updateHivemineText();
     }
 

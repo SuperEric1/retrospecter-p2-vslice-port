@@ -157,6 +157,14 @@ class ExtirpatientSong extends Song
       PlayState.instance.healthBar.alpha = 0;
       PlayState.instance.iconP1.alpha = 0;
       PlayState.instance.iconP2.alpha = 0;
+      // cancel the notes alpha tweens so they disappear properly.
+      for (i in 0...4) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        FlxTween.cancelTweensOf(strum, ["alpha"]);
+
+        strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        FlxTween.cancelTweensOf(strum, ["alpha"]);
+      }
       PlayState.instance.playerStrumline.alpha = 0;
       PlayState.instance.opponentStrumline.alpha = 0;
     }
