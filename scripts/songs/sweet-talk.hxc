@@ -409,7 +409,7 @@ class SweetTalkSong extends Song
 
     // Beat-specific events
     var camZoomEaseTime:Float = 0.7;
-    var oppCamXAdjust = 0;
+    var oppCamXAdjust = 120;
     var oppCamYAdjust = 0;
     var bfCamXAdjust = 0;
     var bfCamYAdjust = 0;
