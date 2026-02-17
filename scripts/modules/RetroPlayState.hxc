@@ -1249,6 +1249,7 @@ class RetroPlayState extends Module {
       sprite.screenCenter(0x01);
       sprite.cameras = [PlayState.instance.camHUD];
       sprite.zIndex = zIndex;
+      sprite.antialiasing = false;
 
       if (isDownscroll) {
         sprite.y = -sprite.height - yOffset;
