@@ -176,7 +176,7 @@ class RetroPlayState extends Module {
     var alwaysVisible:Array<String> = ['spectre'];
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
-    if (targetAlpha == 1) targetAlpha = strum.alpha;
+    //if (targetAlpha == 1) targetAlpha = strum.alpha;
     if (forceNotesAlpha != null) targetAlpha = forceNotesAlpha; // for the spectre note mechanic
     if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisible.contains(k)) {
       event.note.alpha = targetAlpha;
