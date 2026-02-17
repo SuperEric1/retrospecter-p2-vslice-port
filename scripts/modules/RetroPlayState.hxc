@@ -478,6 +478,10 @@ class RetroPlayState extends Module {
         hmpIsAtLimit = false;
       }
 
+      if (hmpActive && event.note.scoreable && retroGameUI != null) {
+        retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), -6289]);
+      }
+
       if (event.note.scoreable) doVocalThing(1.2); // Efeito de miss nas vocais
     }
 
@@ -488,6 +492,10 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
     if (event.holdNote.noteData.getMustHitNote()) { // Só pro jogador!
       doVocalThing(1.3); // efeito de miss nas vocais
+
+      if (hmpActive && retroGameUI != null) {
+        retroGameUI.scriptCall('spawnHivemineMoney', [event.holdNote.noteData.getDirection(), -6289]);
+      }
     }
   }
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
@@ -1146,7 +1154,7 @@ class RetroPlayState extends Module {
       if (holdNote.hitNote) {
         var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
-        if (cover.alpha != targetAlpha) cover.alpha = targetAlpha;
+        if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
       }
     }
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
@@ -1154,7 +1162,7 @@ class RetroPlayState extends Module {
       if (holdNote.hitNote) {
         var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
-        if (cover.alpha != targetAlpha) cover.alpha = targetAlpha;
+        if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
       }
     }
 
@@ -1350,7 +1358,7 @@ class RetroPlayState extends Module {
     hmpTweenAdvance = FlxTween.tween(paper, {y: targetY}, 2.5, {
       ease: FlxEase.quintOut,
       onUpdate: function(t:FlxTween) {
-        if (Math.abs(paper.y - targetY) < 0.3) { // End it early if it's close to fix a time thing
+        if (Math.abs(paper.y - targetY) < 0.5) { // End it early if it's close to fix a time thing
           paper.y = targetY;
           t.onComplete(t);
           t.cancel();
@@ -1376,7 +1384,7 @@ class RetroPlayState extends Module {
     if (hiveminePapers[3] == null) return;
     var paper = hiveminePapers[3];
 
-    var maxYOffset:Float = 35;
+    var maxYOffset:Float = 15;
     var maxY:Float = isDownscroll ? -paper.height + maxYOffset : FlxG.height - maxYOffset;
     var alreadyAtLimit:Bool = isDownscroll ? (paper.y <= maxY) : (paper.y >= maxY);
 
@@ -1403,7 +1411,7 @@ class RetroPlayState extends Module {
     hmpTweenRetract = FlxTween.tween(paper, {y: targetY}, 3, {
       ease: FlxEase.quintOut,
       onUpdate: function(t:FlxTween) {
-        if (Math.abs(paper.y - targetY) < 0.3) { // End it early if it's close to fix a time thing
+        if (Math.abs(paper.y - targetY) < 0.5) { // End it early if it's close to fix a time thing
           paper.y = targetY;
           t.onComplete(t);
           t.cancel();

@@ -551,6 +551,7 @@ class RetroGameUI extends Module {
     return value;
   }
   public function spawnHivemineMoney(direction:Int, amount:Float) {
+    if (PlayState.instance == null) return;
     var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
     addHivemineMoney(amount, 'player');
 
@@ -559,17 +560,17 @@ class RetroGameUI extends Module {
     txt.cameras = [PlayState.instance.camHUD];
     txt.text = amount >= 0 ? '+' + Std.string(amount) : Std.string(amount);
     txt.x = strum.x + (strum.width / 2) - (txt.fieldWidth / 2);
-    txt.y = (strum.y + (strum.height / 2) - (txt.height / 2)) + (downscroll ? -10 : 10);
+    txt.y = (strum.y + (strum.height / 2) - (txt.height / 2)) + (downscroll ? -40 : 40);
     txt.zIndex = strum.zIndex + 10;
     txt.antialiasing = false;
     PlayState.instance.add(txt);
 
     var marketplace:Int = downscroll ? -1 : 1;
-    FlxTween.tween(txt, {y: txt.y + (150 * marketplace)}, 0.5, {ease: FlxEase.cubicInOut, onComplete: function(_) {
+    FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.7, {ease: FlxEase.quintIn, onComplete: function(_) {
       if (PlayState.instance == null || txt == null) return;
       txt.destroy();
     }});
-    FlxTween.tween(txt, {alpha: 0}, 0.2, {startDelay: 0.3});
+    FlxTween.tween(txt, {alpha: 0}, 0.2, {startDelay: 0.55});
   }
 
   override public function onBeatHit(event:SongTimeScriptEvent) {

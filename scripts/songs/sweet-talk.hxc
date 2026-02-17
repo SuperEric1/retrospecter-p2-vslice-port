@@ -56,6 +56,8 @@ class SweetTalkSong extends Song
   var defaultPlayerStrumY:Array<Float> = [];
   var ogPlayerStrumScales:Array<Float> = [];
   var ogOppStrumScales:Array<Float> = [];
+  var bfFocusPoint:Array<Float> = [];
+  var dadFocusPoint:Array<Float> = [];
 
   // Camera variables
   var disableFocus:Bool = true;
@@ -133,6 +135,13 @@ class SweetTalkSong extends Song
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
 
+    if (bfFocusPoint[0] == null) {
+      bfFocusPoint = [playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y];
+    }
+    if (dadFocusPoint[0] == null) {
+      dadFocusPoint = [playStage.getDad().cameraFocusPoint.x, playStage.getDad().cameraFocusPoint.y];
+    }
+
     // Initial camera focus (actually, we should do this in onCountdownStart.)
     /*if (playState.startTimestamp <= 1000) {
       new FlxTimer().start(0.1, function(tmr) {
@@ -140,15 +149,6 @@ class SweetTalkSong extends Song
         playState.camHUD.alpha = 0;
       });
     }*/
-
-    //playState.cameraSpeed = 0.5;
-    //playState.camZoomingMult = 0.5;
-    //playState.camZoomingDecay = 0.75;
-
-    // Skip arrow start tween if modcharts enabled
-    if (modcharts) {
-      // This would be handled in the engine
-    }
   }
 
   public override function onCountdownStart(event:ScriptEvent):Void
@@ -409,31 +409,35 @@ class SweetTalkSong extends Song
 
     // Beat-specific events
     var camZoomEaseTime:Float = 0.7;
+    var oppCamXAdjust = 0;
+    var oppCamYAdjust = 0;
+    var bfCamXAdjust = 0;
+    var bfCamYAdjust = 0;
     switch (beat) {
       case 32:
         //playState.cameraSpeed = 0.65;
 
       case 96:
         resetNote(0.5, false);
-        //setOpponentCameraOffset(100, -200);
-        //setBoyfriendCameraOffset(-400, -450);
+        setOpponentCameraOffset(150 + oppCamXAdjust, -150 + oppCamYAdjust);
+        setBoyfriendCameraOffset(-100 + bfCamXAdjust, -50 + bfCamYAdjust);
         playState.iconP1.bopEvery = 4;
         playState.iconP2.bopEvery = 4;
         playState.tweenCameraZoom(0.425, camZoomEaseTime, true, FlxEase.quadOut);
 
       case 224:
-        //setOpponentCameraOffset(50, -210);
-        //setBoyfriendCameraOffset(-350, -430);
+        setOpponentCameraOffset(100 + oppCamXAdjust, -160 + oppCamYAdjust);
+        setBoyfriendCameraOffset(-50 + bfCamXAdjust, -30 + bfCamYAdjust);
         playState.tweenCameraZoom(0.45, camZoomEaseTime, true, FlxEase.quadOut);
 
       case 256:
-        //setOpponentCameraOffset(0, -200);
-        //setBoyfriendCameraOffset(-450, -450);
+        setOpponentCameraOffset(50 + oppCamXAdjust, -150 + oppCamYAdjust);
+        setBoyfriendCameraOffset(-150 + bfCamXAdjust, -50 + bfCamYAdjust);
         playState.tweenCameraZoom(0.5, camZoomEaseTime, true, FlxEase.quadOut);
 
       case 288:
-        //setOpponentCameraOffset(100, -200);
-        //setBoyfriendCameraOffset(-425, -460);
+        setOpponentCameraOffset(150 + oppCamXAdjust, -150 + oppCamYAdjust);
+        setBoyfriendCameraOffset(-125 + bfCamXAdjust, -60 + bfCamYAdjust);
         playState.tweenCameraZoom(0.425, camZoomEaseTime, true, FlxEase.quadOut);
         resetNote(0.5, false);
         zoomMultGame = 1.25;
@@ -456,6 +460,7 @@ class SweetTalkSong extends Song
         var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
         if (playerStrum != null) {
+          trace('intersect player');
           playerStrum.y = defaultPlayerStrumY[i] + FlxG.random.float(-35, 35);
         }
         if (opponentStrum != null) {
@@ -539,7 +544,7 @@ class SweetTalkSong extends Song
         var baseScaleX = ogPlayerStrumScales[i * 2];
         var baseScaleY = ogPlayerStrumScales[(i * 2) + 1];
 
-        playerStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        playerStrum.scale.set(baseScaleX * 1.1, baseScaleY * 1.1);
         tweens.push(FlxTween.tween(playerStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
 
@@ -548,7 +553,7 @@ class SweetTalkSong extends Song
         var baseScaleX = ogOppStrumScales[i * 2];
         var baseScaleY = ogOppStrumScales[(i * 2) + 1];
 
-        opponentStrum.scale.set(baseScaleX * 1.08, baseScaleY * 1.08);
+        opponentStrum.scale.set(baseScaleX * 1.1, baseScaleY * 1.1);
         tweens.push(FlxTween.tween(opponentStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
     }
@@ -675,6 +680,7 @@ class SweetTalkSong extends Song
   function addCameraZoom(gameZoom:Float, hudZoom:Float):Void
   {
     if (playState == null) return;
+    //playState.tweenCameraZoom(0.425, 0.7, true, FlxEase.quadOut);
     playState.camGame.zoom += gameZoom;
     playState.camHUD.zoom += hudZoom;
   }
@@ -683,8 +689,8 @@ class SweetTalkSong extends Song
   {
     var dad = playStage.getDad();
     if (dad != null) {
-      dad.cameraFocusPoint.x = dad.x + dad.cameraFocusPoint.x + x;
-      dad.cameraFocusPoint.y = dad.y + dad.cameraFocusPoint.y + y;
+      dad.cameraFocusPoint.x = dadFocusPoint[0] + x;
+      dad.cameraFocusPoint.y = dadFocusPoint[1] + y;
     }
   }
 
@@ -692,8 +698,8 @@ class SweetTalkSong extends Song
   {
     var bf = playStage.getBoyfriend();
     if (bf != null) {
-      bf.cameraFocusPoint.x = bf.x + bf.cameraFocusPoint.x + x;
-      bf.cameraFocusPoint.y = bf.y + bf.cameraFocusPoint.y + y;
+      bf.cameraFocusPoint.x = bfFocusPoint[0] + x;
+      bf.cameraFocusPoint.y = bfFocusPoint[1] + y;
     }
   }
 
@@ -758,6 +764,8 @@ class SweetTalkSong extends Song
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
+    bfFocusPoint = [];
+    dadFocusPoint = [];
     resetTweens();
   }
 
@@ -799,6 +807,10 @@ class SweetTalkSong extends Song
     super.onSongRetry(event);
     // Reset the icon's bopEvery to default.
     ModuleHandler.getModule('RetroGameUI')?.scriptCall('configureIcon', []);
+    playStage.getDad().cameraFocusPoint.x = dadFocusPoint[0];
+    playStage.getDad().cameraFocusPoint.y = dadFocusPoint[1];
+    playStage.getBoyfriend().cameraFocusPoint.x = bfFocusPoint[0];
+    playStage.getBoyfriend().cameraFocusPoint.y = bfFocusPoint[1];
     resetFlags();
   }
 
