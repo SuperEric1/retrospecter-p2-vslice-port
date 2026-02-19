@@ -176,7 +176,7 @@ class RetroPlayState extends Module {
     var alwaysVisible:Array<String> = ['spectre'];
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
-    //if (targetAlpha == 1) targetAlpha = strum.alpha;
+    if (targetAlpha == 1) targetAlpha = strum.alpha;
     if (forceNotesAlpha != null) targetAlpha = forceNotesAlpha; // for the spectre note mechanic
     if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisible.contains(k)) {
       event.note.alpha = targetAlpha;
@@ -463,7 +463,7 @@ class RetroPlayState extends Module {
       var noteDir = event.note.noteData.getDirection();
       if (k == "autoChain") {
         lockStrum(noteDir);
-        if (k == 'autoChain') chainText.visible = true;
+        if (k == 'autoChain') chainText.visible = true; // why did i put a if here
 
         event.note.kill();
         event.cancel();
@@ -1237,8 +1237,6 @@ class RetroPlayState extends Module {
     var zIndex = PlayState.instance.playerStrumline.zIndex + 2;
     var yOffset = 20;
     var path:String = 'greed/papers/';
-
-    //for (i in 0...4) FunkinMemory.cacheTexture(Paths.image(path + 'stack' + i, "shared"));
 
     for (i in 0...4) {
       var sprite:FunkinSprite = FunkinSprite.create(0, 0, path + 'stack' + i);

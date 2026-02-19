@@ -7,6 +7,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.Conductor;
 import funkin.Preferences;
+import funkin.FunkinMemory;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
@@ -100,6 +101,12 @@ class SweetTalkSong extends Song
     PlayState.instance.refresh();
 
     resetFlags();
+
+    // Cache hivemine papers.
+    var paperPath:String = 'greed/papers/';
+    for (i in 0...4) {
+      FunkinMemory.cacheTexture(Paths.image(paperPath + 'stack' + i, 'shared'));
+    }
   }
 
   override function onSongStart(event:ScriptEvent):Void
@@ -384,6 +391,7 @@ class SweetTalkSong extends Song
             alpha: 1
           }, crochet / 500 + (0.1 * i), {ease: FlxEase.quadOut, onComplete: function(twn) {
             waveOppStrums = true;
+            playState.opponentStrumline.alpha = 1;
           }}));
         }
       }
@@ -402,6 +410,7 @@ class SweetTalkSong extends Song
             alpha: 1
           }, crochet / 500 + (0.1 * (4 - i)), {ease: FlxEase.quadOut, onComplete: function(twn) {
             wavePlayerStrums = true;
+            playState.playerStrumline.alpha = 1;
           }}));
         }
       }
