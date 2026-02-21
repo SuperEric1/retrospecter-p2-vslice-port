@@ -1,0 +1,25 @@
+{
+  "props": [],
+  "cameraZoom": 0.475,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "scale": 0.9,
+      "zIndex": 300,
+      "position": [1840, 1710],
+      "cameraOffsets": [-500, -400]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [185, 1750],
+      "cameraOffsets": [450, -20]
+    },
+    "gf": {
+      "scale": 0.6,
+      "zIndex": 100,
+      "cameraOffsets": [0, 50],
+      "position": [1050, 1240]
+    }
+  },
+  "name": "Bee"
+}

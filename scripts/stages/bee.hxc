@@ -1,0 +1,246 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.util.Constants;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.Paths;
+import funkin.save.Save;
+import haxe.ds.StringMap;
+
+class BeeStage extends Stage
+{
+  var bgX:Float = -1000;
+  var bgY:Float = -700;
+
+  var glitterPositions:Array<Array<Float>> = [
+    [465,  1833], // FarLeft
+    [2299, 1811], // Center
+    [2890, 1800], // Table
+    [3546, 2200]  // FarRight
+  ];
+
+  var bg:StageProp;
+  var bgg:StageProp;
+  var fg:StageProp;
+  var fgg:StageProp;
+  var glitterSprites:Array<StageProp> = [];
+
+  var crystal:FlxSprite;
+  var bees:FlxAtlasSprite;
+
+  public function new()
+  {
+    super('bee');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    bg = makeSprite('bg', 'greed/hivemine_bg', bgX, bgY);
+    bg.antialiasing = false;
+
+    bgg = makeSprite('bgg', 'greed/BG1', bgX, bgY);
+    bgg.alpha = 0;
+    bgg.antialiasing = false;
+    bgg.kill();
+
+    var glitterNames = ['FarLeft', 'Center', 'Table', 'FarRight'];
+    for (i in 0...glitterPositions.length)
+    {
+      var glitter = makeAnimatedSprite(
+        'glitter_' + glitterNames[i],
+        'greed/Hivemine_GlitterPatch_' + glitterNames[i],
+        bgX + glitterPositions[i][0],
+        bgY + glitterPositions[i][1]
+      );
+      glitter.animation.addByPrefix('glitter', 'Hivemine_GlitterPatch_' + glitterNames[i], 24, true);
+      glitter.animation.play('glitter');
+      glitter.antialiasing = false;
+      glitterSprites.push(glitter);
+    }
+
+    fg = makeSprite('fg', 'greed/hivemine_fg', bgX, bgY);
+    fg.zIndex = 301;
+    fg.antialiasing = false;
+
+    fgg = makeSprite('fgg', 'greed/BG2', bgX, bgY);
+    fgg.alpha = 0;
+    fgg.zIndex = 302;
+    fgg.antialiasing = false;
+    fgg.kill();
+
+    crystal = FunkinSprite.create(-552, 132);
+    crystal.loadTexture(Paths.image('greed/crystal_static'));
+    crystal.alpha = 0.3;
+    crystal.scale.set(0.975, 0.975);
+    crystal.antialiasing = false;
+    PlayState.instance.add(crystal);
+    crystal.kill();
+
+    // Animação das abelhas
+    bees = FunkinSprite.create(-1000, -700, 'greed/bees');
+    bees.loadTextureAtlas('greed/bees', 'shared');
+    bees.animation.addBySymbol('idle', 'bees', 24);
+    bees.animation.play('idle', true);
+    bees.antialiasing = false;
+    PlayState.instance.add(bees);
+    bees.kill();
+
+    // refresh in onsongloaded
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+
+    /*var gf = getGirlfriend();
+    if (gf != null && gf.characterId != 'gf-default')
+    {
+      gf.x += -147;
+      gf.y += 60;
+    }*/
+
+    // subtitle
+    // 0xFFEDC452;
+    // it's getting late: 0xFF9A59DB;
+
+    //positionBoyfriend();
+
+    PlayState.instance.refresh();
+  }
+
+  function positionBoyfriend():Void
+  {
+    var bf = getBoyfriend();
+    if (bf == null) return;
+
+    var xx:Float = -100;
+    var yy:Float = 0;
+
+    switch (bf.characterId)
+    {
+      case 'bf-greed':
+        bf.y += (230 + yy);
+        bf.x -= (150 + xx);
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    
+  }
+
+  override function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == 'RetroChangeCharacter' && value.character == 'dad' && value.newchar == 'hivemineTalk')
+    {
+      getDad().animation.play('idle', true);
+    }
+
+    if (eventKind == 'RetroChangeCharacter' && value.character == 'dad' && value.newchar == 'hiveless')
+    {
+      fg.kill();
+      bg.kill();
+      for (glitter in glitterSprites) glitter.kill();
+
+      // Mostra cenário hiveless
+      bgg.revive();
+      fgg.revive();
+      bgg.alpha = 1;
+      fgg.alpha = 1;
+
+      bees.revive();
+      crystal.revive();
+      FlxTween.tween(crystal, {alpha: 0.1}, 1, {type: 4, ease: FlxEase.quadOut});
+
+      // Shaders
+      if (Preferences.shaders)
+      {
+        // add here later. see colors in the original script
+      }
+
+      //PlayState.instance.refresh();
+    }
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+    if (charType == CharacterType.GF)
+    {
+      character.antialiasing = false;
+    }
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+
+    if (getDad() != null && getDad().characterId == 'hiveless' && crystal != null)
+    {
+      FlxTween.tween(crystal, {alpha: 0.1}, 1, {type: 4, ease: FlxEase.quadOut});
+    }
+  }
+
+  function makeSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    PlayState.instance.add(sprite);
+    return sprite;
+  }
+
+  function makeAnimatedSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadSparrow(imagePath);
+    PlayState.instance.add(sprite);
+    return sprite;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    if (crystal != null && crystal.alive) FlxTween.cancelTweensOf(crystal);
+
+    bgg.kill();
+    fgg.kill();
+    bees.kill();
+    crystal.kill();
+
+    bg.revive();
+    fg.revive();
+    for (glitter in glitterSprites) glitter.revive();
+
+    //PlayState.instance.refresh();
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    glitterSprites = [];
+    crystal = null;
+  }
+}

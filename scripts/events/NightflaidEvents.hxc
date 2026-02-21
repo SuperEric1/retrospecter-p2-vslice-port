@@ -7,12 +7,12 @@ class NightflaidEvents extends SongEvent {
   }
 
   override function getTitle() {
-      return "Nightflaid Events";
+    return "Nightflaid Events";
   }
 
   override function handleEvent(data) {
-      if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
-      if (PlayState.instance.isMinimalMode) return;
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
   }
 
   override function getEventSchema() {

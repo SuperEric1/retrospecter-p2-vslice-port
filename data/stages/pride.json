@@ -75,7 +75,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 3
+      "zIndex": 11
     },
     {
       "alpha": 1,
@@ -100,7 +100,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 2
+      "zIndex": 10
     },
     {
       "alpha": 1,
@@ -125,7 +125,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 4
+      "zIndex": 13
     },
     {
       "alpha": 1,
@@ -150,7 +150,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 3
+      "zIndex": 14
     },
     {
       "alpha": 1,
@@ -175,7 +175,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 5
+      "zIndex": 15
     },
     {
       "alpha": 1,
@@ -200,7 +200,7 @@
         0.1
       ],
       "startingAnimation": null,
-      "zIndex": 4
+      "zIndex": 16
     },
     {
       "alpha": 1,
@@ -334,7 +334,7 @@
           "name": "idle"
         }
       ],
-      "zIndex": 2
+      "zIndex": 9
     }
   ],
   "characters": {
@@ -383,14 +383,14 @@
       ],
       "position": [
         127,
-        330
+        285
       ],
-      "scale": 0.4,
+      "scale": 0.35,
       "scroll": [
         0.6,
         0.1
       ],
-      "zIndex": 100
+      "zIndex": 7
     }
   },
   "cameraZoom": 0.42,

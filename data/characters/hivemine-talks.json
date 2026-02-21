@@ -1,0 +1,54 @@
+{
+  "version": "1.0.0",
+  "name": "Hivemine",
+  "assetPath": "characters/OtherSins/hivemineTalks",
+  "singTime": 20,
+  "startingAnimation": "idle",
+  "isPixel": false,
+  "scale": 1.4,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "hivemine",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "singDOWN",
+      "prefix": "sa",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "ba",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "ca",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "da",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle",
+      "prefix": "transition",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

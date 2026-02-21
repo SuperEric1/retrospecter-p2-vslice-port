@@ -68,8 +68,10 @@ class RetroPlayState extends Module {
   var ogOppStrumsY:Array<Float> = [];
   var ogPlayerStrumScales:Array<Float> = [];
   var ogOppStrumScales:Array<Float> = [];
+  var ogDadId:String = null;
 
   var poisonSprite:FunkinSprite;
+  var poisonSpriteFrame:Bool = 0;
   var poisonText:FlxText;
   var hasAddedPoisonTxt:Bool = false;
   var poisonAmount:Int = 0;
@@ -384,21 +386,23 @@ class RetroPlayState extends Module {
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
       if (solidCameraSprite != null) {
-        solidCameraSprite.makeSolidColor(FlxG.width * 4, FlxG.height * 4, 0xFF66FFF7);
+        solidCameraSprite.makeSolidColor(3000, 4000, 0xFF66FFF7);
       }
 
       if (solidCameraSprite != null) {
+        if (!solidCameraSprite.alive) solidCameraSprite.revive();
         FlxTween.cancelTweensOf(solidCameraSprite);
         solidCameraSprite.visible = true;
       }
 
       if (Preferences.flashingLights) {
         //FlxTween.cancelTweensOf(solidCameraSprite);
-        tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.05, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
-          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.1}, 0.3, {ease: FlxEase.quadOut}));
+        // old: start at 0.3 then go to 0.1
+        tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.5}, 0.7, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+          tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0.3}, 0.4, {ease: FlxEase.quadOut}));
         }}));
       } else if (izzyMechanicEndTween == null) {
-        solidCameraSprite.alpha = 0.1;
+        solidCameraSprite.alpha = 0.4;
       }
 
       scrambleStrumline();
@@ -533,6 +537,7 @@ class RetroPlayState extends Module {
 
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
+      ogDadId = PlayState.instance.currentStage.getDad().characterId;
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
@@ -680,18 +685,19 @@ class RetroPlayState extends Module {
     // Se for instantâneo, aplicamos o valor direto e limpamos os tweens ativos das notas
     if (instant) {
         for (i in 0...4) {
-            var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-            // Cancela tweens anteriores nessa nota para evitar conflito
-            FlxTween.cancelTweensOf(note);
-            note.x = ogStrumsX[i];
-            note.y = ogStrumsY[i];
-            note.angle = 0;
+          var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+          // Cancela tweens anteriores nessa nota para evitar conflito
+          FlxTween.cancelTweensOf(note);
+          note.x = ogStrumsX[i];
+          note.y = ogStrumsY[i];
+          note.angle = 0;
         }
 
         PlayState.instance.camHUD.angle = 0;
         if (solidCameraSprite != null && clearCamera) {
-             solidCameraSprite.alpha = 0;
-             solidCameraSprite.visible = false;
+          solidCameraSprite.alpha = 0;
+          solidCameraSprite.visible = false;
+          solidCameraSprite.kill();
         }
         return; // Sai da função, não precisa criar tweens
     }
@@ -723,10 +729,12 @@ class RetroPlayState extends Module {
         obj.angle = 0;
         if (solidCameraSprite != null) {
           solidCameraSprite.alpha = 0;
+          solidCameraSprite.kill();
         }
       } else {
         izzyMechanicEndTween = FlxTween.tween(obj, {angle: 0}, 3, {ease: FlxEase.quadOut});
         if (solidCameraSprite != null) {
+          if (!solidCameraSprite.alive) solidCameraSprite.revive();
           tweens.push(FlxTween.tween(solidCameraSprite, {alpha: 0}, 2, {ease: FlxEase.quadOut}));
         }
       }
@@ -998,24 +1006,27 @@ class RetroPlayState extends Module {
       }
     }
 
-    if (poisonSprite?.active && poisonSprite?.visible && poisonSprite != null && poisonText != null && PlayState.instance.iconP1 != null) {
-      poisonSprite.x = PlayState.instance.iconP1.x + 15;
-      poisonSprite.y = (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset;
+    if (poisonSprite?.active && poisonSprite != null && PlayState.instance.iconP1 != null) {
+      poisonSprite.animation.curAnim.curFrame = (poisonSpriteFrame * 100) + poisonAmount;
+      poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
+      poisonSprite.y = (PlayState.instance.healthBar.y - 150) + poisonSpriteYOffset; // (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset
       poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
       poisonSprite.alpha = PlayState.instance.healthBar.alpha;
-      poisonText.size = PlayState.instance.iconP1.height / 2.3;
-      poisonText.x = poisonSprite.x + (poisonSprite.width / 2) - (poisonText.width / 2);
-      poisonText.y = poisonSprite.y + (poisonSprite.height / 2) - (poisonText.height / 2) + poisonTextYOffset;
-      poisonText.alpha = PlayState.instance.healthBar.alpha;
+      poisonSprite.visible = true; // it's active, so we make it visible.
       var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
       if (poisonSprite.zIndex != targetZIndex) {
         poisonSprite.zIndex = targetZIndex;
         PlayState.instance.refresh();
       }
-      if (poisonText.zIndex != targetZIndex + 2) {
+      // old stuff
+      //poisonText.size = PlayState.instance.iconP1.height / 2.3;
+      //poisonText.x = poisonSprite.x + (poisonSprite.width / 2) - (poisonText.width / 2);
+      //poisonText.y = poisonSprite.y + (poisonSprite.height / 2) - (poisonText.height / 2) + poisonTextYOffset;
+      //poisonText.alpha = PlayState.instance.healthBar.alpha;
+      /*if (poisonText.zIndex != targetZIndex + 2) {
         poisonText.zIndex = targetZIndex + 2;
         PlayState.instance.refresh();
-      }
+      }*/
     }
 
     if (isDrugged) {
@@ -1197,35 +1208,49 @@ class RetroPlayState extends Module {
     chainText.visible = false;
     PlayState.instance.add(chainText);
 
-    poisonSprite = new FunkinSprite(0, 0);
-    poisonSprite.loadSparrow('ui/healthBars/poison');
-    poisonSprite.animation.addByPrefix('P2', 'P2_0', 1, true);
-    poisonSprite.animation.addByPrefix('P3', 'P3_0', 1, true);
-    poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
-    poisonSprite.animation.play('P2', true);
+    poisonSprite = FunkinSprite.create(0, 0, 'ui/poison');
+    poisonSprite.loadTextureAtlas('ui/poison', 'shared', {
+      applyStageMatrix: false,
+    });
+    //poisonSprite.loadSparrow('ui/healthBars/poison');
+    poisonSprite.animation.addBySymbol('splashes', 'assets/splashes', 0); // gonna have to start adding by symbol to atlases since there will be a breaking change and all anims will have to be added
+    poisonSprite.animation.addBySymbol('fallipe', 'anims/fallipe', 0);
+    //poisonSprite.animation.addByPrefix('P2', 'anims/fallipe', 24, true);
+    //poisonSprite.animation.addByPrefix('P2', 'P2_0', 1, true);
+    //poisonSprite.animation.addByPrefix('P3', 'P3_0', 1, true);
+    //poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
+    poisonSprite.animation.play('splashes', true);
     poisonSprite.cameras = [PlayState.instance.camHUD];
     poisonSprite.updateHitbox();
     poisonSprite.visible = false;
     poisonSprite.active = false;
+    poisonSpriteFrame = 0; // starting frame
+    poisonSprite.animation.curAnim.frameRate = 0;
+    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2; // just to make sure
     PlayState.instance.add(poisonSprite);
+    poisonSprite.kill();
 
     // se for editar propriedades, estao no onupdate
-    poisonText = new FlxText(0, 0, 0, '0', 1);
+    // descartado à favor do novo sprite de poison
+    /*poisonText = new FlxText(0, 0, 0, '0', 1);
     poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
     poisonText.cameras = [PlayState.instance.camHUD];
     // poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
     poisonText.visible = false;
     //poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
     //poisonText.y = PlayState.instance.healthBar.y - 5;
-    PlayState.instance.add(poisonText);
+    PlayState.instance.add(poisonText);*/
 
-    solidCameraSprite = FunkinSprite.create(0, 0);
-    solidCameraSprite.makeSolidColor(FlxG.width * 1.2, FlxG.height * 1.2, 0xFF000000);
-    solidCameraSprite.cameras = [PlayState.instance.camCutscene];
+    solidCameraSprite = FunkinSprite.create(-50, -50);
+    solidCameraSprite.makeSolidColor(3000, 4000, 0xFF000000);
+    //solidCameraSprite.cameras = [PlayState.instance.camCutscene];
+    solidCameraSprite.scrollFactor.set(0, 0);
     solidCameraSprite.screenCenter();
     solidCameraSprite.zIndex = 100000;
     solidCameraSprite.visible = false;
+    solidCameraSprite.blend = 9;
     PlayState.instance.add(solidCameraSprite);
+    solidCameraSprite.kill();
 
     PlayState.instance.refresh();
   }
@@ -1287,8 +1312,13 @@ class RetroPlayState extends Module {
 
     PlayState.instance.refresh(); // apply zindexes properly
   }
-  public function toggleHiveminePapers():Void {
+  public function toggleHiveminePapers(?value:Bool = null):Void {
     if (!mechanicsEnabled) return;
+    if (value != null) {
+      hmpActive = value;
+      return;
+    }
+
     if (hmpActive == false) {
       hmpActive = true;
     } else {
@@ -1427,26 +1457,39 @@ class RetroPlayState extends Module {
     hmpIsAtLimit = false;
   }
 
-  function updatePoisonCounter() {
+  function updatePoisonCounter(?dadId:String = null) {
     var oppId:String = PlayState.instance.currentStage.getDad().characterId.toLowerCase();
+    if (dadId != null) oppId = dadId.toLowerCase();
     if (poisonSprite != null) {
-      poisonSprite.visible = true;
+      if (!poisonSprite.alive) poisonSprite.revive();
       poisonSprite.active = true;
       switch (oppId) {
         case "phase2":
-          poisonSprite.animation.play('P2', true);
+          poisonSpriteFrame = 0;
+          //poisonSprite.animation.play('P2', true);
         case "zerktro-freeplay":
-          poisonSprite.animation.play('P2', true);
+          poisonSpriteFrame = 0;
+          //poisonSprite.animation.play('P2', true);
         case "phase3":
-          poisonSprite.animation.play('P3', true);
-          poisonTextYOffset = 4;
+          poisonSpriteFrame = 1;
+          //poisonSprite.animation.play('P3', true);
+          //poisonTextYOffset = 4;
         case "phase4":
-          poisonSprite.animation.play('P4', true);
-          poisonSpriteYOffset = -7;
-          poisonTextYOffset = 8;
+          poisonSpriteFrame = 2;
+          //poisonSprite.animation.play('P4', true);
+          //poisonSpriteYOffset = -7;
+          //poisonTextYOffset = 8;
+        case "hiveless":
+          poisonSpriteFrame = 3;
+        case "corruptro":
+          poisonSpriteFrame = 4;
+        case "fallipe":
+          poisonSpriteFrame = 0;
+          poisonSprite.animation.play('fallipe', true);
         default:
           poisonSprite.visible = false;
           poisonSprite.active = false;
+          poisonSprite.kill();
       }
     }
     if (poisonText != null && poisonSprite.active) {
@@ -1495,6 +1538,8 @@ class RetroPlayState extends Module {
       PlayState.instance.healthBar.x = healthBarOgPos[0];
       PlayState.instance.healthBar.y = healthBarOgPos[1];
     }
+
+    updatePoisonCounter(ogDadId ?? null);
 
     hmpActive = false;
     hmpSpeed = 0;
@@ -1591,11 +1636,15 @@ class RetroPlayState extends Module {
     super.onSongEvent(event);
 
     var eventKind = event.eventData.eventKind;
-    //var value = event.eventData.value;
+    var value = event.eventData.value;
 
     switch (eventKind) {
       case "RetroChangeCharacter":
-        updatePoisonCounter(); // update poison counter sprite.
+        if (value.character == 'dad') {
+          //new FlxTimer().start(0.01, function(tmr:FlxTimer) {
+            updatePoisonCounter(value.newchar); // update poison counter sprite.
+          //});
+        }
 
       default:
     }
@@ -1703,6 +1752,7 @@ class RetroPlayState extends Module {
     poisonTextYOffset = 0;
     forceNotesAlpha = null;
     funnyVar = false;
+    ogDadId = null;
     destroyHiveminePapers();
     hmpActive = false;
     hmpAnimating = false;
@@ -1719,7 +1769,7 @@ class RetroPlayState extends Module {
       if (sprite != null) {
         // Se ainda estiver na tela, removemos
         if(PlayState.instance.members.contains(sprite)) {
-            PlayState.instance.remove(sprite);
+          PlayState.instance.remove(sprite);
         }
         sprite.destroy(); // Garante a limpeza da memória gráfica
         sprite = null;    // Anula a referência
@@ -1734,7 +1784,7 @@ class RetroPlayState extends Module {
       }
       if (hydraBeamSprites[i] != null) {
         if(PlayState.instance != null && PlayState.instance.members.contains(hydraBeamSprites[i])) {
-            PlayState.instance.remove(hydraBeamSprites[i]);
+          PlayState.instance.remove(hydraBeamSprites[i]);
         }
         hydraBeamSprites[i].destroy();
         hydraBeamSprites[i] = null;
@@ -1756,10 +1806,8 @@ class RetroPlayState extends Module {
 
 	private function resetTweens()
 	{
-		for (tween in tweens)
-		{
-			if (tween != null)
-				tween.cancel();
+		for (tween in tweens) {
+			if (tween != null) tween.cancel();
 		}
 		tweens = [];
 		pausedTweens = [];
@@ -1775,10 +1823,8 @@ class RetroPlayState extends Module {
       izzyMechanicEndTween.active = true;
     }
 
-		for (tween in pausedTweens)
-		{
-			if (tween != null)
-				tween.active = true;
+		for (tween in pausedTweens) {
+			if (tween != null) tween.active = true;
 		}
 		pausedTweens = [];
 	}

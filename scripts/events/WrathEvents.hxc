@@ -1,18 +1,18 @@
 import funkin.play.event.SongEvent;
 import funkin.play.PlayState;
 
-class WrathEvents extends SongEvent { // why did i name it sillyevents
+class WrathEvents extends SongEvent {
   function new() {
     super('WrathEvents');
   }
 
   override function getTitle() {
-      return "Phase 3 Events";
+    return "Phase 3 Events";
   }
 
   override function handleEvent(data) {
-      if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
-      if (PlayState.instance.isMinimalMode) return;
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
   }
 
   override function getEventSchema() {

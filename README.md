@@ -5,7 +5,6 @@ TODO:
 - [ ] Catastrofiend subtitles
 - [ ] Saku note mechanic
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
-- [ ] Sweet talk difficulties
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
 - [ ] Acid death
@@ -22,6 +21,8 @@ TODO:
 - [ ] Song ratings for freeplay
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later (uuuuh not right now cuz the notestyles can't handle offsets)
+- [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
+- [X] Sweet talk difficulties
 - [X] Poison note notesplashes
 - [X] Song length timer
 - [X] Fix title screen on mobile

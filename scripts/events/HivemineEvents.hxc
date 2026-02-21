@@ -1,0 +1,40 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+
+class HiveEvents extends SongEvent {
+  function new() {
+    super('HiveEvents');
+  }
+
+  override function getTitle() {
+    return "Hivemine Events";
+  }
+
+  override function handleEvent(data) {
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "eventType",
+        title: "Tipo",
+        defaultValue: '',
+        type: "string"
+      },
+      {
+        name: "value1",
+        title: "Valor 1",
+        defaultValue: '',
+        type: "string"
+      },
+      {
+        name: "value2",
+        title: "Valor 2",
+        defaultValue: '',
+        type: "string"
+      }
+    ];
+  }
+}

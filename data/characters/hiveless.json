@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "name": "Hiveless",
+  "assetPath": "characters/OtherSins/hiveless",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.4,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "hiveless",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "hive idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "hive down",
+      "offsets": [50, -99],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "hive left",
+      "offsets": [150, -30],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "hive up",
+      "offsets": [-81, 181],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "hive right",
+      "offsets": [-284, 136],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

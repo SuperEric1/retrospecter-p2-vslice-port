@@ -28,12 +28,16 @@ class RetroGirlfriendHandler extends Module {
     "gf-default" => path + 'default',
     "gf-wrath" => path + 'wrath',
     "gf-gluttony" => path + 'gluttony',
+    "gf-greed" => path + 'greed',
+    "gf-pride" => path + 'pride',
   ];
   var refreshed:Bool = false;
 
   var defaultOffset:Array<Float> = [0, 0]; // Fallback
   var stageOffsets:StringMap<String, StringMap<String, Array<Float>>> = [
-    "gf-default" => [
+    // old offsets
+    "" => [],
+    /*"gf-default" => [
       "gluttony" => [-260, 110],
       "pregluto" => [-260, 110],
       "pride" => [-110, 50],
@@ -47,10 +51,18 @@ class RetroGirlfriendHandler extends Module {
     "gf-gluttony" => [
       "gluttony" => [-210 * 2, -130],
       "pregluto" => [-210 * 2, -130],
-    ]
+    ]*/
+  ];
+  var speakerOffsets:StringMap<String, Array<Float>> = [
+    "gf-default" => [-0.05, 0.13],
+    "gf-greed" => [-0.05, -0.04],
+    "gf-gluttony" => [-0.01, -0.175],
+    "gf-pride" => [-0.03, -0.13],
+    "gf-wrath" => [-0.185, 0.01],
   ];
 
   var currentData = null;
+  var currentOffset = null;
   var girlfriend = null;
   var createdSpeaker:Bool = false;
 
@@ -69,8 +81,9 @@ class RetroGirlfriendHandler extends Module {
 
   public function reloadSpeaker():Void {
     if (speaker != null) PlayState.instance.remove(speaker);
-    currentData = stageOffsets.get(girlfriend.characterId);
-    if (currentData == null) return;
+    currentData = stageOffsets.get(girlfriend.characterId) ?? null;
+    currentOffset = speakerOffsets.get(girlfriend.characterId) ?? defaultOffset;
+    if (speakerPaths.get(girlfriend.characterId) == null) return;
     speaker = FunkinSprite.create(0, 0);
     speaker.frames = Paths.getSparrowAtlas(speakerPaths.get(girlfriend.characterId));
     switch (girlfriend.characterId) {
@@ -99,16 +112,26 @@ class RetroGirlfriendHandler extends Module {
   override public function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null || !createdSpeaker || girlfriend == null || currentData == null) return;
+    if (PlayState.instance == null || !createdSpeaker || girlfriend == null) return;
 
-    var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
-    var offset:Array<Float> = currentData.exists(currentStage) ? currentData.get(currentStage) : defaultOffset;
-    var targetCoord:Array<String> = [girlfriend.x + offset[0], girlfriend.y + offset[1]];
+    if (currentData != null) {
+      // old positions
+      var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+      var offset:Array<Float> = currentData.exists(currentStage) ? currentData.get(currentStage) : defaultOffset;
+      var targetCoord:Array<Float> = [girlfriend.x + offset[0], girlfriend.y + offset[1]];
 
-    if (speaker.x != targetCoord[0])
-      speaker.x = targetCoord[0];
-    if (speaker.y != targetCoord[1])
-      speaker.y = targetCoord[1];
+      if (speaker.x != targetCoord[0])
+        speaker.x = targetCoord[0];
+      if (speaker.y != targetCoord[1])
+        speaker.y = targetCoord[1];
+    } else {
+      // new positions
+      var targetCoord:Array<Float> = [girlfriend.x + (girlfriend.width / 2) - (speaker.width / 2) + (girlfriend.width * currentOffset[0]), girlfriend.y + (girlfriend.height / 1.5) - (speaker.height / 2) + (girlfriend.height * currentOffset[1])];
+      if (speaker.x != targetCoord[0])
+        speaker.x = targetCoord[0];
+      if (speaker.y != targetCoord[1])
+        speaker.y = targetCoord[1];
+    }
 
     speaker.visible = girlfriend.visible;
     speaker.alpha = girlfriend.alpha;
@@ -117,7 +140,7 @@ class RetroGirlfriendHandler extends Module {
       speaker.antialiasing = girlfriend.antialiasing;
       speaker.scale.set(girlfriend.scale.x, girlfriend.scale.y);
       speaker.scrollFactor.set(girlfriend.scrollFactor.x, girlfriend.scrollFactor.y);
-      speaker.zIndex = girlfriend.zIndex - 5;
+      speaker.zIndex = girlfriend.zIndex - 1;
       speaker.updateHitbox();
       PlayState.instance.currentStage.add(speaker);
 
@@ -165,6 +188,7 @@ class RetroGirlfriendHandler extends Module {
   override function onDestroy(event:ScriptEvent)
 	{
 		super.onDestroy(event);
+    if (speaker != null) speaker.destroy();
     createdSpeaker = false;
     refreshed = false;
     girlfriend = null;
