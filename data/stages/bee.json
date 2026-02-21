@@ -7,12 +7,12 @@
       "scale": 0.9,
       "zIndex": 300,
       "position": [1840, 1710],
-      "cameraOffsets": [-500, -400]
+      "cameraOffsets": [-500, -340]
     },
     "dad": {
       "zIndex": 200,
       "position": [185, 1750],
-      "cameraOffsets": [450, -20]
+      "cameraOffsets": [600, -20]
     },
     "gf": {
       "scale": 0.6,
