@@ -22,6 +22,10 @@ class BFGreedCharacter extends MultiSparrowCharacter
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       switch (event.note.noteData.kind)
       {
+        case "hivlss":
+          return;
+        case "hivelessNote"
+          return;
         case "poison":
           return;
         case "No Animation":
