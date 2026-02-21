@@ -29,7 +29,7 @@ class cashNote extends Module {
 		super.onNoteHit(event);
 
 		if (PlayState.instance == null) return;
-		if (event.note.noteData.kind == "cashNote" && event.note.noteData.getMustHitNote()) {
+		if ((event.note.noteData.kind == "cashNote" || event.note.noteData.kind == "autoCash") && event.note.noteData.getMustHitNote()) {
 			var dir = event.note.noteData.getDirection();
 			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
 			FunkinMemory.cacheTexture(Paths.image('notes/splash/coin', "shared"));
@@ -70,10 +70,10 @@ class cashNote extends Module {
 	public override function onNoteIncoming( event:NoteScriptEvent )
 	{
 		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "cashNote" )
+		if ( event.note.noteData.kind == "cashNote" || event.note.noteData.kind == "autoCash" )
 		{
 			event.note.x += 0;
-			event.note.yOffset += 0;
+			if (event.note.noteData.kind == "autoCash") event.note.yOffset -= 60;
 
 			event.note.frames = Paths.getSparrowAtlas( 'notes/coin' );
 			event.note.animation.addByPrefix( 'purpleScroll', 'idle0' );

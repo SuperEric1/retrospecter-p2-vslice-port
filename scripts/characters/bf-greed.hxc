@@ -24,7 +24,7 @@ class BFGreedCharacter extends MultiSparrowCharacter
       {
         case "hivlss":
           return;
-        case "hivelessNote"
+        case "hivelessNote":
           return;
         case "poison":
           return;

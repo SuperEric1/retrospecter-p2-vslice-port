@@ -84,6 +84,7 @@ class RetroGameUI extends Module {
   var hivemineOppMoney:FlxText;
   var hiveminePlayerMoneyValue:Float = 0;
   var hivemineOppMoneyValue:Float = 0;
+  var hivemineMoneyMulti = 1;
   var ogHivePlayerTextPos:Array<Float> = [];
   var ogHiveOppTextPos:Array<Float> = [];
 
@@ -504,8 +505,9 @@ class RetroGameUI extends Module {
     //hivemineOppMoney.textField.background = true;
     hivemineOppMoney.antialiasing = false;
 
+    hivemineMoneyMulti = 1;
     positionHivemineText();
-    setHivemineMoney(0); // 0 = default, transforms into 100k
+    setHivemineMoney(0);
     updateHivemineText();
   }
 
@@ -533,8 +535,10 @@ class RetroGameUI extends Module {
     hivemineOppMoney.text = '$ ' + FlxStringUtil.formatMoney(hivemineOppMoneyValue, true, commaSeparated);
 
     var negativeColor = 0xFFdb5659;
-    if (hiveminePlayerMoneyValue <= 0 && hiveminePlayerMoney.color != negativeColor) {
+    if (hiveminePlayerMoneyValue < 0 && hiveminePlayerMoney.color != negativeColor) {
       hiveminePlayerMoney.color = negativeColor;
+    } else {
+      hiveminePlayerMoney.color = color ?? 0xFFee8044;
     }
   }
   public function positionHivemineText():Void {
@@ -554,9 +558,10 @@ class RetroGameUI extends Module {
     ogHiveOppTextPos = [hivemineOppMoney.x, hivemineOppMoney.y];
   }
   public function setHivemineMoney(value:Bool, ?target:String = null) {
-    var valueFinal:Float = 100000;
+    var valueFinal:Float = 0; // should be 100k but it was inaccurate with the original mod
     var lTarget:String = target ?? 'both';
     if (value != 0) valueFinal = value;
+    if (value == -1) hivemineMoneyMulti = -1;
     if (lTarget.toLowerCase() == 'both') {
       hivemineOppMoneyValue = valueFinal;
       hiveminePlayerMoneyValue = valueFinal;
@@ -595,11 +600,11 @@ class RetroGameUI extends Module {
     PlayState.instance.add(txt);
 
     var marketplace:Int = downscroll ? -1 : 1;
-    FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.7, {ease: FlxEase.quintIn, onComplete: function(_) {
+    FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.4, {ease: FlxEase.quintIn, onComplete: function(_) {
       if (PlayState.instance == null || txt == null) return;
       txt.destroy();
     }});
-    FlxTween.tween(txt, {alpha: 0}, 0.2, {startDelay: 0.55});
+    FlxTween.tween(txt, {alpha: 0}, 0.07, {startDelay: 0.4 - 0.07});
   }
 
   override public function onBeatHit(event:SongTimeScriptEvent) {
@@ -795,14 +800,15 @@ class RetroGameUI extends Module {
     if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
     // ---- Texts ----
-    if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
+    if (isHivemine && !PlayState.instance.startingSong && hiveminePlayerMoney != null && hivemineOppMoney != null) {
       var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
       var moneyIncreaseDecimals = (event.elapsed * 100) / 100;
-      var markiplier = (hiveminePlayerMoneyValue < 0) ? -1 : 1;
+      var markiplier = hivemineMoneyMulti;
       hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
       hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
-      updateHivemineText();
     }
+
+    updateHivemineText();
 
     for (holdNote in playState.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;

@@ -62,9 +62,9 @@ class RetroSave extends Module
       resetOneTimeFlags();
     }
 
-    if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
+    /*if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
       FlxG.save.data.BotMode = "off";
-    }
+    }*/
   }
 
   function setupSave():Void {
@@ -128,6 +128,8 @@ class RetroSave extends Module
   public function youThoughtLol():Void {
     //var skillIssueLine:Array<String> = ['skill issue', 'melted'];
     //FlxG.save?.data?.BotMode = skillIssueLine[FlxG.random.int(0, skillIssueLine.length - 1)];
-    FlxG.save?.data?.BotMode = 'off';
+
+    // uncomment once it has been updated
+    //FlxG.save?.data?.BotMode = 'off';
   }
 }

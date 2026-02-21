@@ -165,9 +165,9 @@ class SweetTalkSong extends Song
       // Initial camera focus
       focusIn(1060, 150, 0.8, false);
 
-      PlayState.instance.healthBar.alpha = 0;
-      PlayState.instance.iconP1.alpha = 0;
-      PlayState.instance.iconP2.alpha = 0;
+      //PlayState.instance.healthBar.alpha = 0;
+      //PlayState.instance.iconP1.alpha = 0;
+      //PlayState.instance.iconP2.alpha = 0;
       for (i in 0...4) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
         FlxTween.cancelTweensOf(strum, ["alpha"]);
@@ -196,7 +196,7 @@ class SweetTalkSong extends Song
 
     // Update default cam zoom from fake sprite
     if (curBeat > 0 && !p && playState.startTimestamp <= 1000) {
-      playState.tweenCameraZoom(0.61, 16, true, FlxEase.quadOut);
+      playState.tweenCameraZoom(0.52, 16, true, FlxEase.quadOut);
       p = true;
     }
 
@@ -373,9 +373,9 @@ class SweetTalkSong extends Song
       var time:Float = 1;
       var easing:FlxEase = FlxEase.quadOut;
       //tweens.push(FlxTween.tween(playState.camHUD, {alpha: 1}, time, { ease: easing }));
-      tweens.push(FlxTween.tween(playState.healthBar, {alpha: 1}, time, { ease: easing }));
-      tweens.push(FlxTween.tween(playState.iconP1, {alpha: 1}, time, { ease: easing }));
-      tweens.push(FlxTween.tween(playState.iconP2, {alpha: 1}, time, { ease: easing }));
+      //tweens.push(FlxTween.tween(playState.healthBar, {alpha: 1}, time, { ease: easing }));
+      //tweens.push(FlxTween.tween(playState.iconP1, {alpha: 1}, time, { ease: easing }));
+      //tweens.push(FlxTween.tween(playState.iconP2, {alpha: 1}, time, { ease: easing }));
     }
 
     // Initial strum show (opponent - beat 28)
@@ -419,7 +419,7 @@ class SweetTalkSong extends Song
     // Beat-specific events
     var camZoomEaseTime:Float = 0.7;
     var oppCamXAdjust = 120;
-    var oppCamYAdjust = 0;
+    var oppCamYAdjust = 100;
     var bfCamXAdjust = 0;
     var bfCamYAdjust = 0;
     switch (beat) {
@@ -553,7 +553,7 @@ class SweetTalkSong extends Song
         var baseScaleX = ogPlayerStrumScales[i * 2];
         var baseScaleY = ogPlayerStrumScales[(i * 2) + 1];
 
-        playerStrum.scale.set(baseScaleX * 1.1, baseScaleY * 1.1);
+        playerStrum.scale.set(baseScaleX * 1.225, baseScaleY * 1.225);
         tweens.push(FlxTween.tween(playerStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
 
@@ -562,7 +562,7 @@ class SweetTalkSong extends Song
         var baseScaleX = ogOppStrumScales[i * 2];
         var baseScaleY = ogOppStrumScales[(i * 2) + 1];
 
-        opponentStrum.scale.set(baseScaleX * 1.1, baseScaleY * 1.1);
+        opponentStrum.scale.set(baseScaleX * 1.225, baseScaleY * 1.225);
         tweens.push(FlxTween.tween(opponentStrum.scale, {x: baseScaleX, y: baseScaleY}, 0.35, {ease: FlxEase.cubeOut}));
       }
     }

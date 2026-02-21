@@ -46,6 +46,8 @@ class BFRetroCharacter extends MultiSparrowCharacter
           return;
         case "cashNote":
           return;
+        case "autoCash":
+          return;
         case "hivemoreNote":
           return;
         case "Hey!": // this is in some charts, it's an animation note

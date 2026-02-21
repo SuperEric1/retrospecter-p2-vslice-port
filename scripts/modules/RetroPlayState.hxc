@@ -33,6 +33,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.effects.IntervalShake;
 import funkin.play.PlayStatePlaylist;
 import funkin.util.TouchUtil;
+import funkin.modding.events.HitNoteScriptEvent;
 import haxe.ds.IntMap;
 import StringTools;
 
@@ -69,6 +70,7 @@ class RetroPlayState extends Module {
   var ogPlayerStrumScales:Array<Float> = [];
   var ogOppStrumScales:Array<Float> = [];
   var ogDadId:String = null;
+  var songName:String = null;
 
   var poisonSprite:FunkinSprite;
   var poisonSpriteFrame:Bool = 0;
@@ -120,6 +122,9 @@ class RetroPlayState extends Module {
   var hmpInstructionText:FlxText;
   var hmpInstructionTween:FlxTween = null;
   var hmpInstructionPlayed:Bool = false;
+  var hmpMoneyGain:Array<Int> = [31446, 23148];
+  var hmpMoneyLoss:Array<Int> = [-6289, -4629];
+  var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
 
   // Misc
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -162,7 +167,7 @@ class RetroPlayState extends Module {
   var hurtNotes = [
     'poison', 'izzyNote', 'chain', 'autoChain',
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
-    'spectre', 'insatianNote', "cashNote", "hivemoreNote",
+    'spectre', 'insatianNote', "cashNote", "autoCash", "hivemoreNote",
     'none'
   ];
 
@@ -410,9 +415,9 @@ class RetroPlayState extends Module {
       if (funnyVar) funnyHealth(0.23);
     }
 
-    if (k == 'cashNote') {
+    if (k == 'cashNote' || k == 'autoCash') {
       retractHiveminePapers();
-      if (!hmpInstructionPlayed && PlayStatePlaylist.isStoryMode) {
+      if (k == 'autoCash' && !hmpInstructionPlayed && PlayStatePlaylist.isStoryMode) {
         hmpInstructionPlayed = true;
         hmpInstructionText.visible = true;
         FlxTween.tween(hmpInstructionText, {alpha: 0.6}, 1.5, {ease: FlxEase.quadIn});
@@ -420,7 +425,14 @@ class RetroPlayState extends Module {
           hmpInstructionText.visible = false;
         });
       }
-      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), 31446]);
+      var moneyToAdd:Float = 0;
+      switch (songName.toLowerCase()) {
+        case 'sweet talk':
+          moneyToAdd = hmpMoneyGain[0];
+        default:
+          moneyToAdd = hmpMoneyGain[1];
+      }
+      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), moneyToAdd]);
       FlxG.sound.play(Paths.sound('noteSounds/Coin'));
       event.doesNotesplash = false;
     }
@@ -432,7 +444,14 @@ class RetroPlayState extends Module {
       }
 
       advanceHiveminePapers();
-      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), -62893]);
+      var moneyToLose:Float = 0;
+      switch (songName.toLowerCase()) {
+        case 'sweet talk':
+          moneyToLose = hmpMoneyLossNote[0];
+        default:
+          moneyToLose = hmpMoneyLossNote[1];
+      }
+      if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), moneyToLose]);
       FlxG.sound.play(Paths.sound('noteSounds/Take'));
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
@@ -475,6 +494,16 @@ class RetroPlayState extends Module {
         // don't RETURN or else the custom UI will display as a miss
         // instead, we'll check if the note is scoreable.
       }
+      if (k == 'autoCash') {
+        event.cancel();
+        event.stopPropagation();
+
+        // Simulate a note hit
+        var noteEvent:NoteScriptEvent = new HitNoteScriptEvent(event.note, 0.0, 0, 'perfect', false, 0);
+        PlayState.instance.dispatchEvent(noteEvent);
+        PlayState.instance.playerStrumline.hitNote(event.note);
+        //event.note.kill();
+      }
 
       // Matar o jogador se ele errar uma nota enquanto os papéis da hivemine estão no limite.
       if (event.note.scoreable && hmpIsAtLimit && !PlayState.instance.isPracticeMode) {
@@ -483,7 +512,14 @@ class RetroPlayState extends Module {
       }
 
       if (hmpActive && event.note.scoreable && retroGameUI != null) {
-        retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), -6289]);
+        var moneyToLose:Float = 0;
+        switch (songName.toLowerCase()) {
+          case 'sweet talk':
+            moneyToLose = hmpMoneyLoss[0];
+          default:
+            moneyToLose = hmpMoneyLoss[1];
+        }
+        retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), moneyToLose]);
       }
 
       if (event.note.scoreable) doVocalThing(1.2); // Efeito de miss nas vocais
@@ -498,7 +534,19 @@ class RetroPlayState extends Module {
       doVocalThing(1.3); // efeito de miss nas vocais
 
       if (hmpActive && retroGameUI != null) {
-        retroGameUI.scriptCall('spawnHivemineMoney', [event.holdNote.noteData.getDirection(), -6289]);
+        // stay visible so we know how much we are losing.
+        event.holdNote.alpha = 1;
+        event.holdNote.visible = true;
+
+        var moneyToLose:Float = 0;
+        switch (songName.toLowerCase()) {
+          case 'sweet talk':
+            moneyToLose = hmpMoneyLoss[0];
+          default:
+            moneyToLose = hmpMoneyLoss[1];
+        }
+        // this is done at onupdate too
+        retroGameUI.scriptCall('spawnHivemineMoney', [event.holdNote.noteData.getDirection(), moneyToLose]);
       }
     }
   }
@@ -534,6 +582,8 @@ class RetroPlayState extends Module {
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
+
+    songName = PlayState.instance?.currentChart?.songName ?? '';
 
     //loadChainLockSprites();
     if (!hasLoadedUIElements) {
@@ -1140,6 +1190,19 @@ class RetroPlayState extends Module {
           checkHealthCap();
         }
       }
+
+      if (hmpActive && retroGameUI != null && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && Conductor.instance.songPosition % (holdNote.fullSustainLength / 10) < 5) {
+        //Conductor.instance.songPosition % (holdNote.fullSustainLength / 5) < 10
+        //throw Conductor.instance.songPosition % (holdNote.fullSustainLength / 10);
+        var moneyToLose:Float = 0;
+        switch (songName.toLowerCase()) {
+          case 'sweet talk':
+            moneyToLose = hmpMoneyLoss[0];
+          default:
+            moneyToLose = hmpMoneyLoss[1];
+        }
+        retroGameUI.scriptCall('spawnHivemineMoney', [holdNote.noteData.getDirection(), moneyToLose]);
+      }
     }
 
     /*var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
@@ -1177,12 +1240,12 @@ class RetroPlayState extends Module {
       }
     }
 
-    // Skill issue check
-    var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
+    // Skill issue check (re-enable once it updates.)
+    /*var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
     isCh34t1ng = isCh34t1ng.toLowerCase();
     if (isCh34t1ng != null && (isCh34t1ng == "on" || isCh34t1ng == true || isCh34t1ng != "off")) {
       funnyVar = true;
-    }
+    }*/
 
   }
 
@@ -1290,6 +1353,8 @@ class RetroPlayState extends Module {
       // if (i == 2) hmp3 = sprite;
       // if (i == 3) hmp4 = sprite;
     }
+
+    //if (retroGameUI != null) retroGameUI.scriptCall('setHivemineMoney', [0]);
 
     var strum = PlayState.instance.playerStrumline;
     hmpInstructionText = new FlxText(0, 0, 0, '', 60);
@@ -1753,6 +1818,7 @@ class RetroPlayState extends Module {
     forceNotesAlpha = null;
     funnyVar = false;
     ogDadId = null;
+    songName = null;
     destroyHiveminePapers();
     hmpActive = false;
     hmpAnimating = false;
