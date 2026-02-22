@@ -423,7 +423,7 @@ class RetroMainMenu extends MusicBeatState
     }
   }
 
-  function selectItem(index:Int, playSound:Bool = true):Void
+  function selectItem(index:Int, playSound:Bool = true, ?moveCam:Bool = false):Void
   {
     if (index < 0 || index >= menuItems.length) return;
 
@@ -442,10 +442,26 @@ class RetroMainMenu extends MusicBeatState
     var selected = menuItems[selectedIndex];
     var clipData = menuClips[selectedIndex];
 
-    var targetX:Float = selected.x + clipData.x + (clipData.width);
-    targetX = FlxMath.bound(targetX, minCamX, maxCamX);
+    if (moveCam) { // Only change the camera pos if we clicked/touched. The camera should follow the mouse by default.
+      // Espelhar a lógica do mouse. Mapeia a posição do item proporcionalmente dentro do conteúdo (primeiro..último) para o mesmo range [minCamX, maxCamX].
+      // Assim o primeiro item = minCamX, o último = maxCamX, e os do meio são proporcionais.
+      var firstClip = menuClips[0];
+      var lastClip = menuClips[menuItems.length - 1];
+      var firstCenter:Float = menuItems[0].x + firstClip.x + firstClip.width / 2;
+      var lastCenter:Float = menuItems[menuItems.length - 1].x + lastClip.x + lastClip.width / 2;
+      var selectedCenter:Float = selected.x + clipData.x + clipData.width / 2;
 
-    camFollow.setPosition(targetX, baseY);
+      var t:Float = (lastCenter != firstCenter) ? (selectedCenter - firstCenter) / (lastCenter - firstCenter) : 0;
+      var targetX:Float = FlxMath.lerp(minCamX, maxCamX, FlxMath.bound(t, 0, 1));
+
+      camFollow.setPosition(targetX, baseY);
+
+      /* OLD
+      var targetX:Float = selected.x + clipData.x + (clipData.width);
+      targetX = FlxMath.bound(targetX, minCamX, maxCamX);
+
+      camFollow.setPosition(targetX, baseY);*/
+    }
 
     if (playSound) FunkinSound.playOnce(Paths.sound('scrollMenu'), 1);
 
@@ -634,7 +650,8 @@ class RetroMainMenu extends MusicBeatState
 
   function resetCamera(snap:Bool = true):Void
   {
-    FlxG.camera.follow(camFollow, null, 0.06);
+    FlxG.camera.follow(camFollow, null, 0.3); // 0.06
+
     if (snap) FlxG.camera.snapToTarget();
   }
 
@@ -658,6 +675,12 @@ class RetroMainMenu extends MusicBeatState
     var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased || SwipeUtil.swipeAny;
     var currentMouseX:Float = FlxG.mouse.x;
     var currentMouseY:Float = FlxG.mouse.y;
+    if (!isTouching && !blockMouse && FlxG.mouse.justMoved) {
+      var t:Float = FlxMath.bound(currentMouseX / FlxG.width, 0, 1);
+      var targetX:Float = FlxMath.lerp(minCamX, maxCamX, t);
+
+      camFollow.setPosition(targetX, baseY);
+    }
 
     if (lastMousePos == null) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
 
@@ -674,7 +697,6 @@ class RetroMainMenu extends MusicBeatState
       lastMousePos.set(currentMouseX, currentMouseY);
     }
 
-    // Preparar detecção de input
     var justPressed:Bool = (TouchUtil.justPressed || FlxG.mouse.justPressed) && !SwipeUtil.justSwipedAny;
     var justReleased:Bool = TouchUtil.justReleased || FlxG.mouse.justReleased;
 
@@ -684,7 +706,7 @@ class RetroMainMenu extends MusicBeatState
       justReleased = TouchUtil.justReleased;
     }*/
 
-    // Iterar pelos items para detectar hover/click
+    // Detectar hover/click
     for (i in 0...menuHitboxes.length)
     {
       var hitbox = menuHitboxes[i];
@@ -707,14 +729,14 @@ class RetroMainMenu extends MusicBeatState
           hadInput = true;
           // Se o menu estiver em IDLE (sem seleção) OU o clique for em um item DIFERENTE
           if (!hasSelection || i != selectedIndex) {
-            selectItem(i, true);
+            selectItem(i, true, true);
             lastTouchedIndex = i; // Registra qual item recebeu o primeiro toque
           } else {
             // Se já estava selecionado E clicou no MESMO item: CONFIRMA
             confirmSelection();
           }
 
-          // Importante: após um clique, paramos de processar outras hitboxes e inputs globais
+          // Após um clique, paramos de processar outras hitboxes e inputs globais.
           return;
         }
         break;
@@ -736,7 +758,7 @@ class RetroMainMenu extends MusicBeatState
       blockMouse = true; // Bloquear movimentos do mouse para não interferir.
       hadInput = true;
 
-      // Bloqueia a seleção por hover do mouse até que o usuário mova o mouse fisicamente de novo
+      // Bloqueia a seleção por hover do mouse até que o usuário mova o mouse de novo.
       mouseHasMoved = false;
       lastMousePos.set(FlxG.mouse.x, FlxG.mouse.y);
 
