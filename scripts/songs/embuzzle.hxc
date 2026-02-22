@@ -310,14 +310,15 @@ class EmbuzzleSong extends Song
   {
     var crochet = Conductor.instance.stepLengthMs * 4;
 
+    var oppOffsetAdjustX = 60;
     switch (curBeat) {
       case 294:
-        setOpponentCameraOffset(-70, -100);
+        setOpponentCameraOffset(-70 + oppOffsetAdjustX, -100);
         playState.tweenCameraZoom(0.45, crochet / 1000, true, FlxEase.quadOut);
         focusInDad();
 
       case 304:
-        setOpponentCameraOffset(-100, -50);
+        setOpponentCameraOffset(-100 + oppOffsetAdjustX, -50);
         playState.tweenCameraZoom(0.5, crochet / 1000, true, FlxEase.quadOut);
         focusInDad();
 
@@ -325,7 +326,7 @@ class EmbuzzleSong extends Song
         playState.tweenCameraZoom(0.475, crochet / 1000, true, FlxEase.quadOut);
 
       case 315:
-        setOpponentCameraOffset(20, -100);
+        setOpponentCameraOffset(40 + oppOffsetAdjustX, -100);
         playState.tweenCameraZoom(0.425, crochet / 1000, true, FlxEase.quadOut);
         focusInDad();
 
