@@ -12,7 +12,7 @@
     "dad": {
       "zIndex": 200,
       "position": [185, 1750],
-      "cameraOffsets": [600, -20]
+      "cameraOffsets": [650, -20]
     },
     "gf": {
       "scale": 0.6,
