@@ -75,8 +75,9 @@ class NightflaidCharacter extends AnimateAtlasCharacter
       }
     }
     if (eventKind == "PlayAnimation") {
-      // this needs to be here otherwise the event animation won't play (????)
-      this.animation.finished = true; // mark the animation as finished so the event's anim can play.
+      // this needs to be here otherwise the event animation won't play correctly
+      //this.animation.finished = true; // mark the animation as finished so the event's anim can play.
+      this.canPlayOtherAnims = true; // actually i think this works better?
       this.playAnimation(value.anim, true, true); // then force play the animation. (dude i spent so much time figuring this out why am i even doing this talvez eu endoide no meio do desenvolvimento)
     }
   }

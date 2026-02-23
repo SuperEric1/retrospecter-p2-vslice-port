@@ -87,12 +87,14 @@ class RetroPlayState extends Module {
 
   var solidCameraSprite:FunkinSprite;
 
-  // Chain Notes - Sistema de bloqueio de strums
+  // Chain Notes - Sistema de bloqueio de strums (Hiveless Notes também)
   var chainLockSprites:Array<FunkinSprite> = [];
+  var webLockSprites:Array<FunkinSprite> = [];
   var chainLockStates:IntMap<Int> = new IntMap(); // 0 = desbloqueado, 1-3 = numero de cliques
   var chainLockInputs:IntMap<Int> = new IntMap();
   var isStrumLocked:IntMap<Bool> = new IntMap();
   var chainText:FlxText;
+  var webLockActive:Bool = false;
 
   // Hydra Notes - Sistema de beam que cobre os strums
   var hydraBeamSprites:Array<FunkinSprite> = [];
@@ -127,6 +129,7 @@ class RetroPlayState extends Module {
   var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
 
   // Misc
+  var mechanicsLoaded:Array<String> = []; // here we will store the names of the loaded mechanics in case we need it
   var currentHealthCap:Float = 0; // also used for the insatian notes.
   var forceNotesAlpha:Float = null; // used for the spectre note to make the notes fade with time. null = off, 0-1 = the note alpha to apply.
   var minNoteAlpha:Float = 0; // used to limit the forceNotesAlpha value.
@@ -167,7 +170,8 @@ class RetroPlayState extends Module {
   var hurtNotes = [
     'poison', 'izzyNote', 'chain', 'autoChain',
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
-    'spectre', 'insatianNote', "cashNote", "autoCash", "hivemoreNote",
+    'spectre', 'insatianNote', 'cashNote', 'autoCash',
+    'hivemoreNote', "hivelessNote",
     'none'
   ];
 
@@ -179,8 +183,9 @@ class RetroPlayState extends Module {
       event.note.angle = 0;
     }
     var k = event.note.noteData.kind;
+    var note = event.note;
 
-    var alwaysVisible:Array<String> = ['spectre'];
+    var alwaysVisible:Array<String> = ['spectre', 'Fake Note'];
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
     if (targetAlpha == 1) targetAlpha = strum.alpha;
@@ -196,6 +201,21 @@ class RetroPlayState extends Module {
         //throw 'epa';
         event.note.scoreable = false; // não dar score/combo ao acertar.
         Highscore.tallies.totalNotes--;
+    }
+
+    if (k == 'Fake Note') {
+      var time:Float = 0.3;
+      var delay:Float = (note.get_strumTime() - Constants.HIT_WINDOW_MS * 0.7 - (time * 1000) - Conductor.instance.songPosition) / 1000;
+      tweens.push(FlxTween.tween(note, {alpha: 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function(_:FlxTween) {
+        if (note == null || !note.alive) return;
+        //note.kill();
+      }}));
+      if (event.note.isHoldNote) {
+        tweens.push(FlxTween.tween(note.holdNoteSprite, {alpha: 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function(_:FlxTween) {
+        if (note == null || !note.alive) return;
+        //note.holdNoteSprite.kill();
+      }}));
+      }
     }
 
     // Notas removíveis
@@ -331,7 +351,7 @@ class RetroPlayState extends Module {
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
-    if (k == 'poison') {
+    if (k == 'poison' || k == 'hivelessNote') {
       if (PlayState.instance.isBotPlayMode) {
         event.cancel();
         event.stopPropagation();
@@ -340,7 +360,16 @@ class RetroPlayState extends Module {
 
       poisonAmount++;
       updatePoisonCounter();
-      FlxG.sound.play(Paths.sound('acid'));
+      if (k == 'poison')
+        FlxG.sound.play(Paths.sound('acid'));
+      else {
+        for (i in 0...4) {
+          lockStrum(i, true);
+        }
+        var moneyToLose:Int = (songName.toLowerCase() == 'deadfine') ? -0 : -95;
+        if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), moneyToLose]);
+        FlxG.sound.play(Paths.sound('noteSounds/Take'));
+      }
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
       if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
@@ -591,10 +620,13 @@ class RetroPlayState extends Module {
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
+      // TODO: Only load these sprites if they are actually used in the song's mechanics. Also save them in the loadedMechanics array.
       loadChainLockSprites();
+      loadWebLockSprites();
       loadHydraBeamSprites();
       updatePoisonCounter();
       hasLoadedUIElements = true;
+      PlayState.instance.refresh();
     }
     funnyVar = false;
   }
@@ -791,30 +823,48 @@ class RetroPlayState extends Module {
     }
   }
 
-  function lockStrum(direction:Int):Void {
+  function lockStrum(direction:Int, ?isWeb = false):Void {
     if (isStrumLocked.get(direction)) return; // Já está bloqueado
 
     isStrumLocked.set(direction, true);
     chainLockStates.set(direction, 3); // Precisa de 3 cliques para desbloquear
     chainLockInputs.set(direction, 0); // Reseta o contador de cliques
 
-    FlxG.sound.play(Paths.sound('noteSounds/ChainLock'));
-
-    var lockSprite = chainLockSprites[direction];
+    var lockSprite = !isWeb ? chainLockSprites[direction] : webLockSprites[direction];
+    if (!lockSprite.alive) lockSprite.revive();
     var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
     var darkness = 0.3;
     if (lockSprite != null) {
-      lockSprite.visible = true;
       var dirName = getDirectionName(direction);
-      lockSprite.animation.play('startLocked' + dirName, true);
-      strum.colorTransform.redMultiplier = darkness;
-      strum.colorTransform.greenMultiplier = darkness;
-      strum.colorTransform.blueMultiplier = darkness;
+      lockSprite.visible = true;
+
+      if (!isWeb) {
+        lockSprite.animation.play('startLocked' + dirName, true);
+        strum.colorTransform.redMultiplier = darkness;
+        strum.colorTransform.greenMultiplier = darkness;
+        strum.colorTransform.blueMultiplier = darkness;
+        FlxG.sound.play(Paths.sound('noteSounds/ChainLock'));
+      } else {
+        var dir = direction;
+        FlxTween.cancelTweensOf(lockSprite);
+        lockSprite.alpha = 1;
+        webLockActive = true;
+        tweens.push(
+          FlxTween.tween(lockSprite, {alpha: 0}, 0.3, {ease: FlxEase.quadOut, startDelay: 1, onComplete: function (_) {
+            isStrumLocked.set(dir, false);
+            chainLockStates.set(dir, 0);
+            chainLockInputs.set(dir, 0);
+            if (webLockActive) webLockActive = false;
+            lockSprite.kill();
+          }})
+        );
+      }
     }
   }
 
   function handleChainUnlockInput(direction:Int):Void {
     if (!isStrumLocked.get(direction)) return; // Não está bloqueado
+    if (webLockActive) return; // Se for web, não faz nada.
 
     var currentClicks = chainLockInputs.get(direction);
     currentClicks++;
@@ -898,12 +948,12 @@ class RetroPlayState extends Module {
     // Se já tivermos sprites carregados (e válidos), não fazemos nada.
     // Mas se o array tiver lixo de uma sessão anterior, limpamos.
     if (chainLockSprites.length > 0) {
-        // Verifica se o primeiro sprite ainda está vivo e pertence a este PlayState
-        if (chainLockSprites[0] != null && chainLockSprites[0].exists) {
-            return;
-        } else {
-            chainLockSprites = []; // Limpa referências mortas
-        }
+      // Verifica se o primeiro sprite ainda está vivo e pertence a este PlayState
+      if (chainLockSprites[0] != null && chainLockSprites[0].exists) {
+        return;
+      } else {
+        chainLockSprites = [];
+      }
     }
 
     for (i in 0...4) {
@@ -929,20 +979,55 @@ class RetroPlayState extends Module {
 
       PlayState.instance.add(lockSprite);
       chainLockSprites.push(lockSprite);
+      lockSprite.kill();
     }
 
-    PlayState.instance.refresh();
+    // refresh where the function is called.
+    //PlayState.instance.refresh();
+  }
+
+  function loadWebLockSprites():Void {
+    // Se já tivermos sprites carregados (e válidos), não fazemos nada.
+    if (webLockSprites.length > 0) {
+      if (webLockSprites[0] != null && webLockSprites[0].exists) {
+        return;
+      } else {
+        webLockSprites = [];
+      }
+    }
+
+    for (i in 0...4) {
+      var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+      var dirName = getDirectionName(i).toLowerCase();
+      var lockSprite = new FunkinSprite(strum.x, strum.y, Paths.image('notes/web/' + dirName, 'shared'));
+
+      // O offset é calculado lá no onUpdate!!
+      lockSprite.setGraphicSize(Std.int(strum.width) * 0.8);
+      lockSprite.updateHitbox();
+      lockSprite.cameras = [PlayState.instance.camHUD];
+      lockSprite.visible = false;
+      lockSprite.zIndex = 1500;
+      lockSprite.antialiasing = false;
+
+      PlayState.instance.add(lockSprite);
+      webLockSprites.push(lockSprite);
+      lockSprite.kill();
+    }
+
+    // refresh where the function is called.
+    //PlayState.instance.refresh();
   }
 
   function loadHydraBeamSprites():Void {
     // Se já tivermos sprites carregados (e válidos), não fazemos nada.
     if (hydraBeamSprites.length > 0) {
-        if (hydraBeamSprites[0] != null && hydraBeamSprites[0].exists) {
-            return;
-        } else {
-            hydraBeamSprites = [];
-            hydraBeamTimers = [];
-        }
+      if (hydraBeamSprites[0] != null && hydraBeamSprites[0].exists) {
+        return;
+      } else {
+        hydraBeamSprites = [];
+        hydraBeamTimers = [];
+      }
     }
 
     for (i in 0...4) {
@@ -968,9 +1053,11 @@ class RetroPlayState extends Module {
       PlayState.instance.add(beamSprite);
       hydraBeamSprites.push(beamSprite);
       hydraBeamTimers.push(null);
+      beamSprite.kill();
     }
 
-    PlayState.instance.refresh();
+    // refresh where the function is called.
+    //PlayState.instance.refresh();
   }
 
   function playBeamAnimation(direction:Int):Void {
@@ -989,12 +1076,13 @@ class RetroPlayState extends Module {
     }
 
     // Tocar animação de start
+    if (!beamSprite.alive) beamSprite.revive();
     beamSprite.visible = true;
     beamSprite.animation.play('start', true);
     hydraBeamStates.set(dir, 1);
 
     // Após a animação de start, começar o loop
-    hydraBeamTimers[dir] = new FlxTimer().start(0.125, function(tmr:FlxTimer) { // 3 frames a 24fps = ~0.125s
+    hydraBeamTimers[dir] = new FlxTimer().start(0.125, function(tmr:FlxTimer) { // 3 frames a 24fps = 0.125s
       if (PlayState.instance == null) return;
       if (beamSprite == null || !beamSprite.exists) return;
 
@@ -1006,16 +1094,16 @@ class RetroPlayState extends Module {
         if (PlayState.instance == null) return;
         if (beamSprite == null || !beamSprite.exists) return;
 
-        // Tocar animação de end
         beamSprite.animation.play('end', true);
         hydraBeamStates.set(dir, 3);
 
         // Esconder após a animação de end
-        hydraBeamTimers[dir] = new FlxTimer().start(0.25, function(tmr3:FlxTimer) { // 6 frames a 24fps = ~0.25s
+        hydraBeamTimers[dir] = new FlxTimer().start(0.25, function(tmr3:FlxTimer) { // 6 frames a 24fps = 0.25s
           if (PlayState.instance == null) return;
           if (beamSprite == null) return;
 
           beamSprite.visible = false;
+          beamSprite.kill();
           hydraBeamStates.set(dir, 0);
           hydraBeamTimers[dir] = null;
         });
@@ -1090,7 +1178,7 @@ class RetroPlayState extends Module {
     // Atualizar sprites de lock para seguir os strums
     var lockSpriteOffset:Array<Float, Float> = [ -20, -25 ];
     for (i in 0...4) {
-      if (chainLockSprites[i] != null) {
+      if (chainLockSprites[i] != null && chainLockSprites[i].alive) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
         chainLockSprites[i].x = strum.x + lockSpriteOffset[0];
         chainLockSprites[i].y = strum.y + lockSpriteOffset[1];
@@ -1098,11 +1186,21 @@ class RetroPlayState extends Module {
         chainLockSprites[i].alpha = strum.alpha;
       }
     }
+    var webLockSpriteOffset:Array<Float, Float> = [ 15, 20 ];
+    for (i in 0...4) {
+      if (webLockSprites[i] != null && webLockSprites[i].alive) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        webLockSprites[i].x = strum.x + webLockSpriteOffset[0];
+        webLockSprites[i].y = strum.y + webLockSpriteOffset[1];
+        webLockSprites[i].angle = strum.angle;
+        //webLockSprites[i].alpha = strum.alpha; // don't update the alpha here or else the tween will break
+      }
+    }
 
     // Atualizar sprites de hydra beam para seguir os strums
-    var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)]; // Ajustar conforme necessário
+    var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)];
     for (i in 0...4) {
-      if (hydraBeamSprites[i] != null && hydraBeamSprites[i].visible) {
+      if (hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
         var beam = hydraBeamSprites[i];
         beam.x = strum.x + (strum.width / 2) - (beam.width / 2) + beamOffset[0];
@@ -1189,6 +1287,11 @@ class RetroPlayState extends Module {
         if (!PlayState.instance.isBotPlayMode) {
           checkHealthCap();
         }
+      }
+
+      if (!isDoingVocalThing && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && Conductor.instance.songPosition % (holdNote.fullSustainLength / 10) < 10) {
+        //trace(Conductor.instance.songPosition % (holdNote.fullSustainLength));
+        doVocalThing(0.1);
       }
 
       if (hmpActive && retroGameUI != null && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && Conductor.instance.songPosition % (holdNote.fullSustainLength / 10) < 5) {
@@ -1568,7 +1671,16 @@ class RetroPlayState extends Module {
   {
     if (isDoingVocalThing == true) return;
     var delay = 0.25 * mult;
-    if (PlayState.instance.vocals.opponentVoices.members.length != 0) {
+    isDoingVocalThing = true;
+    PlayState.instance.vocals.opponentVolume = 0;
+    PlayState.instance.vocals.playerVolume = 0;
+    new FlxTimer().start(delay, function(tmr) {
+      if (PlayState.instance == null) return;
+      PlayState.instance.vocals.opponentVolume = 1;
+      PlayState.instance.vocals.playerVolume = 1;
+      isDoingVocalThing = false;
+    });
+    /*if (PlayState.instance.vocals.opponentVoices.members.length != 0) {
 		  PlayState.instance.vocals.opponentVolume = 0;
       isDoingVocalThing = true;
       new FlxTimer().start(delay, function(tmr) {
@@ -1585,7 +1697,7 @@ class RetroPlayState extends Module {
         PlayState.instance.vocals.playerVolume = 1;
         isDoingVocalThing = false;
       });
-		}
+		}*/
   }
 
   function getHealthPercent(percent:Float):Void {
@@ -1668,12 +1780,19 @@ class RetroPlayState extends Module {
     }
 
     // Resetar chain locks
+    webLockActive = false;
     for (i in 0...4) {
       isStrumLocked.set(i, false);
       chainLockStates.set(i, 0);
       chainLockInputs.set(i, 0);
       if (chainLockSprites[i] != null) {
         chainLockSprites[i].visible = false;
+        chainLockSprites[i].kill();
+      }
+      if (webLockSprites[i] != null) {
+        FlxTween.cancelTweensOf(webLockSprites[i]);
+        webLockSprites[i].visible = false;
+        webLockSprites[i].kill();
       }
     }
 
@@ -1686,6 +1805,7 @@ class RetroPlayState extends Module {
       }
       if (hydraBeamSprites[i] != null) {
         hydraBeamSprites[i].visible = false;
+        hydraBeamSprites[i].kill();
       }
     }
   }
@@ -1706,9 +1826,10 @@ class RetroPlayState extends Module {
     switch (eventKind) {
       case "RetroChangeCharacter":
         if (value.character == 'dad') {
-          //new FlxTimer().start(0.01, function(tmr:FlxTimer) {
-            updatePoisonCounter(value.newchar); // update poison counter sprite.
-          //});
+          updatePoisonCounter(value.newchar); // update poison counter sprite.
+          new FlxTimer().start(0.005, function(tmr:FlxTimer) {
+            PlayState.instance.refresh(); // refresh for the poison sprite zindex shit
+          });
         }
 
       default:
@@ -1826,6 +1947,7 @@ class RetroPlayState extends Module {
     hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
     hmpInstructionPlayed = false;
+    webLockActive = false;
 
     removeInsatianHoles(true);
 

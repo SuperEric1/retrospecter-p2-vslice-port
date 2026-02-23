@@ -93,8 +93,10 @@ class BeeStage extends Stage
     crystal.kill();
 
     // Animação das abelhas
-    bees = FunkinSprite.create(-1000, -700, 'greed/bees');
-    bees.loadTextureAtlas('greed/bees', 'shared');
+    bees = FunkinSprite.create(-1000, -700, 'greed/bees'); // -1000, -700
+    bees.loadTextureAtlas('greed/bees', 'shared', {
+      applyStageMatrix: true
+    });
     bees.animation.addBySymbol('idle', 'bees', 24);
     bees.animation.play('idle', true);
     bees.antialiasing = false;
@@ -143,7 +145,7 @@ class BeeStage extends Stage
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
-    
+
   }
 
   override function onSongEvent(event:SongEventScriptEvent):Void

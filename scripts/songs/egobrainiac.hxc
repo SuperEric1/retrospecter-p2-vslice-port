@@ -39,8 +39,6 @@ class EgobrainiacSong extends Song
   var izzyPercent = 14;
   var didLastThing:Bool = false;
 
-  var transformationSprite:FunkinSprite;
-
   // Beats para interrupções
   var interruptionBeatsStart:Array<Int> = [544, 560, 570, 581, 591, 599];
   var interruptionBeatsRetry:Array<Int> = [551, 567, 577, 588, 596, 605];
@@ -149,7 +147,8 @@ class EgobrainiacSong extends Song
     if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
 
     var izzy = izzyPercent / 100;
-    tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
+    //fadeFakeNotes();
+    //tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
 
     if (isMobile) {
       tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 326 * izzy}, 0.5, {ease: FlxEase.backOut}));
@@ -185,8 +184,9 @@ class EgobrainiacSong extends Song
     if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
 
     var izzy = izzyPercent / 50;
+    //fadeFakeNotes(true);
 
-    tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
+    //tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
     if (isMobile) {
       tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY}, 0.5, {ease: FlxEase.quadOut}));
     } else {
@@ -210,6 +210,30 @@ class EgobrainiacSong extends Song
 
       tweens.push(FlxTween.tween(oppNote, {x: ogOppStrumsX[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
     }*/
+  }
+
+  function fadeFakeNotes(?unfade:Bool = false) {
+    var time = 0.5;
+
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || note.noteData.kind != "Fake Note") continue;
+      var delay:Float = (note.get_strumTime() - Constants.HIT_WINDOW_MS * 0.01 - (time * 1000) - Conductor.instance.songPosition) / 1000;
+      FlxTween.cancelTweensOf(note, ['alpha']);
+      note.alpha = 1;
+      tweens.push(FlxTween.tween(note, {alpha: unfade ? 1 : 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function (_) {
+        note.kill();
+      }}));
+    }
+
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive || holdNote.noteData.kind != "Fake Note") continue;
+      var delay:Float = (holdNote.get_strumTime() - Constants.HIT_WINDOW_MS * 0.1 - (time * 1000) - Conductor.instance.songPosition) / 1000;
+      FlxTween.cancelTweensOf(holdNote, ['alpha']);
+      holdNote.alpha = 1;
+      tweens.push(FlxTween.tween(holdNote, {alpha: unfade ? 1 : 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function (_) {
+        holdNote.kill();
+      }}));
+    }
   }
 
   override function onDestroy(event)
@@ -283,7 +307,7 @@ class EgobrainiacSong extends Song
     //playState.playerStrumline.x = ogLaneX;
     //playStage.getBoyfriend().idleSuffix = '-alt';
     //playStage.getBoyfriend().danceEvery = 1;
-    //playState.playerStrumline.alpha = 1;
+    playState.playerStrumline.alpha = 1;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void

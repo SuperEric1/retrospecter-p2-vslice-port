@@ -33,6 +33,7 @@ class EmbuzzleSong extends Song
   var hasStoredStrums:Bool = false;
 
   var modcharts:Bool = true;
+  var isMobile = false;
   var flashingLights:Bool = true;
 
   var defaultOpponentStrumX:Array<Float> = [];
@@ -65,6 +66,7 @@ class EmbuzzleSong extends Song
     super.onCreate(event);
 
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
 
@@ -167,6 +169,21 @@ class EmbuzzleSong extends Song
     if (curBeat >= 320 && curBeat < 640 && modcharts) {
       playState.camHUD.angle = 0.5 * Math.cos(songPosition / 500);
     }
+
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle != targetAngle) {
+        note.angle = targetAngle;
+      }
+    }
+    for (note in PlayState.instance.opponentStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle != targetAngle) {
+        note.angle = targetAngle;
+      }
+    }
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -215,7 +232,7 @@ class EmbuzzleSong extends Song
         dad.scale.set(1.25, 1.25);
         dad.updateHitbox();
 
-        setOpponentCameraOffset(0, -80);
+        setOpponentCameraOffset(0, 10);
         focusInDad();
 
       } else if (value.newchar == 'hivemine-talks') {
@@ -369,8 +386,30 @@ class EmbuzzleSong extends Song
   {
     addCameraZoom(0.0125, 0.025);
     if (!modcharts || !hasStoredStrums) return;
+    var playerStrum = playState.playerStrumline;
+    var opponentStrum = playState.opponentStrumline;
 
-    for (i in 0...4) {
+    if (playerStrum != null) {
+      if (!isMobile) {
+        playerStrum.x = defaultPlayerStrumX[4] - 25;
+        tweens.push(FlxTween.tween(playerStrum, {x: defaultPlayerStrumX[4]}, 0.4, {ease: FlxEase.quadOut}));
+      } else {
+        playerStrum.y = defaultPlayerStrumY[4] + 5;
+        tweens.push(FlxTween.tween(playerStrum, {y: defaultPlayerStrumY[4]}, 0.4, {ease: FlxEase.quadOut}));
+      }
+    }
+
+    if (opponentStrum != null) {
+      if (!isMobile) {
+        opponentStrum.x = defaultOpponentStrumX[4] + 25;
+        tweens.push(FlxTween.tween(opponentStrum, {x: defaultOpponentStrumX[4]}, 0.4, {ease: FlxEase.quadOut}));
+      } else {
+        opponentStrum.y = defaultOpponentStrumY[4] + 5;
+        tweens.push(FlxTween.tween(opponentStrum, {y: defaultOpponentStrumY[4]}, 0.4, {ease: FlxEase.quadOut}));
+      }
+    }
+
+    /*for (i in 0...4) {
       var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
       var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
@@ -382,7 +421,7 @@ class EmbuzzleSong extends Song
         opponentStrum.x = defaultOpponentStrumX[i] + 25;
         tweens.push(FlxTween.tween(opponentStrum, { x: defaultOpponentStrumX[i] }, 0.4, { ease: FlxEase.quadOut }));
       }
-    }
+    }*/
   }
 
   function intersectNotes(value:Float):Void
@@ -637,6 +676,10 @@ class EmbuzzleSong extends Song
         ogPlayerStrumScales.push(pStrum.scale.y);
       }
     }
+    defaultOpponentStrumX.push(playState.opponentStrumline.x);
+    defaultOpponentStrumY.push(playState.opponentStrumline.y);
+    defaultPlayerStrumX.push(playState.playerStrumline.x);
+    defaultPlayerStrumY.push(playState.playerStrumline.y);
   }
 
   function resetFlags():Void

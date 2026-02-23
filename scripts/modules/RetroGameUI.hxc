@@ -589,10 +589,10 @@ class RetroGameUI extends Module {
     var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
     addHivemineMoney(amount, 'player');
 
-    var txt = new FlxText(strum.x, 0, 0, '+0', 23);
+    var txt = new FlxText(strum.x, 0, 0, '-0', 23);
     txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     txt.cameras = [PlayState.instance.camHUD];
-    txt.text = amount >= 0 ? '+' + Std.string(amount) : Std.string(amount);
+    txt.text = amount >= 1 ? '+' + Std.string(amount) : Std.string(amount);
     txt.x = strum.x + (strum.width / 2) - (txt.fieldWidth / 2);
     txt.y = (strum.y + (strum.height / 2) - (txt.height / 2)) + (downscroll ? -40 : 40);
     txt.zIndex = PlayState.instance.playerStrumline.zIndex + 10;
@@ -800,15 +800,17 @@ class RetroGameUI extends Module {
     if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
     // ---- Texts ----
-    if (isHivemine && !PlayState.instance.startingSong && hiveminePlayerMoney != null && hivemineOppMoney != null) {
-      var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
-      var moneyIncreaseDecimals = (event.elapsed * 100) / 100;
-      var markiplier = hivemineMoneyMulti;
-      hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
-      hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
+    if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
+      if (!PlayState.instance.startingSong) {
+        var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
+        var moneyIncreaseDecimals = (event.elapsed * 100) / 100;
+        var markiplier = hivemineMoneyMulti;
+        hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
+        hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
+      }
+      updateHivemineText();
     }
 
-    updateHivemineText();
 
     for (holdNote in playState.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;

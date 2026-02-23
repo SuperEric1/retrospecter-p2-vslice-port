@@ -82,7 +82,7 @@ class SweetTalkSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
-    isMobile = var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     // Camera settings
     disableFocus = true;

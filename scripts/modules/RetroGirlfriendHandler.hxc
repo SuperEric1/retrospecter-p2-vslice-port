@@ -112,7 +112,7 @@ class RetroGirlfriendHandler extends Module {
   override public function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null || !createdSpeaker || girlfriend == null) return;
+    if (PlayState.instance == null || !createdSpeaker || girlfriend == null || !girlfriend.alive || !girlfriend.visible) return;
 
     if (currentData != null) {
       // old positions
