@@ -27,6 +27,9 @@ import funkin.play.scoring.Scoring;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
 import flixel.text.FlxText;
+//import flixel.text.FlxBitmapFont;
+import flixel.graphics.frames.FlxBitmapFont;
+import flixel.text.FlxBitmapText;
 import flixel.text.FlxTextBorderStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -269,7 +272,6 @@ class RetroGameUI extends Module {
       configureIcon(); // setar zindex e tudo mais nos dois icons
       if (isHivemine) loadHivemineText(hivemineTextColor);
       if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
-      playState.scoreText.font = Paths.font('AtariST8x16SystemFont.ttf');
 
       playState.refresh();
 
@@ -306,6 +308,7 @@ class RetroGameUI extends Module {
 
     score = new FlxText(0, yPos + judgement.frameHeight, 0, '', 20);
     score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    //score = new FlxBitmapText(0, yPos + judgement.frameHeight, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
     score.fieldWidth = FlxG.width;
     score.screenCenter(0x01);
     score.cameras = [camera];

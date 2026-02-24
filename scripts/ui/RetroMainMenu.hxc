@@ -79,10 +79,10 @@ class RetroMainMenu extends MusicBeatState
 
   // Config
   var overrideMusic:Bool = false;
-  var horizontalSpacing:Float = 15;
+  var horizontalSpacing:Float = 35;
   var baseY:Float = 360;
   var camMinOffset = -10;
-  var camMaxOffset = 100;
+  var camMaxOffset = 150;
   var backZIndex:Float = 1;
   var frontZIndex:Float = 50;
   var itemScrollFactor = [0.1, 0];
@@ -153,9 +153,9 @@ class RetroMainMenu extends MusicBeatState
     menuStartIndex = members.length;
 
     var path = 'ui/mainmenu/';
-    createMenuItem('story', path + 'story', goToStory);
-    createMenuItem('side', path + 'side', goToFreeplay);
-    createMenuItem('credits', path + 'credits', goToCredits);
+    createMenuItem('story', path + 'story', goToStory, 0.87);
+    createMenuItem('side', path + 'side', goToFreeplay, 0.87);
+    createMenuItem('credits', path + 'credits', goToCredits, 0.87);
     createMenuItem('options', path + 'options', goToOptions, 0.75);
     positionMenuItems();
 
@@ -191,7 +191,7 @@ class RetroMainMenu extends MusicBeatState
     selectedIndex = rememberedSelectedIndex;
     if (selectedIndex >= menuItems.length) selectedIndex = 0;
 
-    setIdleState();
+    setIdleState(false);
 
     camFollow.setPosition(FlxG.width * 0.8, baseY); //  FlxG.width / 2 + camMinOffset
     resetCamera(FlxG.onMobile ? true : false);
@@ -229,7 +229,6 @@ class RetroMainMenu extends MusicBeatState
       state.rightWatermarkText.visible = true;
     }
 
-    // Inicializar posição do mouse
     lastMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
 
     // Habilitar navegação
@@ -238,7 +237,7 @@ class RetroMainMenu extends MusicBeatState
     });
   }
 
-  function createMenuItem(name:String, atlasPath:String, callback:Dynamic, ?sizeMult:Int = 0.87):Void
+  function createMenuItem(name:String, atlasPath:String, callback:Dynamic, sizeMult:Int):Void
   {
     var item:FunkinSprite = FunkinSprite.create(0, 0);
 
@@ -251,7 +250,7 @@ class RetroMainMenu extends MusicBeatState
     item.setGraphicSize(Std.int(FlxG.height * sizeMult));
     item.updateHitbox();
 
-    var cutLeft:Float = item.width / (FlxG.onMobile ? 4.5 : 4);
+    var cutLeft:Float = item.frameWidth / (FlxG.onMobile ? 4.5 : 4);
     var cutRight:Float = cutLeft;
 
     switch (name) {
@@ -298,93 +297,71 @@ class RetroMainMenu extends MusicBeatState
     var totalItems:Int = menuItems.length;
     if (totalItems == 0) return;
 
-    // 1. Calcular a largura total do conteúdo
+    var screenWidths:Array<Float> = [];
     var totalContentWidth:Float = 0;
     for (i in 0...totalItems) {
-      var w = menuItems[i].clipRect.width;
-
-      // TRUQUE: Se for o último item, subtraímos a parte que você "liberou" do corte.
-      // Isso faz o cálculo de espaçamento pensar que o item ainda é curto,
-      // gerando intervalos maiores entre os itens anteriores.
-      if (i == totalItems - 1) {
-          w -= (menuItems[i].width / 4);
-      }
-
-      totalContentWidth += w;
+      var sw:Float = menuClips[i].width * menuItems[i].scale.x;
+      screenWidths.push(sw);
+      totalContentWidth += sw;
     }
 
-    var sidePadding:Float = 85;
-    if (FlxG.onMobile) sidePadding = 40;
-
+    var sidePadding:Float = FlxG.onMobile ? 40 : 85;
     var availableWidth:Float = FlxG.width - (sidePadding * 2);
 
-    // Fórmula: (EspaçoDisponivel - LarguraDosItens) / (NumeroDeIntervalos)
+    // Espaçamento para preencher a largura disponível entre os itens em telas maiores.
     var spreadSpacing:Float = 0;
     if (totalItems > 1) {
       spreadSpacing = (availableWidth - totalContentWidth) / (totalItems - 1);
     }
 
     var finalSpacing:Float = Math.max(horizontalSpacing, spreadSpacing);
-
-    // Verifica se estamos em modo "Espalhado" (tela cheia) ou "Scroll"
     var isSpreading:Bool = (finalSpacing > horizontalSpacing);
 
-    var currentX:Float;
+    var currentX:Float = isSpreading ? sidePadding : -85;
 
-    if (isSpreading) {
-      currentX = sidePadding;
-    } else {
-      currentX = -85;
-    }
-
-    // --- POSICIONAMENTO ---
     for (i in 0...totalItems)
     {
       var item:FlxSprite = menuItems[i];
       var hitbox:FlxObject = menuHitboxes[i];
       var clip:FlxRect = menuClips[i];
+      var sx:Float = item.scale.x;
+      var sy:Float = item.scale.y;
 
-      item.x = currentX - clip.x;
-
-      // Corrigir o espaçamento do options
-      if (i == menuItems.length - 1) {
-        item.x += horizontalSpacing * 1.7;
-      }
-
+      item.x = currentX - clip.x * sx;
       item.y = baseY - (item.height / 2);
 
-      hitbox.x = item.x + (clip.x * item.scale.x);
-      hitbox.y = item.y + (clip.y * item.scale.y);
-      hitbox.width = clip.width * item.scale.x;
-      hitbox.height = clip.height * item.scale.y;
+      // Corrigir botão do story
+      if (i == 0) {
+        item.x += 13; // odeio isso
+      }
 
-      // Avança o X.
-      // Nota: Como usamos o clip.width REAL aqui (grande), mas calculamos o spacing
-      // baseado no width PEQUENO, isso vai empurrar o último item levemente
-      // mais para a direita, preenchendo o espaço vazio.
-      currentX += clip.width + finalSpacing;
+      hitbox.x = currentX;
+      hitbox.y = item.y + clip.y * sy;
+      hitbox.width = screenWidths[i];
+      hitbox.height = clip.height * sy;
+
+      currentX += screenWidths[i] + finalSpacing;
     }
 
     // CÂMERA E LIMITES
     if (menuItems.length > 0)
     {
-      var firstItem = menuItems[0];
-      var lastItem = menuItems[menuItems.length - 1];
-
       if (isSpreading) {
-        var screenCenter = FlxG.width * 0.8;
+        var screenCenter:Float = FlxG.width * 0.8;
         minCamX = screenCenter;
         maxCamX = screenCenter;
       } else {
+        var lastItem = menuItems[menuItems.length - 1];
+        var lastClip = menuClips[menuItems.length - 1];
         minCamX = (FlxG.width / 2) + camMinOffset;
-        maxCamX = lastItem.x + lastItem.clipRect.width + lastItem.clipRect.x - (FlxG.width / 2) + camMaxOffset;
-
+        // Borda direita visível do último item, menos meio ecrã, mais offset de câmera
+        maxCamX = lastItem.x + (lastClip.x + lastClip.width) * lastItem.scale.x - (FlxG.width / 2) + camMaxOffset;
         if (maxCamX < minCamX) maxCamX = minCamX;
       }
     }
   }
 
-  function setIdleState():Void
+  function setIdleState(doTween:Bool = true):Void
   {
     lastMousePos.set(FlxG.mouse.x, FlxG.mouse.y);
     blockMouse = false;
@@ -393,15 +370,16 @@ class RetroMainMenu extends MusicBeatState
     for (i in 0...menuItems.length)
     {
       menuItems[i].animation.play('bright');
-      updateItemClip(i, false);
+      updateItemClip(i, false, doTween);
     }
+    //throw doTween;
     updateLabel(null);
     idleTimer.cancel();
     if (lastTouchedIndex != -1) HapticUtil.vibrate(0, 0.03, 0.005, 0);
     lastTouchedIndex = -1; // Reset touch state
   }
 
-  function updateItemClip(index:Int, isSelected:Bool):Void
+  function updateItemClip(index:Int, isSelected:Bool, ?doTween:Bool):Void
   {
     if (menuItems[index] == null || menuClips[index] == null) return;
 
@@ -409,7 +387,11 @@ class RetroMainMenu extends MusicBeatState
 
     var targetScale:Float = isSelected ? 1.015 : 1.0;
     FlxTween.cancelTweensOf(item.scale);
-    FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.35, {ease: FlxEase.sineOut});
+    if (doTween) {
+      FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.35, {ease: FlxEase.sineOut});
+    } else {
+      item.scale.set(targetScale, targetScale);
+    }
 
     if (isSelected) {
       item.clipRect = null;
@@ -435,7 +417,7 @@ class RetroMainMenu extends MusicBeatState
       var isThisSelected = (i == selectedIndex);
       menuItems[i].animation.play(isThisSelected ? 'bright' : 'dark');
       if (isThisSelected) updateLabel(menuNames[i]);
-      updateItemClip(i, isThisSelected);
+      updateItemClip(i, isThisSelected, true);
       HapticUtil.vibrate(0, 0.03, 0.005, 0);
     }
 
@@ -447,9 +429,12 @@ class RetroMainMenu extends MusicBeatState
       // Assim o primeiro item = minCamX, o último = maxCamX, e os do meio são proporcionais.
       var firstClip = menuClips[0];
       var lastClip = menuClips[menuItems.length - 1];
-      var firstCenter:Float = menuItems[0].x + firstClip.x + firstClip.width / 2;
-      var lastCenter:Float = menuItems[menuItems.length - 1].x + lastClip.x + lastClip.width / 2;
-      var selectedCenter:Float = selected.x + clipData.x + clipData.width / 2;
+      var fs0:Float = menuItems[0].scale.x;
+      var fsN:Float = menuItems[menuItems.length - 1].scale.x;
+      var fsSel:Float = selected.scale.x;
+      var firstCenter:Float = menuItems[0].x + firstClip.x * fs0 + firstClip.width * fs0 / 2;
+      var lastCenter:Float = menuItems[menuItems.length - 1].x + lastClip.x * fsN + lastClip.width * fsN / 2;
+      var selectedCenter:Float = selected.x + clipData.x * fsSel + clipData.width * fsSel / 2;
 
       var t:Float = (lastCenter != firstCenter) ? (selectedCenter - firstCenter) / (lastCenter - firstCenter) : 0;
       var targetX:Float = FlxMath.lerp(minCamX, maxCamX, FlxMath.bound(t, 0, 1));
@@ -490,7 +475,7 @@ class RetroMainMenu extends MusicBeatState
     var targetItem = menuItems[selectedIndex];
     var clipData = menuClips[selectedIndex];
 
-    var itemCenterX:Float = targetItem.x + clipData.x + (clipData.width / 2);
+    var itemCenterX:Float = targetItem.x + clipData.x * targetItem.scale.x + (clipData.width * targetItem.scale.x / 2);
 
     var distance:Float = 500;
     var offsetExtra:Float = 0;
@@ -563,7 +548,7 @@ class RetroMainMenu extends MusicBeatState
       FunkinMemory.clearFreeplay();
       FunkinMemory.purgeCache();
     });
-    startExitState(stateFunc);
+    startExitState(stateFunc, false);
   }
 
   function goToFreeplay():Void
@@ -587,7 +572,7 @@ class RetroMainMenu extends MusicBeatState
     FunkinMemory.cacheSound(Paths.sound('menus/boot'));
     FlxTransitionableState.skipNextTransIn = true;
 
-    startExitState(stateFunc);
+    startExitState(stateFunc, false);
   }
 
   function goToCredits():Void
@@ -595,10 +580,10 @@ class RetroMainMenu extends MusicBeatState
     var stateFunc:Dynamic = function():FlxState {
       return new CreditsState();
     };
-    startExitState(stateFunc);
+    startExitState(stateFunc, false);
   }
 
-  function startExitState(state:Dynamic, ?customFunction:Bool):Void
+  function startExitState(state:Dynamic, customFunction:Bool):Void
   {
     if (isExiting) return;
 
@@ -718,7 +703,7 @@ class RetroMainMenu extends MusicBeatState
         // Aqui usamos FlxG.mouse.justMoved para ter certeza que não vai ter um falso positivo, assim o menu pode voltar para idle normalmente.
         if (!isTouching && mouseHasMoved && FlxG.mouse.justMoved && (i != selectedIndex || !hasSelection))
         {
-          selectItem(i, true);
+          selectItem(i, true, false);
           mouseHasMoved = false;
           hadInput = true;
         }
@@ -766,11 +751,11 @@ class RetroMainMenu extends MusicBeatState
       var next = selectedIndex + dir;
 
       if (!hasSelection) {
-        selectItem(selectedIndex, true);
+        selectItem(selectedIndex, true, false);
       } else {
         if (next < 0) next = menuItems.length - 1;
         if (next >= menuItems.length) next = 0;
-        selectItem(next, true);
+        selectItem(next, true, false);
       }
     }
 

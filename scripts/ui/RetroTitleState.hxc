@@ -15,14 +15,12 @@ import funkin.graphics.shaders.ColorSwap;
 import funkin.graphics.shaders.LeftMaskShader;
 import funkin.graphics.FunkinSprite;
 import funkin.ui.MusicBeatState;
-import funkin.graphics.shaders.TitleOutline;
 import funkin.modding.base.ScriptedMusicBeatState;
 import funkin.audio.FunkinSound;
 import funkin.ui.AtlasText;
 import funkin.FunkinMemory;
 import openfl.Assets;
 import openfl.display.Sprite;
-import openfl.events.AsyncErrorEvent;
 import funkin.ui.mainmenu.MainMenuState;
 import openfl.events.MouseEvent;
 import openfl.events.NetStatusEvent;
@@ -231,7 +229,6 @@ class RetroTitleState extends MusicBeatState
   var backFire:FlxSprite;
   var glow:FlxSprite;
   var hasShownShadow:Bool = false;
-  var outlineShaderShit:TitleOutline;
 
   var titleText:FlxSprite;
   var maskShader = new LeftMaskShader();
