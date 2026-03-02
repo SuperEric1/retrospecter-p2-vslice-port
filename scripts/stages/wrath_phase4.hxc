@@ -781,11 +781,11 @@ class WrathPhase4Stage extends Stage
     ground_M.y = ((bfPositionY - 300) * 0.95) + 300;
     geyserM.y = ((bfPositionY - 330) * 0.95) + 300;
 
-    var gfAdjust = 450;
-    var gfAdjustX = 3150;
+    var gfAdjust = 420; // 450
+    var gfAdjustX = 3060;
     var gf = getGirlfriend();
     if (gf != null) {
-      gf.y = (((bfPositionY - 700) - offM) * 1) + gfAdjust;
+      gf.y = (((bfPositionY - 700) - offM) * gf.scrollFactor.y) + gfAdjust; // (((bfPositionY - 700) - offM) * 1) + gfAdjust
       gf.x = gfAdjustX;
     }
   }

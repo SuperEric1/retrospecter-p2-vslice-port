@@ -60,15 +60,15 @@ class RetroNoteStyles extends Module {
 
 	/**
 	 * Tracks the offset we last applied to each strum, per side.
-	 * Index = direction (0=left, 1=down, 2=up, 3=right).
-	 * [x, y]
+	 * Index = direction (0=left, 1=down, 2=up, 3=right). Value: [x, y].
 	 *
-	 * Instead of tracking animation names, we track the actual offset values we set.
+	 * Instead of tracking animation names, we track the actual offset values we wrote.
 	 * If strum.offset diverges from what we stored, it means centerOffsets() was called
-	 * internally (by playAnimation()) since our last frame, so we re-apply.
+	 * internally (by playAnimation() or setNoteSpacing()) since our last frame, so we re-apply.
+	 *
 	 * This handles the engine bug where the confirmHoldTimer fires playStatic() and then
 	 * holdConfirm() re-calls playAnimation('confirm') in the same frame: both calls reset
-	 * the offset, but since the animation name doesn't change, lastAnims-based detection
+	 * the offset, but since the animation name doesn't change, a lastAnims-based guard
 	 * is blind to it. expectedOffsets catches it regardless of animation name.
 	 */
 	var oppExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
@@ -208,13 +208,21 @@ class RetroNoteStyles extends Module {
 	 *
 	 * Detection: instead of tracking the animation name, we track the offset values we
 	 * last wrote. If strum.offset differs from expectedOffsets, centerOffsets() was called
-	 * internally this frame (by playAnimation()), so we re-apply our delta.
+	 * internally this frame (by playAnimation() or setNoteSpacing()), so we re-apply our delta.
 	 * This correctly handles cases where playAnimation() is called multiple times in one
 	 * frame with the same animation name.
+	 *
+	 * Scaling: JSON offsets are authored at normal strumlineScale (1.0). When the opponent
+	 * strumline enters mini mode, strumlineScale shrinks (e.g. 0.4 * amplification).
+	 * We multiply the delta by strumlineScale.x/y so the offset scales proportionally
+	 * with the sprite, otherwise the same pixel values look exaggerated on the tiny strum.
 	 *
 	 * I hate this please fix it Funkin' Crew (https://github.com/FunkinCrew/Funkin/issues/6836)
 	 */
 	function applyStrumAnimOffsets(strumline:Strumline, animOffsets:StringMap<Array<Float>>, expectedOffsets:Array<Array<Float>>):Void {
+		var scaleX:Float = strumline.strumlineScale.x;
+		var scaleY:Float = strumline.strumlineScale.y;
+
 		for (strum in strumline.strumlineNotes.members) {
 			if (strum == null || !strum.alive) continue;
 
@@ -224,12 +232,12 @@ class RetroNoteStyles extends Module {
 			// If offset matches what we last set, centerOffsets() hasn't fired, nothing to do.
 			if (strum.offset.x == exp[0] && strum.offset.y == exp[1]) continue;
 
-			// centerOffsets() was called this frame. Apply our delta for the current animation.
+			// centerOffsets() was called this frame. Apply our scaled delta for the current animation.
 			var key:String = dirIndex + "_" + strum.getCurrentAnimation();
 			if (animOffsets.exists(key)) {
 				var off:Array<Float> = animOffsets.get(key);
-				strum.offset.x += off[0];
-				strum.offset.y += off[1];
+				strum.offset.x += off[0] * scaleX;
+				strum.offset.y += off[1] * scaleY;
 			}
 
 			// Record the new expected values so we don't fire again next frame.

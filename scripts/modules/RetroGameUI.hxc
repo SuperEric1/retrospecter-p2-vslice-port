@@ -328,11 +328,11 @@ class RetroGameUI extends Module {
     //score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     score = new FlxBitmapText(0, yPos + judgement.height, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
     score.scale.set(hudTextScale, hudTextScale);
-    score.updateHitbox();
-    //score.autoSize = false;
+    score.cameras = [camera];
+    score.autoSize = false;
+    score.autoBounds = false;
     score.alignment = 'center';
     score.fieldWidth = FlxG.width;
-    score.screenCenter(0x01);
     score.letterSpacing = -1;
     score.alignment = 'center';
     score.borderStyle = FlxTextBorderStyle.OUTLINE;
@@ -340,11 +340,12 @@ class RetroGameUI extends Module {
     score.borderSize = 3;
     //score.background = true;
     //score.backgroundColor = FlxColor.BLACK;
-    score.cameras = [camera];
     score.zIndex = zIndex;
+    score.updateHitbox();
     if (PlayState.instance.isBotPlayMode) score.text = 'BOTPLAY';
     score.visible = !PlayState.instance.isBotPlayMode ? false : true;
-    score.x += judgementXOffset - 15;
+    score.screenCenter(0x01);
+    score.x += judgementXOffset + 15;
     PlayState.instance.add(score);
 
     PlayState.instance.scoreText.alpha = 0;
@@ -797,6 +798,8 @@ class RetroGameUI extends Module {
     var totalWidth = judgement.width + comboText.width;
     judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
     comboText.x = judgement.x + judgement.width + 25;
+    //score.screenCenter(0x01);
+    //score.x += judgementXOffset + 15;
 
     if (noteScore > 0) {
       total = PlayState.instance.songScore;

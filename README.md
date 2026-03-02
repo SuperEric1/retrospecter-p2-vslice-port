@@ -13,6 +13,7 @@ TODO:
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Hydra note is not pausing when pausing the game
 - [ ] Make the settings work
+- [ ] Make blend modes able to turn off for optimization
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Story mode menu?

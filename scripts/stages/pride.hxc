@@ -74,6 +74,11 @@ class prideStage extends Stage
         }
       });
 
+      getNamedProp('bg').antialiasing = false;
+      getNamedProp('bgf').antialiasing = false;
+      getNamedProp('pillar4r').antialiasing = false;
+      getNamedProp('pillar4l').antialiasing = false;
+
       //desativado por questoes de otimizacao
       /*for (obj in objectsRight) {
         // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente

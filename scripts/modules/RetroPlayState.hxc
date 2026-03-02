@@ -1111,21 +1111,6 @@ class RetroPlayState extends Module {
     });
   }
 
-  // Failed attempt to sync the notes alpha. it's better to do in onNoteIncoming
-  /*public static function syncNotesAlpha(strumline, time:Float, easing:FlxEase):Void {
-    for (note in strumline.notes.members) {
-      if (note == null) continue;
-      FlxTween.cancelTweensOf(note, ["alpha"]);
-      var targetAlpha = strumline.strumlineNotes.members[note.noteData.getDirection()].alpha;
-      if (time <= 0 || time == null || easing == null) {
-        note.alpha = targetAlpha;
-        continue;
-      }
-
-      tweens.push(FlxTween.tween(note, {alpha: targetAlpha}, time, {ease: easing}));
-    }
-  }*/
-
   public function onUpdate(event:UpdateScriptEvent):Void {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
@@ -1134,10 +1119,10 @@ class RetroPlayState extends Module {
     if (PlayState.instance.isGameOverState) return;
 
     if (poisonAmount > 0 && PlayState.instance.health > 0.08) {
-      PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed; //formula real do mod original btw
+      PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed;
     }
 
-    // Winning plus icon animation (for characters that have it, like zerktro)
+    // Winning plus icon animation (for characters that have it, like Zerktro.)
     if (PlayState.instance.health < 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus') {
       if (PlayState.instance.iconP2.hasAnimation('winningPlus')) {
         PlayState.instance.iconP2.animation.play('winningPlus');
@@ -1145,11 +1130,12 @@ class RetroPlayState extends Module {
     }
 
     if (poisonSprite?.active && poisonSprite != null && PlayState.instance.iconP1 != null) {
-      poisonSprite.animation.curAnim.curFrame = (poisonSpriteFrame * 100) + poisonAmount;
+      var targetFrame = (poisonSpriteFrame * 100) + poisonAmount;
+      if (poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
       poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
       poisonSprite.y = (PlayState.instance.healthBar.y - 150) + poisonSpriteYOffset; // (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset
       poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
-      poisonSprite.alpha = PlayState.instance.healthBar.alpha;
+      if (poisonSprite.alpha != PlayState.instance.healthBar.alpha) poisonSprite.alpha = PlayState.instance.healthBar.alpha;
       poisonSprite.visible = true; // it's active, so we make it visible.
       var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
       if (poisonSprite.zIndex != targetZIndex) {

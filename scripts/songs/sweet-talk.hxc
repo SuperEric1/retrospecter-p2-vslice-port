@@ -15,8 +15,6 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
-import supereric.retrospecter.modules.RetroPlayState;
-
 class SweetTalkSong extends Song
 {
   var tweens:Array<FlxTween> = [];
