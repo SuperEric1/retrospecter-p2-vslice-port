@@ -57,6 +57,7 @@ class RetroMainMenu extends MusicBeatState
   var maxCamX:Float = 0;
   var menuClips:Array<FlxRect>;
   var menuSpacingWidths:Array<Float>; // largura normalizada para cálculo de spread
+  var isSpreading:Bool = false;
 
   // Estado
   var selectedIndex:Int = 0;
@@ -123,7 +124,7 @@ class RetroMainMenu extends MusicBeatState
 
   override function create():Void
   {
-    FlxG.cameras.reset(new FunkinCamera('mainMenu'));
+    //FlxG.cameras.reset(new FunkinCamera('mainMenu'));
 
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
@@ -195,11 +196,12 @@ class RetroMainMenu extends MusicBeatState
 
     setIdleState(false);
 
-    camFollow.setPosition(FlxG.width * 0.7, baseY); //  FlxG.width / 2 + camMinOffset
-    resetCamera(FlxG.onMobile ? true : false);
+    // FlxG.width * 0.7
+    camFollow.setPosition(FlxG.width / 2 + camMinOffset, baseY);
+    resetCamera(isSpreading ? true : false);
 
     var closeCallback:Dynamic = function(_:Dynamic) {
-      resetCamera(false);
+      resetCamera();
     };
     subStateClosed.add(closeCallback);
 
@@ -252,7 +254,7 @@ class RetroMainMenu extends MusicBeatState
     item.setGraphicSize(Std.int(FlxG.height * sizeMult));
     item.updateHitbox();
 
-    var cutLeft:Float = item.frameWidth / (FlxG.onMobile ? 4.5 : 4);
+    var cutLeft:Float = item.frameWidth / (isSpreading ? 4.5 : 4);
     var cutRight:Float = cutLeft;
 
     switch (name) {
@@ -314,18 +316,18 @@ class RetroMainMenu extends MusicBeatState
       totalSpriteWidth += w;
     }
 
-    var sidePadding:Float = FlxG.onMobile ? 40 : 85;
+    var sidePadding:Float = -30; //FlxG.onMobile ? 40 : 85
     var availableWidth:Float = FlxG.width - (sidePadding * 2);
 
     var naturalWidth:Float = totalSpriteWidth + (horizontalSpacing * (totalItems - 1));
-    var isSpreading:Bool = naturalWidth <= availableWidth;
+    isSpreading = naturalWidth <= availableWidth;
 
     var finalSpacing:Float = horizontalSpacing;
     var currentX:Float = -85;
 
     if (isSpreading) {
       if (totalItems > 1) {
-        finalSpacing = (availableWidth - totalSpriteWidth) / (totalItems - 1);
+        finalSpacing = Math.max(horizontalSpacing, (availableWidth - totalSpriteWidth) / (totalItems - 1));
       }
       currentX = sidePadding;
     }
@@ -370,6 +372,8 @@ class RetroMainMenu extends MusicBeatState
         if (maxCamX < minCamX) maxCamX = minCamX;
       }
     }
+
+    if (FlxG.onMobile) throw isSpreading;
   }
 
   function setIdleState(doTween:Bool = true):Void
