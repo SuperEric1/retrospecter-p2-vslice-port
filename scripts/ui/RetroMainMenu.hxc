@@ -254,7 +254,7 @@ class RetroMainMenu extends MusicBeatState
     item.setGraphicSize(Std.int(FlxG.height * sizeMult));
     item.updateHitbox();
 
-    var cutLeft:Float = item.frameWidth / (isSpreading ? 4.5 : 4);
+    var cutLeft:Float = item.frameWidth / (FlxG.onMobile ? 4.5 : 4);
     var cutRight:Float = cutLeft;
 
     switch (name) {
