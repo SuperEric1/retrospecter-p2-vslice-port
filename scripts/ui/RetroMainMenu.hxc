@@ -56,6 +56,7 @@ class RetroMainMenu extends MusicBeatState
   var minCamX:Float = 0;
   var maxCamX:Float = 0;
   var menuClips:Array<FlxRect>;
+  var menuSpacingWidths:Array<Float>; // largura normalizada para cálculo de spread
 
   // Estado
   var selectedIndex:Int = 0;
@@ -100,6 +101,7 @@ class RetroMainMenu extends MusicBeatState
     menuHitboxes = [];
     menuNames = [];
     menuClips = [];
+    menuSpacingWidths = [];
 
     camFollow = new FlxObject(0, 0, 1, 1);
     idleTimer = new FlxTimer();
@@ -276,6 +278,11 @@ class RetroMainMenu extends MusicBeatState
     item.clipRect = new FlxRect(clipX, clipY, clipW, clipH);
     menuClips.push(new FlxRect(clipX, clipY, clipW, clipH));
 
+    // spacingWidth: teto em frameWidth - 2*defaultCut (tamanho de um item padrão).
+    // Itens com cutLeft pequeno (story) não inflam o cálculo de spread.
+    var defaultCut:Float = item.frameWidth / (FlxG.onMobile ? 4.5 : 4);
+    menuSpacingWidths.push(Math.min(clipW, item.frameWidth - 2 * defaultCut));
+
     item.ID = menuItems.length;
     item.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
 
@@ -297,12 +304,17 @@ class RetroMainMenu extends MusicBeatState
     var totalItems:Int = menuItems.length;
     if (totalItems == 0) return;
 
+    // screenWidths: tamanho visual de cada item (hitbox, posição, avanço em non-spread).
+    // spacingScreenWidths: tamanho normalizado.
     var screenWidths:Array<Float> = [];
+    var spacingScreenWidths:Array<Float> = [];
     var totalContentWidth:Float = 0;
     for (i in 0...totalItems) {
-      var sw:Float = menuClips[i].width * menuItems[i].scale.x;
-      screenWidths.push(sw);
-      totalContentWidth += sw;
+      var sx:Float = menuItems[i].scale.x;
+      screenWidths.push(menuClips[i].width * sx);
+      var ssw:Float = menuSpacingWidths[i] * sx;
+      spacingScreenWidths.push(ssw);
+      totalContentWidth += ssw; // usa spacingWidth para o spread threshold
     }
 
     var sidePadding:Float = FlxG.onMobile ? 40 : 85;
@@ -340,7 +352,9 @@ class RetroMainMenu extends MusicBeatState
       hitbox.width = screenWidths[i];
       hitbox.height = clip.height * sy;
 
-      currentX += screenWidths[i] + finalSpacing;
+      // Non-spread: avança pelo tamanho visual real, gap = horizontalSpacing entre bordas visíveis.
+      // Spread: avança pelo spacingWidth normalizado, itens cabem exatamente em availableWidth.
+      currentX += (isSpreading ? spacingScreenWidths[i] : screenWidths[i]) + finalSpacing;
     }
 
     // CÂMERA E LIMITES
