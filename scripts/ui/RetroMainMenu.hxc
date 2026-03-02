@@ -304,30 +304,30 @@ class RetroMainMenu extends MusicBeatState
     var totalItems:Int = menuItems.length;
     if (totalItems == 0) return;
 
-    var totalItemVisualWidth:Float = 0;
+    var totalSpriteWidth:Float = 0;
     var screenWidths:Array<Float> = [];
 
     for (i in 0...totalItems) {
       var sx:Float = menuItems[i].scale.x;
-      var visualW:Float = menuClips[i].width * sx;
-      screenWidths.push(visualW);
-      totalItemVisualWidth += visualW;
+      var w:Float = menuClips[i].width * sx;
+      screenWidths.push(w);
+      totalSpriteWidth += w;
     }
 
     var sidePadding:Float = FlxG.onMobile ? 40 : 85;
     var availableWidth:Float = FlxG.width - (sidePadding * 2);
-    var naturalWidth:Float = totalItemVisualWidth + ((totalItems - 1) * horizontalSpacing);
 
-    // Espaçamento para preencher a largura disponível entre os itens em telas maiores.
-    var isSpreading:Bool = naturalWidth < availableWidth;
+    var naturalWidth:Float = totalSpriteWidth + (horizontalSpacing * (totalItems - 1));
+    var isSpreading:Bool = naturalWidth <= availableWidth;
+
     var finalSpacing:Float = horizontalSpacing;
     var currentX:Float = -85;
 
-    if (isSpreading && totalItems > 1) {
-      // Spread: O espaço vazio é a tela menos os itens.
-      // Dividimos esse espaço pelo número de buracos entre itens.
-      finalSpacing = (availableWidth - totalItemVisualWidth) / (totalItems - 1);
-      currentX = sidePadding; // Começar exatamente na margem
+    if (isSpreading) {
+      if (totalItems > 1) {
+        finalSpacing = (availableWidth - totalSpriteWidth) / (totalItems - 1);
+      }
+      currentX = sidePadding;
     }
 
     for (i in 0...totalItems)
@@ -338,23 +338,21 @@ class RetroMainMenu extends MusicBeatState
       var sx:Float = item.scale.x;
       var sy:Float = item.scale.y;
 
-      item.x = currentX - (clip.x * sx);
+      item.x = currentX - clip.x * sx;
       item.y = baseY - (item.height / 2);
 
       // Corrigir botão do story
-      if (i == 0) {
-        item.x += 13; // odeio isso
-      }
+      if (i == 0) item.x += 13; // odeio isso
 
       hitbox.x = currentX;
-      hitbox.y = item.y + (clip.y * sy);
+      hitbox.y = item.y + clip.y * sy;
       hitbox.width = screenWidths[i];
       hitbox.height = clip.height * sy;
 
       currentX += screenWidths[i] + finalSpacing;
     }
 
-    if (menuItems.length > 0)
+    if (totalItems > 0)
     {
       if (isSpreading) {
         var screenCenter:Float = FlxG.width / 2;
@@ -366,10 +364,8 @@ class RetroMainMenu extends MusicBeatState
 
         minCamX = (FlxG.width / 2) + camMinOffset;
 
-        // O limite direito é onde o último item termina visualmente
-        // A conta é: Posição X visual do item + Largura visual do item - Metade da tela
-        var lastItemVisualRight:Float = lastItem.x + ((lastClip.x + lastClip.width) * lastItem.scale.x);
-        maxCamX = lastItemVisualRight - (FlxG.width / 2) + camMaxOffset;
+        var lastItemRight:Float = lastItem.x + ((lastClip.x + lastClip.width) * lastItem.scale.x);
+        maxCamX = lastItemRight - (FlxG.width / 2) + camMaxOffset;
 
         if (maxCamX < minCamX) maxCamX = minCamX;
       }
