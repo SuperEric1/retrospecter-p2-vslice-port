@@ -182,6 +182,12 @@ class CatastrofiendSong extends Song
     }
   }
 
+  public override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    PlayState.instance.camCutscene.stopFade();
+  }
+
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);

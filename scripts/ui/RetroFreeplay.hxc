@@ -86,6 +86,7 @@ class RetroFreeplay extends Module {
   public override function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {
     super.onFreeplayIntroDone(event);
     var freeplay:FreeplayState = FlxG.state.subState;
+    if (freeplay.currentCharacterId != "bf") return;
     isInFreeplay = true;
     cacheDefaultTexts();
     trace('Freeplay intro done');
@@ -157,6 +158,8 @@ class RetroFreeplay extends Module {
 
   public override function onCapsuleSelected(event:CapsuleScriptEvent):Void {
     super.onCapsuleSelected(event);
+    var freeplay:FreeplayState = FlxG.state.subState;
+    if (freeplay.currentCharacterId != "bf") return;
     if (!isInFreeplay) return;
     if (event.capsule.freeplayData == null) {
       updateBackingCardTexts('', '', '');
