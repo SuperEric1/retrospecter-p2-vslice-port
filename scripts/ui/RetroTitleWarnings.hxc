@@ -540,7 +540,7 @@ class RetroTitleWarnings extends MusicBeatState
     return title;
   }
 
-  private function createBodyText(x:Float, y:Float, width:Float, text:String, size:Int = 24, align:String):FlxText {
+  private function createBodyText(x:Float, y:Float, width:Float, text:String, size:Int = 24, ?align:String = "center"):FlxText {
     var result = new FlxText(x, y, width == 0 ? FlxG.width : width, "");
     result.setFormat(Paths.font(DEFAULT_FONT), size, FlxColor.WHITE, align != null ? align : "center", FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     result.borderSize = 2;

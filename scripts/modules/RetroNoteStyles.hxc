@@ -14,6 +14,8 @@ import funkin.play.PlayState;
 import funkin.Preferences;
 import funkin.save.Save;
 import funkin.util.Constants;
+import funkin.util.ReflectUtil;
+import haxe.ds.StringMap;
 
 class RetroNoteStyles extends Module {
 	public function new() {
@@ -21,15 +23,62 @@ class RetroNoteStyles extends Module {
 	}
 
 	final mobileArrowsActive:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+	var isRetro:Bool = null;
 
 	// Originally "amplification" from Funkin's source code.
 	final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
 
 	var _playerStyle:String = null;
 	var _opponentStyle:String = null;
-	// public var playerStyle(get, set):String = null;
-	// public var opponentStyle(get, set):String = null;
+	var currentOppStyle:String = null;
+	var currentPlayerStyle:String = null;
 	var isOppUsingCustomNote:Bool = false;
+	var isPlayerUsingCustomNote:Bool = false;
+
+	// GAMBIARRA: Offset fixes for broken NoteStyle offset support, while they aren't fixed.
+	/**
+	 * Global note (NoteSprite) Y offsets per side.
+	 * The engine never applies _data.assets.note.offsets to NoteSprites, so we do it manually.
+	 * [xOffset, yOffset]
+	 */
+	var oppNoteOffset:Array<Float> = [0.0, 0.0];
+	var playerNoteOffset:Array<Float> = [0.0, 0.0];
+
+	/**
+	 * Per-animation strumline offsets per side.
+	 * Key format: "<directionIndex>_<animName>"
+	 * 	directionIndex: 0=left, 1=down, 2=up, 3=right
+	 *  animName: "static" | "press" | "confirm" | "confirm-hold"
+	 * Value: [xOffset, yOffset]
+	 *
+	 * The engine adds per-anim offsets to AnimationData but FlxAnimationUtil.addAtlasAnimation
+	 * ignores them, and StrumlineNote.playAnimation() always calls centerOffsets() which resets
+	 * .offset. We re-apply them every frame in onUpdate() after all strums have updated.
+	 */
+	var oppStrumAnimOffsets:StringMap<Array<Float>> = new StringMap();
+	var playerStrumAnimOffsets:StringMap<Array<Float>> = new StringMap();
+
+	/**
+	 * Tracks the offset we last applied to each strum, per side.
+	 * Index = direction (0=left, 1=down, 2=up, 3=right).
+	 * [x, y]
+	 *
+	 * Instead of tracking animation names, we track the actual offset values we set.
+	 * If strum.offset diverges from what we stored, it means centerOffsets() was called
+	 * internally (by playAnimation()) since our last frame, so we re-apply.
+	 * This handles the engine bug where the confirmHoldTimer fires playStatic() and then
+	 * holdConfirm() re-calls playAnimation('confirm') in the same frame: both calls reset
+	 * the offset, but since the animation name doesn't change, lastAnims-based detection
+	 * is blind to it. expectedOffsets catches it regardless of animation name.
+	 */
+	var oppExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
+	var playerExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
+
+	/**
+	 * Whether the gambiarra™ should run for each side.
+	 */
+	var hasOppStrumAnimOffsets:Bool = false;
+	var hasPlayerStrumAnimOffsets:Bool = false;
 
 	public function setStyle(type:CharacterType, name:String):Void {
 		if (type == CharacterType.BF) {
@@ -39,29 +88,10 @@ class RetroNoteStyles extends Module {
 		}
 	}
 
-	final animatedNoteStyles:Array<String> = [
-		'hydra_down', 'hydra_up'
-	];
-
-	/*function get_playerStyle():String {
-		return _playerStyle;
-	}
-	function set_playerStyle(value:String):String {
-		_playerStyle = value;
-		return _playerStyle;
-	}
-	function get_opponentStyle():String {
-		return _opponentStyle;
-	}
-	function set_opponentStyle(value:String):String {
-		_opponentStyle = value;
-		return _opponentStyle;
-	}*/
-
 	override function onSongLoaded(event) {
 		super.onSongLoaded(event);
-		if (PlayState.instance.playerStrumline.noteStyle.id != 'retrospecter') return;
-		isOppUsingCustomNote = false;
+		if (isRetro == null) isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
+		if (!isRetro) return;
 
 		applyCustomNoteStyles();
 	}
@@ -70,41 +100,181 @@ class RetroNoteStyles extends Module {
 		var dadCharacterId:String = PlayState.instance.currentStage.getDad().characterId;
 		var boyfriendCharacterId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
 
-		var dadNoteStyle = NoteStyleRegistry.instance.fetchEntry(dadCharacterId);
-		var bfNoteStyle = NoteStyleRegistry.instance.fetchEntry(boyfriendCharacterId);
-
-		if (_opponentStyle != null) {
+		if (_opponentStyle != null && _opponentStyle != currentOppStyle) {
 			var dadNoteStyle = NoteStyleRegistry.instance.fetchEntry(_opponentStyle);
 			if (dadNoteStyle != null) {
+				// Reset previous offset data
+				oppNoteOffset = [0.0, 0.0];
+				oppStrumAnimOffsets = new StringMap();
+				oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+				hasOppStrumAnimOffsets = false;
+
 				isOppUsingCustomNote = true;
+				currentOppStyle = _opponentStyle;
 				FunkinMemory.cacheNoteStyle(dadNoteStyle);
 				refreshStrumlineStyle(PlayState.instance.opponentStrumline, _opponentStyle, false);
+
+				// Extract and cache the offset data for this style.
+				oppNoteOffset = extractNoteOffset(dadNoteStyle);
+				oppStrumAnimOffsets = extractStrumAnimOffsets(dadNoteStyle);
+				hasOppStrumAnimOffsets = oppStrumAnimOffsets.keys().hasNext();
 			}
 		}
 
-		if (!Save.instance.modOptions.get('retroDefaultNotes') && _playerStyle != null) {
+		if (!Save.instance.modOptions.get('retroDefaultNotes') && _playerStyle != null && _playerStyle != currentPlayerStyle) {
 			var bfNoteStyle = NoteStyleRegistry.instance.fetchEntry(_playerStyle);
 			if (bfNoteStyle != null) {
+				// Reset previus offset data
+				playerNoteOffset = [0.0, 0.0];
+				playerStrumAnimOffsets = new StringMap();
+				playerExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+				hasPlayerStrumAnimOffsets = false;
+
+				isPlayerUsingCustomNote = true;
+				currentPlayerStyle = _playerStyle;
 				FunkinMemory.cacheNoteStyle(bfNoteStyle);
 				refreshStrumlineStyle(PlayState.instance.playerStrumline, _playerStyle, true);
+
+				// Extract and cache the offset data for this style.
+				playerNoteOffset = extractNoteOffset(bfNoteStyle);
+				playerStrumAnimOffsets = extractStrumAnimOffsets(bfNoteStyle);
+				hasPlayerStrumAnimOffsets = playerStrumAnimOffsets.keys().hasNext();
 			}
 		}
 	}
 
-	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+	/**
+	 * Reads the global note offset from _data.assets.note.offsets.
+	 */
+	function extractNoteOffset(style:NoteStyle):Array<Float> {
+		var offsets:Array<Float> = style._data?.assets?.note?.offsets;
+		if (offsets != null && offsets.length >= 2) return offsets;
+		return [0.0, 0.0];
+	}
+
+	/**
+	 * Reads all per-animation offsets from _data.assets.noteStrumline.data.
+	 * FlxAnimationUtil.addAtlasAnimation() ignores AnimationData.offsets entirely,
+	 * so we apply them ourselves in onUpdate().
+	 *
+	 * Only entries that actually have a non-zero or explicitly defined offsets array are stored.
+	 */
+	function extractStrumAnimOffsets(style:NoteStyle):StringMap<Array<Float>> {
+		var result:StringMap<Array<Float>> = new StringMap();
+		var strumData = style._data?.assets?.noteStrumline?.data;
+		if (strumData == null) return result;
+
+		// [JSON field name, direction index as string, animation name]
+		// Direction indices: 0=left, 1=down, 2=up, 3=right
+		// Animation names match what StrumlineNote.getCurrentAnimation() returns.
+		var mappings:Array<Array<String>> = [
+			["leftStatic", "0", "static"],
+			["leftPress", "0", "press"],
+			["leftConfirm", "0", "confirm"],
+			["leftConfirmHold", "0", "confirm-hold"],
+			["downStatic", "1", "static"],
+			["downPress", "1", "press"],
+			["downConfirm", "1", "confirm"],
+			["downConfirmHold", "1", "confirm-hold"],
+			["upStatic", "2", "static"],
+			["upPress", "2", "press"],
+			["upConfirm", "2", "confirm"],
+			["upConfirmHold", "2", "confirm-hold"],
+			["rightStatic", "3", "static"],
+			["rightPress", "3", "press"],
+			["rightConfirm", "3", "confirm"],
+			["rightConfirmHold", "3", "confirm-hold"],
+		];
+
+		for (entry in mappings) {
+			var fieldName:String = entry[0];
+			var dirStr:String = entry[1];
+			var animName:String = entry[2];
+
+			var animData = ReflectUtil.field(strumData, fieldName);
+			if (animData == null) continue;
+
+			var offsets:Array<Float> = animData.offsets;
+			if (offsets == null || offsets.length < 2) continue;
+
+			result.set(dirStr + "_" + animName, offsets);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Apply per-animation strumline offsets to a strumline's notes.
+	 *
+	 * Detection: instead of tracking the animation name, we track the offset values we
+	 * last wrote. If strum.offset differs from expectedOffsets, centerOffsets() was called
+	 * internally this frame (by playAnimation()), so we re-apply our delta.
+	 * This correctly handles cases where playAnimation() is called multiple times in one
+	 * frame with the same animation name.
+	 *
+	 * I hate this please fix it Funkin' Crew (https://github.com/FunkinCrew/Funkin/issues/6836)
+	 */
+	function applyStrumAnimOffsets(strumline:Strumline, animOffsets:StringMap<Array<Float>>, expectedOffsets:Array<Array<Float>>):Void {
+		for (strum in strumline.strumlineNotes.members) {
+			if (strum == null || !strum.alive) continue;
+
+			var dirIndex:Int = Strumline.DIRECTIONS.indexOf(strum.direction);
+			var exp:Array<Float> = expectedOffsets[dirIndex];
+
+			// If offset matches what we last set, centerOffsets() hasn't fired, nothing to do.
+			if (strum.offset.x == exp[0] && strum.offset.y == exp[1]) continue;
+
+			// centerOffsets() was called this frame. Apply our delta for the current animation.
+			var key:String = dirIndex + "_" + strum.getCurrentAnimation();
+			if (animOffsets.exists(key)) {
+				var off:Array<Float> = animOffsets.get(key);
+				strum.offset.x += off[0];
+				strum.offset.y += off[1];
+			}
+
+			// Record the new expected values so we don't fire again next frame.
+			exp[0] = strum.offset.x;
+			exp[1] = strum.offset.y;
+		}
+	}
+
+	override public function onNoteIncoming(event:NoteScriptEvent):Void {
 		super.onNoteIncoming(event);
-		if (!event.note.noteData.getMustHitNote()) {
-			if (animatedNoteStyles.contains(PlayState.instance.opponentStrumline.noteStyle.id)) {
-				event.note.active = true; // For the note's animation to actually play.
-			}
-		}
+		if (!isRetro || !event.note.visible) return;
 
+		if (!event.note.noteData.getMustHitNote()) {
+			// Opponent note
+			event.note.x += oppNoteOffset[0] ?? 0;
+			event.note.yOffset = 0;
+			event.note.yOffset += oppNoteOffset[1] ?? 0;
+
+		} else if (event.note.scoreable) {
+			// Player note
+			event.note.x += playerNoteOffset[0] ?? 0;
+			event.note.yOffset = 0;
+			event.note.yOffset = playerNoteOffset[1] ?? 0;
+		}
 	}
+
+	override public function onUpdate(event:UpdateScriptEvent):Void {
+		super.onUpdate(event);
+		if (PlayState.instance == null) return;
+		if (!isRetro) return;
+
+		if (hasOppStrumAnimOffsets) {
+			applyStrumAnimOffsets(PlayState.instance.opponentStrumline, oppStrumAnimOffsets, oppExpectedOffsets);
+		}
+		if (hasPlayerStrumAnimOffsets) {
+			applyStrumAnimOffsets(PlayState.instance.playerStrumline, playerStrumAnimOffsets, playerExpectedOffsets);
+		}
+	}
+
 	public function onNoteHit(event:HitNoteScriptEvent):Void {
 		super.onNoteHit(event);
-    if (PlayState.instance == null) return;
+		if (PlayState.instance == null) return;
+		if (!isRetro) return;
 
-		// Play splash anims for the opponent if they're using a custom notestyle
+		// Play splash anims for the opponent if they're using a custom notestyle.
 		var noteData = event.note.noteData;
 		if (!noteData.getMustHitNote() && isOppUsingCustomNote) {
 			PlayState.instance.opponentStrumline.playNoteSplash(noteData.getDirection());
@@ -143,7 +313,7 @@ class RetroNoteStyles extends Module {
 			styleData.applyStrumlineOffsets(newStrum);
 			strumline.strumlineNotes.add(newStrum);
 		}
-		// The little animation of the arrows when starting the song on freeplay
+		// The little animation of the arrows when starting the song on freeplay.
 		strumline.fadeInArrows();
 	}
 
@@ -183,11 +353,23 @@ class RetroNoteStyles extends Module {
 		PlayState.instance.opponentStrumline.enterMiniMode(0.4 * screenRatio);
 	}
 
-	override function onDestroy(event:ScriptEvent)
-	{
+	override function onDestroy(event:ScriptEvent) {
 		super.onDestroy(event);
 		// Resetar estilos para que eles não arrastem pra próxima música se ela não tiver um style setado.
+		isRetro = null;
 		_opponentStyle = null;
 		_playerStyle = null;
-  }
+		currentOppStyle = null;
+		currentPlayerStyle = null;
+		isOppUsingCustomNote = false;
+		isPlayerUsingCustomNote = false;
+		oppNoteOffset = [0.0, 0.0];
+		playerNoteOffset = [0.0, 0.0];
+		oppStrumAnimOffsets = new StringMap();
+		playerStrumAnimOffsets = new StringMap();
+		hasOppStrumAnimOffsets = false;
+		hasPlayerStrumAnimOffsets = false;
+		oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+		playerExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+	}
 }

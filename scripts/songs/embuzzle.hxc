@@ -375,7 +375,7 @@ class EmbuzzleSong extends Song
 
         addCameraZoom(0.05, 0.055);
         doFlash(flashPurple, 3 /* multiply */, 1.0, 1.5, FlxEase.quadOut);
-        doFlash(flashLight,  0 /* screen  */, 1.0, 2.0, FlxEase.quadOut);
+        doFlash(flashLight,  12 /* screen  */, 1.0, 2.0, FlxEase.quadOut);
 
       case 640:
         tweens.push(FlxTween.tween(playState.camHUD, { angle: 0.0 }, 0.5, { ease: FlxEase.quadOut }));
@@ -528,7 +528,7 @@ class EmbuzzleSong extends Song
   {
     cancelTweens();
     addCameraZoom(0.025, 0.03);
-    if (flashingLights) doFlash(flashLight, 0 /* screen */, 0.15, 0.5, FlxEase.quadOut);
+    if (flashingLights) doFlash(flashLight, 12 /* screen */, 0.15, 0.5, FlxEase.quadOut);
 
     if (!modcharts || !hasStoredStrums) return;
 

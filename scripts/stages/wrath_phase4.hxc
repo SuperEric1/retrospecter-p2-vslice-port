@@ -275,15 +275,17 @@ class WrathPhase4Stage extends Stage
     PlayState.instance.add(overlay, 'overlay');
     FlxTween.tween(overlay.scale, {x: 1, y: 1}, 1, {type: 4, ease: FlxEase.quadOut});
 
-    // Create fire animation
+    // Create fire
     fire = FunkinSprite.create(4160, 8100);
     fire.loadSparrow('Phase4/dragonball');
+    fire.scale.set(2.857143, 2.857143);
+    fire.updateHitbox();
     fire.animation.addByPrefix('an', 'f', 39, false);
     fire.animation.addByPrefix('nothing', 'nothing', 24, false);
     fire.animation.addByPrefix('d', 'd', 39, true);
     fire.animation.play('nothing');
     fire.zIndex = bfZIndex + 1;
-    fire.antialiasing = false;
+    fire.antialiasing = true;
     PlayState.instance.add(fire, 'fire');
 
     // Create white flash

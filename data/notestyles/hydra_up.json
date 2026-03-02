@@ -7,23 +7,23 @@
     "note": {
       "assetPath": "shared:notes/Hydra_Note_StrumAssets",
       "scale": 0.7,
-      "offsets": [0, -150],
+      "offsets": [0, -20],
       "animated": true,
       "data": {
         "left": {
-          "prefix": "Downscroll_Hydra Note Left instance 1",
+          "prefix": "Hydra Note Left instance 1",
           "looped": true
         },
         "down": {
-          "prefix": "Downscroll_Hydra Note Down instance 1",
+          "prefix": "Hydra Note Down instance 1",
           "looped": true
         },
         "up": {
-          "prefix": "Downscroll_Hydra Note Up instance 1",
+          "prefix": "Hydra Note Up instance 1",
           "looped": true
         },
         "right": {
-          "prefix": "Downscroll_Hydra Note Right instance 1",
+          "prefix": "Hydra Note Right instance 1",
           "looped": true
         }
       }

@@ -193,7 +193,7 @@ class RetroMainMenu extends MusicBeatState
 
     setIdleState(false);
 
-    camFollow.setPosition(FlxG.width * 0.8, baseY); //  FlxG.width / 2 + camMinOffset
+    camFollow.setPosition(FlxG.width * 0.7, baseY); //  FlxG.width / 2 + camMinOffset
     resetCamera(FlxG.onMobile ? true : false);
 
     var closeCallback:Dynamic = function(_:Dynamic) {
@@ -505,7 +505,7 @@ class RetroMainMenu extends MusicBeatState
     idleTimer.cancel();
 
     var timeoutCallback:Dynamic = function(_:FlxTimer) {
-      setIdleState();
+      setIdleState(true);
     };
 
     idleTimer.start(idleTimeoutSeconds, timeoutCallback);

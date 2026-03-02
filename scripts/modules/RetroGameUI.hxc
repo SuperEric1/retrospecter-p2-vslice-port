@@ -54,7 +54,8 @@ class RetroGameUI extends Module {
   var isMobileArrowScheme:Bool = false;
   var healthBgYOffset:Float = 0;
   // move judgements a little bit to the left on non-mobile/non-arrows scheme
-  var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -45;
+  var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -55;
+  var hudTextScale:Float = 0.47;
   var songLengthEnabled:Bool = true;
   var isHivemine:Bool = false;
 
@@ -77,14 +78,14 @@ class RetroGameUI extends Module {
   var ogBarTexture:String;
 
   // Score/HUD elements
-  var judgement:FlxText;
-  var comboText:FlxText;
-  var score:FlxText;
+  var judgement:FlxBitmapText;
+  var comboText:FlxBitmapText;
+  var score:FlxBitmapText;
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
-  var hiveminePlayerMoney:FlxText;
-  var hivemineOppMoney:FlxText;
+  var hiveminePlayerMoney:FlxBitmapText;
+  var hivemineOppMoney:FlxBitmapText;
   var hiveminePlayerMoneyValue:Float = 0;
   var hivemineOppMoneyValue:Float = 0;
   var hivemineMoneyMulti = 1;
@@ -97,7 +98,8 @@ class RetroGameUI extends Module {
   var currentAccuracy:Float = 0.0;
 
   // Time Display
-  var timeDisplay:FlxText;
+  var timeDisplay:FlxBitmapText;
+  var timeDisplaySub:FlxBitmapText;
 
   // Story Mode support (unused rn)
   var talliesLevel:Tallies;
@@ -292,30 +294,57 @@ class RetroGameUI extends Module {
     }
     var zIndex = 9999;
 
-    judgement = new FlxText(0, yPos, 0, '', 20);
-    judgement.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    //judgement = new FlxText(0, yPos, 0, '', 20);
+    //judgement.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    judgement = new FlxBitmapText(0, yPos, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    judgement.scale.set(hudTextScale, hudTextScale);
+    judgement.updateHitbox();
+    judgement.letterSpacing = -1;
+    judgement.alignment = 'left';
+    judgement.borderStyle = FlxTextBorderStyle.OUTLINE;
+    judgement.borderColor = FlxColor.BLACK;
+    judgement.borderSize = 3;
     judgement.cameras = [camera];
     judgement.zIndex = zIndex;
     judgement.visible = false;
     PlayState.instance.add(judgement);
 
-    comboText = new FlxText(0, yPos, 0, '', 20);
-    comboText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    //comboText = new FlxText(0, yPos, 0, '', 20);
+    //comboText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    comboText = new FlxBitmapText(0, yPos, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    comboText.scale.set(hudTextScale, hudTextScale);
+    comboText.updateHitbox();
+    comboText.letterSpacing = -1;
+    comboText.alignment = 'left';
+    comboText.borderStyle = FlxTextBorderStyle.OUTLINE;
+    comboText.borderColor = FlxColor.BLACK;
+    comboText.borderSize = 3;
     comboText.cameras = [camera];
     comboText.zIndex = zIndex;
     comboText.visible = false;
     PlayState.instance.add(comboText);
 
-    score = new FlxText(0, yPos + judgement.frameHeight, 0, '', 20);
-    score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    //score = new FlxBitmapText(0, yPos + judgement.frameHeight, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    //score = new FlxText(0, yPos + judgement.frameHeight, 0, '', 20);
+    //score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    score = new FlxBitmapText(0, yPos + judgement.height, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    score.scale.set(hudTextScale, hudTextScale);
+    score.updateHitbox();
+    //score.autoSize = false;
+    score.alignment = 'center';
     score.fieldWidth = FlxG.width;
     score.screenCenter(0x01);
+    score.letterSpacing = -1;
+    score.alignment = 'center';
+    score.borderStyle = FlxTextBorderStyle.OUTLINE;
+    score.borderColor = FlxColor.BLACK;
+    score.borderSize = 3;
+    //score.background = true;
+    //score.backgroundColor = FlxColor.BLACK;
     score.cameras = [camera];
     score.zIndex = zIndex;
     if (PlayState.instance.isBotPlayMode) score.text = 'BOTPLAY';
     score.visible = !PlayState.instance.isBotPlayMode ? false : true;
-    score.x += judgementXOffset;
+    score.x += judgementXOffset - 15;
     PlayState.instance.add(score);
 
     PlayState.instance.scoreText.alpha = 0;
@@ -326,27 +355,34 @@ class RetroGameUI extends Module {
     if (songLengthEnabled) createTimeDisplay();
   }
 
-  var statsFontSize:Float = FlxG.onMobile ? 35 : 30;
+  var statsFontSizeOLD:Float = FlxG.onMobile ? 35 : 30;
+  var statsFontSize:Float = FlxG.onMobile ? 0.52 : 0.47;
   var statsTextMargin:Array<Float> = [FlxG.onMobile ? 0 : 60, 30];
   function createStatsDisplay():Void {
     var zIndex = 9999;
     var camera = PlayState.instance.camHUD;
 
     statsDisplay = new FlxText(0, 0, 0, '', statsFontSize);
-    statsDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    statsDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSizeOLD, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     statsDisplay.cameras = [camera];
     statsDisplay.zIndex = zIndex;
     statsDisplay.alignment = 'right';
     statsDisplay.visible = false;
     statsDisplay.y = statsTextMargin[1];
+    statsDisplay.antialiasing = false;
+    statsDisplay.borderSize = 1.3;
+    statsDisplay.borderQuality = 0;
     PlayState.instance.add(statsDisplay);
 
     ratingTextDisplay = new FlxText(0, 20, 0, '', statsFontSize);
-    ratingTextDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    ratingTextDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSizeOLD, 0xFFFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     ratingTextDisplay.cameras = [camera];
     ratingTextDisplay.zIndex = zIndex;
     ratingTextDisplay.alignment = 'right';
     ratingTextDisplay.visible = false;
+    ratingTextDisplay.antialiasing = false;
+    ratingTextDisplay.borderSize = 1.3;
+    ratingTextDisplay.borderQuality = 0;
     PlayState.instance.add(ratingTextDisplay);
 
     updateStatsDisplay(true);
@@ -354,12 +390,35 @@ class RetroGameUI extends Module {
   function createTimeDisplay():Void {
     var zIndex = 9999;
 
-    timeDisplay = new FlxText(0, 0, 0, '', statsFontSize);
-    timeDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    //timeDisplay = new FlxText(0, 0, 0, '', statsFontSize);
+    //timeDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    timeDisplay = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    timeDisplay.scale.set(statsFontSize, statsFontSize);
+    timeDisplay.updateHitbox();
+    timeDisplay.letterSpacing = -1;
+    timeDisplay.alignment = 'center';
+    timeDisplay.borderStyle = FlxTextBorderStyle.OUTLINE;
+    timeDisplay.borderColor = FlxColor.BLACK;
+    timeDisplay.borderSize = 3;
+    timeDisplay.fieldWidth = 10;
     timeDisplay.cameras = [PlayState.instance.camHUD];
     timeDisplay.zIndex = zIndex;
+    timeDisplay.antialiasing = false;
     timeDisplay.visible = false;
     PlayState.instance.add(timeDisplay);
+
+    timeDisplaySub = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    timeDisplaySub.scale.set(statsFontSize, statsFontSize);
+    timeDisplaySub.updateHitbox();
+    timeDisplaySub.letterSpacing = -1;
+    timeDisplaySub.alignment = 'center';
+    timeDisplaySub.borderStyle = FlxTextBorderStyle.OUTLINE;
+    timeDisplaySub.borderColor = FlxColor.BLACK;
+    timeDisplaySub.borderSize = 3;
+    timeDisplaySub.cameras = [PlayState.instance.camHUD];
+    timeDisplaySub.zIndex = zIndex;
+    timeDisplaySub.visible = false;
+    PlayState.instance.add(timeDisplaySub);
 
     updateTimeDisplay();
   }
@@ -368,6 +427,7 @@ class RetroGameUI extends Module {
     if (timeDisplay == null || PlayState.instance == null) return;
     if (PlayState.instance?.isBotPlayMode) {
       timeDisplay.visible = false;
+      timeDisplaySub.visible = false;
       return;
     }
 
@@ -381,11 +441,25 @@ class RetroGameUI extends Module {
     var currentTimeStr:String = formatTime(currentTime);
     var totalTimeStr:String = formatTime(songLength);
 
-    timeDisplay.text = RetroLanguage.t('stats.timeLeft', 'Time Left') + '\n' + currentTimeStr + '|' + totalTimeStr;
-    var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - timeDisplay.height - statsTextMargin[1];
-    timeDisplay.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
-    timeDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + timeDisplay.height / 2;
-    if (currentTime > 0) timeDisplay.visible = true;
+    timeDisplay.text = RetroLanguage.t('stats.timeLeft', 'Time Left');
+    timeDisplaySub.text = currentTimeStr + '|' + totalTimeStr;
+    timeDisplay.updateHitbox();
+    timeDisplaySub.updateHitbox();
+
+    var totalHeight = timeDisplay.height + timeDisplaySub.height;
+    var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - totalHeight - statsTextMargin[1];
+    var baseX = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
+    var baseY = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + totalHeight / 2;
+
+    timeDisplay.x = baseX;
+    timeDisplay.y = baseY;
+    timeDisplaySub.x = timeDisplay.x + (timeDisplay.width / 2) - (timeDisplaySub.width / 2);
+    timeDisplaySub.y = baseY + timeDisplay.height;
+
+    if (currentTime > 0) {
+      timeDisplay.visible = true;
+      timeDisplaySub.visible = true;
+    }
   }
 
   function formatTime(milliseconds:Float):String {
@@ -462,7 +536,7 @@ class RetroGameUI extends Module {
     // Calculate the width of "RATING: " in the last line
     var ratingLabelWidth = statsDisplay.textField.getLineMetrics(2).width;
     ratingTextDisplay.x = statsDisplay.x + statsDisplay.textField.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
-    ratingTextDisplay.y = statsDisplay.y + (statsFontSize * 2); // 2 lines down
+    ratingTextDisplay.y = statsDisplay.y + (statsFontSizeOLD * 2); // 2 lines down
   }
 
   function getVanillaRatingData(ratingPercent:Float, goods:Int):{name:String, color:FlxColor} {
@@ -490,21 +564,41 @@ class RetroGameUI extends Module {
     var txtColor = color ?? 0xFFee8044;
     //if (color != null) txtColor = color;
     // update the zIndexes when the text gets updated, so it inherits the health bar's zindex.
-    var hiveTextSize = retroHealthBarOverlay.width * 0.013;
-    var hiveTextFieldWidth = retroHealthBarOverlay.width * 0.12;
+    var hiveTextSizeOLD = retroHealthBarOverlay.width * 0.013;
+    var hiveTextSize = 0.335;
+    var hiveTextFieldWidthOLD = retroHealthBarOverlay.width * 0.12;
+    var hiveTextFieldWidth = 7 * 100;
 
-    hiveminePlayerMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
-    hiveminePlayerMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
-    hiveminePlayerMoney.cameras = [PlayState.instance.camHUD];
+    //hiveminePlayerMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
+    //hiveminePlayerMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
+    hiveminePlayerMoney = new FlxBitmapText(0, 0, '$ 0.00', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    hiveminePlayerMoney.color = 0xFFee8044;
+    hiveminePlayerMoney.scale.set(hiveTextSize, hiveTextSize);
+    hiveminePlayerMoney.updateHitbox();
+    hiveminePlayerMoney.letterSpacing = -1;
+    hiveminePlayerMoney.alignment = "center";
+    hiveminePlayerMoney.borderStyle = FlxTextBorderStyle.NONE;
+    hiveminePlayerMoney.autoSize = false; // for the fieldwith to work
     hiveminePlayerMoney.fieldWidth = hiveTextFieldWidth;
+    //hiveminePlayerMoney.background = true;
+    //hiveminePlayerMoney.backgroundColor = FlxColor.BLACK;
+    hiveminePlayerMoney.cameras = [PlayState.instance.camHUD];
     //hiveminePlayerMoney.textField.background = true;
     hiveminePlayerMoney.screenCenter();
     hiveminePlayerMoney.antialiasing = false;
 
-    hivemineOppMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
-    hivemineOppMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
-    hivemineOppMoney.cameras = [PlayState.instance.camHUD];
+    //hivemineOppMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSizeOLD);
+    //hivemineOppMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSizeOLD, txtColor, 'center', FlxTextBorderStyle.NONE);
+    hivemineOppMoney = new FlxBitmapText(0, 0, '$ 0.00', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    hivemineOppMoney.color = 0xFFee8044;
+    hivemineOppMoney.scale.set(hiveTextSize, hiveTextSize);
+    hivemineOppMoney.updateHitbox();
+    hivemineOppMoney.letterSpacing = -1;
+    hivemineOppMoney.alignment = "center";
+    hivemineOppMoney.borderStyle = FlxTextBorderStyle.NONE;
+    hivemineOppMoney.autoSize = false; // for the fieldwith to work
     hivemineOppMoney.fieldWidth = hiveTextFieldWidth;
+    hivemineOppMoney.cameras = [PlayState.instance.camHUD];
     //hivemineOppMoney.textField.background = true;
     hivemineOppMoney.antialiasing = false;
 
@@ -546,7 +640,7 @@ class RetroGameUI extends Module {
   }
   public function positionHivemineText():Void {
     var hiveTextMarginX = retroHealthBarOverlay.width * 0.115;
-    var hiveTextMarginY = retroHealthBarOverlay.height * 0.3;
+    var hiveTextMarginY = retroHealthBarOverlay.height * 0.29;
 
     hiveminePlayerMoney.screenCenter();
     hiveminePlayerMoney.x += hiveTextMarginX;
@@ -592,8 +686,16 @@ class RetroGameUI extends Module {
     var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
     addHivemineMoney(amount, 'player');
 
-    var txt = new FlxText(strum.x, 0, 0, '-0', 23);
-    txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    //var txt = new FlxText(strum.x, 0, 0, '-0', 23);
+    //txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    var txt:FlxBitmapText = new FlxBitmapText(strum.x, 0, '-0', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    txt.color = amount > 0 ? 0xFFffec44 : FlxColor.RED;
+    txt.scale.set(0.35, 0.35);
+    txt.updateHitbox();
+    txt.borderStyle = FlxTextBorderStyle.OUTLINE;
+    txt.borderColor = FlxColor.BLACK;
+    txt.borderSize = 3;
+    txt.borderQuality = 0;
     txt.cameras = [PlayState.instance.camHUD];
     txt.text = amount >= 1 ? '+' + Std.string(amount) : Std.string(amount);
     txt.x = strum.x + (strum.width / 2) - (txt.fieldWidth / 2);
@@ -605,6 +707,7 @@ class RetroGameUI extends Module {
     var marketplace:Int = downscroll ? -1 : 1;
     FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.4, {ease: FlxEase.quintIn, onComplete: function(_) {
       if (PlayState.instance == null || txt == null) return;
+      txt.kill();
       txt.destroy();
     }});
     FlxTween.tween(txt, {alpha: 0}, 0.07, {startDelay: 0.4 - 0.07});
@@ -617,7 +720,8 @@ class RetroGameUI extends Module {
     if (PlayState.instance.isGameOverState) return;
     if (!isRetro) return;
 
-    if (songLengthEnabled) {
+    if (songLengthEnabled && timeDisplay != null && !timeDisplay.visible) {
+      // Initial update when the song starts, making the text visible
       updateTimeDisplay();
     }
   }
@@ -649,7 +753,7 @@ class RetroGameUI extends Module {
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
       if (isNormalNote) {
-        updateJudgement('miss', Scoring.getMissScore(), true);
+        updateJudgement('miss', Scoring.getMissScore(), true, false);
         // Update stats display after miss
         updateStatsDisplay();
       }
@@ -673,9 +777,8 @@ class RetroGameUI extends Module {
   }
 
   function updateJudgement(judgementName:String, noteScore:Float, isComboBreak = false, doesPopup:Bool = true, stayDuration:Float = 0):Void {
-    cancelTweens();
+    cancelTweens(true);
     var judgementData = getJudgement(judgementName);
-    var xOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -50;
 
     // Atualizar o texto e cor do julgamento
     judgement.text = judgementData.text;
@@ -687,9 +790,13 @@ class RetroGameUI extends Module {
     }
     //comboText.color = 0xFFFFFF;
 
+    // FlxBitmapText precisa de updateHitbox após mudar o texto para que width/height reflitam corretamente a escala aplicada
+    judgement.updateHitbox();
+    comboText.updateHitbox();
+
     var totalWidth = judgement.width + comboText.width;
     judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
-    comboText.x = judgement.x + judgement.width;
+    comboText.x = judgement.x + judgement.width + 25;
 
     if (noteScore > 0) {
       total = PlayState.instance.songScore;
@@ -732,7 +839,7 @@ class RetroGameUI extends Module {
   override public function onDestroy(event) {
     super.onDestroy(event);
     hasBeenCreated = false;
-    cancelTweens();
+    cancelTweens(false);
     currentAccuracy = 0.0;
     isHivemine = false;
   }
@@ -877,6 +984,7 @@ class RetroGameUI extends Module {
     updateStatsDisplay(true);
     if (timeDisplay != null) {
       timeDisplay.visible = false;
+      timeDisplaySub.visible = false;
       updateTimeDisplay();
     }
     if (isHivemine) setHivemineMoney(0);
@@ -1144,7 +1252,7 @@ class RetroGameUI extends Module {
     });
   }
 
-  function cancelTweens():Void {
+  function cancelTweens(resetScale:Bool):Void {
     for (tween in judgementTweens) {
       if (tween != null) tween.cancel();
     }
@@ -1159,17 +1267,21 @@ class RetroGameUI extends Module {
       if (tween != null) tween.cancel();
     }
     scoreTweens = [];
+
+    if (resetScale) {
+      judgement.scale.x = hudTextScale;
+      judgement.scale.y = hudTextScale;
+      comboText.scale.x = hudTextScale;
+      comboText.scale.y = hudTextScale;
+      score.scale.x = hudTextScale;
+      score.scale.y = hudTextScale;
+    }
   }
 
   function animateTexts(doesPulse:Bool = true, stayDuration:Float = 0):Void {
     var pulseDuration:Float = 0.1;
-    var pulseScale:Float = 1.06;
-    judgement.scale.x = 1;
-    judgement.scale.y = 1;
-    comboText.scale.x = 1;
-    comboText.scale.y = 1;
-    score.scale.x = 1;
-    score.scale.y = 1;
+    var pulseScale:Float = hudTextScale + 0.06;
+    cancelTweens(true);
 
     if (doesPulse) {
       judgementTweens.push(
@@ -1177,7 +1289,7 @@ class RetroGameUI extends Module {
           ease: FlxEase.expoOut,
           onComplete: function(twn:FlxTween) {
             judgementTweens.push(
-              FlxTween.tween(judgement.scale, {x: 1, y: 1}, pulseDuration, {
+              FlxTween.tween(judgement.scale, {x: hudTextScale, y: hudTextScale}, pulseDuration, {
                 ease: FlxEase.quadOut
               })
             );
@@ -1190,7 +1302,7 @@ class RetroGameUI extends Module {
           ease: FlxEase.expoOut,
           onComplete: function(twn:FlxTween) {
             comboTweens.push(
-              FlxTween.tween(comboText.scale, {x: 1, y: 1}, pulseDuration, {
+              FlxTween.tween(comboText.scale, {x: hudTextScale, y: hudTextScale}, pulseDuration, {
                 ease: FlxEase.quadOut
               })
             );
@@ -1203,7 +1315,7 @@ class RetroGameUI extends Module {
           ease: FlxEase.expoOut,
           onComplete: function(twn:FlxTween) {
             scoreTweens.push(
-              FlxTween.tween(score.scale, {x: 1, y: 1}, pulseDuration, {
+              FlxTween.tween(score.scale, {x: hudTextScale, y: hudTextScale}, pulseDuration, {
                 ease: FlxEase.quadOut
               })
             );
