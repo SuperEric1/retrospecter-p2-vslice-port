@@ -333,7 +333,7 @@ class RetroGameUI extends Module {
     score.autoSize = false;
     score.autoBounds = false;
     score.alignment = 'center';
-    score.fieldWidth = FlxG.width;
+    score.fieldWidth = 1280;
     score.letterSpacing = -1;
     score.alignment = 'center';
     score.borderStyle = FlxTextBorderStyle.OUTLINE;
@@ -938,32 +938,6 @@ class RetroGameUI extends Module {
       }
     }
   }
-
-  /*public function onStepHit(curStep:Int):Void
-  {
-    // Make the icons bop.
-    if (isPlayerIconAnimated) bopIcon(PlayState.instance.iconP1, curStep);
-    if (isOppIconAnimated) bopIcon(PlayState.instance.iconP2, curStep);
-  }
-
-  function bopIcon(icon, curStep) {
-    if (icon.bopEvery != 0 && curStep % icon.bopEvery == 0)
-    {
-      throw 'opa';
-      icon.bopTween?.cancel();
-      setGraphicSize(Std.int(icon.width + (HealthIcon.HEALTH_ICON_SIZE * icon.size.x * HealthIcon.BOP_SCALE)), 0);
-      icon.bopTween = FlxTween.num(icon.width + (HealthIcon.HEALTH_ICON_SIZE * icon.size.x * HealthIcon.BOP_SCALE), HEALTH_ICON_SIZE * icon.size.x,
-        Math.min(Conductor.instance.stepLengthMs * 0.002, .175), {onComplete: _ -> icon.bopTween = null}, value -> {
-          setGraphicSize(Std.int(value), 0);
-          // Ensure the icon is positioned correctly after updating the hitbox, while its changing size.
-          icon.updateHitbox();
-          icon.updatePosition();
-        });
-      // Ensure the icon is positioned correctly after updating the hitbox.
-      icon.updateHitbox();
-      icon.updatePosition();
-    }
-  }*/
 
   public function onSongRetry(event) {
     super.onSongRetry(event);

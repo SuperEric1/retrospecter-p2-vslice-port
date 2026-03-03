@@ -1649,11 +1649,11 @@ class RetroPlayState extends Module {
     poisonSprite.animation.play('splashes', true);
     poisonSprite.cameras = [PlayState.instance.camHUD];
     poisonSprite.updateHitbox();
-    poisonSprite.visible = false;
-    poisonSprite.active = false;
     poisonSpriteFrame = 0; // starting frame
     poisonSprite.animation.curAnim.frameRate = 0;
-    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2; // just to make sure
+    poisonSprite.visible = false;
+    poisonSprite.active = false;
+    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 3; // just to make sure
     PlayState.instance.add(poisonSprite);
     poisonSprite.kill();
 

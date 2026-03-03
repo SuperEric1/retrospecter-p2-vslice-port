@@ -1,5 +1,6 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.addons.transition.FlxTransitionableState;
 import funkin.ui.mainmenu.MainMenuState;
@@ -7,6 +8,7 @@ import funkin.ui.options.OptionsState;
 import funkin.ui.title.TitleState;
 import funkin.ui.title.AttractState;
 import funkin.ui.MusicBeatState;
+import funkin.util.ReflectUtil;
 import funkin.modding.base.ScriptedMusicBeatState;
 import funkin.modding.base.ScriptedMusicBeatSubState;
 import funkin.modding.module.Module;
@@ -34,12 +36,12 @@ class RetroUIManager extends Module
   {
     super.onStateChangeEnd(event);
     var targetState = event.targetState;
+    var save = Save.instance.modOptions;
 
     if (Std.isOfType(targetState, TitleState))
     {
       if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
-      var save = Save.instance.modOptions;
       // Here we should first open the RetroTitleWarnings state if there's warnings to play based on the saved values in the save.
       if (!titleInitialized && !save.get('retroTitleWarningsPlayed') && (!save.get('retroTitleDisclaimerLanguage') || !save.get('retroTitleDisclaimer') || !save.get('retroTitleDisclaimerSuggestive'))) {
         save.set('retroTitleWarningsPlayed', true);
@@ -58,22 +60,15 @@ class RetroUIManager extends Module
       }
       FlxG.switchState(ScriptedMusicBeatState.init("RetroTitleState"));
     }
-    else if (Std.isOfType(targetState, MainMenuState))
+    else if (Std.isOfType(targetState, MainMenuState) && save.get('retroCustomMenus'))
     {
-      if (!Save.instance.modOptions.get('retroCustomMenus')) return;
-      // insert background to avoid weird transition
-      if (backBg != null) backBg.destroy();
-      backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height * 1.1, FlxColor.BLACK);
-      backBg.screenCenter();
-      backBg.scrollFactor.set(0, 0);
+      createBG();
       targetState.insert(50, backBg);
       //disableNextTransition = true;
-      FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+      if (!ReflectUtil.field(targetState, "overrideMusic")) FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
     }
-    else if (Std.isOfType(targetState, OptionsState))
+    else if (Std.isOfType(targetState, OptionsState) && save.get('retroCustomMenus'))
     {
-      if (!Save.instance.modOptions.get('retroCustomMenus')) return;
-      var save = Save.instance.modOptions;
       // save.set('retroTitleWarningsPlayed', null);
       // Since the warnings are only reset once we fully reopen the game, if the player opens the options menu and doesn't have the value saved, it means he just opened the mod for the first time!
       if (!save.get('retroTitleWarningsPlayed') && (!save.get('retroTitleDisclaimerLanguage') || !save.get('retroTitleDisclaimer') || !save.get('retroTitleDisclaimerSuggestive'))) {
@@ -84,6 +79,20 @@ class RetroUIManager extends Module
         return;
       }
     }
+  }
+
+  override public function onFreeplayClose(event:FreeplayScriptEvent)
+  {
+    super.onFreeplayClose(event);
+
+    if (!Save.instance.modOptions.get('retroCustomMenus')) return;
+
+    // Se sairmos do freeplay o menu custom não vai aparecer por causa do overrideMusic, então a gente força ele manualmente.
+    new FlxTimer().start(0.05, (_) -> {
+      FlxTransitionableState.skipNextTransIn = false;
+      //FlxTransitionableState.skipNextTransOut = true;
+      FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+    });
   }
 
   override public function onStateChangeBegin(event:StateChangeScriptEvent)
@@ -97,5 +106,13 @@ class RetroUIManager extends Module
       FlxTransitionableState.skipNextTransIn = true;
       disableNextTransition = false;
     }
+  }
+
+  function createBG():Void {
+    // insert background to avoid weird transition
+    if (backBg != null) backBg.destroy();
+    backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height * 1.1, FlxColor.BLACK);
+    backBg.screenCenter();
+    backBg.scrollFactor.set(0, 0);
   }
 }

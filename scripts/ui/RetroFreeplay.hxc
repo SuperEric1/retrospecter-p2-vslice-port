@@ -25,6 +25,7 @@ class RetroFreeplay extends Module {
   var isInFreeplay:Bool = false;
   var isFirstTime:Bool = true;
   var tmpBg:FunkinSprite;
+  var backingImagePos = [];
 
   var defaultTexts:BackingCardTexts = null;
   var defaultAlbumAngle:Float = 0.0;
@@ -132,6 +133,7 @@ class RetroFreeplay extends Module {
       @:privateAccess {
         var backingCard = freeplayState.backingCard;
         if (backingCard == null) return;
+        if (freeplayState.backingImage != null && backingImagePos[0] == null) backingImagePos = [freeplayState.backingImage.x, freeplayState.backingImage.y];
         var styleData = freeplayState.styleData;
 
         var funnyScroll = backingCard.funnyScroll;
@@ -285,6 +287,10 @@ class RetroFreeplay extends Module {
                 },
               });
             }
+
+            // For some reason, the backing image breaks when you return from the char select screen so we do this to fix it
+            freeplayState.backingImage.x = backingImagePos[0];
+            freeplayState.backingImage.y = backingImagePos[1];
           }
         }
       }
