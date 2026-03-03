@@ -54,7 +54,7 @@ class RetroGameUI extends Module {
   var isMobileArrowScheme:Bool = false;
   var healthBgYOffset:Float = 0;
   // move judgements a little bit to the left on non-mobile/non-arrows scheme
-  var judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -55;
+  var judgementXOffset = 0; // set when the song loads.
   var hudTextScale:Float = 0.47;
   var songLengthEnabled:Bool = true;
   var isHivemine:Bool = false;
@@ -116,6 +116,7 @@ class RetroGameUI extends Module {
       downscroll = Preferences.downscroll;
       isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
       if (isMobileArrowScheme) downscroll = true;
+      judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -60;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -342,11 +343,14 @@ class RetroGameUI extends Module {
     //score.backgroundColor = FlxColor.BLACK;
     score.zIndex = zIndex;
     score.updateHitbox();
-    if (PlayState.instance.isBotPlayMode) score.text = 'BOTPLAY';
     score.visible = !PlayState.instance.isBotPlayMode ? false : true;
     score.screenCenter(0x01);
     score.x += judgementXOffset + 15;
     PlayState.instance.add(score);
+    if (PlayState.instance.isBotPlayMode) {
+      score.text = 'BOTPLAY';
+      score.x += judgementXOffset;
+    }
 
     PlayState.instance.scoreText.alpha = 0;
     PlayState.instance.scoreText.visible = false;
@@ -426,11 +430,11 @@ class RetroGameUI extends Module {
 
   function updateTimeDisplay():Void {
     if (timeDisplay == null || PlayState.instance == null) return;
-    if (PlayState.instance?.isBotPlayMode) {
+    /*if (PlayState.instance?.isBotPlayMode) {
       timeDisplay.visible = false;
       timeDisplaySub.visible = false;
       return;
-    }
+    }*/
 
     var currentTime:Float = Conductor.instance.songPosition ?? 0.0;
     var songLength:Float = FlxG.sound?.music?.length ?? 0.0;
@@ -798,8 +802,6 @@ class RetroGameUI extends Module {
     var totalWidth = judgement.width + comboText.width;
     judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
     comboText.x = judgement.x + judgement.width + 25;
-    //score.screenCenter(0x01);
-    //score.x += judgementXOffset + 15;
 
     if (noteScore > 0) {
       total = PlayState.instance.songScore;

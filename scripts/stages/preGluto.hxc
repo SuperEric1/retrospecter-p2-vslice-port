@@ -200,7 +200,9 @@ class PreGluttonyStage extends Stage
     super.onSongStart(event);
     songStarted = true;
 
-    if (!hasStoredStrums) storeDefaultStrumPositions();
+    if (!hasStoredStrums) new FlxTimer().start(0.3, function(tmr:FlxTimer) {
+      storeDefaultStrumPositions();
+    });
 
     weakerShakeTimer = new FlxTimer().start(0.05, function(tmr:FlxTimer) {
       handleStrums();
@@ -415,6 +417,7 @@ class PreGluttonyStage extends Stage
     if (PlayState.instance == null) return;
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+    if (!hasStoredStrums) return;
 
     var str = FlxG.random.float(-strumLineShake, strumLineShake);
     var str2 = FlxG.random.float(-strumLineShake, strumLineShake) / 1.5;

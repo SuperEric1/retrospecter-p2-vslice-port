@@ -377,8 +377,7 @@ class RetroMainMenu extends MusicBeatState
         if (maxCamX < minCamX) maxCamX = minCamX;
       }
     }
-
-    if (FlxG.onMobile) throw isSpreading;
+    //if (FlxG.onMobile) throw isSpreading;
   }
 
   function setIdleState(doTween:Bool = true):Void
@@ -392,7 +391,7 @@ class RetroMainMenu extends MusicBeatState
       menuItems[i].animation.play('bright');
       updateItemClip(i, false, doTween);
     }
-    //throw doTween;
+
     updateLabel(null);
     idleTimer.cancel();
     if (lastTouchedIndex != -1) HapticUtil.vibrate(0, 0.03, 0.005, 0);

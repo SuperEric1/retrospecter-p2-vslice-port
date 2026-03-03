@@ -1,0 +1,105 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.math.FlxMath;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.text.FlxText;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.util.Constants;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.graphics.adobeanimate.FlxAtlasSprite;
+import funkin.Paths;
+import funkin.save.Save;
+import haxe.ds.StringMap;
+
+class HivelessStage extends Stage
+{
+  var bgX:Float = -1000;
+  var bgY:Float = -700;
+
+  var bg:StageProp;
+  var fg:StageProp;
+  var lasers:StageProp;
+
+  var crystal:FunkinSprite;
+  var bees:FunkinSprite;
+
+  public function new()
+  {
+    super('hiveless');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    bg = makeSprite('bg', 'greed/BG1', bgX, bgY);
+    bg.antialiasing = false;
+
+    fg = makeSprite('fg', 'greed/BG2', bgX, bgY);
+    fg.antialiasing = false;
+    fg.zIndex = 301;
+
+    lasers = makeSprite('lasers', 'greed/hiveless_lasers', bgX - 200, bgY + 100);
+    lasers.scale.set(1.15, 1.15);
+    lasers.updateHitbox();
+    lasers.antialiasing = false;
+    lasers.zIndex = 302;
+
+    crystal = FunkinSprite.create(-552, 132);
+    crystal.loadTexture(Paths.image('greed/crystal_static'));
+    crystal.alpha = 0.3;
+    crystal.scale.set(0.975, 0.975);
+    crystal.antialiasing = false;
+    PlayState.instance.add(crystal);
+    FlxTween.tween(crystal, {alpha: 0.1}, 1, {type: 4, ease: FlxEase.quadOut});
+
+    bees = FunkinSprite.create(bgX, bgY);
+    bees.loadTextureAtlas('greed/bees', 'shared', {
+      applyStageMatrix: true
+    });
+    bees.animation.addBySymbol('idle', 'bees', 24, true);
+    bees.animation.play('idle', true);
+    bees.antialiasing = false;
+    PlayState.instance.add(bees);
+
+    PlayState.instance.refresh();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.GF)
+      character.antialiasing = false;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+
+  }
+
+  function makeSprite(name:String, imagePath:String, x:Float, y:Float):StageProp
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    PlayState.instance.add(sprite);
+    return sprite;
+  }
+}

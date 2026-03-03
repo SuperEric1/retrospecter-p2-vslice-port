@@ -39,8 +39,8 @@ class BeeStage extends Stage
   var fgg:StageProp;
   var glitterSprites:Array<StageProp> = [];
 
-  var crystal:FlxSprite;
-  var bees:FlxAtlasSprite;
+  var crystal:FunkinSprite;
+  var bees:FunkinSprite;
 
   public function new()
   {
@@ -89,8 +89,10 @@ class BeeStage extends Stage
     crystal.alpha = 0.3;
     crystal.scale.set(0.975, 0.975);
     crystal.antialiasing = false;
+    crystal.visible = false;
     PlayState.instance.add(crystal);
-    crystal.kill();
+    FlxTween.tween(crystal, {alpha: 0.1}, 1, {type: 4, ease: FlxEase.quadOut});
+    //crystal.kill();
 
     // Animação das abelhas
     bees = FunkinSprite.create(-1000, -700, 'greed/bees'); // -1000, -700
@@ -109,13 +111,6 @@ class BeeStage extends Stage
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-
-    /*var gf = getGirlfriend();
-    if (gf != null && gf.characterId != 'gf-default')
-    {
-      gf.x += -147;
-      gf.y += 60;
-    }*/
 
     // subtitle
     // 0xFFEDC452;
@@ -173,8 +168,8 @@ class BeeStage extends Stage
       fgg.alpha = 1;
 
       bees.revive();
-      crystal.revive();
-      FlxTween.tween(crystal, {alpha: 0.1}, 1, {type: 4, ease: FlxEase.quadOut});
+      crystal.visible = true;
+      //crystal.revive();
 
       // Shaders
       if (Preferences.shaders)
@@ -230,7 +225,8 @@ class BeeStage extends Stage
     bgg.kill();
     fgg.kill();
     bees.kill();
-    crystal.kill();
+    crystal.visible = false;
+    //crystal.kill();
 
     bg.revive();
     fg.revive();
