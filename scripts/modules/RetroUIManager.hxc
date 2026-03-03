@@ -63,7 +63,7 @@ class RetroUIManager extends Module
       if (!Save.instance.modOptions.get('retroCustomMenus')) return;
       // insert background to avoid weird transition
       if (backBg != null) backBg.destroy();
-      backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+      backBg = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height * 1.1, FlxColor.BLACK);
       backBg.screenCenter();
       backBg.scrollFactor.set(0, 0);
       targetState.insert(50, backBg);

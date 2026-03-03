@@ -12,6 +12,7 @@ import funkin.play.stage.Bopper;
 import funkin.play.stage.StageProp;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.ui.FullScreenScaleMode;
 import flixel.text.FlxText;
 import funkin.FunkinMemory;
@@ -89,6 +90,8 @@ class WrathPhase3 extends Stage
     override public function onCreate(event:ScriptEvent):Void
     {
         super.onCreate(event);
+
+        ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison', 'chainlock']]);
 
         // Inicializar mapas
         stagePositions = new haxe.ds.StringMap();

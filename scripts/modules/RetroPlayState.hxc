@@ -129,7 +129,7 @@ class RetroPlayState extends Module {
   var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
 
   // Misc
-  var mechanicsLoaded:Array<String> = []; // here we will store the names of the loaded mechanics in case we need it
+  var loadedMechanics:Array<String> = []; // here we will store the names of the loaded mechanics for the current song (set by the song's scripts)
   var currentHealthCap:Float = 0; // also used for the insatian notes.
   var forceNotesAlpha:Float = null; // used for the spectre note to make the notes fade with time. null = off, 0-1 = the note alpha to apply.
   var minNoteAlpha:Float = 0; // used to limit the forceNotesAlpha value.
@@ -253,6 +253,11 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+      if (!loadedMechanics.contains('chainlock')) {
+        trace('LOADED UNLOADED MECHANIC: chainlock');
+        loadedMechanics.push('chainlock');
+        loadChainLockSprites();
+      }
 
       lockStrum(noteDir);
       if (k == 'autoChain') chainText.visible = true;
@@ -267,6 +272,11 @@ class RetroPlayState extends Module {
         event.cancel();
         event.stopPropagation();
         return;
+      }
+      if (!loadedMechanics.contains('hydra')) {
+        trace('LOADED UNLOADED MECHANIC: hydra');
+        loadedMechanics.push('hydra');
+        loadHydraBeamSprites();
       }
 
       playBeamAnimation(noteDir);
@@ -284,6 +294,13 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+      if (!loadedMechanics.contains('insatian')) {
+        trace('LOADED UNLOADED MECHANIC: insatian');
+        loadedMechanics.push('insatian');
+        FunkinMemory.cacheSound(Paths.sound("noteSounds/Insatian", "shared"));
+        FunkinMemory.cacheTexture(Paths.image('gluttony/hole', 'shared'));
+      }
+
       event.doesNotesplash = false;
 
       if (insatianHolesTimer != null) {
@@ -357,12 +374,23 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+      if (!loadedMechanics.contains('poison')) {
+        trace('LOADED UNLOADED MECHANIC: poison');
+        loadedMechanics.push('poison');
+        loadPoisonMechanic();
+        updatePoisonCounter();
+      }
 
       poisonAmount++;
       updatePoisonCounter();
       if (k == 'poison')
         FlxG.sound.play(Paths.sound('acid'));
       else {
+        if (!loadedMechanics.contains('weblock')) {
+          trace('LOADED UNLOADED MECHANIC: weblock');
+          loadedMechanics.push('weblock');
+          loadWebLockSprites();
+        }
         for (i in 0...4) {
           lockStrum(i, true);
         }
@@ -614,19 +642,37 @@ class RetroPlayState extends Module {
 
     songName = PlayState.instance?.currentChart?.songName ?? '';
 
-    //loadChainLockSprites();
     if (!hasLoadedUIElements) {
       ogDadId = PlayState.instance.currentStage.getDad().characterId;
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
-      // TODO: Only load these sprites if they are actually used in the song's mechanics. Also save them in the loadedMechanics array.
-      loadChainLockSprites();
-      loadWebLockSprites();
-      loadHydraBeamSprites();
-      updatePoisonCounter();
+
+      // Load mechanics based on what we need for this song.
+      if (mechanicsEnabled) {
+        if (loadedMechanics.contains('poison')) {
+          loadPoisonMechanic();
+          updatePoisonCounter();
+        }
+        if (loadedMechanics.contains('chainlock')) {
+          loadChainLockSprites();
+        }
+        if (loadedMechanics.contains('weblock')) {
+          loadWebLockSprites();
+        }
+        if (loadedMechanics.contains('hydra')) {
+          loadHydraBeamSprites();
+        }
+        if (loadedMechanics.contains('insatian')) {
+          FunkinMemory.cacheSound(Paths.sound("noteSounds/Insatian", "shared"));
+          FunkinMemory.cacheTexture(Paths.image('gluttony/hole', 'shared')); // insatian's hole LOL
+        }
+      }
+
       hasLoadedUIElements = true;
       PlayState.instance.refresh();
+
+      if (loadedMechanics.length > 0) trace('Mechanics enabled (' + Std.string(loadedMechanics.length) + '): ' + Std.string(loadedMechanics));
     }
     funnyVar = false;
   }
@@ -886,7 +932,7 @@ class RetroPlayState extends Module {
       if (lockSprite != null) {
         lockSprite.animation.play('unlocked' + dirName, false);
         // Esconde o sprite após a animação terminar
-        var dir = direction; // Capturar o valor localmente para uso nas closures
+        var dir = direction;
         new FlxTimer().start(0.6, function(tmr:FlxTimer) {
           if (PlayState.instance == null) return;
           if (lockSprite != null && !isStrumLocked.get(dir)) lockSprite.visible = false;
@@ -897,7 +943,7 @@ class RetroPlayState extends Module {
       strum.colorTransform.greenMultiplier = 1;
       strum.colorTransform.blueMultiplier = 1;
 
-      chainText.visible = false;
+      if (chainText != null) chainText.visible = false;
       isStrumLocked.set(direction, false);
       chainLockStates.set(direction, 0);
       chainLockInputs.set(direction, 0);
@@ -981,6 +1027,24 @@ class RetroPlayState extends Module {
       chainLockSprites.push(lockSprite);
       lockSprite.kill();
     }
+
+    var strum = PlayState.instance.playerStrumline;
+    chainText = new FlxText(0, 0, 0, '', 60);
+    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), isMobile ? 35 : strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    chainText.borderSize = 1.5;
+    chainText.fieldWidth = isMobile ? FlxG.width : strum.width;
+    if (!isMobile) {
+      chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
+    }
+    if (isDownscroll) {
+      chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
+    } else chainText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height + 10;
+    chainText.scrollFactor.set(0, 0);
+    chainText.zIndex = strum.strumlineNotes.members[3].zIndex + 1;
+    chainText.cameras = [PlayState.instance.camHUD];
+    chainText.text = RetroLanguage.t('instruction.chainNote', 'MASH TO BREAK FREE');
+    chainText.visible = false;
+    PlayState.instance.add(chainText);
 
     // refresh where the function is called.
     //PlayState.instance.refresh();
@@ -1129,14 +1193,14 @@ class RetroPlayState extends Module {
       }
     }
 
-    if (poisonSprite?.active && poisonSprite != null && PlayState.instance.iconP1 != null) {
+    if (poisonSprite != null && poisonSprite?.alive && poisonSprite?.active && PlayState.instance.iconP1 != null) {
       var targetFrame = (poisonSpriteFrame * 100) + poisonAmount;
       if (poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
       poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
       poisonSprite.y = (PlayState.instance.healthBar.y - 150) + poisonSpriteYOffset; // (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset
       poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
       if (poisonSprite.alpha != PlayState.instance.healthBar.alpha) poisonSprite.alpha = PlayState.instance.healthBar.alpha;
-      poisonSprite.visible = true; // it's active, so we make it visible.
+      if (!poisonSprite.visible) poisonSprite.visible = true; // it's active, so we make it visible.
       var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
       if (poisonSprite.zIndex != targetZIndex) {
         poisonSprite.zIndex = targetZIndex;
@@ -1153,54 +1217,60 @@ class RetroPlayState extends Module {
       }*/
     }
 
-    if (isDrugged) {
-      if (wiggleShader != null) wiggleShader.update(event.elapsed);
-      for (i in 0...4) {
-        var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-        note.x = note.x + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0 + i) * 0.4;
-      }
+    if (isDrugged && wiggleShader != null) {
+      wiggleShader.update(event.elapsed);
     }
 
-    // Atualizar sprites de lock para seguir os strums
     var lockSpriteOffset:Array<Float, Float> = [ -20, -25 ];
-    for (i in 0...4) {
-      if (chainLockSprites[i] != null && chainLockSprites[i].alive) {
-        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-        chainLockSprites[i].x = strum.x + lockSpriteOffset[0];
-        chainLockSprites[i].y = strum.y + lockSpriteOffset[1];
-        chainLockSprites[i].angle = strum.angle;
-        chainLockSprites[i].alpha = strum.alpha;
-      }
-    }
     var webLockSpriteOffset:Array<Float, Float> = [ 15, 20 ];
-    for (i in 0...4) {
-      if (webLockSprites[i] != null && webLockSprites[i].alive) {
-        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-        webLockSprites[i].x = strum.x + webLockSpriteOffset[0];
-        webLockSprites[i].y = strum.y + webLockSpriteOffset[1];
-        webLockSprites[i].angle = strum.angle;
-        //webLockSprites[i].alpha = strum.alpha; // don't update the alpha here or else the tween will break
-      }
-    }
-
-    // Atualizar sprites de hydra beam para seguir os strums
     var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)];
-    for (i in 0...4) {
-      if (hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
+    if (mechanicsEnabled) {
+      for (i in 0...4) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-        var beam = hydraBeamSprites[i];
-        beam.x = strum.x + (strum.width / 2) - (beam.width / 2) + beamOffset[0];
-        beam.y = 0 - beamOffset[1];
-        beam.alpha = strum.alpha;
-        //hydraBeamSprites[i].x = strum.x + beamOffset[0];
-        //hydraBeamSprites[i].y = strum.y + beamOffset[1];
+        if (!strum.visible) continue;
+
+        // Pequeno efeito dos strums com a mecânica do Izzy
+        if (isDrugged) strum.x = strum.x + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0 + i) * 0.4;
+
+        // Atualizar sprites de lock para seguir os strums
+        if (loadedMechanics.contains('chainlock') && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
+          var sprite = chainLockSprites[i];
+          var targetPos:Array<Float> = [strum.x + lockSpriteOffset[0], strum.y + lockSpriteOffset[1]];
+
+          if (sprite.x != targetPos[0]) sprite.x = targetPos[0];
+          if (sprite.y != targetPos[1]) sprite.y = targetPos[1];
+          if (sprite.angle != strum.angle) sprite.angle = strum.angle;
+          if (sprite.alpha != strum.alpha) sprite.alpha = strum.alpha;
+        }
+        if (loadedMechanics.contains('weblock') && webLockSprites[i] != null && webLockSprites[i].alive && webLockSprites[i].visible && webLockSprites[i].alpha > 0) {
+          var sprite = webLockSprites[i];
+          var targetPos:Array<Float> = [strum.x + webLockSpriteOffset[0], strum.y + webLockSpriteOffset[1]];
+
+          if (sprite.x != targetPos[0]) sprite.x = targetPos[0];
+          if (sprite.y != targetPos[1]) sprite.y = targetPos[1];
+          if (sprite.angle != strum.angle) sprite.angle = strum.angle;
+          //sprite.alpha = strum.alpha; // Não atualizar o alpha aqui pois se não os tweens de alpha do sprite quebram
+        }
+
+        // Atualizar sprites de hydra beam para seguir os strums
+        if (loadedMechanics.contains('hydra') && hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
+          var beam = hydraBeamSprites[i];
+          var targetPos:Array<Float> = [
+            strum.x + (strum.width / 2) - (beam.width / 2) + beamOffset[0],
+            0 - beamOffset[1]
+          ];
+
+          if (beam.x != targetPos[0]) beam.x = targetPos[0];
+          if (beam.y != targetPos[1]) beam.y = targetPos[1];
+          if (beam.alpha != strum.alpha) beam.alpha = strum.alpha;
+        }
       }
     }
 
     // Mobile: usar TouchUtil para detectar toques nos sprites de lock quando o ghost tap está ativado.
-    if (FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
+    if (mechanicsEnabled && FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
       for (i in 0...4) {
-        if (chainLockSprites[i] != null && chainLockSprites[i].visible && isStrumLocked.get(i)) {
+        if (isStrumLocked.get(i) && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
           var sprite = chainLockSprites[i];
 
           if (TouchUtil.justPressed && TouchUtil.overlapsComplex(sprite)) {
@@ -1270,7 +1340,7 @@ class RetroPlayState extends Module {
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
-        if (!PlayState.instance.isBotPlayMode) {
+        if (mechanicsEnabled && !PlayState.instance.isBotPlayMode) {
           checkHealthCap();
         }
       }
@@ -1338,60 +1408,13 @@ class RetroPlayState extends Module {
 
   }
 
+  public function setMechanics(names:Array<String>) {
+    loadedMechanics = names;
+  }
+
   function loadUIElements()
   {
     var scoreTxt = PlayState.instance.scoreText;
-    var strum = PlayState.instance.playerStrumline;
-
-    chainText = new FlxText(0, 0, 0, '', 60);
-    chainText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), isMobile ? 35 : strum.width / 16, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    chainText.borderSize = 1.5;
-    chainText.fieldWidth = isMobile ? FlxG.width : strum.width;
-    if (!isMobile) {
-      chainText.x = strum.x + (strum.width / 2) - (chainText.width / 2); //strum.strumlineNotes.x
-    }
-    if (isDownscroll) {
-      chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
-    } else chainText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height + 10;
-    chainText.scrollFactor.set(0, 0);
-    chainText.zIndex = strum.strumlineNotes.members[3].zIndex + 1;
-    chainText.cameras = [PlayState.instance.camHUD];
-    chainText.text = RetroLanguage.t('instruction.chainNote', 'MASH TO BREAK FREE');
-    chainText.visible = false;
-    PlayState.instance.add(chainText);
-
-    poisonSprite = FunkinSprite.create(0, 0, 'ui/poison');
-    poisonSprite.loadTextureAtlas('ui/poison', 'shared', {
-      applyStageMatrix: false,
-    });
-    //poisonSprite.loadSparrow('ui/healthBars/poison');
-    poisonSprite.animation.addBySymbol('splashes', 'assets/splashes', 0); // gonna have to start adding by symbol to atlases since there will be a breaking change and all anims will have to be added
-    poisonSprite.animation.addBySymbol('fallipe', 'anims/fallipe', 0);
-    //poisonSprite.animation.addByPrefix('P2', 'anims/fallipe', 24, true);
-    //poisonSprite.animation.addByPrefix('P2', 'P2_0', 1, true);
-    //poisonSprite.animation.addByPrefix('P3', 'P3_0', 1, true);
-    //poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
-    poisonSprite.animation.play('splashes', true);
-    poisonSprite.cameras = [PlayState.instance.camHUD];
-    poisonSprite.updateHitbox();
-    poisonSprite.visible = false;
-    poisonSprite.active = false;
-    poisonSpriteFrame = 0; // starting frame
-    poisonSprite.animation.curAnim.frameRate = 0;
-    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2; // just to make sure
-    PlayState.instance.add(poisonSprite);
-    poisonSprite.kill();
-
-    // se for editar propriedades, estao no onupdate
-    // descartado à favor do novo sprite de poison
-    /*poisonText = new FlxText(0, 0, 0, '0', 1);
-    poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
-    poisonText.cameras = [PlayState.instance.camHUD];
-    // poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
-    poisonText.visible = false;
-    //poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
-    //poisonText.y = PlayState.instance.healthBar.y - 5;
-    PlayState.instance.add(poisonText);*/
 
     solidCameraSprite = FunkinSprite.create(-50, -50);
     solidCameraSprite.makeSolidColor(3000, 4000, 0xFF000000);
@@ -1404,7 +1427,7 @@ class RetroPlayState extends Module {
     PlayState.instance.add(solidCameraSprite);
     solidCameraSprite.kill();
 
-    PlayState.instance.refresh();
+    //PlayState.instance.refresh(); // We already refresh the playstate after all the elements load in onSongLoaded.
   }
   public function loadHiveminePapers():Void {
     if (!mechanicsEnabled) return;
@@ -1489,7 +1512,7 @@ class RetroPlayState extends Module {
   public function getHiveminePapersSpeed() {
     if (PlayState.instance == null) {
       destroyHiveminePapers();
-      throw "Could not initialize mechanic: PlayState is null!";
+      throw "Could not initialize hivemine mechanic: PlayState is null! (how?)";
     }
     var defaultSpeed:Float = 3.5;
     var speed:Float = defaultSpeed;
@@ -1611,7 +1634,46 @@ class RetroPlayState extends Module {
     hmpIsAtLimit = false;
   }
 
-  function updatePoisonCounter(?dadId:String = null) {
+  function loadPoisonMechanic():Void {
+    poisonSprite = FunkinSprite.create(0, 0, 'ui/poison');
+    poisonSprite.loadTextureAtlas('ui/poison', 'shared', {
+      applyStageMatrix: false,
+    });
+    //poisonSprite.loadSparrow('ui/healthBars/poison');
+    poisonSprite.animation.addBySymbol('splashes', 'assets/splashes', 0); // gonna have to start adding anims by symbol for atlases since there will be a breaking change and all anims will have to be added
+    poisonSprite.animation.addBySymbol('fallipe', 'anims/fallipe', 0);
+    //poisonSprite.animation.addByPrefix('P2', 'anims/fallipe', 24, true);
+    //poisonSprite.animation.addByPrefix('P2', 'P2_0', 1, true);
+    //poisonSprite.animation.addByPrefix('P3', 'P3_0', 1, true);
+    //poisonSprite.animation.addByPrefix('P4', 'P4_0', 1, true);
+    poisonSprite.animation.play('splashes', true);
+    poisonSprite.cameras = [PlayState.instance.camHUD];
+    poisonSprite.updateHitbox();
+    poisonSprite.visible = false;
+    poisonSprite.active = false;
+    poisonSpriteFrame = 0; // starting frame
+    poisonSprite.animation.curAnim.frameRate = 0;
+    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 2; // just to make sure
+    PlayState.instance.add(poisonSprite);
+    poisonSprite.kill();
+
+    // descartado à favor do novo sprite de poison
+    // se for editar propriedades, estao no onupdate
+    /*poisonText = new FlxText(0, 0, 0, '0', 1);
+    poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
+    poisonText.cameras = [PlayState.instance.camHUD];
+    // poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
+    poisonText.visible = false;
+    //poisonText.x = PlayState.instance.healthBarBG.x + PlayState.instance.healthBarBG.width + 10;
+    //poisonText.y = PlayState.instance.healthBar.y - 5;
+    PlayState.instance.add(poisonText);*/
+
+    FunkinMemory.cacheSound(Paths.sound("acid", "shared"));
+
+    PlayState.instance.refresh(); // trying to fix the poison sprite zindex on mobile when it changes to hiveless, dunno if it will work tho
+  }
+
+  function updatePoisonCounter(?dadId:String = null):Void {
     var oppId:String = PlayState.instance.currentStage.getDad().characterId.toLowerCase();
     if (dadId != null) oppId = dadId.toLowerCase();
     if (poisonSprite != null) {
@@ -1919,6 +1981,7 @@ class RetroPlayState extends Module {
 	{
 		super.onDestroy(event);
     if (PlayState.instance == null) return;
+    loadedMechanics = [];
     hasLoadedUIElements = false;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
@@ -1934,6 +1997,7 @@ class RetroPlayState extends Module {
     hmpCurrentYValue = 0;
     hmpInstructionPlayed = false;
     webLockActive = false;
+    wiggleShader = null;
 
     removeInsatianHoles(true);
 
@@ -2071,7 +2135,6 @@ class RetroPlayState extends Module {
 			FunkinMemory.permanentCacheTexture(Paths.image('HydraNoteBeam', "shared"));
 
       // Mechanics
-      FunkinMemory.permanentCacheTexture(Paths.image('gluttony/hole', "shared")); // insatian's hole LOL
       //FunkinMemory.permanentCacheTexture(Paths.image('gluttony/munch', "shared"));
 
       // Sounds
@@ -2079,7 +2142,6 @@ class RetroPlayState extends Module {
       var noteSoundsToCache:Array<String> = [
         'Coin',
         'Take',
-        'Insatian',
         'ChainHit1',
         'ChainHit2',
         'ChainHit3',
@@ -2092,7 +2154,7 @@ class RetroPlayState extends Module {
       for (soundName in noteSoundsToCache) {
         FunkinMemory.permanentCacheSound(Paths.sound(noteSoundsDir + soundName, "shared"));
       }
-      FunkinMemory.permanentCacheSound(Paths.sound("acid", "shared"));
+      //FunkinMemory.permanentCacheSound(Paths.sound("acid", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("scythe", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("clothsSFX", "shared"));
 

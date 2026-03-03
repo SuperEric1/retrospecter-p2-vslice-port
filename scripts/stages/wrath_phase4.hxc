@@ -16,6 +16,7 @@ import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.FunkinMemory;
 import flixel.text.FlxText;
 import funkin.Paths;
@@ -121,6 +122,8 @@ class WrathPhase4Stage extends Stage
   {
     super.onCreate(event);
     if (hasCreatedStage) return;
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison', 'chainlock', 'hydra']]);
 
     // Create vortex
     vortex = FunkinSprite.create(600, -7850);

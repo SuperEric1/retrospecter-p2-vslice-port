@@ -429,7 +429,7 @@ class RetroGameUI extends Module {
   }
 
   function updateTimeDisplay():Void {
-    if (timeDisplay == null || PlayState.instance == null) return;
+    if (timeDisplay == null || timeDisplaySub == null || PlayState.instance == null) return;
     /*if (PlayState.instance?.isBotPlayMode) {
       timeDisplay.visible = false;
       timeDisplaySub.visible = false;
@@ -446,24 +446,24 @@ class RetroGameUI extends Module {
     var currentTimeStr:String = formatTime(currentTime);
     var totalTimeStr:String = formatTime(songLength);
 
-    timeDisplay.text = RetroLanguage.t('stats.timeLeft', 'Time Left');
-    timeDisplaySub.text = currentTimeStr + '|' + totalTimeStr;
-    timeDisplay.updateHitbox();
-    timeDisplaySub.updateHitbox();
+    timeDisplay?.text = RetroLanguage.t('stats.timeLeft', 'Time Left');
+    timeDisplaySub?.text = currentTimeStr + '|' + totalTimeStr;
+    timeDisplay?.updateHitbox();
+    timeDisplaySub?.updateHitbox();
 
     var totalHeight = timeDisplay.height + timeDisplaySub.height;
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - totalHeight - statsTextMargin[1];
     var baseX = (FullScreenScaleMode.gameCutoutSize.x / 2) + statsTextMargin[0];
     var baseY = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + totalHeight / 2;
 
-    timeDisplay.x = baseX;
-    timeDisplay.y = baseY;
-    timeDisplaySub.x = timeDisplay.x + (timeDisplay.width / 2) - (timeDisplaySub.width / 2);
-    timeDisplaySub.y = baseY + timeDisplay.height;
+    timeDisplay?.x = baseX;
+    timeDisplay?.y = baseY;
+    timeDisplaySub?.x = timeDisplay.x + (timeDisplay.width / 2) - (timeDisplaySub.width / 2);
+    timeDisplaySub?.y = baseY + timeDisplay.height;
 
     if (currentTime > 0) {
-      timeDisplay.visible = true;
-      timeDisplaySub.visible = true;
+      timeDisplay?.visible = true;
+      timeDisplaySub?.visible = true;
     }
   }
 
@@ -725,7 +725,7 @@ class RetroGameUI extends Module {
     if (PlayState.instance.isGameOverState) return;
     if (!isRetro) return;
 
-    if (songLengthEnabled && timeDisplay != null && !timeDisplay.visible) {
+    if (songLengthEnabled && timeDisplay != null && timeDisplaySub != null && !timeDisplay.visible) {
       // Initial update when the song starts, making the text visible
       updateTimeDisplay();
     }

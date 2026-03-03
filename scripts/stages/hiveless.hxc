@@ -42,6 +42,8 @@ class HivelessStage extends Stage
   {
     super.onCreate(event);
 
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison', 'weblock']]);
+
     bg = makeSprite('bg', 'greed/BG1', bgX, bgY);
     bg.antialiasing = false;
 

@@ -98,6 +98,7 @@ class GluttonyStage extends Stage
     defaultOpponentStrumX = [];
     defaultOpponentStrumY = [];
 
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['insatian']]);
     //ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, 'insatian']);
 
     // Create sky

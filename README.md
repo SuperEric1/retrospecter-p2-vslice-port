@@ -2,6 +2,7 @@
 A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
 
 TODO:
+- [ ] `addBySymbol()` all dozirc anims in the options menu
 - [ ] Catastrofiend subtitles
 - [ ] Saku note mechanic
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
@@ -13,7 +14,7 @@ TODO:
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Hydra note is not pausing when pausing the game
 - [ ] Make the settings work
-- [ ] Make blend modes able to turn off for optimization
+- [ ] Make blend modes able to turn off for optimization (maybe not?)
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Story mode menu?

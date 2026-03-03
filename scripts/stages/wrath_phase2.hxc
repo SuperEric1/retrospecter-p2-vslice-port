@@ -13,6 +13,7 @@ import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.graphics.shaders.DropShadowShader;
 import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
@@ -116,13 +117,14 @@ class WrathPhase2Stage extends Stage
   {
     super.onCreate(event);
 
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison']]);
+
     var songName = PlayState.instance?.currentChart?.songName ?? '';
     var lSongName = songName.toLowerCase();
 
     isSpectral = lSongName == 'spectral';
     isEctospasm = lSongName == 'ectospasm' || lSongName == 'ectogasm';
 
-    // Inicializar variáveis de cutscene
     hasPlayedInGameCutscene = false;
 
     if (hasCreatedStage) return;
