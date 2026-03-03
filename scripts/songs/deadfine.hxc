@@ -159,13 +159,13 @@ class DeadfineSong extends Song
         var oStrum = playState.opponentStrumline.strumlineNotes.members[i];
         if (pStrum != null) {
           FlxTween.cancelTweensOf(pStrum);
-          pStrum.x = defaultPlayerStrumX[i] + 600;
+          pStrum.x = FlxG.width + 20 + defaultPlayerStrumX[i]; //defaultPlayerStrumX[i] + 600
           pStrum.angle = 600;
           pStrum.alpha = 1;
         }
         if (oStrum != null) {
           FlxTween.cancelTweensOf(oStrum);
-          oStrum.x = defaultOpponentStrumX[i] - 600;
+          oStrum.x = 0 - defaultOpponentStrumX[i]; //defaultOpponentStrumX[i] + 600
           oStrum.angle = -600;
           oStrum.alpha = 1;
         }
