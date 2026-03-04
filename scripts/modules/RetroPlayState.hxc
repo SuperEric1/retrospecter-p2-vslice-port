@@ -1195,7 +1195,7 @@ class RetroPlayState extends Module {
 
     if (poisonSprite != null && poisonSprite?.alive && poisonSprite?.active && PlayState.instance.iconP1 != null) {
       var targetFrame = (poisonSpriteFrame * 100) + poisonAmount;
-      if (poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
+      if (poisonSprite?.animation != null && poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
       poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
       poisonSprite.y = (PlayState.instance.healthBar.y - 150) + poisonSpriteYOffset; // (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset
       poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
@@ -1268,7 +1268,7 @@ class RetroPlayState extends Module {
     }
 
     // Mobile: usar TouchUtil para detectar toques nos sprites de lock quando o ghost tap está ativado.
-    if (mechanicsEnabled && FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
+    if (mechanicsEnabled && loadedMechanics.contains('chainlock') && FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
       for (i in 0...4) {
         if (isStrumLocked.get(i) && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
           var sprite = chainLockSprites[i];
