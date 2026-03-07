@@ -84,7 +84,7 @@ class EmbuzzleSong extends Song
     flashPurple.makeGraphic(4000, 4000, FlxColor.fromString('#9C00DF'));
     flashPurple.scrollFactor.set(0, 0);
     flashPurple.screenCenter();
-    flashPurple.blend = 3; // multiply
+    flashPurple.blend = 9; // multiply
     flashPurple.alpha = 0;
     flashPurple.active = false;
     flashPurple.zIndex = 500;
@@ -366,7 +366,7 @@ class EmbuzzleSong extends Song
         setOpponentCameraOffset(-50, -200);
         playState.camGame.shake(0.015, 0.15);
 
-        doFlash(flashPurple, 3 /* multiply */, 0.4, 0.25, FlxEase.quadOut);
+        doFlash(flashPurple, 9 /* multiply */, 0.4, 0.25, FlxEase.quadOut);
 
         // Fade black overlay
         if (!tempBlack.alive) tempBlack.revive();
@@ -386,7 +386,7 @@ class EmbuzzleSong extends Song
         }
 
         addCameraZoom(0.05, 0.055);
-        doFlash(flashPurple, 3 /* multiply */, 1.0, 1.5, FlxEase.quadOut);
+        doFlash(flashPurple, 9 /* multiply */, 1.0, 1.5, FlxEase.quadOut);
         doFlash(flashLight,  12 /* screen  */, 1.0, 2.0, FlxEase.quadOut);
 
       case 640:
@@ -492,7 +492,7 @@ class EmbuzzleSong extends Song
   {
     addCameraZoom(0.02, 0.03);
     if (flashingLights)
-      doFlash(flashPurple, 3 /* multiply */, 0.9, 0.35, FlxEase.quadOut);
+      doFlash(flashPurple, 9 /* multiply */, 0.9, 0.35, FlxEase.quadOut);
 
     if (!modcharts || !hasStoredStrums) return;
 
@@ -571,7 +571,7 @@ class EmbuzzleSong extends Song
   function darkFlash():Void
   {
     addCameraZoom(0.0125, 0.03);
-    doFlash(flashPurple, 3 /* multiply */, 0.6, 0.35, FlxEase.circOut);
+    doFlash(flashPurple, 9 /* multiply */, 0.6, 0.35, FlxEase.circOut);
     if (flashingLights) doFlash(flashPurple, 0 /* add */, 0.25, 0.5, FlxEase.quadIn);
   }
 

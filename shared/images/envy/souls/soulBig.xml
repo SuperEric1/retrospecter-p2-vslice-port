@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="soulBig.png">
+	<!-- Created with Adobe Animate version 23.0.2.103 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="IDVsoul1_close0000" x="168" y="422" width="163" height="403" frameX="0" frameY="0" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0001" x="168" y="422" width="163" height="403" frameX="0" frameY="0" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0002" x="169" y="2" width="162" height="414" frameX="-12" frameY="-3" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0003" x="169" y="2" width="162" height="414" frameX="-12" frameY="-3" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0004" x="2" y="2" width="165" height="418" frameX="-9" frameY="-3" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0005" x="2" y="2" width="165" height="418" frameX="-9" frameY="-3" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0006" x="2" y="422" width="164" height="410" frameX="-5" frameY="-2" frameWidth="174" frameHeight="421"/>
+	<SubTexture name="IDVsoul1_close0007" x="2" y="422" width="164" height="410" frameX="-5" frameY="-2" frameWidth="174" frameHeight="421"/>
+</TextureAtlas>

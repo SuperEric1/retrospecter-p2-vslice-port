@@ -1,4 +1,5 @@
 import flixel.addons.display.FlxRuntimeShader;
+import funkin.Paths;
 
 class RetroGodraysShader extends FlxRuntimeShader
 {

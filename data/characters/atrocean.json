@@ -1,0 +1,85 @@
+{
+  "version": "1.0.0",
+  "name": "Atrocean",
+  "assetPath": "characters/OtherSins/Atrocean",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.2,
+  "healthIcon": {
+    "offsets": [15, 15],
+    "id": "atrocean",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "offsets": [0, 70],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": false,
+      "name": "singDOWN-hold",
+      "prefix": "dLoop",
+      "offsets": [0, 70],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": false,
+      "name": "singLEFT-hold",
+      "prefix": "lLoop",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "offsets": [-50, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": false,
+      "name": "singUP-hold",
+      "prefix": "uLoop",
+      "offsets": [-50, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "offsets": [70, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": false,
+      "name": "singRIGHT-hold",
+      "prefix": "rLoop",
+      "offsets": [70, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

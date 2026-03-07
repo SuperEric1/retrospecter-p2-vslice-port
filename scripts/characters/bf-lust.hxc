@@ -55,17 +55,16 @@ class BFLustCharacter extends MultiSparrowCharacter
     super.onNoteGhostMiss(event);
   }
 
-  /*function onNoteMiss(event:NoteScriptEvent) {
+  function onNoteMiss(event:NoteScriptEvent) {
     if (PlayState.instance == null) return;
 
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       if (!Save.instance.modOptions.get('retroSuggestive')) {
-        PlayState.instance.onNoteMiss(event.note, event.playSound, event.healthChange);
-        event.cancel();
+        this.holdTimer = 0;
       }
     }
     super.onNoteMiss(event);
-  }*/
+  }
 
   function onAnimationFrame(name:String, frameNumber:Int, frameIndex:Int)
   {

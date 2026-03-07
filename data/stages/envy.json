@@ -1,0 +1,26 @@
+{
+  "props": [],
+  "cameraZoom": 0.33,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "scale": 0.983,
+      "zIndex": 300,
+      "position": [730, 570],
+      "cameraOffsets": [-500, -250]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-1050, 1000],
+      "cameraOffsets": [550, -100]
+    },
+    "gf": {
+      "scale": 0.6,
+      "zIndex": 100,
+      "scroll": [0.85, 0.85],
+      "cameraOffsets": [0, 50],
+      "position": [55, 350]
+    }
+  },
+  "name": "Envy"
+}

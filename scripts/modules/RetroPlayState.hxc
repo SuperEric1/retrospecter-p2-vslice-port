@@ -70,7 +70,7 @@ class RetroPlayState extends Module {
   var ogPlayerStrumScales:Array<Float> = [];
   var ogOppStrumScales:Array<Float> = [];
   var ogDadId:String = null;
-  var songName:String = null;
+  var songId:String = null;
 
   var poisonSprite:FunkinSprite;
   var poisonSpriteFrame:Bool = 0;
@@ -171,7 +171,7 @@ class RetroPlayState extends Module {
     'poison', 'izzyNote', 'chain', 'autoChain',
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
     'spectre', 'insatianNote', 'cashNote', 'autoCash',
-    'hivemoreNote', "hivelessNote",
+    'hivemoreNote', "hivelessNote", "atroceanNote",
     'none'
   ];
 
@@ -394,7 +394,7 @@ class RetroPlayState extends Module {
         for (i in 0...4) {
           lockStrum(i, true);
         }
-        var moneyToLose:Int = (songName.toLowerCase() == 'deadfine') ? -0 : -95;
+        var moneyToLose:Int = (songId.toLowerCase() == 'deadfine') ? -0 : -95;
         if (retroGameUI != null) retroGameUI.scriptCall('spawnHivemineMoney', [event.note.noteData.getDirection(), moneyToLose]);
         FlxG.sound.play(Paths.sound('noteSounds/Take'));
       }
@@ -483,8 +483,8 @@ class RetroPlayState extends Module {
         });
       }
       var moneyToAdd:Float = 0;
-      switch (songName.toLowerCase()) {
-        case 'sweet talk':
+      switch (songId.toLowerCase()) {
+        case 'sweet-talk':
           moneyToAdd = hmpMoneyGain[0];
         default:
           moneyToAdd = hmpMoneyGain[1];
@@ -502,8 +502,8 @@ class RetroPlayState extends Module {
 
       advanceHiveminePapers();
       var moneyToLose:Float = 0;
-      switch (songName.toLowerCase()) {
-        case 'sweet talk':
+      switch (songId.toLowerCase()) {
+        case 'sweet-talk':
           moneyToLose = hmpMoneyLossNote[0];
         default:
           moneyToLose = hmpMoneyLossNote[1];
@@ -570,8 +570,8 @@ class RetroPlayState extends Module {
 
       if (hmpActive && event.note.scoreable && retroGameUI != null) {
         var moneyToLose:Float = 0;
-        switch (songName.toLowerCase()) {
-          case 'sweet talk':
+        switch (songId.toLowerCase()) {
+          case 'sweet-talk':
             moneyToLose = hmpMoneyLoss[0];
           default:
             moneyToLose = hmpMoneyLoss[1];
@@ -596,8 +596,8 @@ class RetroPlayState extends Module {
         event.holdNote.visible = true;
 
         var moneyToLose:Float = 0;
-        switch (songName.toLowerCase()) {
-          case 'sweet talk':
+        switch (songId.toLowerCase()) {
+          case 'sweet-talk':
             moneyToLose = hmpMoneyLoss[0];
           default:
             moneyToLose = hmpMoneyLoss[1];
@@ -640,7 +640,7 @@ class RetroPlayState extends Module {
 
     mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
 
-    songName = PlayState.instance?.currentChart?.songName ?? '';
+    songId = PlayState.instance?.currentChart?.song?.id ?? '';
 
     if (!hasLoadedUIElements) {
       ogDadId = PlayState.instance.currentStage.getDad().characterId;
@@ -1354,8 +1354,8 @@ class RetroPlayState extends Module {
         //Conductor.instance.songPosition % (holdNote.fullSustainLength / 5) < 10
         //throw Conductor.instance.songPosition % (holdNote.fullSustainLength / 10);
         var moneyToLose:Float = 0;
-        switch (songName.toLowerCase()) {
-          case 'sweet talk':
+        switch (songId.toLowerCase()) {
+          case 'sweet-talk':
             moneyToLose = hmpMoneyLoss[0];
           default:
             moneyToLose = hmpMoneyLoss[1];
@@ -1988,7 +1988,7 @@ class RetroPlayState extends Module {
     forceNotesAlpha = null;
     funnyVar = false;
     ogDadId = null;
-    songName = null;
+    songId = null;
     destroyHiveminePapers();
     hmpActive = false;
     hmpAnimating = false;
@@ -2118,6 +2118,7 @@ class RetroPlayState extends Module {
         'PoisonNotes_down',
         'PoisonNotes_up',
         'Pride_Note_Assets',
+        'Atrocean_Note_Assets',
         'Hivemore_Note_Assets',
         'PoisonArrowHit',
         'ChainNotes',

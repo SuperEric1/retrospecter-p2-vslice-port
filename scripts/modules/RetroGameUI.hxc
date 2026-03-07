@@ -75,7 +75,7 @@ class RetroGameUI extends Module {
   var ogBfId:String;
   var ogDadId:String;
   var ogBarOffsetY:Float = 0;
-  var ogBarTexture:String;
+  var ogBarTexture:String; // When the bar gets updated, we save the previous one here for later.
 
   // Score/HUD elements
   var judgement:FlxBitmapText;
@@ -112,11 +112,14 @@ class RetroGameUI extends Module {
       super.onSongLoaded(event);
       isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
       if (!isRetro) return;
+
+      trace(hasBeenCreated);
       if (hasBeenCreated) return;
+
       downscroll = Preferences.downscroll;
       isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
       if (isMobileArrowScheme) downscroll = true;
-      judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? 0 : -60;
+      judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? -30 : -60;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -138,7 +141,7 @@ class RetroGameUI extends Module {
 
       playState.healthBar.y += downscroll ? -17 : 0;
       playState.healthBar.visible = false;
-      playState.healthBarBG.y = downscroll ? -17 : 0;
+      playState.healthBarBG.y += downscroll ? -17 : 0;
       playState.healthBarBG.visible = false;
 
       var isCustomHealthBar:Bool = true;
@@ -196,6 +199,12 @@ class RetroGameUI extends Module {
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/hiveless/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/hiveless/bar');
           isHivemine = true;
+        case 'atrocean':
+          defaultScale = [0.53, 0.53];
+          healthBgYOffset = -70;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/atrocean/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/atrocean/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/atrocean/bar');
         case 'insatian':
           /*var healthGroup:FlxTypedSpriteGroup; testing
 
@@ -231,7 +240,7 @@ class RetroGameUI extends Module {
         default:
           playState.healthBar.visible = true;
           playState.healthBarBG.visible = true;
-          return; // nao criar health bar custom
+          isCustomHealthBar = false; // nao criar health bar custom
       }
 
       if (isCustomHealthBar) {
@@ -874,7 +883,7 @@ class RetroGameUI extends Module {
   public function onUpdate(event:UpdateScriptEvent) {
     super.onUpdate(event);
     if (PlayState.instance == null) return;
-    if (!isRetro || !hasBeenCreated || retroHealthBarFill == null) return;
+    if (!isRetro) return;
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 
@@ -884,6 +893,19 @@ class RetroGameUI extends Module {
     if (songLengthEnabled && timeDisplay != null && timeDisplay.visible) {
       updateTimeDisplay();
     }
+
+    for (holdNote in playState.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      // While the hold note is being hit, and there is length on the hold note...
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        // Update score text.
+        if (!playState.isBotPlayMode) {
+          score.text = PlayState.instance.songScore; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
+        }
+      }
+    }
+
+    if (!hasBeenCreated || retroHealthBarFill == null) return;
 
     // ---- Health Bars ----
     var healthPercent:Float = playState.healthLerp / Constants.HEALTH_MAX;
@@ -924,18 +946,6 @@ class RetroGameUI extends Module {
         hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
       }
       updateHivemineText();
-    }
-
-
-    for (holdNote in playState.playerStrumline.holdNotes.members) {
-      if (holdNote == null || !holdNote.alive) continue;
-      // While the hold note is being hit, and there is length on the hold note...
-      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
-        // Update score text.
-        if (!playState.isBotPlayMode) {
-          score.text = PlayState.instance.songScore; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
-        }
-      }
     }
   }
 
@@ -997,6 +1007,8 @@ class RetroGameUI extends Module {
         return getRGB(171, 22, 74);
       case 'bf-greed':
         return getRGB(127, 31, 227);
+      case 'bf-envy':
+        return getRGB(30, 104, 120);
       case 'bf-lust':
         return getRGB(107, 27, 63);
 
@@ -1035,6 +1047,8 @@ class RetroGameUI extends Module {
         return getRGB(183, 19, 238);
       case 'hiveless':
         return getRGB(175, 102, 206);
+      case 'atrocean':
+        return getRGB(18, 228, 118);
       case 'sakuromap2-atlas':
         return getRGB(169, 50, 140);
       case 'nightflaid_atlas':
@@ -1139,7 +1153,7 @@ class RetroGameUI extends Module {
 
   public function configureIcon(?icon = 'both', ?bop:Int = 0):Void { // This should not be called every frame because of the playstate refresh
     var playState = PlayState.instance;
-    var iZIndex = retroHealthBarOverlay.zIndex + 2;
+    var iZIndex = (retroHealthBarOverlay?.zIndex ?? playState.healthBar.zIndex) + 2;
     var iBopEvery = (bop == 0 || bop == null) ? 8 : bop;
     var iconLower = icon?.toLowerCase() ?? 'both';
 

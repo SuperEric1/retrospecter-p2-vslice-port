@@ -1,0 +1,96 @@
+package supereric.retrospecter.modules;
+
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Conductor;
+import funkin.save.Save;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.Module;
+import funkin.audio.FunkinSound;
+import funkin.util.Constants;
+import flixel.math.FlxRandom;
+import flixel.math.FlxMath;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import funkin.play.event.SongEvent;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+
+class RetroUtil extends Module
+{
+  public function new()
+  {
+    super('RetroUtil');
+  }
+
+  private static var tweens:Array<FlxTween> = [];
+  private static var pausedTweens:Array<FlxTween> = [];
+  private static var hudZoomTween:FlxTween = null;
+
+  // This one is meant to be used in song scripts.
+  public static function addCameraZoom(gameZoom:Float, hudZoom:Float):Void
+  {
+    if (PlayState.instance == null) return;
+    var playState = PlayState.instance;
+    var time:Float = 0.05;
+    var crochet:Float = Conductor.instance.stepLengthMs * 4;
+
+    if (gameZoom != 0 || gameZoom != null) {
+      if (playState.cameraZoomTween != null && playState.cameraZoomTween.active) playState.cameraZoomTween.cancel();
+      playState.currentCameraZoom = playState.stageZoom;
+
+      playState.cameraZoomTween = FlxTween.tween(playState, { currentCameraZoom: playState.currentCameraZoom + gameZoom}, crochet / 7000, {ease: FlxEase.quintOut, onComplete: function (t:FlxTween) {
+        playState.cameraZoomTween = FlxTween.tween(playState, { currentCameraZoom: playState.stageZoom }, crochet / 250, {ease: FlxEase.quartOut});
+      }});
+    }
+
+    if (hudZoom != 0 || hudZoom != null) playState.camHUD.zoom += hudZoom;
+    //FlxTween.cancelTweensOf(playState.camHUD, ['zoom']);
+    //if (hudZoom != 0 || hudZoom != null) tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
+  }
+
+  // ---------------------------------------------------
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    resetTweens();
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    resetTweens();
+  }
+
+  private static function resetTweens():Void
+  {
+    for (tween in tweens)
+      if (tween != null) tween.cancel();
+    tweens = [];
+    pausedTweens = [];
+    hudZoomTween = null;
+  }
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens) {
+      if (tween != null && !tween.finished) {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+    if (hudZoomTween != null && !hudZoomTween.finished) hudZoomTween.active = false;
+  }
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens) {
+      if (tween != null && !tween.finished) tween.active = true;
+    }
+    pausedTweens = [];
+    if (hudZoomTween != null && !hudZoomTween.finished) hudZoomTween.active = true;
+  }
+}

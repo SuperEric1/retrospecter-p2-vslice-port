@@ -100,7 +100,7 @@ class DeadfineSong extends Song
     flashPurple.makeGraphic(4000, 4000, FlxColor.fromString('#9C00DF'));
     flashPurple.scrollFactor.set(0, 0);
     flashPurple.screenCenter();
-    flashPurple.blend = 3; // multiply
+    flashPurple.blend = 9; // multiply
     flashPurple.alpha = 0;
     flashPurple.active = false;
     flashPurple.zIndex = 500;
@@ -511,7 +511,7 @@ class DeadfineSong extends Song
   function darkFlash():Void
   {
     addCameraZoom(0.02, 0.035);
-    doFlash(flashPurple, 3 /* multiply */, 0.6, 0.35, FlxEase.circOut);
+    doFlash(flashPurple, 9 /* multiply */, 0.6, 0.35, FlxEase.circOut);
     if (flashingLights)
       doFlash(flashPurple, 0 /* add */, 0.25, 0.5, FlxEase.quadIn);
   }

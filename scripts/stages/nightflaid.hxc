@@ -1273,14 +1273,3 @@ class NightflaidStage extends Stage
   }
 
 }
-
-// Character configuration structure
-typedef CharacterColorData = {
-  var iconColor:String;
-  var barColor:String;
-  var health:Float;
-  @:optional var digiMulti:Float;
-  @:optional var digideathShake:Bool;
-  @:optional var digideathScreenShake:Bool;
-  @:optional var digideathNoteDrain:Bool;
-}

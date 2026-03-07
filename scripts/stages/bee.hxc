@@ -163,7 +163,7 @@ class BeeStage extends Stage
       bg.kill();
       for (glitter in glitterSprites) glitter.kill();
 
-      // Mostra cenário hiveless
+      // Hiveless stage
       bgg.revive();
       fgg.revive();
       bgg.alpha = 1;

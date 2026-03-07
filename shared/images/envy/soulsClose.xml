@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="soulsClose.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="souls_close0000" x="1730" y="0" width="1719" height="2708" frameX="-8" frameY="0" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0001" x="1730" y="0" width="1719" height="2708" frameX="-8" frameY="0" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0002" x="0" y="0" width="1725" height="2720" frameX="-3" frameY="-8" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0003" x="0" y="0" width="1725" height="2720" frameX="-3" frameY="-8" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0004" x="5177" y="0" width="1726" height="2614" frameX="0" frameY="-11" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0005" x="5177" y="0" width="1726" height="2614" frameX="0" frameY="-11" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0006" x="3454" y="0" width="1718" height="2668" frameX="-8" frameY="-3" frameWidth="1728" frameHeight="2728"/>
+	<SubTexture name="souls_close0007" x="3454" y="0" width="1718" height="2668" frameX="-8" frameY="-3" frameWidth="1728" frameHeight="2728"/>
+</TextureAtlas>

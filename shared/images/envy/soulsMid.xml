@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="soulsMid.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="soulsmid0000" x="345" y="0" width="339" height="825" frameX="-2" frameY="0" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0001" x="345" y="0" width="339" height="825" frameX="-2" frameY="0" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0002" x="0" y="0" width="340" height="829" frameX="-1" frameY="-3" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0003" x="0" y="0" width="340" height="829" frameX="-1" frameY="-3" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0004" x="343" y="834" width="341" height="797" frameX="0" frameY="-4" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0005" x="343" y="834" width="341" height="797" frameX="0" frameY="-4" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0006" x="0" y="834" width="338" height="813" frameX="-3" frameY="-1" frameWidth="341" frameHeight="832"/>
+	<SubTexture name="soulsmid0007" x="0" y="834" width="338" height="813" frameX="-3" frameY="-1" frameWidth="341" frameHeight="832"/>
+</TextureAtlas>

@@ -1,0 +1,680 @@
+import flixel.FlxG;
+import flixel.FlxSprite;
+import funkin.graphics.FunkinSprite;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import funkin.Preferences;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.stage.StageProp;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+import funkin.Paths;
+import funkin.save.Save;
+import openfl.filters.ShaderFilter;
+
+class EnvyStage extends Stage
+{
+  var bgX:Float = -3000;
+  var bgY:Float = -1250;
+  var hasCreatedStage:Bool = false;
+
+  var darkness:FunkinSprite;
+  var faces:FunkinSprite;
+  var light:FunkinSprite;
+  var sister:FunkinSprite;
+  var bubbleGF:FunkinSprite;
+  var bubble:FunkinSprite;
+  var dadBubble:FunkinSprite;
+  var souls:FunkinSprite;
+  var soulsLeft:FunkinSprite;
+  var soulsMid:FunkinSprite;
+
+  // Shaders
+  var water:ScriptedFlxRuntimeShader;
+  var sharkPit:ScriptedFlxRuntimeShader;
+  var shaderTime:Float = 0;
+  var useShaders:Bool = false;
+
+  // States
+  var sp1:Bool = false;
+  var sp2:Bool = false;
+
+  public function new()
+  {
+    super('envy');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['atrocean']]);
+
+    sp1 = false;
+    sp2 = false;
+    shaderTime = 0;
+    useShaders = Save.instance.modOptions.get('retroShaders') ?? true;
+    var z:Int = 0;
+
+    var sea = makeSpr('envy/optimized/sea', bgX, bgY);
+    sea.scale.set(2, 2);
+    sea.updateHitbox();
+    sea.zIndex = z++;
+
+    darkness = makeSpr('envy/optimized/darkness', bgX + 1000, bgY + 400);
+    darkness.scale.set(2.45, 2.45);
+    darkness.updateHitbox();
+    darkness.scrollFactor.set(0.33, 0.33);
+    darkness.alpha = 0;
+    darkness.zIndex = z++;
+    darkness.antialiasing = false;
+
+    faces = makeSpr('envy/optimized/faces', bgX + 1400, bgY + 400);
+    faces.scale.set(2.45, 2.45);
+    faces.updateHitbox();
+    faces.scrollFactor.set(0.33, 0.33);
+    faces.zIndex = z++;
+
+    var leftribs3 = makeSpr('envy/optimized/ribs3', bgX + 2000, bgY + 500);
+    leftribs3.scale.set(2, 2);
+    leftribs3.scrollFactor.set(0.3, 0.3);
+    leftribs3.zIndex = z++;
+    leftribs3.antialiasing = false;
+
+    var leftribs2 = makeSpr('envy/optimized/ribs2', bgX + 1100, bgY + 100);
+    leftribs2.scale.set(2, 2);
+    leftribs2.updateHitbox();
+    leftribs2.scrollFactor.set(0.5, 0.5);
+    leftribs2.zIndex = z++;
+
+    var leftribs1 = makeSpr('envy/optimized/ribs1', bgX + 700, bgY - 100);
+    leftribs1.scale.set(2, 2);
+    leftribs1.updateHitbox();
+    leftribs1.scrollFactor.set(0.9, 0.9);
+    leftribs1.zIndex = z++;
+
+    var mine1 = makeSpr('envy/optimized/mine', bgX + 1300, bgY + 100);
+    mine1.scale.set(1.3, 1.3);
+    mine1.updateHitbox();
+    mine1.scrollFactor.set(0.9, 0.9);
+    mine1.zIndex = z++;
+
+    var rightribs3 = makeSpr('envy/optimized/ribs3', bgX + 3100, bgY + 500);
+    rightribs3.scale.set(2, 2);
+    rightribs3.updateHitbox();
+    rightribs3.scrollFactor.set(0.3, 0.3);
+    rightribs3.flipX = true;
+    rightribs3.zIndex = z++;
+    rightribs3.antialiasing = false;
+
+    var rightribs2 = makeSpr('envy/optimized/ribs2', bgX + 3200, bgY + 100);
+    rightribs2.scale.set(2, 2);
+    rightribs2.updateHitbox();
+    rightribs2.scrollFactor.set(0.5, 0.5);
+    rightribs2.flipX = true;
+    rightribs2.zIndex = z++;
+
+    var rightribs1 = makeSpr('envy/optimized/ribs1', bgX + 3500, bgY - 100);
+    rightribs1.scale.set(2, 2);
+    rightribs1.updateHitbox();
+    rightribs1.scrollFactor.set(0.9, 0.9);
+    rightribs1.flipX = true;
+    rightribs1.zIndex = z++;
+
+    var mine2 = makeSpr('envy/optimized/mineMoreBlurred', bgX + 2400, bgY + 700);
+    mine2.scale.set(2.6, 2.6);
+    mine2.updateHitbox();
+    mine2.scrollFactor.set(0.5, 0.5);
+    mine2.zIndex = z++;
+    mine2.antialiasing = false;
+
+    var leftSkull = makeSpr('envy/optimized/pieceLeft', bgX, bgY);
+    leftSkull.scale.set(2, 2);
+    leftSkull.updateHitbox();
+    leftSkull.zIndex = z++;
+
+    var mine3 = makeSpr('envy/optimized/mineBlurred', bgX + 2500, bgY + 150);
+    mine3.scale.set(1.3, 1.3);
+    mine3.updateHitbox();
+    mine3.scrollFactor.set(0.75, 0.75);
+    mine3.zIndex = z++;
+    mine3.antialiasing = false;
+
+    var songId = PlayState.instance?.currentChart?.song?.id ?? '';
+    if (songId == 'seasire' || songId == 'macovet' || songId == 'macoveil') {
+      sister = FunkinSprite.create(-402, -280);
+      sister.loadSparrow('envy/torrendous');
+      sister.updateHitbox();
+      sister.animation.addByPrefix('idle', 'idle', 24, false);
+      sister.scrollFactor.set(0.85, 0.85);
+      sister.zIndex = z++;
+      sister.antialiasing = false;
+      add(sister);
+    }
+
+    var midLand = makeSpr('envy/optimized/pieceMiddle', bgX + 2600, bgY + 650);
+    midLand.scale.set(1.2, 1.2);
+    midLand.updateHitbox();
+    midLand.scrollFactor.set(0.85, 0.85);
+    midLand.zIndex = z++;
+
+    var mine4 = makeSpr('envy/optimized/mine', bgX + 3400, bgY + 150);
+    mine4.scale.set(1.3, 1.3);
+    mine4.updateHitbox();
+    mine4.scrollFactor.set(0.9, 0.9);
+    mine4.zIndex = z++;
+
+    var rightLand = makeSpr('envy/optimized/rightPieceDown', bgX + 2700, bgY + 1900);
+    rightLand.scale.set(1.8, 1.8);
+    rightLand.updateHitbox();
+    rightLand.zIndex = z++;
+
+    var rightLandUp = makeSpr('envy/optimized/rightPieceUp', bgX + 4060, bgY - 1596);
+    rightLandUp.scale.set(1.8, 1.8);
+    rightLandUp.updateHitbox();
+    rightLandUp.zIndex = z++;
+
+    var leftLand = makeSpr('envy/optimized/leftPiece', bgX + 500, bgY + 1600);
+    leftLand.scale.set(2.6, 2.6);
+    leftLand.updateHitbox();
+    leftLand.zIndex = z++;
+
+    light = FunkinSprite.create(-2405, -520);
+    light.loadTexture('envy/optimized/light');
+    light.scale.set(2, 2);
+    light.antialiasing = false;
+    light.zIndex = z++;
+    add(light);
+
+    var glow = makeSpr('envy/optimized/glow', bgX, bgY);
+    glow.scale.set(8, 8);
+    glow.updateHitbox();
+    glow.zIndex = 400;
+
+    PlayState.instance.refresh();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+
+    if (light != null) {
+      FlxTween.cancelTweensOf(light);
+      light.alpha = 1;
+      FlxTween.tween(light, {alpha: 0.25}, 1, {type: 4, ease: FlxEase.quadOut});
+    }
+
+    positionCharacters(); // Position the characters again because when whe retry the song, the default character positions gets applied.
+
+    // Shaders
+    if (useShaders) {
+      if (water == null) water = ScriptedFlxRuntimeShader.init('RetroWaterShader');
+      if (sharkPit == null) sharkPit = ScriptedFlxRuntimeShader.init('RetroSharkPitShader');
+      PlayState.instance.camGame.filters = [];
+      PlayState.instance.camGame.filters = [new ShaderFilter(water), new ShaderFilter(sharkPit)];
+    }
+
+    if (!hasCreatedStage) {
+      spawnSouls();
+      hasCreatedStage = true;
+    }
+
+    PlayState.instance.refresh();
+  }
+
+  function positionCharacters():Void
+  {
+    var bf = getBoyfriend();
+    var gf = getGirlfriend();
+    var dad = getDad();
+
+    var xx:Float = -100;
+    var yy:Float = 0;
+
+    // GF
+    if (bubbleGF != null) {
+      bubbleGF.kill();
+      bubbleGF.destroy();
+    }
+    bubbleGF = FunkinSprite.create(gf.x, gf.y);
+    bubbleGF.loadSparrow('envy/Atro_Bubble');
+    bubbleGF.animation.addByPrefix('idle', 'GF Bubble instance 1', 24, true);
+    bubbleGF.animation.play('idle');
+    bubbleGF.scrollFactor.set(gf.scrollFactor.x, gf.scrollFactor.y);
+    bubbleGF.zIndex = 105;
+
+    var scalarrX:Float = 1;
+    var scalarrY:Float = 1;
+
+    switch (gf.characterId)
+    {
+      case 'gf-default':
+        bubbleGF.x -= 270; bubbleGF.y -= 140;
+      case 'gf-envy':
+        bubbleGF.x -= 290; bubbleGF.y -= 180; scalarrX = 1.1; scalarrY = 1.1;
+        // Adjust the rest when we add the possibility to change skins. For now, we'll leave the origial values.
+      case 'gf-wrath':
+        bubbleGF.x += 80; bubbleGF.y += 160;
+      case 'gf-gluttony':
+        bubbleGF.x += 80; bubbleGF.y += 130; scalarrX = 1.2; scalarrY = 1.05;
+      case 'gf-lust':
+        bubbleGF.x += 80; bubbleGF.y += 220;
+      case 'gf-greed':
+        bubbleGF.x += 85; bubbleGF.y += 130; scalarrX = 1.1; scalarrY = 1.1;
+      case 'gf-sloth':
+        bubbleGF.x += 90; bubbleGF.y += 145; scalarrX = 1.15; scalarrY = 1.15;
+      case 'gf-minus':
+        bubbleGF.x += 90; bubbleGF.y += 170;
+      case 'gf-pride':
+        bubbleGF.x += 100; bubbleGF.y += 80; scalarrX = 1.2; scalarrY = 1.2;
+      case 'gf-wrath-legacy':
+        bubbleGF.x += 100; bubbleGF.y += 160;
+      case 'gf-lust-legacy':
+        bubbleGF.x += 60; bubbleGF.y += 235;
+      case 'gf-pride-legacy':
+        bubbleGF.x += 95; bubbleGF.y += 65; scalarrX = 1.2; scalarrY = 1.2;
+      case 'gf-gluttony-legacy':
+        bubbleGF.x -= 30; bubbleGF.y += 100; scalarrX = 1.2; scalarrY = 1.05;
+      case 'gf-envy-legacy':
+        bubbleGF.x += 85; bubbleGF.y += 140;
+      case 'gf-sloth-legacy':
+        bubbleGF.x += 85; bubbleGF.y += 140; scalarrX = 1.1; scalarrY = 1.1;
+      case 'gf-greed-legacy':
+        bubbleGF.x += 95; bubbleGF.y += 140; scalarrX = 1.1; scalarrY = 1.1;
+      case 'gf-minus-legacy':
+        bubbleGF.x += 100; bubbleGF.y += 160;
+      case 'gf-saku' | 'gf-saku-goth':
+        bubbleGF.x -= 700; bubbleGF.y -= 500; scalarrX = 1.1; scalarrY = 1.1;
+      case 'gf-zerktro':
+        bubbleGF.x -= 650; bubbleGF.y -= 350; scalarrX = 1.75; scalarrY = 1.75;
+      case 'gf-retro':
+        bubbleGF.x -= 700; bubbleGF.y -= 475; scalarrX = 1.1; scalarrY = 1.1;
+      case 'gf-izzy':
+        bubbleGF.x -= 810; bubbleGF.y -= 600; scalarrX = 1.45; scalarrY = 1.45;
+      case 'gf-hivemine':
+        bubbleGF.x -= 700; bubbleGF.y -= 460; scalarrX = 1.25; scalarrY = 1.25;
+      case 'gf-atrocean':
+        bubbleGF.alpha = 0;
+        bubbleGF.x -= 835; bubbleGF.y -= 410; scalarrX = 1.45; scalarrY = 1.45;
+      case 'gf-dozirc':
+        bubbleGF.x -= 700; bubbleGF.y -= 410; scalarrX = 1.25; scalarrY = 1.25;
+      case 'gf-insatian':
+        bubbleGF.x -= 700; bubbleGF.y -= 420; scalarrX = 1.65; scalarrY = 1.45;
+      case 'gf-nightflaid':
+        bubbleGF.x -= 700; bubbleGF.y -= 410; scalarrX = 1.45; scalarrY = 1.45;
+      case 'gf-ace':
+        bubbleGF.x -= 700; bubbleGF.y -= 500; scalarrX = 1.1; scalarrY = 1.1;
+    }
+    bubbleGF.scale.set(scalarrX, scalarrY);
+    bubbleGF.updateHitbox();
+
+    add(bubbleGF);
+
+    // BF
+    if (bubble != null) {
+      bubble.kill();
+      bubble.destroy();
+    }
+    bubble = FunkinSprite.create(bf.x /*- 35*/, bf.y /*- 120*/);
+    bubble.loadSparrow('envy/Atro_Bubble');
+    bubble.animation.addByPrefix('idle', 'BF Bubble instance 1', 24, true);
+    bubble.animation.play('idle');
+    bubble.zIndex = 350;
+
+    var scalarX:Float = 1;
+    var scalarY:Float = 1;
+
+    switch (bf.characterId)
+    {
+      case 'bf-retrospecter':
+        bf.x -= (100 + xx); bf.y += (400 + yy) - 40;
+        bubble.y += 250; bubble.x -= 50;
+      case 'bf-envy':
+        bf.x -= (20 + xx); bf.y += (360 + yy);
+        bubble.y += 260; bubble.x -= 70;
+      // Adjust the rest when we add the possibility to change skins. For now, we'll leave the origial values.
+      case 'mico':
+        bf.x -= (xx + 200); bf.y -= (yy - 280);
+        bubble.y += 270; bubble.x -= 50; scalarX = 1.2; scalarY = 1.1;
+      case 'playable-dozirc':
+        bf.x -= (xx + 100) + 250; bf.y -= (yy + 400) + 100;
+        bubble.y -= 350; bubble.x += 30; scalarX = 4; scalarY = 4;
+      case 'playable-insatian':
+        bf.x -= 300; bf.y -= 150;
+        bubble.y += 30; bubble.x -= 50; scalarX = 2; scalarY = 2;
+      case 'playable-mace':
+        bf.x -= (xx + 0) + 100; bf.y -= (yy - 130 + 400) + 120;
+        bubble.y -= 200; scalarX = 2; scalarY = 2;
+      case 'playable-hivemine':
+        bf.x -= (xx + 300 - 100) - 100; bf.y += (yy - 220) + 50;
+        bubble.y -= 80; bubble.x += 150; scalarX = 2.6; scalarY = 2.6;
+      case 'playable-atrocean':
+        bf.x -= (xx + 300); bf.y += (yy - 300);
+        bubble.alpha = 0;
+      case 'bf-minusNew':
+        bf.x -= (100 + xx); bf.y += (400 + yy) - 40;
+        bubble.y += 250; bubble.x -= 100;
+      case 'bf-wrath':
+        bf.x -= (240 + xx); bf.y += (270 + yy);
+        bubble.y += 250; bubble.x -= 40; scalarX = 1.35;
+      case 'bf-lust':
+        bf.y += (290 + yy); bf.x -= (50 + xx);
+        bubble.y += 250; bubble.x -= 50;
+      case 'bf-pride':
+        bf.y += (303 + yy); bf.x -= (100 + xx);
+        bubble.y += 250; bubble.x -= 50;
+      case 'bf-greed':
+        bf.y += (230 + yy); bf.x -= (150 + xx);
+        bubble.y += 220; bubble.x -= 70; scalarY = 1.2; scalarX = 1.2;
+      case 'bf-gluttony':
+        bf.x -= (100 + xx); bf.y += (290 + yy);
+        bubble.y += 220; bubble.x -= 30;
+      case 'bf-sloth':
+        bf.y += (320 + yy); bf.x -= xx;
+        bubble.y += 220; bubble.x -= 40;
+      case 'bf-corrupt':
+        bf.x -= (70 + xx); bf.y += (250 + yy);
+        bubble.y += 220;
+      case 'bf-minus':
+        bf.y += (320 + yy); bf.x -= (30 + xx);
+        bubble.y += 220; bubble.x -= 50;
+      case 'fun-retro':
+        bf.y += (350 + yy); bf.x -= xx;
+        bubble.y += 220; bubble.x -= 50;
+      case 'fun-retro-pixel':
+        bf.x += xx + 500; bf.y += yy + 450;
+        bubble.x += 50; bubble.y += 175;
+      case 'fun-ace-pixel':
+        bf.x += xx + 500; bf.y += yy + 450;
+        bubble.x += 50; bubble.y += 175;
+      case 'fun-atrocean':
+        bf.y += (20 + yy); bf.x -= (180 + xx);
+        bf.x -= 70; bf.y += 0;
+        bubble.alpha = 0;
+      case 'fun-izzy':
+        bf.y += (350 + yy); bf.x -= xx;
+        bubble.y += 230; bubble.x -= 30;
+      case 'fun-saku':
+        bf.x -= (55 + xx); bf.y += (265 + yy);
+        bubble.y += 220; bubble.x -= 50;
+      case 'fun-insatian':
+        bf.y += (265 + yy); bf.x -= (130 + xx);
+        bubble.y += 220; bubble.x -= 50; scalarX = 1.1;
+      case 'fun-hivemine':
+        bf.x -= (200 + xx); bf.y += (90 + yy);
+        bubble.y += 165; bubble.x -= 70; scalarX = 1.2; scalarY = 1.22;
+      case 'fun-dozirc':
+        bf.y += (130 + yy); bf.x -= (30 + xx); bf.y += 30;
+        bubble.y += 180; bubble.x -= 20; scalarX = 1.25; scalarY = 1.3;
+      case 'fun-ace':
+        bf.x += 200;
+        bubble.y -= 90; bubble.x -= 30;
+      case 'playable-retro':
+        bf.x -= (155 + xx); bf.y -= (125 + yy);
+        bf.y += 700; bf.y -= 770; bf.x -= 150; bf.y += 50;
+        bubble.x -= 140; scalarX = 1.4; scalarY = 2;
+      case 'playable-retro-angry':
+        bf.x -= (256 + xx); bf.y -= (174 + yy);
+        bf.x += 100; bf.y -= 35; bf.y += 10; bf.y += 696;
+        bf.y -= 770; bf.y -= 7; bf.x += 8;
+        bf.x -= 150; bf.x -= 20; bf.y += 20; bf.y += 50;
+        bubble.x -= 110; scalarX = 1.55; scalarY = 2;
+      case 'playable-saku' | 'playable-saku-worried':
+        bf.x -= 275; bf.y -= 160;
+        bf.x += 100; bf.y -= 400; bf.y += 300; bf.x += 200;
+        bf.x -= 170; bf.y -= 50; bf.y += 80; bf.x -= 50;
+        bubble.y -= 230; scalarX = 2.5; scalarY = 2.6;
+      case 'playable-izzy':
+        bf.x -= (440 + xx); bf.y -= (30 + yy);
+        bf.x -= 100; bf.y += 30; bf.y -= 810; bf.x += 100;
+        bf.y += 700; bf.y -= 30; bf.y += 50;
+        bubble.y += 60; scalarX = 2; scalarY = 1.6;
+      case 'playable-ace':
+        bf.x -= (200 + xx); bf.y -= (70 + yy);
+        bf.y += 20; bf.x -= 100; bf.y -= 770; bf.x += 200;
+        bf.x -= 100; bf.y += 670; bf.y += 50;
+        bubble.y += 30; bubble.x -= 50; scalarX = 1.4; scalarY = 1.8;
+      case 'playable-aceNew':
+        bf.x -= 300; bf.y -= 120;
+        bubble.x -= 100; scalarX = 1.9; scalarY = 1.9;
+      case 'playable-zerktro':
+        bf.x -= 150; bf.y -= 360;
+        bf.x -= 400; bf.y -= 200; bf.x += 600;
+        bf.y -= 50; bf.x -= 250; bf.y -= 50;
+        bf.y += 200; bf.x -= 250; bf.y -= 70; bf.x += 200;
+        bubble.x += 50; bubble.y -= 170;
+       scalarX = 2.9; scalarY = 3;
+      case 'playable-metro':
+        bf.x -= (250 + xx); bf.y -= (140 + yy);
+        bf.y -= 800; bf.x += 100; bf.y += 700;
+        bf.x -= 150; bf.y -= 20; bf.y -= 30; bf.y += 50;
+        bubble.y -= 5; bubble.x -= 50; scalarX = 1.8; scalarY = 2.1;
+      case 'playable-maku':
+        bf.x -= 270; bf.y -= 240; bf.y += 70;
+        bf.y -= 420; bf.x += 400; bf.y += 340;
+        bf.y -= 60; bf.y += 50;
+        bubble.y -= 120; bubble.x += 80; scalarX = 1.85; scalarY = 2.4;
+    }
+    bubble.scale.set(scalarX, scalarY);
+    bubble.updateHitbox();
+    add(bubble);
+
+    // Leaving this here just in case side stories gets added later
+    if (PlayState.instance.isStoryMode && dad != null && dad.characterId == 'enemy-ace-spell') {
+      if (dadBubble != null) {
+        dadBubble.kill();
+        dadBubble.destroy();
+      }
+      dadBubble = FunkinSprite.create(dad.x - 275, dad.y - 70);
+      dadBubble.loadSparrow('envy/Atro_Bubble');
+      dadBubble.animation.addByPrefix('idle', 'BF Bubble instance 1', 24, true);
+      dadBubble.animation.play('idle');
+      dadBubble.scale.set(1.8, 1.8);
+      dadBubble.updateHitbox();
+      dadBubble.zIndex = 250;
+      add(dadBubble);
+    }
+  }
+
+  function spawnSouls():Void {
+    soulsLeft = FunkinSprite.create(FlxG.random.float(-2500, 6000), 5000);
+    soulsLeft.loadSparrow('envy/soulsMid');
+    soulsLeft.animation.addByPrefix('idle', 'soulsmid', 24, true);
+    soulsLeft.animation.play('idle');
+    soulsLeft.scrollFactor.set(0.4, 0.4);
+    soulsLeft.alpha = 0.5;
+    soulsLeft.zIndex = 10;
+    soulsLeft.antialiasing = false;
+    add(soulsLeft);
+
+    soulsMid = FunkinSprite.create(FlxG.random.float(-2500, 6000), 4000);
+    soulsMid.loadSparrow('envy/soulsMid');
+    soulsMid.animation.addByPrefix('idle', 'soulsmid', 24, true);
+    soulsMid.animation.play('idle');
+    soulsMid.scrollFactor.set(0.6, 0.6);
+    soulsMid.alpha = 0.5;
+    soulsMid.zIndex = 3;
+    soulsMid.antialiasing = false;
+    add(soulsMid);
+
+    souls = FunkinSprite.create(FlxG.random.float(-3000, 6000), 2000);
+    souls.loadSparrow('envy/optimized/soulsClose');
+    souls.animation.addByPrefix('idle', 'souls_close', 24, true);
+    souls.animation.play('idle');
+    souls.scrollFactor.set(1.4, 1.2);
+    souls.scale.set(4, 4);
+    souls.updateHitbox();
+    souls.alpha = 0.5;
+    souls.zIndex = 370;
+    add(souls);
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var elapsed = event.elapsed;
+
+    if (souls != null) {
+      souls.y -= elapsed * 2500;
+      if (souls.y <= -4000) {
+        souls.x = FlxG.random.float(-3000, 2500);
+        souls.y = FlxG.random.float(6000, 10000);
+        var scaler = FlxG.random.float(3.5, 4.5);
+        souls.scale.set(scaler, scaler);
+      }
+    }
+
+    if (soulsLeft != null) {
+      soulsLeft.y -= elapsed * 675;
+      if (soulsLeft.y <= -3000) {
+        soulsLeft.x = FlxG.random.float(-2500, 2500);
+        soulsLeft.y = FlxG.random.float(6000, 10000);
+        var scaler = FlxG.random.float(1, 2);
+        soulsLeft.scale.set(scaler, scaler);
+      }
+    }
+
+    if (soulsMid != null) {
+      soulsMid.y -= elapsed * 675;
+      if (soulsMid.y <= -2400) {
+        soulsMid.x = FlxG.random.float(-2500, 2500);
+        soulsMid.y = FlxG.random.float(8000, 12000);
+        var scaler = FlxG.random.float(1, 2);
+        soulsMid.scale.set(scaler, scaler);
+      }
+    }
+
+    if (useShaders && water != null && sharkPit != null) {
+      shaderTime += elapsed;
+
+      water.setFloat('iTime', shaderTime);
+      sharkPit.setFloat('iTime', shaderTime);
+
+      var cam = PlayState.instance.camGame;
+      var scrollX = cam.scroll.x / (cam.width / cam.zoom);
+      var scrollY = cam.scroll.y / (cam.height / cam.zoom);
+      sharkPit.setFloatArray('uScroll', [scrollX, scrollY]);
+    }
+  }
+
+  function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    PlayState.instance.camGame.filters = [];
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var beat = event.beat;
+
+    if (beat % 2 == 0 && sister != null && sister?.animation != null) sister?.animation?.play('idle', true);
+
+    if (beat % 10 == 0) {
+      var rand = FlxG.random.int(1, 5);
+
+      if (rand == 3 && !sp1 && darkness != null) {
+        sp1 = true;
+        FlxTween.tween(darkness, {alpha: FlxG.random.float(0.20, 0.30)}, FlxG.random.float(4, 7), {
+          ease: FlxEase.linear,
+          onComplete: function(t:FlxTween) {
+            new FlxTimer().start(FlxG.random.float(6, 13), function(tmr:FlxTimer) {
+              FlxTween.tween(darkness, {alpha: 0}, FlxG.random.float(4, 7), {
+                ease: FlxEase.linear, onComplete: function(t2:FlxTween) { sp1 = false; }
+              });
+            });
+          }
+        });
+      }
+      else if (rand == 4 && !sp2 && faces != null) {
+        sp2 = true;
+        FlxTween.tween(faces, {alpha: FlxG.random.float(0.20, 0.30)}, FlxG.random.float(4, 7), {
+          ease: FlxEase.linear,
+          onComplete: function(t:FlxTween) {
+            new FlxTimer().start(FlxG.random.float(6, 13), function(tmr:FlxTimer) {
+              FlxTween.tween(faces, {alpha: 0}, FlxG.random.float(4, 7), {
+                ease: FlxEase.linear, onComplete: function(t2:FlxTween) { sp2 = false; }
+              });
+            });
+          }
+        });
+      }
+    }
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.GF) {
+      character.antialiasing = false;
+    }
+
+    // Leaving this here just in case side stories gets added later, haven't tested it
+    if (charType == CharacterType.DAD && character.characterId == 'enemy-ace-spell') {
+      character.cameraFocusPoint.x += 100;
+    }
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+
+    if (light != null) {
+      FlxTween.cancelTweensOf(light);
+      FlxTween.tween(light, {alpha: 0.5}, 1, {type: 4, ease: FlxEase.quadOut});
+    }
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    sp1 = false;
+    sp2 = false;
+    shaderTime = 0;
+
+    if (useShaders) {
+      if (water != null) water.setFloat('iTime', 0.0);
+      if (sharkPit != null) { sharkPit.setFloat('iTime', 0.0); sharkPit.setFloatArray('uScroll', [0.0, 0.0]); }
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+
+    hasCreatedStage = false;
+    darkness = null;
+    faces = null;
+    light = null;
+    sister = null;
+    souls = null;
+    soulsLeft = null;
+    soulsMid = null;
+    water = null;
+    sharkPit = null;
+  }
+
+  function makeSpr(imagePath:String, x:Float, y:Float):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    sprite.active = false;
+    add(sprite);
+    return sprite;
+  }
+}

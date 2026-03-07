@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="soul6.png">
+	<!-- Created with Adobe Animate version 23.0.2.103 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idvsoul60000" x="2" y="2" width="98" height="178" frameX="0" frameY="0" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60001" x="2" y="2" width="98" height="178" frameX="0" frameY="0" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60002" x="102" y="2" width="96" height="181" frameX="-2" frameY="-1" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60003" x="102" y="2" width="96" height="181" frameX="-2" frameY="-1" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60004" x="105" y="185" width="91" height="185" frameX="-5" frameY="-1" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60005" x="105" y="185" width="91" height="185" frameX="-5" frameY="-1" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60006" x="2" y="185" width="101" height="169" frameX="0" frameY="-2" frameWidth="101" frameHeight="186"/>
+	<SubTexture name="idvsoul60007" x="2" y="185" width="101" height="169" frameX="0" frameY="-2" frameWidth="101" frameHeight="186"/>
+</TextureAtlas>

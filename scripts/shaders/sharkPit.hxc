@@ -1,0 +1,21 @@
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.Paths;
+
+class RetroSharkPitShader extends FlxRuntimeShader
+{
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('sharkPit')));
+    this.setFloat("iTime", 0.0);
+    this.setFloatArray("uScroll", [0.0, 0.0]);
+  }
+  public function setTime(time:Float):Void
+  {
+    this.setFloat("iTime", time);
+  }
+
+  public function setScroll(x:Float, y:Float):Void
+  {
+    this.setFloatArray("uScroll", [x, y]);
+  }
+}

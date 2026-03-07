@@ -1,0 +1,49 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+import Std;
+
+/* This event mimicks an event from Pych Engine.
+ * It adds value to the camera zooms, but in a way that is like the
+ * game's camera bops. Basically, adds the zoom and the game reverts
+ * it back automatically.
+ */
+
+class RetroAddCamZoom extends SongEvent {
+  function new() {
+    super('RetroAddCamZoom');
+  }
+
+  override function getTitle() {
+    return "Add Cam Zoom";
+  }
+
+  override function handleEvent(data) {
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
+    var multi:Float = 15;
+    var game:Float = data.getFloat('game') ?? 0;
+    var hud:Float = data.getFloat('hud') ?? 0;
+
+    if (game != 0 || hud != 0) {
+      PlayState.instance.cameraBopMultiplier += (game * multi) / PlayState.instance.currentCameraZoom;
+      PlayState.instance.camHUD.zoom += (hud * multi)  / PlayState.instance.camHUD.zoom;
+    }
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "game",
+        title: "Game",
+        defaultValue: 0,
+        type: "float"
+      },
+      {
+        name: "hud",
+        title: "HUD",
+        defaultValue: 0,
+        type: "float"
+      }
+    ];
+  }
+}

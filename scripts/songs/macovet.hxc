@@ -1,0 +1,268 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Conductor;
+import funkin.play.PlayState;
+import funkin.play.song.Song;
+import funkin.play.character.CharacterType;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.module.ModuleHandler;
+import funkin.save.Save;
+
+class MacovetSong extends Song
+{
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+
+  var modcharts:Bool = true;
+  var hasStoredStrums:Bool = false;
+  var isMobile:Bool = false;
+
+  // Buoyancy
+  var buoyancy:Float = 1.0;
+  var buoyancyTween:FlxTween = null;
+  var randomGen:Float = 1.0;
+
+  var defaultStrumX:Array<Float> = [];
+  var defaultStrumY:Array<Float> = [];
+  var originalOffsetY:Array<Float> = [];
+
+  var playState:PlayState;
+
+  public function new()
+  {
+    super('macovet');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    randomGen = FlxG.random.float(0.9, 3.0);
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    playState = PlayState.instance;
+
+    // Load custom notestyle.
+	  // TODO: Move this somewhere else.
+    var strum = (playState.currentStage.getDad().characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+    var strumStyle:String = 'atrocean';
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+  }
+
+  override function onCountdownStart(event:ScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+    if (!hasStoredStrums) storeDefaultStrumPositions();
+    //if (modcharts) floatUp();
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (playState == null) return;
+    if (playState.isGamePaused || playState.isGameOverState) return;
+    if (!modcharts || !hasStoredStrums) return;
+
+    var time:Float = Conductor.instance.songPosition;
+    var boy:Float = buoyancy + Math.abs(0.25 * Math.cos(time / 1000));
+
+    for (i in 0...4) {
+      var strum = playState.opponentStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      strum.y = defaultStrumY[i] + (8 * boy) * Math.cos(time / 900 + (i * randomGen));
+      strum.x = defaultStrumX[i] + (4 * boy) * Math.cos(time / 1000 + (i / 2 * randomGen));
+      strum.angle = (2 * boy) * Math.sin(time / 310 + (i / randomGen));
+    }
+    for (i in 0...4) {
+      var luaIndex:Int = i + 4;
+      var strum = playState.playerStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      strum.y = defaultStrumY[luaIndex] + (8 * boy) * Math.cos(time / 900 + (luaIndex * randomGen));
+      strum.x = defaultStrumX[luaIndex] + (4 * boy) * Math.cos(time / 1000 + (luaIndex / 2 * randomGen));
+      strum.angle = (2 * boy) * Math.sin(time / 310 + (luaIndex / randomGen));
+    }
+
+    // Sync notes angle
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle != targetAngle) {
+        note.angle = targetAngle;
+      }
+    }
+    for (note in PlayState.instance.opponentStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle != targetAngle) {
+        note.angle = targetAngle;
+      }
+    }
+  }
+
+  function floatUp():Void
+  {
+    cancelBuoyancyTween();
+    buoyancyTween = FlxTween.num(buoyancy, 1.0, 10.0, { ease: FlxEase.quadOut }, function(num:Float) {
+      buoyancy = num;
+    });
+
+    if (!hasStoredStrums) return;
+
+    var portuguese = isMobile ? -1 : 1;
+    for (i in 0...4) {
+      var strum = playState.opponentStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      var ogY:Float = originalOffsetY[i];
+      strum.offset.y = -FlxG.random.float(1000 * portuguese, 1200 * portuguese);
+      var dur:Float = FlxG.random.float(5.0, 6.5);
+      tweens.push(FlxTween.tween(strum.offset, { y: ogY }, dur, { ease: FlxEase.quadOut }));
+    }
+    for (i in 0...4) {
+      var strum = playState.playerStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      var ogY:Float = originalOffsetY[i + 4];
+      strum.offset.y = -FlxG.random.float(1000, 1200);
+      var dur:Float = FlxG.random.float(5.0, 6.5);
+      tweens.push(FlxTween.tween(strum.offset, { y: ogY }, dur, { ease: FlxEase.quadOut }));
+    }
+  }
+
+  function updateBuoyancy(value:Float):Void
+  {
+    cancelBuoyancyTween();
+    var startVal:Float = buoyancy;
+    buoyancyTween = FlxTween.num(startVal, value, 0.5, { ease: FlxEase.quadOut }, function(num:Float) {
+      buoyancy = num;
+    });
+  }
+
+  function storeDefaultStrumPositions():Void
+  {
+    if (playState == null) return;
+    hasStoredStrums = true;
+
+    defaultStrumX = [];
+    defaultStrumY = [];
+    originalOffsetY = [];
+
+    for (i in 0...4) {
+      var strum = playState.opponentStrumline.strumlineNotes.members[i];
+      defaultStrumX.push(strum.x);
+      defaultStrumY.push(strum.y + 10);
+      originalOffsetY.push(strum.offset.y);
+    }
+    for (i in 0...4) {
+      var strum = playState.playerStrumline.strumlineNotes.members[i];
+      defaultStrumX.push(strum.x);
+      defaultStrumY.push(strum.y + 10);
+      originalOffsetY.push(strum.offset.y);
+    }
+  }
+
+  function resetFlags():Void
+  {
+    buoyancy = 1.0;
+    randomGen = FlxG.random.float(0.9, 3.0);
+  }
+
+  private function cancelBuoyancyTween():Void
+  {
+    if (buoyancyTween != null) {
+      buoyancyTween.cancel();
+      buoyancyTween = null;
+    }
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == "EnvyEvents" && !playState.startingSong) {
+      var eventType = value.eventType;
+      var rawValue:String = value.value1 ?? '';
+      var numValue:Float = rawValue != '' ? Std.parseFloat(rawValue) : 0.0;
+
+      switch (eventType) {
+        case 'updateBuoyancy': updateBuoyancy(numValue);
+      }
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    hasStoredStrums = false;
+    defaultStrumX = [];
+    defaultStrumY = [];
+    originalOffsetY = [];
+    cancelBuoyancyTween();
+    resetTweens();
+    resetFlags();
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    cancelBuoyancyTween();
+    resetTweens();
+    resetFlags();
+  }
+
+  private function resetTweens():Void
+  {
+    for (tween in tweens)
+      if (tween != null) tween.cancel();
+    tweens = [];
+    pausedTweens = [];
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens) {
+      if (tween != null && !tween.finished) {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+    if (buoyancyTween != null && !buoyancyTween.finished) buoyancyTween.active = false;
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens) {
+      if (tween != null && !tween.finished) tween.active = true;
+    }
+    pausedTweens = [];
+    if (buoyancyTween != null && !buoyancyTween.finished) buoyancyTween.active = true;
+  }
+
+  override function onGameOver(event:ScriptEvent):Void
+  {
+    super.onGameOver(event);
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
+}

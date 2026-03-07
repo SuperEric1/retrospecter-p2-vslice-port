@@ -65,6 +65,12 @@ class RetroFreeplay extends Module {
     songConfig.set('8-greed_extras', {
       bgImage: bgPath + 'greed_blur',
     });
+    songConfig.set('9-envy', {
+      bgImage: bgPath + 'envy_blur',
+    });
+    songConfig.set('10-envy_extras', {
+      bgImage: bgPath + 'envy_blur',
+    });
 
 
     songConfig.set('waitkeeper', {

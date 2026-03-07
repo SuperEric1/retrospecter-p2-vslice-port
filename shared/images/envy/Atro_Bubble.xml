@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="Atro_Bubble.png" width="2935" height="2246">
+	<SubTexture name="BF Bubble instance 10000" x="1" y="1087" width="701" height="580" frameX="-13" frameY="-26" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10001" x="1" y="1087" width="701" height="580" frameX="-13" frameY="-26" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10002" x="1" y="1087" width="701" height="580" frameX="-13" frameY="-26" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10003" x="1474" y="1081" width="717" height="581" frameX="-7" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10004" x="1474" y="1081" width="717" height="581" frameX="-7" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10005" x="1474" y="1081" width="717" height="581" frameX="-7" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10006" x="705" y="1087" width="725" height="576" frameX="-3" frameY="-30" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10007" x="705" y="1087" width="725" height="576" frameX="-3" frameY="-30" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10008" x="705" y="1087" width="725" height="576" frameX="-3" frameY="-30" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10009" x="1" y="1670" width="703" height="575" frameX="-12" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10010" x="1" y="1670" width="703" height="575" frameX="-12" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10011" x="1" y="1670" width="703" height="575" frameX="-12" frameY="-29" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10012" x="1474" y="496" width="699" height="582" frameX="-15" frameY="-21" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10013" x="1474" y="496" width="699" height="582" frameX="-15" frameY="-21" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10014" x="1474" y="496" width="699" height="582" frameX="-15" frameY="-21" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10015" x="1" y="1" width="698" height="586" frameX="-16" frameY="-19" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10016" x="1" y="1" width="698" height="586" frameX="-16" frameY="-19" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10017" x="1" y="1" width="698" height="586" frameX="-16" frameY="-19" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10018" x="770" y="502" width="701" height="582" frameX="-13" frameY="-25" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10019" x="770" y="502" width="701" height="582" frameX="-13" frameY="-25" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="BF Bubble instance 10020" x="770" y="502" width="701" height="582" frameX="-13" frameY="-25" frameWidth="752" frameHeight="633"/>
+	<SubTexture name="GF Bubble instance 10000" x="2176" y="496" width="741" height="496" frameX="-12" frameY="-29" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10001" x="2176" y="496" width="741" height="496" frameX="-12" frameY="-29" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10002" x="2176" y="496" width="741" height="496" frameX="-12" frameY="-29" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10003" x="702" y="1" width="758" height="498" frameX="-6" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10004" x="702" y="1" width="758" height="498" frameX="-6" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10005" x="702" y="1" width="758" height="498" frameX="-6" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10006" x="1" y="590" width="766" height="494" frameX="-2" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10007" x="1" y="590" width="766" height="494" frameX="-2" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10008" x="1" y="590" width="766" height="494" frameX="-2" frameY="-31" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10009" x="1463" y="1" width="743" height="492" frameX="-11" frameY="-32" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10010" x="1463" y="1" width="743" height="492" frameX="-11" frameY="-32" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10011" x="1463" y="1" width="743" height="492" frameX="-11" frameY="-32" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10012" x="2174" y="1665" width="739" height="499" frameX="-14" frameY="-24" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10013" x="2174" y="1665" width="739" height="499" frameX="-14" frameY="-24" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10014" x="2174" y="1665" width="739" height="499" frameX="-14" frameY="-24" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10015" x="1433" y="1665" width="738" height="503" frameX="-15" frameY="-22" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10016" x="1433" y="1665" width="738" height="503" frameX="-15" frameY="-22" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10017" x="1433" y="1665" width="738" height="503" frameX="-15" frameY="-22" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10018" x="2194" y="995" width="740" height="498" frameX="-13" frameY="-28" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10019" x="2194" y="995" width="740" height="498" frameX="-13" frameY="-28" frameWidth="791" frameHeight="555"/>
+	<SubTexture name="GF Bubble instance 10020" x="2194" y="995" width="740" height="498" frameX="-13" frameY="-28" frameWidth="791" frameHeight="555"/>
+</TextureAtlas>

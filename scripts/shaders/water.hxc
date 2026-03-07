@@ -1,0 +1,16 @@
+import flixel.addons.display.FlxRuntimeShader;
+import funkin.Paths;
+
+class RetroWaterShader extends FlxRuntimeShader
+{
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('water')));
+    this.setFloat("iTime", 0.0);
+  }
+
+  public function setTime(time:Float):Void
+  {
+    this.setFloat("iTime", time);
+  }
+}

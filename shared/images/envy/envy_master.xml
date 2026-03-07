@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+-->
+<TextureAtlas imagePath="envy_master.png" width="5884" height="5575">
+  <SubTexture name="Glow.png" x="2" y="2"  width="5880" height="2045" frameX="-0" frameY="-0" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Skull_0.png" x="2969" y="2051" width="2837" height="1292" rotated="true"  frameX="-0" frameY="-128" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Skull_1.png" x="2" y="3675" width="2144" height="825" rotated="true"  frameX="-2677" frameY="-821" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Stage_Envy.png" x="2969" y="3347"  width="2016" height="1441" frameX="-812" frameY="-1524" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Stage_BF.png" x="2" y="2051" width="2963" height="1620" rotated="true"  frameX="-3270" frameY="-2" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Mines_0.png" x="2" y="4504" width="2661" height="523" rotated="true"  frameX="-3369" frameY="-304" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Mines_1.png" x="2" y="5031" width="2499" height="452" rotated="true"  frameX="-1279" frameY="-466" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Mines_2.png" x="2667" y="4792" width="2908" height="446" rotated="true"  frameX="-4810" frameY="-57" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Mines_3.png" x="2505" y="5242" width="2902" height="328" rotated="true"  frameX="-2480" frameY="-63" frameWidth="5880" frameHeight="2965"/>
+  <SubTexture name="Mines_4.png" x="5579" y="3347"  width="253" height="2226" frameX="-1960" frameY="-739" frameWidth="5880" frameHeight="2965"/>
+</TextureAtlas>
