@@ -7,6 +7,7 @@ import funkin.play.song.Song;
 import funkin.play.character.CharacterType;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
+import funkin.mobile.input.ControlsHandler;
 import funkin.save.Save;
 
 class MacovetSong extends Song
