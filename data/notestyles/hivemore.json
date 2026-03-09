@@ -1,13 +1,13 @@
 {
   "version": "1.1.0",
-  "name": "Atrocean",
+  "name": "Hivemore",
   "author": "Ported by SuperEric",
   "fallback": "retrospecter",
   "assets": {
     "note": {
-      "assetPath": "shared:notes/Atrocean_Note_Assets",
+      "assetPath": "shared:notes/Hivemore_Note_Assets",
       "scale": 0.7,
-      "offsets": [7, 0],
+      "offsets": [8, -6],
       "animated": true,
       "data": {
         "left": { "prefix": "Left0" },
@@ -17,43 +17,43 @@
       }
     },
     "noteStrumline": {
-      "assetPath": "shared:notes/Atrocean_Note_Assets",
+      "assetPath": "shared:notes/Hivemore_Note_Assets",
       "scale": 0.7,
-      "offsets": [-5, -8],
+      "offsets": [-5, -5],
       "data": {
         "leftStatic": { "prefix": "static Left0" },
         "leftPress": { "prefix": "static Left0" },
         "leftConfirm": { "prefix": "confirm Left0" },
-        "leftConfirmHold": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
 
-        "downStatic": { "prefix": "static Down0" },
-        "downPress": { "prefix": "static Down0" },
-        "downConfirm": { "prefix": "confirm Down0" },
-        "downConfirmHold": { "prefix": "confirm Down0" },
+        "downStatic": { "prefix": "static Down0", "offsets": [0, 5] },
+        "downPress": { "prefix": "static Down0", "offsets": [0, 5] },
+        "downConfirm": { "prefix": "confirm Down0", "offsets": [0, 5] },
+        "downConfirmHold": { "prefix": "confirm Down0005", "offsets": [0, 5] },
 
-        "upStatic": { "prefix": "static Up0" },
-        "upPress": { "prefix": "static Up0" },
-        "upConfirm": { "prefix": "confirm Up0" },
-        "upConfirmHold": { "prefix": "confirm Up0" },
+        "upStatic": { "prefix": "static Up0", "offsets": [0, 5] },
+        "upPress": { "prefix": "static Up0", "offsets": [0, 5] },
+        "upConfirm": { "prefix": "confirm Up0", "offsets": [0, 5] },
+        "upConfirmHold": { "prefix": "confirm Up0005", "offsets": [0, 5] },
 
         "rightStatic": { "prefix": "static Right0" },
         "rightPress": { "prefix": "static Right0" },
         "rightConfirm": { "prefix": "confirm Right0" },
-        "rightConfirmHold": { "prefix": "confirm Right0" }
+        "rightConfirmHold": { "prefix": "confirm Right0005" }
       }
     },
     "holdNote": {
-      "assetPath": "shared:notes/hold/Atrocean",
+      "assetPath": "shared:notes/hold/Hivemore",
       "scale": 0.7,
-      "offsets": [0, 0],
+      "offsets": [1, 0],
       "data": {}
     },
     "noteSplash": {
-      "assetPath": null,
+      "assetPath": "shared:notes/splash/bee",
       "alpha": 0.8,
-      "offsets": [0, 0],
+      "offsets": [40, 10],
       "data": {
-        "enabled": false,
+        "enabled": true,
         "leftSplashes": [
           { "prefix": "note splash purple 1" }
         ],
@@ -69,7 +69,7 @@
       }
     },
     "holdNoteCover": {
-      "assetPath": "shared:notes/hold/Atrocean_cover",
+      "assetPath": "shared:notes/hold/Hivemore_cover",
       "offsets": [0, 0],
       "data": {
         "enabled": true,

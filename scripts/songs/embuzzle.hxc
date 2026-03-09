@@ -14,6 +14,7 @@ import funkin.play.PlayStatePlaylist;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.graphics.FunkinSprite;
+import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
@@ -126,6 +127,16 @@ class EmbuzzleSong extends Song
 
     if (dadFocusPoint[0] == null) dadFocusPoint = [playStage.getDad().cameraFocusPoint.x, playStage.getDad().cameraFocusPoint.y];
     if (bfFocusPoint[0] == null) bfFocusPoint = [playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y];
+
+    // Load custom notestyle.
+	  // TODO: Move this somewhere else.
+    var strum = PlayState.instance.opponentStrumline;
+    var strumStyle:String = 'hivemore';
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
   }
 
   override function onCountdownStart(event:ScriptEvent):Void
@@ -240,6 +251,16 @@ class EmbuzzleSong extends Song
         setOpponentCameraOffset(-30, 5);
         setBoyfriendCameraOffset(0, 20);
         focusInDad();
+
+        // Load custom notestyle.
+        // TODO: Move this somewhere else.
+        var strum = PlayState.instance.opponentStrumline;
+        var strumStyle:String = 'hiveless';
+
+        if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+        ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+        ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
 
       } else if (value.newchar == 'hivemine-talks') {
         FlxTween.cancelTweensOf(playState.camHUD);

@@ -49,6 +49,9 @@ class RetroGameUI extends Module {
     super('RetroGameUI');
   }
 
+  var _fontAtari:FlxBitmapFont;
+  var _font5by7:FlxBitmapFont;
+
   var isRetro:Bool = false;
   var downscroll:Bool = false;
   var isMobileArrowScheme:Bool = false;
@@ -64,10 +67,13 @@ class RetroGameUI extends Module {
   var retroHealthBarOverlay:FunkinSprite;
   var retroHealthBarFill:FunkinSprite;
   var retroHealthBarFillBG:FunkinSprite; // Fundo da barra (cor do oponente)
+  var _fillClipRect:FlxRect = new FlxRect();
+  var _fillBGClipRect:FlxRect = new FlxRect();
+  var _overlayClipRect:FlxRect = new FlxRect();
+  var healthBarResetTween:FlxTween = null;
+
   var maxHealthCutOffset:Float = 0; // Offset ajustável para o corte visual (caso precise algum dia)
   var currentHealthCut:Float = 0; // Porcentagem atual do corte (0 a 1)
-  var healthBarResetTween:FlxTween = null;
-  // var insatianMunch:FunkinSprite;
   var p1BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_GREEN; // bf
   var p2BarColor:FlxColor = Constants.COLOR_HEALTH_BAR_RED; // dad
   var isOppIconAnimated:Bool = false;
@@ -76,6 +82,8 @@ class RetroGameUI extends Module {
   var ogDadId:String;
   var ogBarOffsetY:Float = 0;
   var ogBarTexture:String; // When the bar gets updated, we save the previous one here for later.
+  final BAR_COLOR_PHASE4:FlxColor = FlxColor.fromRGB(18, 255, 255);
+  final BAR_COLOR_PHASE4_DEAD:FlxColor = FlxColor.fromRGB(118, 118, 118);
 
   // Score/HUD elements
   var judgement:FlxBitmapText;
@@ -284,6 +292,7 @@ class RetroGameUI extends Module {
       configureIcon(); // setar zindex e tudo mais nos dois icons
       if (isHivemine) loadHivemineText(hivemineTextColor);
       if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
+      playState.remove(playState.comboPopUps); // remover os popups padrão de julgamento e combo
 
       playState.refresh();
 
@@ -303,10 +312,11 @@ class RetroGameUI extends Module {
       yPos = PlayState.instance.playerStrumline.y + 50;
     }
     var zIndex = 9999;
+    if (_fontAtari == null) _fontAtari = FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt"));
 
     //judgement = new FlxText(0, yPos, 0, '', 20);
     //judgement.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'right', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    judgement = new FlxBitmapText(0, yPos, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    judgement = new FlxBitmapText(0, yPos, '', _fontAtari);
     judgement.scale.set(hudTextScale, hudTextScale);
     judgement.updateHitbox();
     judgement.letterSpacing = -1;
@@ -321,7 +331,7 @@ class RetroGameUI extends Module {
 
     //comboText = new FlxText(0, yPos, 0, '', 20);
     //comboText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    comboText = new FlxBitmapText(0, yPos, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    comboText = new FlxBitmapText(0, yPos, '', _fontAtari);
     comboText.scale.set(hudTextScale, hudTextScale);
     comboText.updateHitbox();
     comboText.letterSpacing = -1;
@@ -336,7 +346,7 @@ class RetroGameUI extends Module {
 
     //score = new FlxText(0, yPos + judgement.frameHeight, 0, '', 20);
     //score.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 30, 0xFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    score = new FlxBitmapText(0, yPos + judgement.height, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    score = new FlxBitmapText(0, yPos + judgement.height, '', _fontAtari);
     score.scale.set(hudTextScale, hudTextScale);
     score.cameras = [camera];
     score.autoSize = false;
@@ -406,7 +416,7 @@ class RetroGameUI extends Module {
 
     //timeDisplay = new FlxText(0, 0, 0, '', statsFontSize);
     //timeDisplay.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), statsFontSize, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    timeDisplay = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    timeDisplay = new FlxBitmapText(0, 0, '', _fontAtari);
     timeDisplay.scale.set(statsFontSize, statsFontSize);
     timeDisplay.updateHitbox();
     timeDisplay.letterSpacing = -1;
@@ -419,9 +429,10 @@ class RetroGameUI extends Module {
     timeDisplay.zIndex = zIndex;
     timeDisplay.antialiasing = false;
     timeDisplay.visible = false;
+    timeDisplay.text = RetroLanguage.t('stats.timeLeft', 'Time Left');
     PlayState.instance.add(timeDisplay);
 
-    timeDisplaySub = new FlxBitmapText(0, 0, '', FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt")));
+    timeDisplaySub = new FlxBitmapText(0, 0, '', _fontAtari);
     timeDisplaySub.scale.set(statsFontSize, statsFontSize);
     timeDisplaySub.updateHitbox();
     timeDisplaySub.letterSpacing = -1;
@@ -455,10 +466,10 @@ class RetroGameUI extends Module {
     var currentTimeStr:String = formatTime(currentTime);
     var totalTimeStr:String = formatTime(songLength);
 
-    timeDisplay?.text = RetroLanguage.t('stats.timeLeft', 'Time Left');
-    timeDisplaySub?.text = currentTimeStr + '|' + totalTimeStr;
-    timeDisplay?.updateHitbox();
-    timeDisplaySub?.updateHitbox();
+    var targetDisplaySubText:String = currentTimeStr + '|' + totalTimeStr;
+    if (timeDisplaySub != null && timeDisplaySub?.text != targetDisplaySubText) timeDisplaySub?.text = targetDisplaySubText;
+    //timeDisplay?.updateHitbox();
+    //timeDisplaySub?.updateHitbox();
 
     var totalHeight = timeDisplay.height + timeDisplaySub.height;
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - totalHeight - statsTextMargin[1];
@@ -533,23 +544,27 @@ class RetroGameUI extends Module {
     var accuracyStr:String = Std.string(Math.round(currentAccuracy));
 
     // Update main stats text
+    var targetText:String = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
+    targetText += RetroLanguage.tf('stats.misses', [missed]) + '\n';
+    targetText += RetroLanguage.t('stats.rating', 'RANK:') + '  '; // we add the rating after. the two spaces are important
+    if (statsDisplay.text != targetText) statsDisplay.text = targetText;
     //statsDisplay.text = ' \n';
-    statsDisplay.text = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
+    /*statsDisplay.text = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
     statsDisplay.text += RetroLanguage.tf('stats.misses', [missed]) + '\n';
-    statsDisplay.text += RetroLanguage.t('stats.rating', 'RANK:') + '  '; // we add the rating after. the two spaces are important
-    // if (isNewHighscore) statsDisplay.text += '\nNEW HIGHSCORE!';
+    statsDisplay.text += RetroLanguage.t('stats.rating', 'RANK:') + '  ';*/
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
     statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
     statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;
 
     // Update rating text with color
-    ratingTextDisplay.text = ratingData.name;
-    ratingTextDisplay.color = ratingData.color;
+    if (ratingTextDisplay.text != ratingData.name) ratingTextDisplay.text = ratingData.name;
+    if (ratingTextDisplay.color != ratingData.color) ratingTextDisplay.color = ratingData.color;
 
-    // Position rating text right after "RATING: " label
-    // Calculate the width of "RATING: " in the last line
-    var ratingLabelWidth = statsDisplay.textField.getLineMetrics(2).width;
-    ratingTextDisplay.x = statsDisplay.x + statsDisplay.textField.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
+    // Position rating text right after "RANK: " text
+    // Calculate the width of "RANK: " in the last line
+    if (statsDisplay == null || statsDisplay?.textField == null) return;
+    var ratingLabelWidth = statsDisplay?.textField?.getLineMetrics(2)?.width ?? 0;
+    ratingTextDisplay.x = statsDisplay.x + statsDisplay?.textField?.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
     ratingTextDisplay.y = statsDisplay.y + (statsFontSizeOLD * 2); // 2 lines down
   }
 
@@ -582,10 +597,11 @@ class RetroGameUI extends Module {
     var hiveTextSize = 0.335;
     var hiveTextFieldWidthOLD = retroHealthBarOverlay.width * 0.12;
     var hiveTextFieldWidth = 7 * 100;
+    if (_font5by7 == null) _font5by7 = FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt"));
 
     //hiveminePlayerMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSize);
     //hiveminePlayerMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSize, txtColor, 'center', FlxTextBorderStyle.NONE);
-    hiveminePlayerMoney = new FlxBitmapText(0, 0, '$ 0.00', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    hiveminePlayerMoney = new FlxBitmapText(0, 0, '$ 0.00', _font5by7);
     hiveminePlayerMoney.color = 0xFFee8044;
     hiveminePlayerMoney.scale.set(hiveTextSize, hiveTextSize);
     hiveminePlayerMoney.updateHitbox();
@@ -603,7 +619,7 @@ class RetroGameUI extends Module {
 
     //hivemineOppMoney = new FlxText(0, 0, 0, '$ 0.00', hiveTextSizeOLD);
     //hivemineOppMoney.setFormat(Paths.font('5by7.ttf'), hiveTextSizeOLD, txtColor, 'center', FlxTextBorderStyle.NONE);
-    hivemineOppMoney = new FlxBitmapText(0, 0, '$ 0.00', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    hivemineOppMoney = new FlxBitmapText(0, 0, '$ 0.00', _font5by7);
     hivemineOppMoney.color = 0xFFee8044;
     hivemineOppMoney.scale.set(hiveTextSize, hiveTextSize);
     hivemineOppMoney.updateHitbox();
@@ -616,6 +632,12 @@ class RetroGameUI extends Module {
     //hivemineOppMoney.textField.background = true;
     hivemineOppMoney.antialiasing = false;
 
+    hiveminePlayerMoney.zIndex = retroHealthBarOverlay.zIndex + 1;
+    hivemineOppMoney.zIndex = retroHealthBarOverlay.zIndex + 1;
+    PlayState.instance.add(hiveminePlayerMoney);
+    PlayState.instance.add(hivemineOppMoney);
+    // no need to refresh since we already do it after the function is called
+
     hivemineMoneyMulti = 1;
     positionHivemineText();
     setHivemineMoney(0);
@@ -627,30 +649,27 @@ class RetroGameUI extends Module {
     if (hiveminePlayerMoney == null || hivemineOppMoney == null) return;
     if (retroHealthBarOverlay == null) return;
 
-    var targetZIndex = retroHealthBarOverlay.zIndex + 1;
+    /*var targetZIndex = retroHealthBarOverlay.zIndex + 1;
     if (hiveminePlayerMoney.zIndex != targetZIndex) {
       hiveminePlayerMoney?.zIndex = targetZIndex;
       PlayState.instance.add(hiveminePlayerMoney);
       PlayState.instance.refresh(); // refresh to make sure the zindex is applied
     }
-    if (hiveminePlayerMoney.alpha != retroHealthBarOverlay.alpha) hiveminePlayerMoney.alpha = retroHealthBarOverlay.alpha;
     if (hivemineOppMoney.zIndex != targetZIndex) {
       hivemineOppMoney?.zIndex = targetZIndex;
       PlayState.instance.add(hivemineOppMoney);
       PlayState.instance.refresh(); // refresh to make sure the zindex is applied
-    }
+    }*/
+    if (hiveminePlayerMoney.alpha != retroHealthBarOverlay.alpha) hiveminePlayerMoney.alpha = retroHealthBarOverlay.alpha;
     if (hivemineOppMoney.alpha != retroHealthBarOverlay.alpha) hivemineOppMoney.alpha = retroHealthBarOverlay.alpha;
 
     var commaSeparated:Bool = true;
     hiveminePlayerMoney.text = '$ ' + FlxStringUtil.formatMoney(hiveminePlayerMoneyValue, true, commaSeparated);
     hivemineOppMoney.text = '$ ' + FlxStringUtil.formatMoney(hivemineOppMoneyValue, true, commaSeparated);
 
-    var negativeColor = 0xFFdb5659;
-    if (hiveminePlayerMoneyValue < 0 && hiveminePlayerMoney.color != negativeColor) {
-      hiveminePlayerMoney.color = negativeColor;
-    } else {
-      hiveminePlayerMoney.color = color ?? 0xFFee8044;
-    }
+    var positiveColor:FlxColor = color ?? 0xFFee8044;
+    var targetColor:FlxColor = (hiveminePlayerMoneyValue < 0) ? 0xFFdb5659 : positiveColor;
+    if (hiveminePlayerMoney.color != targetColor) hiveminePlayerMoney.color = targetColor;
   }
   public function positionHivemineText():Void {
     var hiveTextMarginX = retroHealthBarOverlay.width * 0.115;
@@ -702,7 +721,7 @@ class RetroGameUI extends Module {
 
     //var txt = new FlxText(strum.x, 0, 0, '-0', 23);
     //txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    var txt:FlxBitmapText = new FlxBitmapText(strum.x, 0, '-0', FlxBitmapFont.fromAngelCode(Paths.font("5by7-bmp.png"), Paths.font("5by7-bmp.fnt")));
+    var txt:FlxBitmapText = new FlxBitmapText(strum.x, 0, '-0', _font5by7);
     txt.color = amount > 0 ? 0xFFffec44 : FlxColor.RED;
     txt.scale.set(0.35, 0.35);
     txt.updateHitbox();
@@ -738,6 +757,26 @@ class RetroGameUI extends Module {
       // Initial update when the song starts, making the text visible
       updateTimeDisplay();
     }
+
+    if (statsDisplay != null && statsDisplay?.visible == true) updateStatsDisplay(); // so the values are accurate
+    if (songLengthEnabled && timeDisplay != null && timeDisplay.visible) {
+      updateTimeDisplay();
+    }
+  }
+  override public function onStepHit(event:SongTimeScriptEvent) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    if (!isRetro) return;
+
+    // We update the texts here because updating texts each frame apparently can cause lag.
+    if (statsDisplay != null && statsDisplay?.visible == true)
+      updateStatsDisplay(); // So the values are accurate even if we don't miss or hit notes
+    if (songLengthEnabled && timeDisplay != null && timeDisplay.visible)
+      updateTimeDisplay();
+
+    if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) updateHivemineText();
   }
 
   public function onNoteHit(event:HitNoteScriptEvent):Void {
@@ -758,7 +797,7 @@ class RetroGameUI extends Module {
     }
   }
 
-  public function onNoteMiss( event:NoteScriptEvent )
+  public function onNoteMiss(event:NoteScriptEvent)
 	{
     if (PlayState.instance == null) return;
     if (!isRetro) return;
@@ -795,13 +834,10 @@ class RetroGameUI extends Module {
     var judgementData = getJudgement(judgementName);
 
     // Atualizar o texto e cor do julgamento
-    judgement.text = judgementData.text;
-    judgement.color = judgementData.color;
-    if (!isComboBreak) {
-      comboText.text = getCombo();
-    } else {
-      comboText.text = '0';
-    }
+    if (judgement.text != judgementData.text) judgement.text = judgementData.text;
+    if (judgement.color != judgementData.color) judgement.color = judgementData.color;
+    var targetComboText:String = !isComboBreak ? getCombo() : '0';
+    if (comboText.text != targetComboText) comboText.text = targetComboText;
     //comboText.color = 0xFFFFFF;
 
     // FlxBitmapText precisa de updateHitbox após mudar o texto para que width/height reflitam corretamente a escala aplicada
@@ -846,13 +882,15 @@ class RetroGameUI extends Module {
       case 'miss':
         return {text: RetroLanguage.t('judgement.miss', 'MISS') + ' ', color: 0xFFe90606}; // #e90606ff
       default:
-        return {text: '?', color: 0xFFFFFF};
+        return {text: '???', color: 0xFFFFFF};
     }
   }
 
   override public function onDestroy(event) {
     super.onDestroy(event);
     hasBeenCreated = false;
+    isPlayerIconAnimated = false;
+    isPlayerOppAnimated = false;
     cancelTweens(false);
     currentAccuracy = 0.0;
     isHivemine = false;
@@ -889,10 +927,7 @@ class RetroGameUI extends Module {
 
     var playState = PlayState.instance;
 
-    if (statsDisplay.visible == true) updateStatsDisplay(); // so the values are accurate
-    if (songLengthEnabled && timeDisplay != null && timeDisplay.visible) {
-      updateTimeDisplay();
-    }
+    // removed the text updating from here to test if it was causing lag.
 
     for (holdNote in playState.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
@@ -900,8 +935,10 @@ class RetroGameUI extends Module {
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
         // Update score text.
         if (!playState.isBotPlayMode) {
-          score.text = PlayState.instance.songScore; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
+          var newScoreStr:String = Std.string(PlayState.instance.songScore);
+          if (score.text != newScoreStr) score.text = newScoreStr; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
         }
+        break;
       }
     }
 
@@ -912,7 +949,9 @@ class RetroGameUI extends Module {
     var newWidth:Float = fillOriginalWidth * healthPercent;
 
     var clipX:Float = fillOriginalWidth - newWidth; // Cortar fill das barras
-    retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
+    //retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
+    _fillClipRect.set(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
+    retroHealthBarFill.clipRect = _fillClipRect;
 
     // Isso aqui agora é na função de setCut, não tem pra que estar aqui
     /*if (currentHealthCut > 0 && (healthBarResetTween == null || !healthBarResetTween.active)) {
@@ -921,10 +960,9 @@ class RetroGameUI extends Module {
     }*/
 
     // Catastrofiend has 2 colors: default and losing.
-    if (PlayState.instance.health > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) {
-      if (PlayState.instance.currentStage.getDad().characterId == 'phase4' && retroHealthBarFillBG.color != getIconColor('phase4-dead')) retroHealthBarFillBG.color = getIconColor('phase4-dead');
-    } else if (PlayState.instance.health < Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) {
-      if (PlayState.instance.currentStage.getDad().characterId == 'phase4' && retroHealthBarFillBG.color != getIconColor('phase4')) retroHealthBarFillBG.color = getIconColor('phase4');
+    if (ogDadId == 'phase4') {
+      var targetColor = (PlayState.instance.health > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) ? BAR_COLOR_PHASE4_DEAD : BAR_COLOR_PHASE4;
+      if (retroHealthBarFillBG.color != targetColor) retroHealthBarFillBG.color = targetColor;
     }
 
     var targetBarY = playState.healthBar.y + healthBgYOffset;
@@ -945,7 +983,7 @@ class RetroGameUI extends Module {
         hivemineOppMoneyValue += (moneyIncrease + moneyIncreaseDecimals); // no multiplier here cuz it's always going up
         hiveminePlayerMoneyValue += (moneyIncrease + moneyIncreaseDecimals) * markiplier;
       }
-      updateHivemineText();
+      //updateHivemineText(); now in stepHit
     }
   }
 
@@ -978,13 +1016,14 @@ class RetroGameUI extends Module {
     }
     if (isHivemine) setHivemineMoney(0);
 
+    configureIcon(); // Setar zindex e tudo mais nos dois icons (por algum motivo estava ficando errado ao recomeçar)
+
     // i tried
     if (isPlayerIconAnimated) syncIconAnim(PlayState.instance.iconP1, false);
     if (isOppIconAnimated) syncIconAnim(PlayState.instance.iconP2, true);
   }
 
   public function getIconColor(characterId:String, ?updateIconAnim:Bool = false) {
-    isOppIconAnimated = false;
     playerIcon = PlayState.instance.iconP1;
     oppIcon = PlayState.instance.iconP2;
     switch (characterId) {
@@ -1034,9 +1073,7 @@ class RetroGameUI extends Module {
           oppIcon.animation.addByPrefix("losing", "lose", 24, false);
           syncIconAnim(oppIcon, true);
         }
-        return getRGB(18, 255, 255);
-      case 'phase4-dead': // this is for the losing color in onUpdate()
-        return getRGB(118, 118, 118);
+        return BAR_COLOR_PHASE4;
       case 'izzy':
         return getRGB(130, 255, 250);
       case 'insatian':
@@ -1184,9 +1221,16 @@ class RetroGameUI extends Module {
     var cutWidth:Float = fillOriginalWidth * cutPercent;
 
     var oppBarXOffset = -65; // Para que a barra fique cortada certinho (antes cortava mais do que deveria)
-    retroHealthBarFillBG.clipRect = FlxRect.get(cutWidth + offset + oppBarXOffset, 0, fillOriginalWidth - (cutWidth + offset), retroHealthBarFillBG.frameHeight);
+    _fillBGClipRect.set(cutWidth + offset + oppBarXOffset, 0, fillOriginalWidth - (cutWidth + offset), retroHealthBarFillBG.frameHeight);
+    retroHealthBarFillBG.clipRect = _fillBGClipRect;
 
-    retroHealthBarOverlay.clipRect = FlxRect.get(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
+    _overlayClipRect.set(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
+    retroHealthBarOverlay.clipRect = _overlayClipRect;
+
+    // Antigo
+    //retroHealthBarFillBG.clipRect = FlxRect.get(cutWidth + offset + oppBarXOffset, 0, fillOriginalWidth - (cutWidth + offset), retroHealthBarFillBG.frameHeight);
+
+    //retroHealthBarOverlay.clipRect = FlxRect.get(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
     /// retroHealthBarOverlay.clipRect = FlxRect.get(cutWidth + offset, 0, retroHealthBarOverlay.frameWidth - (cutWidth + offset), retroHealthBarOverlay.frameHeight);
   }
 
@@ -1361,10 +1405,12 @@ class RetroGameUI extends Module {
       var characterId = event.eventData.value.newchar.toLowerCase();
 
       if (target == "bf") {
+        isPlayerIconAnimated = false;
 			  retroHealthBarFill.color = getIconColor(characterId, true);
         configureIcon('p1');
       }
       if (target == "dad") {
+        isOppIconAnimated = false;
         retroHealthBarFillBG.color = getIconColor(characterId, true);
         configureIcon('p2');
         updateBarTexture(characterId);

@@ -7,6 +7,7 @@
     "note": {
       "assetPath": "shared:notes/Gluttony_Note_Assets",
       "scale": 0.7,
+      "offsets": [9, -3],
       "data": {
         "left": { "prefix": "Left0" },
         "down": { "prefix": "Down0" },
@@ -17,39 +18,39 @@
     "noteStrumline": {
       "assetPath": "shared:notes/Gluttony_Note_Assets",
       "scale": 0.7,
-      "offsets": [-13, -10],
+      "offsets": [-5, -10],
       "data": {
         "leftStatic": { "prefix": "static Left0" },
         "leftPress": { "prefix": "static Left0" },
         "leftConfirm": { "prefix": "confirm Left0" },
-        "leftConfirmHold": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
 
         "downStatic": { "prefix": "static Down0" },
         "downPress": { "prefix": "static Down0" },
         "downConfirm": { "prefix": "confirm Down0" },
-        "downConfirmHold": { "prefix": "confirm Down0" },
+        "downConfirmHold": { "prefix": "confirm Down0005" },
 
         "upStatic": { "prefix": "static Up0" },
         "upPress": { "prefix": "static Up0" },
         "upConfirm": { "prefix": "confirm Up0" },
-        "upConfirmHold": { "prefix": "confirm Up0" },
+        "upConfirmHold": { "prefix": "confirm Up0005" },
 
         "rightStatic": { "prefix": "static Right0" },
         "rightPress": { "prefix": "static Right0" },
         "rightConfirm": { "prefix": "confirm Right0" },
-        "rightConfirmHold": { "prefix": "confirm Right0" }
+        "rightConfirmHold": { "prefix": "confirm Right0005" }
       }
     },
     "holdNote": {
       "assetPath": "shared:notes/hold/Gluttony",
       "scale": 0.7,
-      "offsets": [2, 0],
+      "offsets": [-5, 0],
       "data": {}
     },
     "noteSplash": {
       "assetPath": "shared:notes/splash/eatmepls",
       "alpha": 0.8,
-      "offsets": [40, 0],
+      "offsets": [45, 5],
       "data": {
         "enabled": true,
         "leftSplashes": [
@@ -68,7 +69,7 @@
     },
     "holdNoteCover": {
       "assetPath": "shared:notes/hold/Gluttony_cover",
-      "offsets": [0, 0],
+      "offsets": [5, 0],
       "data": {
         "enabled": true,
         "left": {

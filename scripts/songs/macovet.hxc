@@ -50,7 +50,7 @@ class MacovetSong extends Song
 
     // Load custom notestyle.
 	  // TODO: Move this somewhere else.
-    var strum = (playState.currentStage.getDad().characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+    var strum = PlayState.instance.opponentStrumline;
     var strumStyle:String = 'atrocean';
 
     if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.

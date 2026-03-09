@@ -1,118 +1,72 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
-import funkin.graphics.FunkinSprite;
-import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
+
+import supereric.retrospecter.modules.RetroUtil;
 
 class poisonNote extends Module {
 	public function new() {
 		super("poison");
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	var _downscroll:Bool = false;
 
-		if (PlayState.instance == null) return;
+	override function onSongLoaded(event:Dynamic):Void {
+		super.onSongLoaded(event);
+		_downscroll = Preferences.downscroll;
+		if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice)
+			_downscroll = true;
 	}
 
 	public override function onNoteHit(event:HitNoteScriptEvent):Void {
 		super.onNoteHit(event);
-
 		if (PlayState.instance == null) return;
 		if (event.eventCanceled) return;
 		if (event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote()) {
-			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
-			splash.frames = Paths.getSparrowAtlas('notes/PoisonArrowHit');
-			splash.animation.addByPrefix('purpleScroll', 'Poison Arrow Hit Left0', 24, false);
-			splash.animation.addByPrefix('blueScroll', 'Poison Arrow Hit Down0', 24, false);
-			splash.animation.addByPrefix('greenScroll', 'Poison Arrow Hit Up0', 24, false);
-			splash.animation.addByPrefix('redScroll', 'Poison Arrow Hit Right0', 24, false);
-			splash.x -= 146; // these offsets pmo
-			splash.y -= 80;
-			splash.scale.set(event.note.scale.x, event.note.scale.y);
-			splash.cameras = [PlayState.instance.camHUD];
-			splash.zIndex = event.note.zIndex;
-			splash.antialiasing = true;
-			PlayState.instance.add(splash);
-			var anim:String;
-			switch (event.note.noteData.data % 4)
-			{
-				case 0:
-					anim = "purpleScroll";
-				case 1:
-					anim = "blueScroll";
-				case 2:
-					anim = "greenScroll";
-				case 3:
-					anim = "redScroll";
-			}
-			splash.animation.play(anim);
-
-			splash.animation.finishCallback = function(_name:String) {
-				splash.kill();
-				PlayState.instance.remove(splash, true);
-			};
+			RetroUtil.spawnSplash(event.note, {
+				atlas: 'notes/PoisonArrowHit',
+				prefixes: ['Poison Arrow Hit Left0', 'Poison Arrow Hit Down0', 'Poison Arrow Hit Up0', 'Poison Arrow Hit Right0'],
+				relativePos: true,
+				xOffset: -146,
+				yOffset: -80,
+				antialiasing: false
+			});
 		}
 	}
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote() )
-		{
-      var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		super.onNoteIncoming(event);
+		if (event.note.noteData.kind != "poison" || !event.note.noteData.getMustHitNote()) return;
 
-			event.note.x += -3;
-			event.note.yOffset += -70;
+		event.note.x += -3;
+		event.note.yOffset += -70;
 
-      if (downscroll) {
-        event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Downscroll Left0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Downscroll Down0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Downscroll Up0' );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Downscroll Right0' );
-      } else {
-        event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_up');
-        event.note.animation.addByPrefix( 'purpleScroll', 'PoisonArrows Upscroll Left0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'PoisonArrows Upscroll Down0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'PoisonArrows Upscroll Up0' );
-        event.note.animation.addByPrefix( 'redScroll', 'PoisonArrows Upscroll Right0' );
-      }
-
-			var poisonNote:String;
-			switch ( event.note.noteData.data % 4 )
-			{
-				case 0:
-					poisonNote = "purpleScroll";
-				case 1:
-					poisonNote = "blueScroll";
-				case 2:
-					poisonNote = "greenScroll";
-				case 3:
-					poisonNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play( poisonNote );
+		if (_downscroll) {
+			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
+			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Downscroll Left0');
+			event.note.animation.addByPrefix('blueScroll', 'PoisonArrows Downscroll Down0');
+			event.note.animation.addByPrefix('greenScroll', 'PoisonArrows Downscroll Up0');
+			event.note.animation.addByPrefix('redScroll', 'PoisonArrows Downscroll Right0');
+		} else {
+			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_up');
+			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Upscroll Left0');
+			event.note.animation.addByPrefix('blueScroll', 'PoisonArrows Upscroll Down0');
+			event.note.animation.addByPrefix('greenScroll', 'PoisonArrows Upscroll Up0');
+			event.note.animation.addByPrefix('redScroll', 'PoisonArrows Upscroll Right0');
 		}
+
+		event.note.active = true;
+		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 	}
 
-	public override function onNoteMiss(event:NoteScriptEvent)
-	{
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
 		super.onNoteMiss(event);
-
-		if (event.note.noteData.kind == "poison")
-		{
+		if (event.note.noteData.kind == "poison") {
 			event.cancel();
 			event.stopPropagation();
 		}

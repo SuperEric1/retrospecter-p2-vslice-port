@@ -5,6 +5,7 @@ import funkin.Paths;
 import funkin.Conductor;
 import funkin.save.Save;
 import funkin.play.PlayState;
+import funkin.graphics.FunkinSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
@@ -24,9 +25,203 @@ class RetroUtil extends Module
     super('RetroUtil');
   }
 
+  // Array of active tweens made in this script to manage later.
   private static var tweens:Array<FlxTween> = [];
+
+  // Currently paused tweens from the tweens array
   private static var pausedTweens:Array<FlxTween> = [];
+
+  // The chached hud zoom tween, once used at addCameraZoom() but not used anymore
   private static var hudZoomTween:FlxTween = null;
+
+  // -- SPLASH POOL --
+  public static final SPLASH_ANIM_NAMES:Array<String> = ['purpleScroll', 'blueScroll', 'greenScroll', 'redScroll'];
+
+  // The maximum amount of active splashes
+  private static final SPLASH_POOL_MAX:Int = 5;
+
+  // The pooled sprites themselves.
+  private static var _splashPool:Array<FunkinSprite> = [];
+
+  // Which "atlas key" is currently loaded on each slot.
+  private static var _splashAtlasKey:Array<String> = [];
+
+  // Active tween on each slot, so we can cancel it when stealing.
+  private static var _splashTween:Array<FlxTween> = [];
+
+  // Monotonically increasing birth counter per slot.
+  // The slot with the lowest value is the "oldest" and will be stolen first.
+  private static var _splashBirth:Array<Int> = [];
+  private static var _splashBirthCounter:Int = 0;
+
+  /**
+   * Wipes the pool. Must be called on song retry and destroy so that stale references to the old PlayState's members are cleared.
+   */
+  public static function resetSplashPool():Void {
+    for (i in 0..._splashPool.length) {
+      if (_splashTween[i] != null) {
+        _splashTween[i].cancel();
+        _splashTween[i] = null;
+      }
+      if (_splashPool[i] != null) {
+        _splashPool[i].animation.finishCallback = null;
+        if (_splashPool[i].alive) _splashPool[i].kill();
+      }
+    }
+    _splashPool = [];
+    _splashAtlasKey = [];
+    _splashTween = [];
+    _splashBirth = [];
+    _splashBirthCounter = 0;
+  }
+
+  /**
+   * Acquires a recycled (or freshly created) splash sprite configured
+   * for the requested atlas/animations.
+   *
+   * If every slot is busy and the pool is at capacity, the oldest active
+   * splash is stolen: its tween/callback are cancelled and it is killed
+   * before being handed back.
+   *
+   * @param atlasKey     Unique string identifying this atlas.
+   * @param atlasPath    Path to load.
+   * @param animNames    Animation names to register (parallel with prefixes).
+   * @param animPrefixes Animation prefixes to register (parallel with names).
+   * @param animFps      Frame rate for animations.
+   * @param alpha        Opacity for the splash.
+   *
+   * @return The acquired FunkinSprite, already revived and added to PlayState, or null if PlayState is unavailable.
+   */
+  public static function acquireSplash(atlasKey:String, atlasPath:String, animNames:Array<String>, animPrefixes:Array<String>, animFps:Int, alpha:Float):FunkinSprite {
+    if (PlayState.instance == null) return null;
+
+    var slot:Int = -1;
+
+    // Look for a free (dead) slot.
+    for (i in 0..._splashPool.length) {
+      if (!_splashPool[i].alive) { slot = i; break; }
+    }
+
+    if (slot == -1) { // No free slot, either grow the pool or steal the oldest.
+      if (_splashPool.length < SPLASH_POOL_MAX) {
+        // Grow: create a new sprite and add it once.
+        var s:FunkinSprite = new FunkinSprite(0, 0);
+        s.cameras = [PlayState.instance.camHUD];
+        s.antialiasing = true;
+        PlayState.instance.add(s);
+        s.kill(); // starts dead
+        slot = _splashPool.length;
+        _splashPool.push(s);
+        _splashAtlasKey.push('');
+        _splashTween.push(null);
+        _splashBirth.push(0);
+      } else {
+        // Steal the oldest active slot.
+        var oldestTime:Int = _splashBirth[0];
+        slot = 0;
+        for (i in 1...SPLASH_POOL_MAX) {
+          if (_splashBirth[i] < oldestTime) { oldestTime = _splashBirth[i]; slot = i; }
+        }
+        // Disarm the stolen sprite before reusing it.
+        if (_splashTween[slot] != null) {
+          _splashTween[slot].cancel();
+          _splashTween[slot] = null;
+        }
+        _splashPool[slot].animation.finishCallback = null;
+        _splashPool[slot].kill();
+      }
+    }
+
+    var splash:FunkinSprite = _splashPool[slot];
+
+    if (_splashAtlasKey[slot] != atlasKey) {
+      splash.frames = Paths.getSparrowAtlas(atlasPath);
+      for (i in 0...animNames.length) {
+        splash.animation.addByPrefix(animNames[i], animPrefixes[i], animFps, false);
+      }
+      _splashAtlasKey[slot] = atlasKey;
+    }
+
+    splash.revive();
+    splash.alpha = alpha;
+    splash.animation.finishCallback = null; // caller sets this if needed
+    _splashTween[slot] = null;
+    _splashBirth[slot] = _splashBirthCounter++;
+
+    return splash;
+  }
+
+  /**
+   * Spawns a common note hit splash that dies when its animation finishes.
+   *
+   * Fields:
+   *   atlas: path for the texture.
+   *   prefixes: animation prefixes [left, down, up, right].
+   *   relativePos: if the splash's position is relative to the note, and not the strumline.
+   *   xOffset
+   *   yOffset
+   *   sizeMulti: the size multiplier for this splash.
+   *   fps
+   *   alpha
+   *   antialiasing
+   */
+  public static function spawnSplash(note:Dynamic, cfg:Dynamic):Void {
+    var prefixes:Array<String> = cfg.prefixes;
+    var atlasKey:String = cfg.atlas;
+    var relative:Bool = cfg.relativePos != null ? cfg.relativePos : false;
+    var fps:Int = cfg.fps != null ? Std.int(cfg.fps) : 24;
+    var alpha:Float = cfg.alpha != null ? cfg.alpha : 1;
+    var sizeMulti:Float = cfg.sizeMulti != null ? cfg.sizeMulti : 1;
+    var antialiasing:Bool = cfg.antialiasing != null ? cfg.antialiasing : true;
+
+    var noteDir = note.noteData.getDirection();
+    var strum = note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
+
+    var splash:FunkinSprite = acquireSplash(atlasKey, cfg.atlas, SPLASH_ANIM_NAMES, prefixes, fps, alpha);
+    if (splash == null) return;
+
+    splash.scale.set(note.scale.x * sizeMulti, note.scale.y * sizeMulti);
+    if (!relative) splash.updateHitbox();
+    splash.x = (relative ? note.x : strum.strumlineNotes.members[noteDir].x) + cfg.xOffset;
+    splash.y = (relative ? note.y : strum.strumlineNotes.members[noteDir].y) + cfg.yOffset;
+    splash.antialiasing = antialiasing;
+    splash.zIndex = strum.zIndex + 1;
+
+    splash.animation.finishCallback = function(_) { splash.kill(); };
+    splash.animation.play(SPLASH_ANIM_NAMES[note.noteData.data % 4]);
+  }
+
+  /**
+   * Spawns a spectre note hit splash.
+   */
+  public static function spawnSpectreSplash(note:Dynamic, downscroll:Bool):Void {
+    var atlasKey:String = downscroll ? 'Notes_Spectre_down' : 'Notes_Spectre_up';
+    var animPrefixes:Array<String> = downscroll
+      ? ['Left(Down)0', 'Down(Down)0', 'Up(Down)0', 'Right(Down)0']
+      : ['Left(Up)0',   'Down(Up)0',   'Up(Up)0',   'Right(Up)0'];
+
+    var splash:FunkinSprite = acquireSplash(atlasKey, 'notes/Notes_Spectre', SPLASH_ANIM_NAMES, animPrefixes, 24);
+    if (splash == null) return;
+
+    splash.x = note.x - 25;
+    splash.y = note.y - 50;
+    splash.scale.set(note.scale.x, note.scale.y);
+    splash.zIndex = note.zIndex;
+
+    // Find the slot so we can store the tween reference for cancellation.
+    var slot:Int = _splashPool.indexOf(splash);
+    var tween:FlxTween = FlxTween.tween(splash, {alpha: 0}, 0.2, {
+      startDelay: 0.3,
+      ease: FlxEase.quadOut,
+      onComplete: function(_) {
+        splash.kill();
+        if (slot >= 0) _splashTween[slot] = null;
+      }
+    });
+    if (slot >= 0) _splashTween[slot] = tween;
+
+    splash.animation.play(SPLASH_ANIM_NAMES[note.noteData.data % 4]);
+  }
 
   // This one is meant to be used in song scripts.
   public static function addCameraZoom(gameZoom:Float, hudZoom:Float):Void
@@ -50,17 +245,19 @@ class RetroUtil extends Module
     //if (hudZoom != 0 || hudZoom != null) tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
   }
 
-  // ---------------------------------------------------
+  /* --------------------------------------------------- */
 
   override function onSongRetry(event:ScriptEvent):Void
   {
     super.onSongRetry(event);
+    resetSplashPool();
     resetTweens();
   }
 
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
+    resetSplashPool();
     resetTweens();
   }
 

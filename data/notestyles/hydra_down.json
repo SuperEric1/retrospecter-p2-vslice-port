@@ -57,7 +57,7 @@
     "holdNote": {
       "assetPath": "shared:notes/hold/Hydra",
       "scale": 0.7,
-      "offsets": [4, 0],
+      "offsets": [5, 0],
       "data": {}
     },
     "noteSplash": {

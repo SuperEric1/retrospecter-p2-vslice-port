@@ -1,14 +1,13 @@
 {
   "version": "1.1.0",
-  "name": "Atrocean",
+  "name": "Hiveless",
   "author": "Ported by SuperEric",
   "fallback": "retrospecter",
   "assets": {
     "note": {
-      "assetPath": "shared:notes/Atrocean_Note_Assets",
+      "assetPath": "shared:notes/Hiveless_Note_Assets",
       "scale": 0.7,
-      "offsets": [7, 0],
-      "animated": true,
+      "offsets": [19, -18],
       "data": {
         "left": { "prefix": "Left0" },
         "down": { "prefix": "Down0" },
@@ -17,41 +16,41 @@
       }
     },
     "noteStrumline": {
-      "assetPath": "shared:notes/Atrocean_Note_Assets",
+      "assetPath": "shared:notes/Hiveless_Note_Assets",
       "scale": 0.7,
-      "offsets": [-5, -8],
+      "offsets": [-5, -15],
       "data": {
         "leftStatic": { "prefix": "static Left0" },
         "leftPress": { "prefix": "static Left0" },
         "leftConfirm": { "prefix": "confirm Left0" },
-        "leftConfirmHold": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
 
-        "downStatic": { "prefix": "static Down0" },
-        "downPress": { "prefix": "static Down0" },
-        "downConfirm": { "prefix": "confirm Down0" },
-        "downConfirmHold": { "prefix": "confirm Down0" },
+        "downStatic": { "prefix": "static Down0", "offsets": [-7, 5] },
+        "downPress": { "prefix": "static Down0", "offsets": [-7, 5] },
+        "downConfirm": { "prefix": "confirm Down0", "offsets": [-7, 5] },
+        "downConfirmHold": { "prefix": "confirm Down0005", "offsets": [-7, 5] },
 
-        "upStatic": { "prefix": "static Up0" },
-        "upPress": { "prefix": "static Up0" },
-        "upConfirm": { "prefix": "confirm Up0" },
-        "upConfirmHold": { "prefix": "confirm Up0" },
+        "upStatic": { "prefix": "static Up0", "offsets": [-4, 5] },
+        "upPress": { "prefix": "static Up0", "offsets": [-4, 5] },
+        "upConfirm": { "prefix": "confirm Up0", "offsets": [-4, 5] },
+        "upConfirmHold": { "prefix": "confirm Up0005", "offsets": [-4, 5] },
 
-        "rightStatic": { "prefix": "static Right0" },
-        "rightPress": { "prefix": "static Right0" },
-        "rightConfirm": { "prefix": "confirm Right0" },
-        "rightConfirmHold": { "prefix": "confirm Right0" }
+        "rightStatic": { "prefix": "static Right0", "offsets": [5, 0] },
+        "rightPress": { "prefix": "static Right0", "offsets": [5, 0] },
+        "rightConfirm": { "prefix": "confirm Right0", "offsets": [5, 0] },
+        "rightConfirmHold": { "prefix": "confirm Right0005", "offsets": [5, 0] }
       }
     },
     "holdNote": {
-      "assetPath": "shared:notes/hold/Atrocean",
+      "assetPath": "shared:notes/hold/Hiveless",
       "scale": 0.7,
-      "offsets": [0, 0],
+      "offsets": [-8, 0],
       "data": {}
     },
     "noteSplash": {
-      "assetPath": null,
+      "assetPath": "shared:notes/splash/Hivemore",
       "alpha": 0.8,
-      "offsets": [0, 0],
+      "offsets": [36, 0],
       "data": {
         "enabled": false,
         "leftSplashes": [
@@ -69,8 +68,8 @@
       }
     },
     "holdNoteCover": {
-      "assetPath": "shared:notes/hold/Atrocean_cover",
-      "offsets": [0, 0],
+      "assetPath": "shared:notes/hold/Hiveless_cover",
+      "offsets": [9, 1],
       "data": {
         "enabled": true,
         "left": {

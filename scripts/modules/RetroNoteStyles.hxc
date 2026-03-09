@@ -3,6 +3,7 @@ package supereric.retrospecter.modules;
 import flixel.FlxG;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.FunkinMemory;
+import funkin.Conductor;
 import funkin.mobile.input.ControlsHandler;
 import funkin.modding.module.Module;
 import funkin.play.notes.notekind.NoteKindManager;
@@ -15,6 +16,7 @@ import funkin.Preferences;
 import funkin.save.Save;
 import funkin.util.Constants;
 import funkin.util.ReflectUtil;
+import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 
 class RetroNoteStyles extends Module {
@@ -34,6 +36,7 @@ class RetroNoteStyles extends Module {
 	var currentPlayerStyle:String = null;
 	var isOppUsingCustomNote:Bool = false;
 	var isPlayerUsingCustomNote:Bool = false;
+	var didNotesFade:Bool = false;
 
 	// GAMBIARRA: Offset fixes for broken NoteStyle offset support, while they aren't fixed.
 	/**
@@ -55,8 +58,8 @@ class RetroNoteStyles extends Module {
 	 * ignores them, and StrumlineNote.playAnimation() always calls centerOffsets() which resets
 	 * .offset. We re-apply them every frame in onUpdate() after all strums have updated.
 	 */
-	var oppStrumAnimOffsets:StringMap<Array<Float>> = new StringMap();
-	var playerStrumAnimOffsets:StringMap<Array<Float>> = new StringMap();
+	var oppStrumAnimOffsets:IntMap<StringMap<Array<Float>>> = new IntMap();
+	var playerStrumAnimOffsets:IntMap<StringMap<Array<Float>>> = new IntMap();
 
 	/**
 	 * Tracks the offset we last applied to each strum, per side.
@@ -96,6 +99,13 @@ class RetroNoteStyles extends Module {
 		applyCustomNoteStyles();
 	}
 
+	public override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+
+		didNotesFade = true; // So the game's note fade effect won't appear again when we rebuild the strumlines
+	}
+
 	public function applyCustomNoteStyles():Void {
 		var dadCharacterId:String = PlayState.instance.currentStage.getDad().characterId;
 		var boyfriendCharacterId:String = PlayState.instance.currentStage.getBoyfriend().characterId;
@@ -105,14 +115,14 @@ class RetroNoteStyles extends Module {
 			if (dadNoteStyle != null) {
 				// Reset previous offset data
 				oppNoteOffset = [0.0, 0.0];
-				oppStrumAnimOffsets = new StringMap();
+				oppStrumAnimOffsets = new IntMap();
 				oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
 				hasOppStrumAnimOffsets = false;
 
-				isOppUsingCustomNote = true;
 				currentOppStyle = _opponentStyle;
 				FunkinMemory.cacheNoteStyle(dadNoteStyle);
 				refreshStrumlineStyle(PlayState.instance.opponentStrumline, _opponentStyle, false);
+				isOppUsingCustomNote = true;
 
 				// Extract and cache the offset data for this style.
 				oppNoteOffset = extractNoteOffset(dadNoteStyle);
@@ -126,14 +136,14 @@ class RetroNoteStyles extends Module {
 			if (bfNoteStyle != null) {
 				// Reset previus offset data
 				playerNoteOffset = [0.0, 0.0];
-				playerStrumAnimOffsets = new StringMap();
+				playerStrumAnimOffsets = new IntMap();
 				playerExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
 				hasPlayerStrumAnimOffsets = false;
 
-				isPlayerUsingCustomNote = true;
 				currentPlayerStyle = _playerStyle;
 				FunkinMemory.cacheNoteStyle(bfNoteStyle);
 				refreshStrumlineStyle(PlayState.instance.playerStrumline, _playerStyle, true);
+				isPlayerUsingCustomNote = true;
 
 				// Extract and cache the offset data for this style.
 				playerNoteOffset = extractNoteOffset(bfNoteStyle);
@@ -159,12 +169,12 @@ class RetroNoteStyles extends Module {
 	 *
 	 * Only entries that actually have a non-zero or explicitly defined offsets array are stored.
 	 */
-	function extractStrumAnimOffsets(style:NoteStyle):StringMap<Array<Float>> {
-		var result:StringMap<Array<Float>> = new StringMap();
+	function extractStrumAnimOffsets(style:NoteStyle):IntMap<StringMap<Array<Float>>> {
+		var result:IntMap<StringMap<Array<Float>>> = new IntMap();
 		var strumData = style._data?.assets?.noteStrumline?.data;
 		if (strumData == null) return result;
 
-		// [JSON field name, direction index as string, animation name]
+		// [JSON field name, direction index as Int, animation name]
 		// Direction indices: 0=left, 1=down, 2=up, 3=right
 		// Animation names match what StrumlineNote.getCurrentAnimation() returns.
 		var mappings:Array<Array<String>> = [
@@ -188,7 +198,7 @@ class RetroNoteStyles extends Module {
 
 		for (entry in mappings) {
 			var fieldName:String = entry[0];
-			var dirStr:String = entry[1];
+			var dirIndex:Int = Std.parseInt(entry[1]);
 			var animName:String = entry[2];
 
 			var animData = ReflectUtil.field(strumData, fieldName);
@@ -197,7 +207,8 @@ class RetroNoteStyles extends Module {
 			var offsets:Array<Float> = animData.offsets;
 			if (offsets == null || offsets.length < 2) continue;
 
-			result.set(dirStr + "_" + animName, offsets);
+			if (!result.exists(dirIndex)) result.set(dirIndex, new StringMap());
+			result.get(dirIndex).set(animName, offsets);
 		}
 
 		return result;
@@ -219,25 +230,28 @@ class RetroNoteStyles extends Module {
 	 *
 	 * I hate this please fix it Funkin' Crew (https://github.com/FunkinCrew/Funkin/issues/6836)
 	 */
-	function applyStrumAnimOffsets(strumline:Strumline, animOffsets:StringMap<Array<Float>>, expectedOffsets:Array<Array<Float>>):Void {
+	function applyStrumAnimOffsets(strumline:Strumline, animOffsets:IntMap<StringMap<Array<Float>>>, expectedOffsets:Array<Array<Float>>):Void {
 		var scaleX:Float = strumline.strumlineScale.x;
 		var scaleY:Float = strumline.strumlineScale.y;
 
-		for (strum in strumline.strumlineNotes.members) {
+		for (i in 0...4) {
+			var strum = strumline.strumlineNotes.members[i];
 			if (strum == null || !strum.alive) continue;
 
-			var dirIndex:Int = Strumline.DIRECTIONS.indexOf(strum.direction);
-			var exp:Array<Float> = expectedOffsets[dirIndex];
+			var exp:Array<Float> = expectedOffsets[i];
 
 			// If offset matches what we last set, centerOffsets() hasn't fired, nothing to do.
 			if (strum.offset.x == exp[0] && strum.offset.y == exp[1]) continue;
 
 			// centerOffsets() was called this frame. Apply our scaled delta for the current animation.
-			var key:String = dirIndex + "_" + strum.getCurrentAnimation();
-			if (animOffsets.exists(key)) {
-				var off:Array<Float> = animOffsets.get(key);
-				strum.offset.x += off[0] * scaleX;
-				strum.offset.y += off[1] * scaleY;
+			// IntMap lookup by direction index (no String allocation), then StringMap by anim name.
+			var dirMap:StringMap<Array<Float>> = animOffsets.get(i);
+			if (dirMap != null) {
+				var off:Array<Float> = dirMap.get(strum.getCurrentAnimation());
+				if (off != null) {
+					strum.offset.x += off[0] * scaleX;
+					strum.offset.y += off[1] * scaleY;
+				}
 			}
 
 			// Record the new expected values so we don't fire again next frame.
@@ -322,7 +336,7 @@ class RetroNoteStyles extends Module {
 			strumline.strumlineNotes.add(newStrum);
 		}
 		// The little animation of the arrows when starting the song on freeplay.
-		strumline.fadeInArrows();
+		if (!didNotesFade) strumline.fadeInArrows();
 	}
 
 	function updateExistingNotes(strumline:Strumline, styleData:NoteStyle):Void {
@@ -371,10 +385,11 @@ class RetroNoteStyles extends Module {
 		currentPlayerStyle = null;
 		isOppUsingCustomNote = false;
 		isPlayerUsingCustomNote = false;
+		didNotesFade = false;
 		oppNoteOffset = [0.0, 0.0];
 		playerNoteOffset = [0.0, 0.0];
-		oppStrumAnimOffsets = new StringMap();
-		playerStrumAnimOffsets = new StringMap();
+		oppStrumAnimOffsets = new IntMap();
+		playerStrumAnimOffsets = new IntMap();
 		hasOppStrumAnimOffsets = false;
 		hasPlayerStrumAnimOffsets = false;
 		oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];

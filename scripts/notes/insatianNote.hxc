@@ -11,22 +11,35 @@ import funkin.Paths;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class insatianNote extends Module {
 	public function new() {
 		super("insatianNote");
 	}
 
-	function onCreate(event:Dynamic)
-	{
+	function onCreate(event:Dynamic) {
 		super.onCreate(event);
-
 		if (PlayState.instance == null) return;
 	}
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "insatianNote" )
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		super.onNoteHit(event);
+		if (PlayState.instance == null) return;
+		if (event.note.noteData.kind == "insatianNote" && event.note.noteData.getMustHitNote()) {
+			RetroUtil.spawnSplash(event.note, {
+				atlas: 'notes/splash/eatmepls',
+				prefixes: ['note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'],
+				sizeMulti: 1.4,
+				xOffset: -25,
+				yOffset: -27,
+			});
+		}
+	}
+
+	public override function onNoteIncoming(event:NoteScriptEvent) {
+		super.onNoteIncoming(event);
+		if (event.note.noteData.kind == "insatianNote")
 		{
       var downscroll = Preferences.downscroll;
 			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
@@ -40,30 +53,15 @@ class insatianNote extends Module {
 			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
 			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
 
-			var insatianNote:String;
-			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						insatianNote = "purpleScroll";
-					case 1:
-						insatianNote = "blueScroll";
-					case 2:
-						insatianNote = "greenScroll";
-					case 3:
-						insatianNote = "redScroll";
-				}
-
 			// the anim is only 1 frame so no need to put event.note.active = true
-			event.note.animation.play( insatianNote );
+			event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 		}
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
+	public override function onNoteMiss(event:NoteScriptEvent)
 	{
-		super.onNoteMiss( event );
-
-		if ( event.note.noteData.kind == "insatianNote" )
-		{
+		super.onNoteMiss(event);
+		if (event.note.noteData.kind == "insatianNote") {
 			event.cancel();
 			event.stopPropagation();
 		}

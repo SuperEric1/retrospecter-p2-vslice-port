@@ -11,6 +11,7 @@ import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.graphics.FunkinSprite;
 import funkin.mobile.input.ControlsHandler;
+import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
@@ -117,6 +118,16 @@ class DeadfineSong extends Song
     super.onSongLoaded(event);
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+
+    // Load custom notestyle.
+	  // TODO: Move this somewhere else.
+    var strum = PlayState.instance.opponentStrumline;
+    var strumStyle:String = 'hiveless';
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
   }
 
   override function onCountdownStart(event:ScriptEvent):Void

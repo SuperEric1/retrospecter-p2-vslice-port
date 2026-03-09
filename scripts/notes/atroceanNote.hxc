@@ -15,10 +15,8 @@ class atroceanNote extends Module {
 		super("atroceanNote");
 	}
 
-	function onCreate(event:Dynamic)
-	{
+	function onCreate(event:Dynamic) {
 		super.onCreate(event);
-
 		if (PlayState.instance == null) return;
 	}
 
@@ -33,8 +31,7 @@ class atroceanNote extends Module {
 	public override function onNoteIncoming(event:NoteScriptEvent)
 	{
 		super.onNoteIncoming(event);
-		if (event.note.noteData.kind == "atroceanNote" && event.note.noteData.getMustHitNote())
-			{
+		if (event.note.noteData.kind == "atroceanNote" && event.note.noteData.getMustHitNote()) {
 			event.note.x += -45;
 			event.note.yOffset += -47;
 
@@ -65,9 +62,7 @@ class atroceanNote extends Module {
 	public override function onNoteMiss(event:NoteScriptEvent)
 	{
 		super.onNoteMiss(event);
-
-		if (event.note.noteData.kind == "atroceanNote")
-		{
+		if (event.note.noteData.kind == "atroceanNote") {
 			event.cancel();
 			event.stopPropagation();
 		}

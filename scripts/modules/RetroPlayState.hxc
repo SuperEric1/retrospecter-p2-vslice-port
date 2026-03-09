@@ -48,6 +48,8 @@ class RetroPlayState extends Module {
     super('RetroPlayState', 120);
   }
 
+  final alwaysVisibleKinds:Array<String> = ['spectre', 'Fake Note'];
+
   var isRetro:Bool = false;
   var isDoingVocalThing:Bool = false;
   var isDownscroll:Bool = false;
@@ -63,6 +65,7 @@ class RetroPlayState extends Module {
 
   var healthBarOgPos:Array<Float, Float> = [];
   var healthBarBgOgPos:Array<Float, Float> = [];
+  var lastIconP1Width:Float = -1;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
@@ -80,10 +83,12 @@ class RetroPlayState extends Module {
   var poisonSpriteYOffset:Float = 0;
   var poisonTextYOffset:Float = 0;
 
+  // Izzy Note
   var izzyMechanicTimer:FlxTimer;
   var izzyMechanicEndTween:FlxTween;
   var isDrugged:Bool = false;
   var wiggleShader:FlxRuntimeShader = null;
+  var wiggleFilter:ShaderFilter = null;
 
   var solidCameraSprite:FunkinSprite;
 
@@ -185,16 +190,15 @@ class RetroPlayState extends Module {
     var k = event.note.noteData.kind;
     var note = event.note;
 
-    var alwaysVisible:Array<String> = ['spectre', 'Fake Note'];
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
     if (targetAlpha == 1) targetAlpha = strum.alpha;
     if (forceNotesAlpha != null) targetAlpha = forceNotesAlpha; // for the spectre note mechanic
-    if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisible.contains(k)) {
+    if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisibleKinds.contains(k)) {
       event.note.alpha = targetAlpha;
       if (event.note.isHoldNote) event.note.holdNoteSprite.alpha = targetAlpha;
     }
-    if (alwaysVisible.contains(k)) event.note.alpha = 1; // sempre visíveis.
+    if (alwaysVisibleKinds.contains(k)) event.note.alpha = 1; // sempre visíveis.
 
     // Notas que não contam pro score
     if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
@@ -334,7 +338,7 @@ class RetroPlayState extends Module {
         hole.animation.addByPrefix('idle', 'void', 24, true);
         hole.animation.play('idle');
         hole.setGraphicSize(size, size);
-        hole.zIndex = PlayState.instance.playerStrumline.zIndex + 1;
+        hole.zIndex = PlayState.instance.playerStrumline.zIndex + 3;
         hole.updateHitbox();
         hole.x = FlxG.random.int(FullScreenScaleMode.gameNotchSize.x - 10, FlxG.width - hole.width + 10);
         hole.y = FlxG.random.int(FullScreenScaleMode.gameNotchSize.y - 10, FlxG.height - hole.height + 20);
@@ -437,6 +441,18 @@ class RetroPlayState extends Module {
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
+    if (k == 'atroceanNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      FlxG.sound.play(Paths.sound('noteSounds/Atrocean'));
+      event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
     if (k == 'izzyNote') {
       if (PlayState.instance.isBotPlayMode) {
         event.cancel();
@@ -448,12 +464,17 @@ class RetroPlayState extends Module {
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
       if (solidCameraSprite != null) {
-        solidCameraSprite.makeSolidColor(3000, 4000, 0xFF66FFF7);
+        //solidCameraSprite.makeSolidColor(3000, 4000, 0xFF66FFF7);
       }
 
       if (solidCameraSprite != null) {
         if (!solidCameraSprite.alive) solidCameraSprite.revive();
         FlxTween.cancelTweensOf(solidCameraSprite);
+        var camZoom = PlayState.instance.currentCameraZoom;
+        var w = Math.ceil((FlxG.width + 50) / camZoom);
+        var h = Math.ceil((FlxG.height + 50) / camZoom);
+        solidCameraSprite.makeSolidColor(w, h, 0xFF66FFF7);
+        solidCameraSprite.screenCenter();
         solidCameraSprite.visible = true;
       }
 
@@ -714,10 +735,14 @@ class RetroPlayState extends Module {
     }
   }
 
-  /*public override function onBeatHit(event:SongTimeScriptEvent):Void
+  override public function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
-  }*/
+    if (!isRetro) return;
+
+    // Limpeza de tweens já completados do array de tweens
+    tweens = tweens.filter(function(t) return t != null && t.active);
+  }
 
   function removeInsatianHoles(?instant = false):Void {
     for (hole in holeSprites) {
@@ -757,7 +782,7 @@ class RetroPlayState extends Module {
     if (izzyMechanicTimer != null) { //se acertar uma nota enquanto ja ta com o efeito, resetar strums e o timer pra acontecer novamente
       izzyMechanicTimer.cancel();
       izzyMechanicTimer = null;
-      unscrambleStrumline(true);
+      unscrambleStrumline(true, false);
     }
     if (izzyMechanicEndTween != null) {
       izzyMechanicEndTween.active = false;
@@ -767,8 +792,14 @@ class RetroPlayState extends Module {
 
     if (!wiggleShader) {
       wiggleShader = new WiggleEffectRuntime(1, 0.5, 0.03, WiggleEffectType.FLAG);
-      FlxG.camera.filters = [new ShaderFilter(wiggleShader)];
-      PlayState.instance.camHUD.filters = [new ShaderFilter(wiggleShader)];
+      wiggleFilter = new ShaderFilter(wiggleShader);
+
+      // Adiciona ao array existente em vez de substituir
+      if (PlayState.instance.camGame.filters == null) PlayState.instance.camGame.filters = [];
+      if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [];
+
+      PlayState.instance.camGame.filters.push(wiggleFilter);
+      PlayState.instance.camHUD.filters.push(wiggleFilter);
     }
 
     var objects = [
@@ -793,22 +824,25 @@ class RetroPlayState extends Module {
 
     isDrugged = true;
 
-    izzyMechanicTimer = new FlxTimer().start(6, function(tmr:FlxTimer) { //ao completar o timer
+    izzyMechanicTimer = new FlxTimer().start(6, function(tmr:FlxTimer) { // Ao completar o timer
       if (PlayState.instance == null) {
         izzyMechanicTimer = null;
         return;
       }
       if (PlayState.instance.isGameOverState) return;
-      unscrambleStrumline();
+      unscrambleStrumline(false, true);
     });
   }
   function unscrambleStrumline(instant:Bool = false, clearCamera:Bool = true) {
     if (PlayState.instance == null) return;
     izzyMechanicTimer = null;
     isDrugged = false;
-    wiggleShader = null;
-    FlxG.camera.filters = [];
-    PlayState.instance.camHUD.filters = [];
+    if (wiggleFilter != null) {
+      PlayState.instance.camGame.filters.remove(wiggleFilter);
+      PlayState.instance.camHUD.filters.remove(wiggleFilter);
+      wiggleShader = null;
+      wiggleFilter = null;
+    }
 
     // Se for instantâneo, aplicamos o valor direto e limpamos os tweens ativos das notas
     if (instant) {
@@ -1196,9 +1230,15 @@ class RetroPlayState extends Module {
     if (poisonSprite != null && poisonSprite?.alive && poisonSprite?.active && PlayState.instance.iconP1 != null) {
       var targetFrame = (poisonSpriteFrame * 100) + poisonAmount;
       if (poisonSprite?.animation != null && poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
+
       poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
       poisonSprite.y = (PlayState.instance.healthBar.y - 150) + poisonSpriteYOffset; // (PlayState.instance.healthBar.y - 95) + poisonSpriteYOffset
-      poisonSprite?.setGraphicSize(PlayState?.instance?.iconP1?.width / 1.5);
+
+      var iconWidth = PlayState.instance?.iconP1?.width;
+      if (iconWidth != lastIconP1Width) {
+        lastIconP1Width = iconWidth;
+        poisonSprite?.setGraphicSize(iconWidth / 1.5);
+      }
       if (poisonSprite.alpha != PlayState.instance.healthBar.alpha) poisonSprite.alpha = PlayState.instance.healthBar.alpha;
       if (!poisonSprite.visible) poisonSprite.visible = true; // it's active, so we make it visible.
       var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
@@ -1221,9 +1261,19 @@ class RetroPlayState extends Module {
       wiggleShader.update(event.elapsed);
     }
 
-    var lockSpriteOffset:Array<Float, Float> = [ -20, -25 ];
-    var webLockSpriteOffset:Array<Float, Float> = [ 15, 20 ];
-    var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)];
+    //var lockSpriteOffset:Array<Float, Float> = [ -20, -25 ];
+    //var webLockSpriteOffset:Array<Float, Float> = [ 15, 20 ];
+    //var beamOffset:Array<Float, Float> = [10, (FlxG.height / 4)];
+    // Ao invés de usar arrays nesse loop que é executado a todo frame, iremos guardar nessas variáveis. Criar arrays todo frame não é uma boa ideia.
+    var lockTargetX:Float;
+    var lockTargetY:Float;
+    var webTargetX:Float;
+    var webTargetY:Float;
+    var beamTargetX:Float;
+    var beamTargetY:Float;
+    var hasChainlock:Bool = loadedMechanics.contains('chainlock');
+    var hasWeblock:Bool = loadedMechanics.contains('weblock');
+    var hasHydra:Bool = loadedMechanics.contains('hydra');
     if (mechanicsEnabled) {
       for (i in 0...4) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
@@ -1233,35 +1283,35 @@ class RetroPlayState extends Module {
         if (isDrugged) strum.x = strum.x + Math.sin((Conductor.instance.songPosition / 1000) * (Conductor.instance.bpm / 60) * 1.0 + i) * 0.4;
 
         // Atualizar sprites de lock para seguir os strums
-        if (loadedMechanics.contains('chainlock') && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
+        if (hasChainlock && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
           var sprite = chainLockSprites[i];
-          var targetPos:Array<Float> = [strum.x + lockSpriteOffset[0], strum.y + lockSpriteOffset[1]];
+          lockTargetX = strum.x + -20;
+          lockTargetY = strum.y + -25;
 
-          if (sprite.x != targetPos[0]) sprite.x = targetPos[0];
-          if (sprite.y != targetPos[1]) sprite.y = targetPos[1];
+          if (sprite.x != lockTargetX) sprite.x = lockTargetX;
+          if (sprite.y != lockTargetY) sprite.y = lockTargetY;
           if (sprite.angle != strum.angle) sprite.angle = strum.angle;
           if (sprite.alpha != strum.alpha) sprite.alpha = strum.alpha;
         }
-        if (loadedMechanics.contains('weblock') && webLockSprites[i] != null && webLockSprites[i].alive && webLockSprites[i].visible && webLockSprites[i].alpha > 0) {
+        if (hasWeblock && webLockSprites[i] != null && webLockSprites[i].alive && webLockSprites[i].visible && webLockSprites[i].alpha > 0) {
           var sprite = webLockSprites[i];
-          var targetPos:Array<Float> = [strum.x + webLockSpriteOffset[0], strum.y + webLockSpriteOffset[1]];
+          webTargetX = strum.x + 15;
+          webTargetY = strum.y + 20;
 
-          if (sprite.x != targetPos[0]) sprite.x = targetPos[0];
-          if (sprite.y != targetPos[1]) sprite.y = targetPos[1];
+          if (sprite.x != webTargetX) sprite.x = webTargetX;
+          if (sprite.y != webTargetY) sprite.y = webTargetY;
           if (sprite.angle != strum.angle) sprite.angle = strum.angle;
           //sprite.alpha = strum.alpha; // Não atualizar o alpha aqui pois se não os tweens de alpha do sprite quebram
         }
 
         // Atualizar sprites de hydra beam para seguir os strums
-        if (loadedMechanics.contains('hydra') && hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
+        if (hasHydra && hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
           var beam = hydraBeamSprites[i];
-          var targetPos:Array<Float> = [
-            strum.x + (strum.width / 2) - (beam.width / 2) + beamOffset[0],
-            0 - beamOffset[1]
-          ];
+          beamTargetX = strum.x + (strum.width / 2) - (beam.width / 2) + 10;
+          beamTargetY = 0 - (FlxG.height / 4);
 
-          if (beam.x != targetPos[0]) beam.x = targetPos[0];
-          if (beam.y != targetPos[1]) beam.y = targetPos[1];
+          if (beam.x != beamTargetX) beam.x = beamTargetX;
+          if (beam.y != beamTargetY) beam.y = beamTargetY;
           if (beam.alpha != strum.alpha) beam.alpha = strum.alpha;
         }
       }
@@ -1416,14 +1466,14 @@ class RetroPlayState extends Module {
   {
     var scoreTxt = PlayState.instance.scoreText;
 
-    solidCameraSprite = FunkinSprite.create(-50, -50);
-    solidCameraSprite.makeSolidColor(3000, 4000, 0xFF000000);
-    //solidCameraSprite.cameras = [PlayState.instance.camCutscene];
+    solidCameraSprite = FunkinSprite.create();
+    solidCameraSprite.makeSolidColor(1, 1, 0xFFFFFF);
     solidCameraSprite.scrollFactor.set(0, 0);
     solidCameraSprite.screenCenter();
     solidCameraSprite.zIndex = 100000;
-    solidCameraSprite.visible = false;
+    solidCameraSprite.cameras = [PlayState.instance.camCutscene];
     solidCameraSprite.blend = 9;
+    solidCameraSprite.visible = false;
     PlayState.instance.add(solidCameraSprite);
     solidCameraSprite.kill();
 
@@ -1785,7 +1835,7 @@ class RetroPlayState extends Module {
     isDrugged = false;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
-      unscrambleStrumline(true);
+      unscrambleStrumline(true, true);
       izzyMechanicTimer = null;
     }
 
@@ -1861,7 +1911,7 @@ class RetroPlayState extends Module {
   function onGameOver(event:ScriptEvent)
   {
     super.onGameOver(event);
-    if (izzyMechanicTimer != null) unscrambleStrumline();
+    if (izzyMechanicTimer != null) unscrambleStrumline(true, true);
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void
@@ -1985,6 +2035,7 @@ class RetroPlayState extends Module {
     hasLoadedUIElements = false;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
+    lastIconP1Width = -1;
     forceNotesAlpha = null;
     funnyVar = false;
     ogDadId = null;
@@ -1998,6 +2049,7 @@ class RetroPlayState extends Module {
     hmpInstructionPlayed = false;
     webLockActive = false;
     wiggleShader = null;
+    wiggleFilter = null;
 
     removeInsatianHoles(true);
 

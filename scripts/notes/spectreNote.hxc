@@ -1,129 +1,64 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
-import funkin.graphics.FunkinSprite;
-import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
-import funkin.mobile.input.ControlsHandler;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+import supereric.retrospecter.modules.RetroUtil;
 
 class spectreNote extends Module {
 	public function new() {
 		super("spectre");
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	var _downscroll:Bool = false;
 
-		if (PlayState.instance == null) return;
+	override function onSongLoaded(event:Dynamic):Void {
+		super.onSongLoaded(event);
+		_downscroll = Preferences.downscroll;
+		if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice)
+			_downscroll = true;
 	}
 
 	public override function onNoteHit(event:HitNoteScriptEvent):Void {
 		super.onNoteHit(event);
-
 		if (PlayState.instance == null) return;
 		if (event.eventCanceled) return;
-		if (event.note.noteData.kind == "spectre" && event.note.noteData.getMustHitNote() ) {
-			var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
-
-			var splash:FunkinSprite = new FunkinSprite(event.note.x, event.note.y);
-			splash.frames = Paths.getSparrowAtlas('notes/Notes_Spectre');
-			if (downscroll) {
-        splash.animation.addByPrefix( 'purpleScroll', 'Left(Down)0', 24, false );
-        splash.animation.addByPrefix( 'blueScroll', 'Down(Down)0', 24, false );
-        splash.animation.addByPrefix( 'greenScroll', 'Up(Down)0', 24, false );
-        splash.animation.addByPrefix( 'redScroll', 'Right(Down)0', 24, false );
-      } else {
-        splash.animation.addByPrefix( 'purpleScroll', 'Left(Up)0', 24, false );
-        splash.animation.addByPrefix( 'blueScroll', 'Down(Up)0', 24, false );
-        splash.animation.addByPrefix( 'greenScroll', 'Up(Up)0', 24, false );
-        splash.animation.addByPrefix( 'redScroll', 'Right(Up)0', 24, false );
-      }
-			splash.x -= 25; // these offsets pmo
-			splash.y -= 50;
-			splash.scale.set(event.note.scale.x, event.note.scale.y);
-			splash.cameras = [PlayState.instance.camHUD];
-			splash.zIndex = event.note.zIndex;
-			splash.antialiasing = true;
-			PlayState.instance.add(splash, true);
-			var anim:String;
-			switch (event.note.noteData.data % 4)
-			{
-				case 0:
-					anim = "purpleScroll";
-				case 1:
-					anim = "blueScroll";
-				case 2:
-					anim = "greenScroll";
-				case 3:
-					anim = "redScroll";
-			}
-			splash.animation.play(anim);
-
-			FlxTween.tween(splash, {alpha: 0}, 0.2, {startDelay: 0.3, ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
-				if (PlayState.instance == null || splash == null) return;
-				splash.kill();
-				PlayState.instance.remove(splash, true);
-			}});
+		if (event.note.noteData.kind == "spectre" && event.note.noteData.getMustHitNote()) {
+			RetroUtil.spawnSpectreSplash(event.note, _downscroll);
 		}
 	}
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "spectre" ) {
-			var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		super.onNoteIncoming(event);
+		if (event.note.noteData.kind != "spectre") return;
 
-			event.note.x += 15;
-			event.note.yOffset += -68;
+		event.note.x += 15;
+		event.note.yOffset += -68;
 
-			event.note.frames = Paths.getSparrowAtlas( 'notes/Notes_Spectre' );
-			if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
-      } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
-      }
-
-			var spectreNote:String;
-			switch ( event.note.noteData.data % 4 )
-			{
-				case 0:
-					spectreNote = "purpleScroll";
-				case 1:
-					spectreNote = "blueScroll";
-				case 2:
-					spectreNote = "greenScroll";
-				case 3:
-					spectreNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play( spectreNote, true );
+		event.note.frames = Paths.getSparrowAtlas('notes/Notes_Spectre');
+		if (_downscroll) {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
+		} else {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
 		}
+
+		event.note.active = true;
+		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4], true);
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		super.onNoteMiss( event );
-
-		if ( event.note.noteData.kind == "spectre" )
-		{
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		super.onNoteMiss(event);
+		if (event.note.noteData.kind == "spectre") {
 			event.cancel();
 			event.stopPropagation();
 		}

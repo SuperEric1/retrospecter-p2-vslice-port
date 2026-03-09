@@ -2,6 +2,7 @@
 A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
 
 TODO:
+- [ ] Change `folderNames` inside RetroSave when we're gonna post the mod on gamebanana, adding whatever new folder name the mod gets
 - [ ] `addBySymbol()` all dozirc anims in the options menu
 - [ ] Catastrofiend subtitles
 - [ ] Saku note mechanic
@@ -23,7 +24,7 @@ TODO:
 - [ ] Song ratings for freeplay
 - [ ] Sweet talk intro instruction
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
-- [ ] Replace the modified note assets with the original mod assets to implement notestyles later (uuuuh not right now cuz the notestyles can't handle offsets)
+- [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Dialogues...?
 - [X] Sweet talk difficulties

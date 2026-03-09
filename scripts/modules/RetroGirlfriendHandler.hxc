@@ -118,21 +118,23 @@ class RetroGirlfriendHandler extends Module {
 
     if (currentData != null) {
       // old positions
-      var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+      /*var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
       var offset:Array<Float> = currentData.exists(currentStage) ? currentData.get(currentStage) : defaultOffset;
-      var targetCoord:Array<Float> = [girlfriend.x + offset[0], girlfriend.y + offset[1]];
+      var targetCoordX:Float = girlfriend.x + offset[0];
+      var targetCoordY:Float = girlfriend.y + offset[1];
 
-      if (speaker.x != targetCoord[0])
-        speaker.x = targetCoord[0];
-      if (speaker.y != targetCoord[1])
-        speaker.y = targetCoord[1];
+      if (speaker.x != targetCoordX)
+        speaker.x = targetCoordX;
+      if (speaker.y != targetCoordY)
+        speaker.y = targetCoordY;*/
     } else {
       // new positions
-      var targetCoord:Array<Float> = [girlfriend.x + (girlfriend.width / 2) - (speaker.width / 2) + (girlfriend.width * currentOffset[0]), girlfriend.y + (girlfriend.height / 1.5) - (speaker.height / 2) + (girlfriend.height * currentOffset[1])];
-      if (speaker.x != targetCoord[0])
-        speaker.x = targetCoord[0];
-      if (speaker.y != targetCoord[1])
-        speaker.y = targetCoord[1];
+      var targetCoordX:Float = girlfriend.x + (girlfriend.width / 2) - (speaker.width / 2) + (girlfriend.width * currentOffset[0]);
+      var targetCoordY:Float = girlfriend.y + (girlfriend.height / 1.5) - (speaker.height / 2) + (girlfriend.height * currentOffset[1]);
+      if (speaker.x != targetCoordX)
+        speaker.x = targetCoordX;
+      if (speaker.y != targetCoordY)
+        speaker.y = targetCoordY;
     }
 
     speaker.visible = girlfriend.visible;

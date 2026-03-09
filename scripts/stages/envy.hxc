@@ -566,7 +566,12 @@ class EnvyStage extends Stage
     }
   }
 
-  function onGameOver(event:ScriptEvent)
+  override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    PlayState.instance.camGame.filters = [];
+  }
+  override function onGameOver(event:ScriptEvent)
   {
     super.onGameOver(event);
     PlayState.instance.camGame.filters = [];
