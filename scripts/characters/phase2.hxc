@@ -16,6 +16,16 @@ class PhaseTwoCharacter extends MultiSparrowCharacter {
 	function onNoteHit(event:HitNoteScriptEvent) {
 		if (PlayState.instance == null) return;
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			switch (event.note.noteData.kind)
+			{
+				case "hollowNotes":
+					return;
+				case "spectre":
+					return;
+				case "Fake Note":
+					return;
+			}
+
 			if (event.note.noteData.getDirection() == 3 && event.note.isHoldNote && isGfDoingAnim == false) {
 				PlayState.instance.currentStage.getGirlfriend().playAnimation('hair', true);
 				isGfDoingAnim = true;

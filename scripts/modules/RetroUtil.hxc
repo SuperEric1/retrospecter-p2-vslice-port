@@ -200,7 +200,7 @@ class RetroUtil extends Module
       ? ['Left(Down)0', 'Down(Down)0', 'Up(Down)0', 'Right(Down)0']
       : ['Left(Up)0',   'Down(Up)0',   'Up(Up)0',   'Right(Up)0'];
 
-    var splash:FunkinSprite = acquireSplash(atlasKey, 'notes/Notes_Spectre', SPLASH_ANIM_NAMES, animPrefixes, 24);
+    var splash:FunkinSprite = acquireSplash(atlasKey, 'notes/Notes_Spectre', SPLASH_ANIM_NAMES, animPrefixes, 24, 1);
     if (splash == null) return;
 
     splash.x = note.x - 25;

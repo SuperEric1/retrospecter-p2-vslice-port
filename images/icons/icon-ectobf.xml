@@ -2,6 +2,14 @@
 <TextureAtlas imagePath="icon-ectobf.png">
 	<!-- Created with Adobe Animate version 23.0.0.407 -->
 	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="neutral0012" x="284" y="368" width="130" height="104" frameX="-12" frameY="-6" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0013" x="284" y="368" width="130" height="104" frameX="-12" frameY="-6" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0014" x="439" y="364" width="128" height="105" frameX="-14" frameY="-5" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0015" x="439" y="364" width="128" height="105" frameX="-14" frameY="-5" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0016" x="144" y="367" width="135" height="104" frameX="-9" frameY="-6" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0017" x="144" y="367" width="135" height="104" frameX="-9" frameY="-6" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0018" x="439" y="255" width="133" height="104" frameX="-8" frameY="-6" frameWidth="152" frameHeight="124"/>
+	<SubTexture name="neutral0019" x="439" y="255" width="133" height="104" frameX="-8" frameY="-6" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="win0000" x="156" y="126" width="146" height="123" frameX="-2" frameY="-1" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="win0001" x="156" y="126" width="146" height="123" frameX="-2" frameY="-1" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="win0002" x="307" y="127" width="144" height="123" frameX="-4" frameY="-1" frameWidth="152" frameHeight="124"/>
@@ -14,14 +22,6 @@
 	<SubTexture name="win0009" x="0" y="128" width="144" height="120" frameX="-4" frameY="-1" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="win0010" x="156" y="0" width="151" height="121" frameX="-1" frameY="-1" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="win0011" x="156" y="0" width="151" height="121" frameX="-1" frameY="-1" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0012" x="284" y="368" width="130" height="104" frameX="-12" frameY="-6" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0013" x="284" y="368" width="130" height="104" frameX="-12" frameY="-6" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0014" x="439" y="364" width="128" height="105" frameX="-14" frameY="-5" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0015" x="439" y="364" width="128" height="105" frameX="-14" frameY="-5" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0016" x="144" y="367" width="135" height="104" frameX="-9" frameY="-6" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0017" x="144" y="367" width="135" height="104" frameX="-9" frameY="-6" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0018" x="439" y="255" width="133" height="104" frameX="-8" frameY="-6" frameWidth="152" frameHeight="124"/>
-	<SubTexture name="neutral0019" x="439" y="255" width="133" height="104" frameX="-8" frameY="-6" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="lose0020" x="0" y="253" width="142" height="108" frameX="-4" frameY="-5" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="lose0021" x="0" y="253" width="142" height="108" frameX="-4" frameY="-5" frameWidth="152" frameHeight="124"/>
 	<SubTexture name="lose0022" x="0" y="366" width="139" height="108" frameX="-6" frameY="-5" frameWidth="152" frameHeight="124"/>

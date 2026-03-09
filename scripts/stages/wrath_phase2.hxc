@@ -117,13 +117,15 @@ class WrathPhase2Stage extends Stage
   {
     super.onCreate(event);
 
-    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison']]);
 
     var songName = PlayState.instance?.currentChart?.songName ?? '';
     var lSongName = songName.toLowerCase();
 
     isSpectral = lSongName == 'spectral';
     isEctospasm = lSongName == 'ectospasm' || lSongName == 'ectogasm';
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison']]);
+    if (isEctospasm) ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['spectre']]);
 
     hasPlayedInGameCutscene = false;
 

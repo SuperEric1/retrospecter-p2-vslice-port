@@ -11,8 +11,9 @@ import funkin.play.PlayState;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.GameOverSubState;
-import funkin.util.ReflectUtil;
 import funkin.play.PlayStatePlaylist;
+import funkin.util.ReflectUtil;
+import funkin.modding.module.ModuleHandler;
 import funkin.ui.FullScreenScaleMode;
 
 class EctospasmSong extends Song
@@ -22,7 +23,6 @@ class EctospasmSong extends Song
   public function new()
   {
     super('ectospasm');
-
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -31,7 +31,7 @@ class EctospasmSong extends Song
 
   }
 
-  function onCreate(event:ScriptEvent):Void
+  public override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
 
@@ -43,7 +43,7 @@ class EctospasmSong extends Song
 
   }
 
-  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  /*public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
@@ -62,7 +62,7 @@ class EctospasmSong extends Song
     if (event.step == 1) {
 
     }
-  }
+  }*/
 
   override function onDestroy(event)
 	{

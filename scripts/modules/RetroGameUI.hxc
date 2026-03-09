@@ -121,7 +121,6 @@ class RetroGameUI extends Module {
       isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
       if (!isRetro) return;
 
-      trace(hasBeenCreated);
       if (hasBeenCreated) return;
 
       downscroll = Preferences.downscroll;
@@ -290,8 +289,10 @@ class RetroGameUI extends Module {
 
       // Outros
       configureIcon(); // setar zindex e tudo mais nos dois icons
-      if (isHivemine) loadHivemineText(hivemineTextColor);
-      if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
+      if (isCustomHealthBar) {
+        if (isHivemine) loadHivemineText(hivemineTextColor);
+        if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
+      }
       playState.remove(playState.comboPopUps); // remover os popups padrão de julgamento e combo
 
       playState.refresh();
@@ -961,7 +962,7 @@ class RetroGameUI extends Module {
 
     // Catastrofiend has 2 colors: default and losing.
     if (ogDadId == 'phase4') {
-      var targetColor = (PlayState.instance.health > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) ? BAR_COLOR_PHASE4_DEAD : BAR_COLOR_PHASE4;
+      var targetColor = (PlayState.instance.healthLerp > Constants.HEALTH_MAX - HealthIcon.LOSING_THRESHOLD) ? BAR_COLOR_PHASE4_DEAD : BAR_COLOR_PHASE4;
       if (retroHealthBarFillBG.color != targetColor) retroHealthBarFillBG.color = targetColor;
     }
 

@@ -139,6 +139,10 @@ class RetroPlayState extends Module {
   var forceNotesAlpha:Float = null; // used for the spectre note to make the notes fade with time. null = off, 0-1 = the note alpha to apply.
   var minNoteAlpha:Float = 0; // used to limit the forceNotesAlpha value.
 
+  var spectreHit:Bool = false;
+  var spectreOppHit:Bool = false;
+  var noteFadeTime:Float = 0.025;
+
   var hurtNoteVibration:VibrationPreset =
   {
     period: 0,
@@ -189,6 +193,13 @@ class RetroPlayState extends Module {
     }
     var k = event.note.noteData.kind;
     var note = event.note;
+
+    if (k == 'spectre' && !loadedMechanics.contains('spectre')) {
+      trace('LOADED UNLOADED MECHANIC: spectre');
+      loadedMechanics.push('spectre');
+      FunkinMemory.cacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
+      forceNotesAlpha = 0.5;
+    }
 
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
@@ -536,6 +547,7 @@ class RetroPlayState extends Module {
     }
 
     if (k == 'spectre') {
+      spectreHit = true;
       FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
       event.doesNotesplash = false;
     }
@@ -550,6 +562,23 @@ class RetroPlayState extends Module {
       event.note.active = false;
     }
   } // fim do if de checagem que é nota do player
+
+    if (!event.note.noteData.getMustHitNote() && event.note.noteData.kind == 'spectre' && mechanicsEnabled && loadedMechanics.contains('spectre')) {
+      spectreOppHit = true;
+      FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
+      for (note in PlayState.instance.opponentStrumline.notes.members) {
+        if (note == null || !note.alive) continue;
+        FlxTween.tween(note, {alpha: 1}, 0.5);
+      }
+      for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+        if (holdNote == null || !holdNote.alive) continue;
+        FlxTween.tween(holdNote, {alpha: 1}, 0.5);
+      }
+      new FlxTimer().start(0.5, function(_) {
+        if (PlayState.instance == null) return;
+        spectreOppHit = false;
+      });
+    }
 
     super('onNoteHit');
   }
@@ -674,6 +703,10 @@ class RetroPlayState extends Module {
         if (loadedMechanics.contains('poison')) {
           loadPoisonMechanic();
           updatePoisonCounter();
+        }
+        if (loadedMechanics.contains('spectre')) {
+          FunkinMemory.cacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
+          forceNotesAlpha = 0.5;
         }
         if (loadedMechanics.contains('chainlock')) {
           loadChainLockSprites();
@@ -1216,19 +1249,37 @@ class RetroPlayState extends Module {
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 
-    if (poisonAmount > 0 && PlayState.instance.health > 0.08) {
-      PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed;
+    if (forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre')) {
+      if (!spectreHit) {
+        forceNotesAlpha -= noteFadeTime * event.elapsed;
+        if (forceNotesAlpha < minNoteAlpha) forceNotesAlpha = minNoteAlpha;
+      } else {
+        forceNotesAlpha += event.elapsed;
+        if (forceNotesAlpha >= 1) {
+          forceNotesAlpha = 1;
+          spectreHit = false;
+        }
+      }
+      applySpectreAlpha();
+    }
+
+    if (poisonAmount > 0 && PlayState.instance.health > 0.01) {
+      if (poisonAmount * 0.0125 * event.elapsed > PlayState.instance.health) {
+        PlayState.instance.health = 0.01;
+      } else {
+        PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed;
+      }
     }
 
     // Winning plus icon animation (for characters that have it, like Zerktro.)
-    if (PlayState.instance.health < 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus') {
+    if (PlayState.instance.healthLerp < 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus') {
       if (PlayState.instance.iconP2.hasAnimation('winningPlus')) {
         PlayState.instance.iconP2.animation.play('winningPlus');
       }
     }
 
     if (poisonSprite != null && poisonSprite?.alive && poisonSprite?.active && PlayState.instance.iconP1 != null) {
-      var targetFrame = (poisonSpriteFrame * 100) + poisonAmount;
+      var targetFrame = (poisonSpriteFrame * 100) + (poisonAmount < 100 ? poisonAmount : 99);
       if (poisonSprite?.animation != null && poisonSprite.animation.curAnim.curFrame != targetFrame) poisonSprite.animation.curAnim.curFrame = targetFrame;
 
       poisonSprite.x = PlayState.instance.iconP1.x - 40; // + 15
@@ -1432,9 +1483,10 @@ class RetroPlayState extends Module {
     }*/
 
     // Update hold covers so they match the actual opacity of the notes because they are really weird sometimes
+    var isSpectreActive:Bool = forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre');
     for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
-      if (holdNote.hitNote) {
+      if (holdNote.hitNote && !isSpectreActive) {
         var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
@@ -1442,7 +1494,7 @@ class RetroPlayState extends Module {
     }
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
-      if (holdNote.hitNote) {
+      if (holdNote.hitNote && !isSpectreActive) {
         var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
@@ -1459,7 +1511,40 @@ class RetroPlayState extends Module {
   }
 
   public function setMechanics(names:Array<String>) {
-    loadedMechanics = names;
+    trace('Loading mechanic kit: ' + Std.string(names));
+    for (name in names) {
+      loadedMechanics.push(name);
+    }
+  }
+
+  function applySpectreAlpha():Void {
+    var clampedAlpha:Float = Math.max(minNoteAlpha, Math.min(1.0, forceNotesAlpha));
+
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive) continue;
+      if (alwaysVisibleKinds.contains(note.noteData.kind)) continue;
+      note.alpha = clampedAlpha;
+    }
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
+      holdNote.alpha = clampedAlpha;
+      if (holdNote.cover != null) holdNote.cover.alpha = clampedAlpha;
+    }
+
+    if (!spectreOppHit) {
+      for (note in PlayState.instance.opponentStrumline.notes.members) {
+        if (note == null || !note.alive) continue;
+        if (alwaysVisibleKinds.contains(note.noteData.kind)) continue;
+        note.alpha = clampedAlpha;
+      }
+      for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+        if (holdNote == null || !holdNote.alive) continue;
+        if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
+        holdNote.alpha = clampedAlpha;
+        if (holdNote.cover != null) holdNote.cover.alpha = clampedAlpha;
+      }
+    }
   }
 
   function loadUIElements()
@@ -1825,7 +1910,9 @@ class RetroPlayState extends Module {
     destroyHiveminePapers();
 
     poisonAmount = 0;
-    if (forceNotesAlpha != null) forceNotesAlpha = 1; // reset to default alpha
+    if (forceNotesAlpha != null) forceNotesAlpha = 0.5; // reset to default alpha
+    spectreHit = false;
+    spectreOppHit = false;
     /*if (poisonText != null) {
       poisonText.visible = false;
     }*/
@@ -2033,10 +2120,13 @@ class RetroPlayState extends Module {
     if (PlayState.instance == null) return;
     loadedMechanics = [];
     hasLoadedUIElements = false;
+    poisonSprite = null;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
     lastIconP1Width = -1;
     forceNotesAlpha = null;
+    spectreHit = false;
+    spectreOppHit = false;
     funnyVar = false;
     ogDadId = null;
     songId = null;
@@ -2202,7 +2292,6 @@ class RetroPlayState extends Module {
         'beam',
         'Nightflaid',
         'Saku',
-        'SpectreArrow',
       ];
       for (soundName in noteSoundsToCache) {
         FunkinMemory.permanentCacheSound(Paths.sound(noteSoundsDir + soundName, "shared"));
@@ -2210,6 +2299,14 @@ class RetroPlayState extends Module {
       //FunkinMemory.permanentCacheSound(Paths.sound("acid", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("scythe", "shared"));
       FunkinMemory.permanentCacheSound(Paths.sound("clothsSFX", "shared"));
+
+      var fontsToCache:Array<String> = [
+        'AtariST8x16SystemFont-bmp.png',
+        '5by7-bmp.png'
+      ];
+      for (fontName in fontsToCache) {
+        FunkinMemory.permanentCacheTexture(Paths.font(fontName));
+      }
 
       // Phase 2 - Spectral
       //FunkinMemory.permanentCacheTexture(Paths.image('wrath/Crystals', "shared"));
