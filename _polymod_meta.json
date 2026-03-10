@@ -1,28 +1,29 @@
 {
-    "title": "Vs. RetroSpecter - Part Two: Infernadise",
-    "description": "Unofficial V-Slice port of the mod. Check the credits!!!",
-    "author": "RetroSpecter",
-    "homepage": "https://github.com/SuperEric1/retrospecter-p2-vslice-port",
-    "contributors": [
-      {
-        "name": "Team Respec",
-        "role": "Original dev team, owns Infernadise and the original mod",
-        "url": "https://gamebanana.com/mods/317366"
-      },
-      {
-        "name": "SuperEric",
-        "role": "Port Developer",
-        "url": "https://youtube.com/@super_eric"
-      }
-    ],
-    "metadata": {
-      "debug": "false",
-      "reset_warns": "false"
+  "id": "retrospecter-p2-port",
+  "title": "Vs. RetroSpecter - Part Two: Infernadise",
+  "description": "Unofficial V-Slice port of the mod. Check the credits!!!",
+  "author": "RetroSpecter",
+  "homepage": "https://github.com/SuperEric1/retrospecter-p2-vslice-port",
+  "contributors": [
+    {
+      "name": "Team Respec",
+      "role": "Original dev team, owns Infernadise and the original mod",
+      "url": "https://gamebanana.com/mods/317366"
     },
+    {
+      "name": "SuperEric",
+      "role": "Port Developer",
+      "url": "https://youtube.com/@super_eric"
+    }
+  ],
+  "metadata": {
+    "debug": "false",
+    "reset_warns": "false"
+  },
 
-    "‼️ TO THE SCRIPT KIDDIES: IF THERE'S A NEW BASE GAME UPDATE, *DO NOT* REUPLOAD THIS MOD TO GAMEBANANA, OR ELSE IT WILL BE TAKEN DOWN AS A REUPLOAD AND RULE VIOLATION. I DON'T WANT MY CODE FROM THIS MOD TO BE USED IN REUPLOADS OF IT. PLEASE WAIT FOR THE MOD TO BE UPDATED! THANKS.": true,
-    "api_version": "0.8.2",
-    "mod_version": "1.0.0",
+  "‼️ TO THE SCRIPT KIDDIES: IF THERE'S A NEW BASE GAME UPDATE, *DO NOT* REUPLOAD THIS MOD TO GAMEBANANA, OR ELSE IT WILL BE TAKEN DOWN AS A REUPLOAD AND RULE VIOLATION. I DON'T WANT MY CODE FROM THIS MOD TO BE USED IN REUPLOADS OF IT. PLEASE WAIT FOR THE MOD TO BE UPDATED! THANKS.": true,
+  "api_version": "0.8.2",
+  "mod_version": "1.0.0",
 
-    "license": "Apache-2.0"
+  "license": "Apache-2.0"
 }

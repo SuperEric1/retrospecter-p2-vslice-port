@@ -136,8 +136,9 @@ class RetroPlayState extends Module {
   // Misc
   var loadedMechanics:Array<String> = []; // here we will store the names of the loaded mechanics for the current song (set by the song's scripts)
   var currentHealthCap:Float = 0; // also used for the insatian notes.
-  var forceNotesAlpha:Float = null; // used for the spectre note to make the notes fade with time. null = off, 0-1 = the note alpha to apply.
-  var minNoteAlpha:Float = 0; // used to limit the forceNotesAlpha value.
+  var forceNotesAlpha:Float = null;    // alpha atual das notas do jogador (null = mechanic off)
+  var forceOppNotesAlpha:Float = null; // alpha atual das notas do oponente (null = mechanic off)
+  var minNoteAlpha:Float = 0;
 
   var spectreHit:Bool = false;
   var spectreOppHit:Bool = false;
@@ -199,12 +200,14 @@ class RetroPlayState extends Module {
       loadedMechanics.push('spectre');
       FunkinMemory.cacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
       forceNotesAlpha = 0.5;
+      forceOppNotesAlpha = 0.5;
     }
 
     var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
     var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
     if (targetAlpha == 1) targetAlpha = strum.alpha;
-    if (forceNotesAlpha != null) targetAlpha = forceNotesAlpha; // for the spectre note mechanic
+    var forcedAlpha:Float = event.note.noteData.getMustHitNote() ? forceNotesAlpha : forceOppNotesAlpha;
+    if (forcedAlpha != null) targetAlpha = forcedAlpha;
     if (event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisibleKinds.contains(k)) {
       event.note.alpha = targetAlpha;
       if (event.note.isHoldNote) event.note.holdNoteSprite.alpha = targetAlpha;
@@ -548,6 +551,7 @@ class RetroPlayState extends Module {
 
     if (k == 'spectre') {
       spectreHit = true;
+      spectreOppHit = true;
       FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
       event.doesNotesplash = false;
     }
@@ -566,18 +570,6 @@ class RetroPlayState extends Module {
     if (!event.note.noteData.getMustHitNote() && event.note.noteData.kind == 'spectre' && mechanicsEnabled && loadedMechanics.contains('spectre')) {
       spectreOppHit = true;
       FlxG.sound.play(Paths.sound('noteSounds/SpectreArrow'));
-      for (note in PlayState.instance.opponentStrumline.notes.members) {
-        if (note == null || !note.alive) continue;
-        FlxTween.tween(note, {alpha: 1}, 0.5);
-      }
-      for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
-        if (holdNote == null || !holdNote.alive) continue;
-        FlxTween.tween(holdNote, {alpha: 1}, 0.5);
-      }
-      new FlxTimer().start(0.5, function(_) {
-        if (PlayState.instance == null) return;
-        spectreOppHit = false;
-      });
     }
 
     super('onNoteHit');
@@ -707,6 +699,7 @@ class RetroPlayState extends Module {
         if (loadedMechanics.contains('spectre')) {
           FunkinMemory.cacheSound(Paths.sound("noteSounds/SpectreArrow", "shared"));
           forceNotesAlpha = 0.5;
+          forceOppNotesAlpha = 0.5;
         }
         if (loadedMechanics.contains('chainlock')) {
           loadChainLockSprites();
@@ -1260,6 +1253,16 @@ class RetroPlayState extends Module {
           spectreHit = false;
         }
       }
+      if (!spectreOppHit) {
+        forceOppNotesAlpha -= noteFadeTime * event.elapsed;
+        if (forceOppNotesAlpha < minNoteAlpha) forceOppNotesAlpha = minNoteAlpha;
+      } else {
+        forceOppNotesAlpha += event.elapsed;
+        if (forceOppNotesAlpha >= 1) {
+          forceOppNotesAlpha = 1;
+          spectreOppHit = false;
+        }
+      }
       applySpectreAlpha();
     }
 
@@ -1518,32 +1521,31 @@ class RetroPlayState extends Module {
   }
 
   function applySpectreAlpha():Void {
-    var clampedAlpha:Float = Math.max(minNoteAlpha, Math.min(1.0, forceNotesAlpha));
+    var clampedPlayerAlpha:Float = Math.max(minNoteAlpha, Math.min(1.0, forceNotesAlpha));
+    var clampedOppAlpha:Float = Math.max(minNoteAlpha, Math.min(1.0, forceOppNotesAlpha));
 
     for (note in PlayState.instance.playerStrumline.notes.members) {
       if (note == null || !note.alive) continue;
       if (alwaysVisibleKinds.contains(note.noteData.kind)) continue;
-      note.alpha = clampedAlpha;
+      note.alpha = clampedPlayerAlpha;
     }
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
       if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
-      holdNote.alpha = clampedAlpha;
-      if (holdNote.cover != null) holdNote.cover.alpha = clampedAlpha;
+      holdNote.alpha = clampedPlayerAlpha;
+      if (holdNote.cover != null) holdNote.cover.alpha = clampedPlayerAlpha;
     }
 
-    if (!spectreOppHit) {
-      for (note in PlayState.instance.opponentStrumline.notes.members) {
-        if (note == null || !note.alive) continue;
-        if (alwaysVisibleKinds.contains(note.noteData.kind)) continue;
-        note.alpha = clampedAlpha;
-      }
-      for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
-        if (holdNote == null || !holdNote.alive) continue;
-        if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
-        holdNote.alpha = clampedAlpha;
-        if (holdNote.cover != null) holdNote.cover.alpha = clampedAlpha;
-      }
+    for (note in PlayState.instance.opponentStrumline.notes.members) {
+      if (note == null || !note.alive) continue;
+      if (alwaysVisibleKinds.contains(note.noteData.kind)) continue;
+      note.alpha = clampedOppAlpha;
+    }
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
+      holdNote.alpha = clampedOppAlpha;
+      if (holdNote.cover != null) holdNote.cover.alpha = clampedOppAlpha;
     }
   }
 
@@ -1910,7 +1912,8 @@ class RetroPlayState extends Module {
     destroyHiveminePapers();
 
     poisonAmount = 0;
-    if (forceNotesAlpha != null) forceNotesAlpha = 0.5; // reset to default alpha
+    if (forceNotesAlpha != null) forceNotesAlpha = 0.5;
+    if (forceOppNotesAlpha != null) forceOppNotesAlpha = 0.5;
     spectreHit = false;
     spectreOppHit = false;
     /*if (poisonText != null) {
@@ -2125,6 +2128,7 @@ class RetroPlayState extends Module {
     poisonTextYOffset = 0;
     lastIconP1Width = -1;
     forceNotesAlpha = null;
+    forceOppNotesAlpha = null;
     spectreHit = false;
     spectreOppHit = false;
     funnyVar = false;

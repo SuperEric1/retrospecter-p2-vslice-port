@@ -32,7 +32,7 @@ class RetroSave extends Module
     for (name in folderNames) {
       if (data != null) break;
       // Tenta pegar o metadata via Polymod
-      data = PolymodHandler.modFileSystem.getMetadata(name);
+      data = PolymodHandler.modFileSystem.getMetadata(name); // use getMetadataById and remove the foldernames when the new patch arrives.
     }
 
     if (data != null) {
