@@ -1,86 +1,51 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
-import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 
-class HydraNote extends Module {
+class HydraNote extends NoteKind {
 	public function new() {
-		super("Hydra");
+		super('Hydra', 'Hydra Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!event.note.noteData.getMustHitNote()) return;
 
-		if (PlayState.instance == null) return;
-	}
+		var downscroll:Bool = Preferences.downscroll
+			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
-		super.onNoteHit(ev);
+		event.note.x += -45;
+		event.note.yOffset += -265;
 
-		if (PlayState.instance == null) return;
-		if (!ev.note.noteData.getMustHitNote()) return;
-		if (ev.note.noteData.kind != "Hydra") return;
-	}*/
-
-	public override function onNoteIncoming(event:NoteScriptEvent)
-	{
-		super.onNoteIncoming(event);
-		if (event.note.noteData.kind == "Hydra" && event.note.noteData.getMustHitNote())
-		{
-      var downscroll = Preferences.downscroll;
-			if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
-
-			event.note.x += -45;
-			event.note.yOffset += -265;
-
-			event.note.frames = Paths.getSparrowAtlas('notes/HydraNotes');
-      if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
-      } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0');
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
-      }
-
-			var hydraNote:String;
-			switch ( event.note.noteData.data % 4 )
-			{
-				case 0:
-					hydraNote = "purpleScroll";
-				case 1:
-					hydraNote = "blueScroll";
-				case 2:
-					hydraNote = "greenScroll";
-				case 3:
-					hydraNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play( hydraNote );
+		event.note.frames = Paths.getSparrowAtlas('notes/HydraNotes');
+		if (downscroll) {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
+		} else {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
 		}
+
+		var hydraAnim:String;
+		switch (event.note.noteData.data % 4) {
+			case 0: hydraAnim = 'purpleScroll';
+			case 1: hydraAnim = 'blueScroll';
+			case 2: hydraAnim = 'greenScroll';
+			case 3: hydraAnim = 'redScroll';
+		}
+
+		event.note.active = true;
+		event.note.animation.play(hydraAnim);
 	}
 
-	public override function onNoteMiss(event:NoteScriptEvent)
-	{
-		super.onNoteMiss(event);
-
-		if (event.note.noteData.kind == "Hydra")
-		{
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
 	}
 }

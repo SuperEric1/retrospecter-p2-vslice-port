@@ -1,78 +1,51 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
-import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 
-class sakuNote extends Module {
+class SakuNote extends NoteKind {
 	public function new() {
-		super("sakuNote");
+		super('sakuNote', 'Saku Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!event.note.noteData.getMustHitNote()) return;
 
-		if (PlayState.instance == null) return;
-	}
+		var downscroll:Bool = Preferences.downscroll
+			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming(event);
-		if (event.note.noteData.kind == "sakuNote" && event.note.noteData.getMustHitNote())
-		{
-      var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+		event.note.x += -75;
+		event.note.yOffset += -225;
 
-			event.note.x += -75;
-			event.note.yOffset += -225;
-
-			event.note.frames = Paths.getSparrowAtlas('notes/HeartNotes');
-      if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
-      } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
-      }
-
-			var sakuNote:String;
-			switch ( event.note.noteData.data % 4 )
-			{
-				case 0:
-					sakuNote = "purpleScroll";
-				case 1:
-					sakuNote = "blueScroll";
-				case 2:
-					sakuNote = "greenScroll";
-				case 3:
-					sakuNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play( sakuNote );
+		event.note.frames = Paths.getSparrowAtlas('notes/HeartNotes');
+		if (downscroll) {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
+		} else {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
 		}
+
+		var sakuAnim:String;
+		switch (event.note.noteData.data % 4) {
+			case 0: sakuAnim = 'purpleScroll';
+			case 1: sakuAnim = 'blueScroll';
+			case 2: sakuAnim = 'greenScroll';
+			case 3: sakuAnim = 'redScroll';
+		}
+
+		event.note.active = true;
+		event.note.animation.play(sakuAnim);
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		super.onNoteMiss(event);
-
-		if (event.note.noteData.kind == "sakuNote")
-		{
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
 	}
 }

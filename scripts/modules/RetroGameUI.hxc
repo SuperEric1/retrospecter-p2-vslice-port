@@ -288,11 +288,12 @@ class RetroGameUI extends Module {
       }
 
       // Outros
-      configureIcon(); // setar zindex e tudo mais nos dois icons
       if (isCustomHealthBar) {
         if (isHivemine) loadHivemineText(hivemineTextColor);
         if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
       }
+      configureIcon(); // setar zindex e tudo mais nos dois icons
+      
       playState.remove(playState.comboPopUps); // remover os popups padrão de julgamento e combo
 
       playState.refresh();
@@ -851,8 +852,8 @@ class RetroGameUI extends Module {
 
     if (noteScore > 0) {
       total = PlayState.instance.songScore;
-      score.text = Std.string(total + noteScore);
-    } else score.text = PlayState.instance.songScore;
+      score.text = Std.string(Std.int(total + noteScore));
+    } else score.text = Std.int(PlayState.instance.songScore);
 
     judgement.visible = true;
     judgement.alpha = 1;
@@ -936,7 +937,7 @@ class RetroGameUI extends Module {
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
         // Update score text.
         if (!playState.isBotPlayMode) {
-          var newScoreStr:String = Std.string(PlayState.instance.songScore);
+          var newScoreStr:String = Std.string(Std.int(PlayState.instance.songScore));
           if (score.text != newScoreStr) score.text = newScoreStr; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
         }
         break;
@@ -1413,8 +1414,8 @@ class RetroGameUI extends Module {
       if (target == "dad") {
         isOppIconAnimated = false;
         retroHealthBarFillBG.color = getIconColor(characterId, true);
-        configureIcon('p2');
         updateBarTexture(characterId);
+        configureIcon('p2');
       }
     }
   }

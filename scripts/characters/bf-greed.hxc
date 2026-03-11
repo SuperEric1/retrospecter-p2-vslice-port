@@ -16,7 +16,7 @@ class BFGreedCharacter extends MultiSparrowCharacter
     super('bf-greed');
   }
 
-  function onNoteHit(event:HitNoteScriptEvent):Void {
+  /*function onNoteHit(event:HitNoteScriptEvent):Void {
 
     if (PlayState.instance == null) return;
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
@@ -39,7 +39,7 @@ class BFGreedCharacter extends MultiSparrowCharacter
       }
     }
     super.onNoteHit(event);
-	}
+	}*/
 
   /*function onNoteMiss(event:NoteScriptEvent) {
     super.onNoteMiss(event);

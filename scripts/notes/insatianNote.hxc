@@ -1,11 +1,6 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
 import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
 import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
@@ -13,57 +8,40 @@ import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroUtil;
 
-class insatianNote extends Module {
+class InsatianNote extends NoteKind {
 	public function new() {
-		super("insatianNote");
-	}
-
-	function onCreate(event:Dynamic) {
-		super.onCreate(event);
-		if (PlayState.instance == null) return;
+		super('insatianNote', 'Insatian Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
 	public override function onNoteHit(event:HitNoteScriptEvent):Void {
-		super.onNoteHit(event);
 		if (PlayState.instance == null) return;
-		if (event.note.noteData.kind == "insatianNote" && event.note.noteData.getMustHitNote()) {
-			RetroUtil.spawnSplash(event.note, {
-				atlas: 'notes/splash/eatmepls',
-				prefixes: ['note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'],
-				sizeMulti: 1.4,
-				xOffset: -25,
-				yOffset: -27,
-			});
-		}
+		if (event.eventCanceled) return;
+		if (!event.note.noteData.getMustHitNote()) return;
+		RetroUtil.spawnSplash(event.note, {
+			atlas: 'notes/splash/eatmepls',
+			prefixes: ['note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'],
+			sizeMulti: 1.4,
+			xOffset: -25,
+			yOffset: -27,
+		});
 	}
 
-	public override function onNoteIncoming(event:NoteScriptEvent) {
-		super.onNoteIncoming(event);
-		if (event.note.noteData.kind == "insatianNote")
-		{
-      var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		event.note.x += -50;
+		event.note.yOffset += -29;
 
-			event.note.x += -50;
-			event.note.yOffset += -29;
+		event.note.frames = Paths.getSparrowAtlas('notes/Gluttony_Note_Assets');
+		event.note.animation.addByPrefix('purpleScroll', 'Left0');
+		event.note.animation.addByPrefix('blueScroll', 'Down0');
+		event.note.animation.addByPrefix('greenScroll', 'Up0');
+		event.note.animation.addByPrefix('redScroll', 'Right0');
 
-			event.note.frames = Paths.getSparrowAtlas( 'notes/Gluttony_Note_Assets' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
-			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
-
-			// the anim is only 1 frame so no need to put event.note.active = true
-			event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
-		}
+		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 	}
 
-	public override function onNoteMiss(event:NoteScriptEvent)
-	{
-		super.onNoteMiss(event);
-		if (event.note.noteData.kind == "insatianNote") {
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
 	}
 }

@@ -16,7 +16,7 @@ class BFWindCharacter extends MultiSparrowCharacter
     super('bf-wind');
   }
 
-  function onNoteHit(event:HitNoteScriptEvent):Void {
+  /*function onNoteHit(event:HitNoteScriptEvent):Void {
 		if (PlayState.instance == null) return;
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       switch (event.note.noteData.kind)
@@ -40,7 +40,7 @@ class BFWindCharacter extends MultiSparrowCharacter
       }
     }
     super.onNoteHit(event);
-	}
+	}*/
 
   function onAnimationFrame(name:String, frameNumber:Int, frameIndex:Int)
   {

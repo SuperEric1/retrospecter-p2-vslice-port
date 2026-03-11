@@ -1,5 +1,4 @@
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.modding.events.HitNoteScriptEvent;
 import flixel.FlxG;
@@ -9,44 +8,35 @@ import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroUtil;
 
-class poisonNote extends Module {
+class PoisonNote extends NoteKind {
 	public function new() {
-		super("poison");
-	}
-
-	var _downscroll:Bool = false;
-
-	override function onSongLoaded(event:Dynamic):Void {
-		super.onSongLoaded(event);
-		_downscroll = Preferences.downscroll;
-		if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice)
-			_downscroll = true;
+		super('poison', 'Poison Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
 	public override function onNoteHit(event:HitNoteScriptEvent):Void {
-		super.onNoteHit(event);
 		if (PlayState.instance == null) return;
 		if (event.eventCanceled) return;
-		if (event.note.noteData.kind == "poison" && event.note.noteData.getMustHitNote()) {
-			RetroUtil.spawnSplash(event.note, {
-				atlas: 'notes/PoisonArrowHit',
-				prefixes: ['Poison Arrow Hit Left0', 'Poison Arrow Hit Down0', 'Poison Arrow Hit Up0', 'Poison Arrow Hit Right0'],
-				relativePos: true,
-				xOffset: -146,
-				yOffset: -80,
-				antialiasing: false
-			});
-		}
+		if (!event.note.noteData.getMustHitNote()) return;
+		RetroUtil.spawnSplash(event.note, {
+			atlas: 'notes/PoisonArrowHit',
+			prefixes: ['Poison Arrow Hit Left0', 'Poison Arrow Hit Down0', 'Poison Arrow Hit Up0', 'Poison Arrow Hit Right0'],
+			relativePos: true,
+			xOffset: -146,
+			yOffset: -80,
+			antialiasing: false
+		});
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
-		super.onNoteIncoming(event);
-		if (event.note.noteData.kind != "poison" || !event.note.noteData.getMustHitNote()) return;
+		if (!event.note.noteData.getMustHitNote()) return;
+
+		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
 		event.note.x += -3;
 		event.note.yOffset += -70;
 
-		if (_downscroll) {
+		if (downscroll) {
 			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
 			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Downscroll Left0');
 			event.note.animation.addByPrefix('blueScroll', 'PoisonArrows Downscroll Down0');
@@ -65,10 +55,7 @@ class poisonNote extends Module {
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {
-		super.onNoteMiss(event);
-		if (event.note.noteData.kind == "poison") {
-			event.cancel();
-			event.stopPropagation();
-		}
+		event.cancel();
+		event.stopPropagation();
 	}
 }

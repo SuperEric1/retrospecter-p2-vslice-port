@@ -14,8 +14,7 @@ TODO:
 - [ ] Intro for options menu
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Hydra note is not pausing when pausing the game
-- [ ] Make the settings work
-- [ ] Make blend modes able to turn off for optimization (maybe not?)
+- [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Story mode menu?
@@ -26,6 +25,7 @@ TODO:
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
+- [ ] Review mechanics
 - [ ] Dialogues...?
 - [X] Sweet talk difficulties
 - [X] Poison note notesplashes

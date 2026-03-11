@@ -1,50 +1,26 @@
-import funkin.audio.FunkinSound;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
-import funkin.modding.events.HitNoteScriptEvent;
-import flixel.util.FlxTimer;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.Paths;
-import funkin.Preferences;
 
-class hollowNote extends Module {
+class HollowNote extends NoteKind {
 	public function new() {
-		super("hollowNote");
+		super('hollowNotes', 'Hollow Note', null, [], true); // id, description, styleId, params, noanim
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		event.note.frames = Paths.getSparrowAtlas('notes/hollowNotes');
+		event.note.animation.addByPrefix('purpleScroll', 'noteLeft');
+		event.note.animation.addByPrefix('blueScroll', 'noteDown');
+		event.note.animation.addByPrefix('greenScroll', 'noteUp');
+		event.note.animation.addByPrefix('redScroll', 'noteRight');
 
-		if (PlayState.instance == null) return;
-	}
-
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "hollowNotes" )
-		{
-			event.note.frames = Paths.getSparrowAtlas( 'notes/hollowNotes' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'noteLeft' );
-			event.note.animation.addByPrefix( 'blueScroll', 'noteDown' );
-			event.note.animation.addByPrefix( 'greenScroll', 'noteUp' );
-			event.note.animation.addByPrefix( 'redScroll', 'noteRight' );
-
-			var hollowNote:String;
-			switch ( event.note.noteData.data % 4 )
-				{
-					case 0:
-						hollowNote = "purpleScroll";
-					case 1:
-						hollowNote = "blueScroll";
-					case 2:
-						hollowNote = "greenScroll";
-					case 3:
-						hollowNote = "redScroll";
-				}
-
-			event.note.animation.play( hollowNote );
+		var hollowAnim:String;
+		switch (event.note.noteData.data % 4) {
+			case 0: hollowAnim = 'purpleScroll';
+			case 1: hollowAnim = 'blueScroll';
+			case 2: hollowAnim = 'greenScroll';
+			case 3: hollowAnim = 'redScroll';
 		}
-	}
 
+		event.note.animation.play(hollowAnim);
+	}
 }

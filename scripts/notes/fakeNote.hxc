@@ -1,80 +1,29 @@
-import funkin.audio.FunkinSound;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
+import funkin.play.notes.notekind.NoteKind;
 import funkin.modding.events.HitNoteScriptEvent;
-import flixel.util.FlxTimer;
-import flixel.tweens.FlxTween;
-import flixel.tweens.FlxEase;
-import funkin.Paths;
-import funkin.FunkinMemory;
-import funkin.Preferences;
 
-class fakeNote extends Module {
-	var time:Bool = -1;
-
+class FakeNote extends NoteKind {
 	public function new() {
-		super("Fake Note");
+		super('Fake Note', 'Fake Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
-
-		if (PlayState.instance == null) return;
-	}
-
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming(event);
-		var note = event.note;
-	}
-
-	public override function onUpdate(event:UpdateScriptEvent):Void
-	{
-		super.onUpdate(event);
-		if (PlayState.instance == null) return;
-
-		/*for (note in PlayState.instance.playerStrumline.notes.members)
-    {
-      if (!note.alive) continue;
-			if (note.noteData.kind == "Fake Note") {
-
-			}
-    }*/
-	}
+	// onNoteIncoming: fade-out tween is handled by RetroPlayState.
 
 	public override function onNoteHit(event:HitNoteScriptEvent):Void {
-		super.onNoteHit(event);
-
-		if (PlayState.instance == null) return;
 		if (!event.note.noteData.getMustHitNote()) return;
-		if (event.note.noteData.kind != "Fake Note") return;
-
 		event.cancel();
 		event.stopPropagation();
 	}
 
-	public override function onNoteHoldDrop(event:noteScriptEvent):Void {
-		super.onNoteHoldDrop(event);
-
-		if (PlayState.instance == null) return;
+	public override function onNoteHoldDrop(event:HoldNoteScriptEvent):Void {
 		if (!event.holdNote.noteData.getMustHitNote()) return;
-		if (event.holdNote.noteData.kind != "Fake Note") return;
-
 		event.cancel();
 		event.stopPropagation();
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		super.onNoteMiss(event);
-
-		if ( event.note.noteData.kind == "Fake Note" )
-		{
-			event.note.kill();
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.note.kill();
+		event.cancel();
+		event.stopPropagation();
 	}
 }

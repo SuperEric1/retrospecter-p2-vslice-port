@@ -1,44 +1,17 @@
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.modding.events.HitNoteScriptEvent;
-import flixel.util.FlxTimer;
-import flixel.FlxG;
-import funkin.Paths;
-import funkin.Preferences;
+import funkin.play.notes.notekind.NoteKind;
 
-class RemoveNote extends Module {
+class RemoveNote extends NoteKind {
 	public function new() {
-		super("RemoveNote");
+		super('none', 'Remove Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	// onNoteIncoming: cancelEvent + kill handled by RetroPlayState.
 
-		if (PlayState.instance == null) return;
-	}
-
-	// a logica dessa funcao ta no retroplaystate
-	/*public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if (PlayState.instance == null) return;
-		if (event.note.noteData.kind != "none") return;
-	}*/
-
-	public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		// Pointer to the original onNoteMiss function in source code.
-		// Required when calling source code functions.
-		super.onNoteMiss( event );
-		for ( note in PlayState.instance.playerStrumline.notes.members )
-		{
-			if ( event.note.noteData.kind == "none" )
-			{
-				event.note.length = 0;
-				event.note.kill();
-				event.cancel();
-			}
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.note.length = 0;
+		event.note.kill();
+		event.cancel();
+		event.stopPropagation();
 	}
 }

@@ -22,7 +22,7 @@ class BFRetroCharacter extends MultiSparrowCharacter
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       switch (event.note.noteData.kind)
       {
-        case "hollowNotes":
+        /*case "hollowNotes":
           return;
         case "poison":
           return;
@@ -51,7 +51,7 @@ class BFRetroCharacter extends MultiSparrowCharacter
         case "autoCash":
           return;
         case "hivemoreNote":
-          return;
+          return;*/
         case "Hey!": // this is in some charts, it's an animation note
           this.animation.finished = true;
           this.playAnimation('hey', true, true);

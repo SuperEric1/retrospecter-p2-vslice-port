@@ -1,88 +1,48 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
-import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
 import funkin.mobile.input.ControlsHandler;
 
-class chainNote extends Module {
+class ChainNote extends NoteKind {
 	public function new() {
-		super("chain");
+		super('chain', 'Chain Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic)
-	{
-		super.onCreate(event);
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		if (PlayState.instance == null) return;
-	}
+		event.note.x += -18;
+		event.note.yOffset += -100;
 
-	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
-		super.onNoteHit(ev);
-
-		if (PlayState.instance == null) return;
-		if (!ev.note.noteData.getMustHitNote()) return;
-		if (ev.note.noteData.kind != "chain") return;
-	}*/
-
-	public override function onNoteIncoming( event:NoteScriptEvent )
-	{
-		super.onNoteIncoming( event );
-		if ( event.note.noteData.kind == "chain" )
-		{
-      var downscroll = Preferences.downscroll;
-			if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
-
-			//event.note.x += -55;
-			//event.note.yOffset += -57;
-			event.note.x += -18;
-			event.note.yOffset += -100;
-
-			event.note.frames = Paths.getSparrowAtlas( 'notes/ChainNotes' );
-      if (downscroll) {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Down)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Down)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Down)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Down)0' );
-      } else {
-        event.note.animation.addByPrefix( 'purpleScroll', 'Left(Up)0' );
-        event.note.animation.addByPrefix( 'blueScroll', 'Down(Up)0' );
-        event.note.animation.addByPrefix( 'greenScroll', 'Up(Up)0' );
-        event.note.animation.addByPrefix( 'redScroll', 'Right(Up)0' );
-      }
-
-			var chainNote:String;
-			switch ( event.note.noteData.data % 4 )
-			{
-				case 0:
-					chainNote = "purpleScroll";
-				case 1:
-					chainNote = "blueScroll";
-				case 2:
-					chainNote = "greenScroll";
-				case 3:
-					chainNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play( chainNote );
+		event.note.frames = Paths.getSparrowAtlas('notes/ChainNotes');
+		if (downscroll) {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
+		} else {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
 		}
+
+		var chainAnim:String;
+		switch (event.note.noteData.data % 4) {
+			case 0: chainAnim = 'purpleScroll';
+			case 1: chainAnim = 'blueScroll';
+			case 2: chainAnim = 'greenScroll';
+			case 3: chainAnim = 'redScroll';
+		}
+
+		event.note.active = true;
+		event.note.animation.play(chainAnim);
 	}
 
-	public override function onNoteMiss( event:NoteScriptEvent )
-	{
-		super.onNoteMiss( event );
-
-		if ( event.note.noteData.kind == "chain" )
-		{
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
 	}
 }

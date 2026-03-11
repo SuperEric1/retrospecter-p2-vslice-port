@@ -185,9 +185,9 @@ class RetroPlayState extends Module {
     'none'
   ];
 
-  public function onNoteIncoming(event:NoteScriptEvent) {
+  public override function onNoteIncoming(event:NoteScriptEvent) {
     if (PlayState.instance == null) return;
-    if (!isRetro) return;
+    //if (!isRetro) return;
 
     if (izzyMechanicTimer != null) {
       event.note.angle = 0;
@@ -215,11 +215,10 @@ class RetroPlayState extends Module {
     if (alwaysVisibleKinds.contains(k)) event.note.alpha = 1; // sempre visíveis.
 
     // Notas que não contam pro score
-    if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
-        //throw 'epa';
-        event.note.scoreable = false; // não dar score/combo ao acertar.
-        Highscore.tallies.totalNotes--;
-    }
+    // Agora todas as notas são um notekind que já seta scoreable como false, então não é mais necessário.
+    /*if (hurtNotes.contains(k) && event.note.noteData.getMustHitNote() && event.note.alive) {
+      event.note.scoreable = false; // não dar score/combo ao acertar.
+    }*/
 
     if (k == 'Fake Note') {
       var time:Float = 0.3;
@@ -247,7 +246,7 @@ class RetroPlayState extends Module {
     super('onNoteIncoming');
   }
 
-  function onNoteHit(event:HitNoteScriptEvent):Void {
+  public override function onNoteHit(event:HitNoteScriptEvent):Void {
   if (PlayState.instance == null) return;
   if (!isRetro) return;
   if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
@@ -689,6 +688,19 @@ class RetroPlayState extends Module {
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
+
+      // TODO: use this later to load mechanics
+      /*if (PlayState.instance?.currentChart != null) {
+        var startTime:Float = PlayState.instance.startTimestamp;
+        for (noteData in PlayState.instance.currentChart.notes) {
+          if (noteData.time < startTime) continue;
+          if (noteData.getMustHitNote()) {
+            switch (noteData.kind ?? '') {
+
+            }
+          }
+        }
+      }*/
 
       // Load mechanics based on what we need for this song.
       if (mechanicsEnabled) {
@@ -1275,10 +1287,10 @@ class RetroPlayState extends Module {
     }
 
     // Winning plus icon animation (for characters that have it, like Zerktro.)
-    if (PlayState.instance.healthLerp < 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus') {
-      if (PlayState.instance.iconP2.hasAnimation('winningPlus')) {
-        PlayState.instance.iconP2.animation.play('winningPlus');
-      }
+    // it's not using healthLerp so if the player is dying rapdly, the icon can show
+    if (PlayState.instance.health <= 0.1 && PlayState.instance.iconP2?.animation?.curAnim != 'winningPlus'
+        && PlayState.instance.iconP2.hasAnimation('winningPlus')) {
+      PlayState.instance.iconP2.animation.play('winningPlus');
     }
 
     if (poisonSprite != null && poisonSprite?.alive && poisonSprite?.active && PlayState.instance.iconP1 != null) {

@@ -5,9 +5,9 @@ import funkin.Paths;
 
 import supereric.retrospecter.modules.RetroUtil;
 
-class CashNote extends NoteKind {
+class AutoCashNote extends NoteKind {
 	public function new() {
-		super('cashNote', 'Cash Note', null, [], true); // id, description, styleId, params, noanim
+		super('autoCash', 'Auto Cash Note', null, [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -24,6 +24,8 @@ class CashNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		event.note.yOffset -= 60;
+
 		event.note.frames = Paths.getSparrowAtlas('notes/coin');
 		event.note.animation.addByPrefix('purpleScroll', 'idle0');
 		event.note.animation.addByPrefix('blueScroll', 'idle0');
@@ -34,8 +36,5 @@ class CashNote extends NoteKind {
 		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 	}
 
-	public override function onNoteMiss(event:NoteScriptEvent):Void {
-		event.cancel();
-		event.stopPropagation();
-	}
+	// onNoteMiss: auto-simulates a hit, handled by RetroPlayState.
 }

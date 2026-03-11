@@ -1,70 +1,38 @@
-import funkin.audio.FunkinSound;
 import funkin.play.notes.notekind.NoteKind;
-import funkin.modding.module.Module;
-import funkin.play.PlayState;
-import funkin.play.character.CharacterType;
-import funkin.modding.events.HitNoteScriptEvent;
-import funkin.util.HapticUtil;
-import flixel.util.FlxTimer;
-import flixel.FlxG;
 import funkin.Paths;
-import funkin.Preferences;
 
-class atroceanNote extends Module {
+class AtroceanNote extends NoteKind {
 	public function new() {
-		super("atroceanNote");
+		super('atroceanNote', 'Atrocean Note', null, [], true); // id, description, styleId, params, noanim
+		scoreable = false;
 	}
 
-	function onCreate(event:Dynamic) {
-		super.onCreate(event);
-		if (PlayState.instance == null) return;
-	}
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!event.note.noteData.getMustHitNote()) return;
 
-	/*public override function onNoteHit(ev:HitNoteScriptEvent):Void {
-		super.onNoteHit(ev);
+		event.note.x += -45;
+		event.note.yOffset += -47;
 
-		if (PlayState.instance == null) return;
-		if (!ev.note.noteData.getMustHitNote()) return;
-		if (ev.note.noteData.kind != "atroceanNote") return;
-	}*/
+		event.note.frames = Paths.getSparrowAtlas('notes/Atrocean_Note_Assets');
+		event.note.animation.addByPrefix('purpleScroll', 'Left0');
+		event.note.animation.addByPrefix('blueScroll', 'Down0');
+		event.note.animation.addByPrefix('greenScroll', 'Up0');
+		event.note.animation.addByPrefix('redScroll', 'Right0');
 
-	public override function onNoteIncoming(event:NoteScriptEvent)
-	{
-		super.onNoteIncoming(event);
-		if (event.note.noteData.kind == "atroceanNote" && event.note.noteData.getMustHitNote()) {
-			event.note.x += -45;
-			event.note.yOffset += -47;
-
-			event.note.frames = Paths.getSparrowAtlas( 'notes/Atrocean_Note_Assets' );
-			event.note.animation.addByPrefix( 'purpleScroll', 'Left0' );
-			event.note.animation.addByPrefix( 'blueScroll', 'Down0' );
-			event.note.animation.addByPrefix( 'greenScroll', 'Up0' );
-			event.note.animation.addByPrefix( 'redScroll', 'Right0' );
-
-			var atroceanNote:String;
-			switch (event.note.noteData.data % 4)
-			{
-				case 0:
-					atroceanNote = "purpleScroll";
-				case 1:
-					atroceanNote = "blueScroll";
-				case 2:
-					atroceanNote = "greenScroll";
-				case 3:
-					atroceanNote = "redScroll";
-			}
-
-			event.note.active = true; // so the anim always plays.
-			event.note.animation.play(atroceanNote);
+		var atroceanAnim:String;
+		switch (event.note.noteData.data % 4) {
+			case 0: atroceanAnim = 'purpleScroll';
+			case 1: atroceanAnim = 'blueScroll';
+			case 2: atroceanAnim = 'greenScroll';
+			case 3: atroceanAnim = 'redScroll';
 		}
+
+		event.note.active = true;
+		event.note.animation.play(atroceanAnim);
 	}
 
-	public override function onNoteMiss(event:NoteScriptEvent)
-	{
-		super.onNoteMiss(event);
-		if (event.note.noteData.kind == "atroceanNote") {
-			event.cancel();
-			event.stopPropagation();
-		}
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
 	}
 }

@@ -17,7 +17,7 @@ class BFLustCharacter extends MultiSparrowCharacter
     super('bf-lust');
   }
 
-  function onNoteHit(event:HitNoteScriptEvent):Void {
+  /*function onNoteHit(event:HitNoteScriptEvent):Void {
 
     if (PlayState.instance == null) return;
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
@@ -46,7 +46,7 @@ class BFLustCharacter extends MultiSparrowCharacter
       }
     }
     super.onNoteHit(event);
-	}
+	}*/
 
   function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
   {
