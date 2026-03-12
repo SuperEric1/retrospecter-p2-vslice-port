@@ -58,6 +58,7 @@ class RetroTitleState extends MusicBeatState
   public static var initialized:Bool = false; // to determine if we created the sprites
   var hasPlayedIntro:Bool; // to actually check if the intro has played before
   var hasIntroStarted:Bool = false;
+  var useShaders:Bool = true;
 
   var blackScreen:FlxSprite;
   var team:FlxSprite;
@@ -116,6 +117,22 @@ class RetroTitleState extends MusicBeatState
   var nightflaid_redLightTime:Float = 0.0;
   var nightflaid_leftColor:FlxSprite;
   var nightflaid_rightColor:FlxSprite;
+  // Envy specific
+  var envy_soulsLeft:FlxSprite;
+  var envy_souls:FlxSprite;
+  var envy_soulsMid:FlxSprite;
+  var envy_waterShader:ScriptedFlxRuntimeShader;
+  var envy_waterTime:Float = 0.0;
+  // Gluttony specific
+  var glut_castlePhases:Array<Float> = [];
+  var glut_castles:Array<FlxSprite> = [];
+  var glut_castleRays:Array<FlxSprite> = [];
+  var glut_clouds:Array<FlxSprite> = [];
+  var glut_portalRayBg:FlxSprite;
+  var glut_portalRayFg:FlxSprite;
+  var glut_glow:Float = 0.0;
+  var glut_portalGlow:Float = 1.0;
+  var glut_initY:Float = -850;
 
   override public function create():Void
   {
@@ -131,6 +148,8 @@ class RetroTitleState extends MusicBeatState
     FlxG.cameras.setDefaultDrawTarget(mainCamera, true);
 
     registerBackgrounds();
+
+    useShaders = Save.instance.modOptions.get('retroShaders') ?? true;
 
     if (backgrounds.length > 0) {
       currentBgConfig = backgrounds[FlxG.random.int(0, backgrounds.length - 1)];
@@ -222,6 +241,26 @@ class RetroTitleState extends MusicBeatState
       flameColorB: 0x36FFE9,
       bgZoom: 0.45
     });
+
+    // Gluttony
+    backgrounds.push({
+      id: "gluttony",
+      musicTrack: "Gluttony",
+      flameColorR: 0xEA588D,
+      flameColorG: 0xDB3153,
+      flameColorB: 0xAE1E3B,
+      bgZoom: 0.4
+    });
+
+    // Envy
+    backgrounds.push({
+      id: "envy",
+      musicTrack: "Envy",
+      flameColorR: 0xE7FFED,
+      flameColorG: 0x69FCBF,
+      flameColorB: 0x01FC94,
+      bgZoom: 1.0
+    });
   }
 
   var logoRetro:FlxSprite;
@@ -264,6 +303,10 @@ class RetroTitleState extends MusicBeatState
           loadNightflaidBackground();
         case "pride":
           loadPrideBackground();
+        case "gluttony":
+          loadGluttonyBackground();
+        case "envy":
+          loadEnvyBackground();
       }
     }
 
@@ -362,17 +405,17 @@ class RetroTitleState extends MusicBeatState
     FlxG.mouse.visible = false;
 
     // A música precisa ser tocada depois do stage ser criado para evitar que beats sejam pulados no beatHit.
-    var isFreakyMenu:Bool = (currentBgConfig == null || currentBgConfig.musicTrack == 'freakyMenu');
+    /*var isFreakyMenu:Bool = (currentBgConfig == null || currentBgConfig.musicTrack == 'freakyMenu');
     if (isFreakyMenu)
     {
       if (!hasPlayedIntro || FlxG.sound.music == null) playMenuMusic('freakyMenu');
     }
     else
-    {
+    {*/
       if (!hasPlayedIntro && currentBgConfig != null) {
         playMenuMusic(currentBgConfig.musicTrack, true);
       }
-    }
+    //}
 
     if (!initialized) initialized = true;
     hasIntroStarted = true;
@@ -394,6 +437,7 @@ class RetroTitleState extends MusicBeatState
   {
     var path:String = name;
     if (name != 'freakyMenu') path = !intro ? 'Menu_' + name : 'Intro_' + name;
+    if (name == 'freakyMenu' && intro) path = 'Intro_Part2';
 
     var shouldFadeIn:Bool = FlxG.sound.music == null && !intro && !hasPlayedIntro;
 
@@ -524,6 +568,55 @@ class RetroTitleState extends MusicBeatState
     {
       nightflaid_redLightTime += elapsed;
       nightflaid_redlights.alpha = Math.sin(Math.PI * nightflaid_redLightTime) * 0.25 + 0.85;
+    }
+
+    // Gluttony - castelo, raios, nuvens
+    if (currentBgConfig != null && currentBgConfig.id == "gluttony")
+    {
+      for (i in 0...8)
+      {
+        glut_castlePhases[i] += elapsed;
+        var yOff:Float = glut_initY + Math.sin(glut_castlePhases[i] * 0.3) * 70;
+        if (glut_castles[i] != null) glut_castles[i].y = yOff;
+        if (i >= 3 && glut_castleRays[i - 3] != null) glut_castleRays[i - 3].y = yOff;
+      }
+
+      for (ray in glut_castleRays)
+        if (ray != null) ray.alpha = glut_glow;
+
+      glut_glow = FlxMath.lerp(glut_glow, 0.001, 0.025);
+      glut_portalGlow = FlxMath.lerp(glut_portalGlow, 0.001, 0.025);
+
+      if (glut_portalRayBg != null) glut_portalRayBg.alpha = glut_portalGlow;
+      if (glut_portalRayFg != null) glut_portalRayFg.alpha = glut_portalGlow;
+
+      for (cloud in glut_clouds)
+      {
+        if (cloud == null) continue;
+        cloud.x -= elapsed * 20;
+        if (cloud.x <= -2000) cloud.x = 10700;
+      }
+    }
+
+    // Envy - shader e almas flutuando
+    if (currentBgConfig != null && currentBgConfig.id == "envy")
+    {
+      if (envy_waterShader != null) {
+        envy_waterTime += elapsed;
+        envy_waterShader.setTime(envy_waterTime);
+      }
+      if (envy_souls != null) {
+        envy_souls.y -= elapsed * 1250;
+        if (envy_souls.y <= -34000) envy_souls.y = 2000;
+      }
+      if (envy_soulsMid != null) {
+        envy_soulsMid.y -= elapsed * 750;
+        if (envy_soulsMid.y <= -24000) envy_soulsMid.y = 4000;
+      }
+      if (envy_soulsLeft != null) {
+        envy_soulsLeft.y -= elapsed * 1250;
+        if (envy_soulsLeft.y <= -30000) envy_soulsLeft.y = 2000;
+      }
     }
 
     super.update(elapsed);
@@ -689,6 +782,15 @@ class RetroTitleState extends MusicBeatState
       }
     }
 
+    // Gluttony - pulsos dos raios
+    if (currentBgConfig != null && currentBgConfig.id == "gluttony" && skippedIntro)
+    {
+      if (Conductor.instance.currentBeat % 4 == 0)
+        glut_portalGlow = 1.0;
+      if (Conductor.instance.currentBeat % 4 == 2)
+        glut_glow = 1.0;
+    }
+
     // Wrath - Glows pulsando
     if (currentBgConfig != null && currentBgConfig.id == "wrath" && skippedIntro) {
       handleWrathGlows(1);
@@ -796,10 +898,10 @@ class RetroTitleState extends MusicBeatState
   {
     if (!skippedIntro && initialized)
     {
-      if (currentBgConfig != null && currentBgConfig.musicTrack != 'freakyMenu') {
+      if (currentBgConfig != null /*&& currentBgConfig.musicTrack != 'freakyMenu'*/) {
         playMenuMusic(currentBgConfig.musicTrack, false);
       }
-      if (hasPlayedIntro && currentBgConfig.musicTrack == 'freakyMenu') { // this is necessary
+      if (hasPlayedIntro && currentBgConfig.musicTrack == 'freakyMenu') { // this is necessary ig
         playMenuMusic(currentBgConfig.musicTrack, false);
       }
 
@@ -1529,7 +1631,7 @@ class RetroTitleState extends MusicBeatState
     bg.scale.set(1.1, 1.1);
     addBg(bg);
 
-    loadPrideShader();
+    if (useShaders) loadPrideShader();
 
     //LEFT pillars
 
@@ -1595,5 +1697,169 @@ class RetroTitleState extends MusicBeatState
     pillar0r.scrollFactor.set(1, 1);
     pillar0r.scale.set(1.1, 1.1);
     addBg(pillar0r);
+  }
+
+  function loadGluttonyBackground():Void
+  {
+    var xOff:Float = -1500;
+    var yOff:Float = -700;
+
+    glut_glow = 0.0;
+    glut_portalGlow = 1.0;
+    glut_castlePhases = [];
+    glut_castles = [];
+    glut_castleRays = [];
+    glut_clouds = [];
+
+    var sky = new FlxSprite(xOff, yOff).loadGraphic(Paths.image('gluttony/sky'));
+    sky.scrollFactor.set(0.5, 0.5);
+    sky.antialiasing = false;
+    addBg(sky);
+
+    var cloudPattern:Array<Int> = [2, 7, 3, 9, 5, 4, 1, 8, 10, 6];
+    for (i in 0...cloudPattern.length)
+    {
+      var cloud = new FlxSprite(-1300 + i * 1200, -400);
+      cloud.frames = Paths.getSparrowAtlas('gluttony/cloud');
+      cloud.animation.addByPrefix('idle', 'cloud' + cloudPattern[i], 24, true);
+      cloud.animation.play('idle');
+      cloud.scrollFactor.set(0.5, 0.5);
+      cloud.antialiasing = false;
+      addBg(cloud);
+      glut_clouds.push(cloud);
+    }
+
+    glut_initY = -850;
+    for (i in 0...8)
+    {
+      glut_castlePhases.push(FlxG.random.float(0, Math.PI));
+      var castle = new FlxSprite(xOff, glut_initY);
+      castle.frames = Paths.getSparrowAtlas('gluttony/castle_master');
+      castle.animation.addByPrefix('castle', 'castle_' + i + '.png', 1, true);
+      castle.animation.play('castle');
+      castle.scrollFactor.set(0.8, 0.8);
+      castle.active = false;
+      addBg(castle);
+      glut_castles.push(castle);
+    }
+
+    for (i in 3...8)
+    {
+      var ray = new FlxSprite(xOff, glut_initY);
+      ray.frames = Paths.getSparrowAtlas('gluttony/castle_ray_master');
+      ray.animation.addByPrefix('ray', 'castle_' + i + '_ray', 1, true);
+      ray.animation.play('ray');
+      ray.scrollFactor.set(0.8, 0.8);
+      ray.alpha = 0;
+      ray.antialiasing = false;
+      ray.active = false;
+      addBg(ray);
+      glut_castleRays.push(ray);
+    }
+
+    var voidR = new FlxSprite(1700, -48);
+    voidR.frames = Paths.getSparrowAtlas('gluttony/Gluttony_void_righttree');
+    voidR.animation.addByPrefix('idle', 'RightTreeVoid instance 1', 24, true);
+    voidR.animation.play('idle');
+    addBg(voidR);
+
+    var voidG = new FlxSprite(-1120, 900);
+    voidG.frames = Paths.getSparrowAtlas('gluttony/Gluttony_voidground');
+    voidG.animation.addByPrefix('idle', 'GroundVoid instance 1', 24, true);
+    voidG.animation.play('idle');
+    addBg(voidG);
+
+    var voidL = new FlxSprite(-750, -275);
+    voidL.frames = Paths.getSparrowAtlas('gluttony/Gluttony_voidlefttree');
+    voidL.animation.addByPrefix('idle', 'LeftTreeVoid instance 1', 24, true);
+    voidL.animation.play('idle');
+    addBg(voidL);
+
+    var stage = new FlxSprite(xOff, yOff).loadGraphic(Paths.image('gluttony/stage'));
+    addBg(stage);
+
+    var trees = new FlxSprite(xOff, yOff).loadGraphic(Paths.image('gluttony/trees'));
+    trees.antialiasing = false;
+    addBg(trees);
+
+    glut_portalRayBg = new FlxSprite(xOff, yOff).loadGraphic(Paths.image('gluttony/portal_ray_bg'));
+    addBg(glut_portalRayBg);
+
+    glut_portalRayFg = new FlxSprite(xOff, yOff).loadGraphic(Paths.image('gluttony/portal_ray_fg'));
+    glut_portalRayFg.antialiasing = false;
+    addBg(glut_portalRayFg);
+
+    var fgFog = new FlxSprite(-1880, 750);
+    fgFog.frames = Paths.getSparrowAtlas('gluttony/FG_Mist');
+    fgFog.animation.addByPrefix('fog', 'FG_mist1', 24, true);
+    fgFog.animation.play('fog');
+    fgFog.antialiasing = false;
+    addBg(fgFog);
+  }
+
+  function loadEnvyBackground():Void
+  {
+    if (useShaders) {
+      envy_waterShader = ScriptedFlxRuntimeShader.init('RetroWaterShader');
+      bgCam.filters = [new ShaderFilter(envy_waterShader)];
+    }
+
+    envy_soulsLeft = new FlxSprite(0, 5000);
+    envy_soulsLeft.frames = Paths.getSparrowAtlas('envy/soulsMid');
+    envy_soulsLeft.animation.addByPrefix('idle', 'soulsmid', 24, true);
+    envy_soulsLeft.animation.play('idle');
+    envy_soulsLeft.scale.set(0.5, 0.5);
+    addBg(envy_soulsLeft);
+
+    var back = new FlxSprite().loadGraphic(Paths.image('envy/title/back'));
+    back.setGraphicSize(1280);
+    back.updateHitbox();
+    back.screenCenter();
+    addBg(back);
+
+    var spooky1 = new FlxSprite().loadGraphic(Paths.image('envy/title/1'));
+    spooky1.setGraphicSize(1500);
+    spooky1.updateHitbox();
+    spooky1.screenCenter();
+    spooky1.alpha = 0;
+    addBg(spooky1);
+    FlxTween.tween(spooky1, {alpha: 1}, 4, {ease: FlxEase.quadOut});
+
+    var spooky2 = new FlxSprite().loadGraphic(Paths.image('envy/title/2'));
+    spooky2.setGraphicSize(1500);
+    spooky2.updateHitbox();
+    spooky2.screenCenter();
+    spooky2.alpha = 0;
+    addBg(spooky2);
+    new FlxTimer().start(2, function(tmr:FlxTimer) {
+      FlxTween.tween(spooky2, {alpha: 1}, 4, {ease: FlxEase.quadOut});
+    });
+
+    var front = new FlxSprite().loadGraphic(Paths.image('envy/title/front'));
+    front.setGraphicSize(1280);
+    front.updateHitbox();
+    front.screenCenter();
+    addBg(front);
+
+    var gg = new FlxSprite(55, 160).loadGraphic(Paths.image('envy/title/g'));
+    gg.scale.set(0.66666, 0.66666);
+    gg.updateHitbox();
+    gg.alpha = 0;
+    addBg(gg);
+    FlxTween.tween(gg, {alpha: 0.5}, 1, {ease: FlxEase.quadOut});
+
+    envy_soulsMid = new FlxSprite(250, 4000);
+    envy_soulsMid.frames = Paths.getSparrowAtlas('envy/soulsMid');
+    envy_soulsMid.animation.addByPrefix('idle', 'soulsmid', 24, true);
+    envy_soulsMid.animation.play('idle');
+    envy_soulsMid.scale.set(0.5, 0.5);
+    addBg(envy_soulsMid);
+
+    envy_souls = new FlxSprite(500, 2000);
+    envy_souls.frames = Paths.getSparrowAtlas('envy/soulsClose');
+    envy_souls.animation.addByPrefix('idle', 'souls_close', 24, true);
+    envy_souls.animation.play('idle');
+    envy_souls.scale.set(0.5, 0.5);
+    addBg(envy_souls);
   }
 }

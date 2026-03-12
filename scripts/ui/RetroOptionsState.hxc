@@ -38,7 +38,8 @@ class RetroOptionsState extends Module
   var curAnim:String = 'anims/default';
   var curPage:String = 'options';
   var curText:String = '';
-  var buttonPosX:Float = FlxG.onMobile ? 57 : 45;
+  var hasUpdatedBgSprite:Bool = false;
+  var buttonPosX:Float = FlxG.onMobile ? 72 : 55;
   var buttonOffsetY:Float = -50;
   var dozircShake:Bool = false;
   var hasChangedButtonPos:Bool = false;
@@ -46,9 +47,11 @@ class RetroOptionsState extends Module
   var isShuttingDown:Bool = false;
 
   var backBgAlpha:Float = 0.4;
+  var windozBg:FunkinSprite;
   var taskbar:FlxSprite;
   var backBg:FlxSprite;
   var introBg:FlxSprite;
+  var introWindozBg:FlxSprite;
   var dozirc:FlxAtlasSprite;
   var dozircShadow:FlxAtlasSprite;
   var overlay:FlxSprite;
@@ -96,6 +99,11 @@ class RetroOptionsState extends Module
 
   public function buildSprites():Void
   {
+    windozBg = FunkinSprite.create(0, 0, bgPath);
+    windozBg.setGraphicSize(1216);
+    windozBg.scrollFactor.set(0, 0);
+    windozBg.screenCenter(0x01);
+
     taskbar = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, 100, 0xFF2d3131);
     taskbar.screenCenter(0x01);
     taskbar.scrollFactor.set(0, 0);
@@ -109,9 +117,13 @@ class RetroOptionsState extends Module
     backBg.visible = false;
 
     introBg = new FlxSprite(0, 0);
-    introBg.loadGraphic(Paths.image(bgPath));
-    introBg.setGraphicSize(Std.int(FlxG.width * 1.05));
+    introBg.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, 0xFF60dee8);
     introBg.screenCenter();
+
+    introWindozBg = new FlxSprite(0, 0);
+    introWindozBg.loadGraphic(Paths.image(bgPath));
+    introWindozBg.setGraphicSize(1320);
+    introWindozBg.screenCenter();
 
     dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozirc.setGraphicSize(Std.int(dozirc.width * 1));
@@ -141,7 +153,7 @@ class RetroOptionsState extends Module
     windozText.screenCenter(0x01);
     windozText.y = 560;
     windozIntroText = windozText.clone();
-    windozIntroText.y = introBg.height * 0.8;
+    windozIntroText.y = windozText.y + 10;
 
     signText = new FlxText(0, 0, 0, 'TEST', 1);
     signText.setFormat(Paths.font('DS-DIGIB.TTF'), 150, 0xFF7df1ef, 'center');
@@ -207,6 +219,7 @@ class RetroOptionsState extends Module
     frontBg = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
     frontBg.screenCenter();
     frontBg.alpha = 0;
+    frontBg.alpha = 0.15;
     frontBg.scrollFactor.set(0, 0);
 
     fade = new FlxSprite(0, 0).makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.BLACK);
@@ -307,29 +320,35 @@ class RetroOptionsState extends Module
     {
       initRetroOptions(); // refresh the options (for the translations to work)
       hasAddedOptions = false; // add the options again!
+      hasUpdatedBgSprite = false;
       canUpdate = Save.instance.modOptions.get('retroCustomMenus'); // to determine if the menu will build/update. we update this variable once the state changes to not cause any bugs with onUpdate.
 
       if (!event.targetState.members.contains(dozirc) && canUpdate)
       {
         var state = event.targetState;
         //loadDebugElements();
+        var z:Int = 0;
         taskBarApps = []; // delete the previous apps to prevent errors
         buildSprites();
-        state.insert(1, windozText);
-        state.insert(2, backBg);
-        state.insert(3, dozirc);
-        state.insert(4, dozircShadow);
-        state.insert(5, signText);
-        state.insert(6, signArrows);
-        state.insert(7, taskbar);
-        for (app in taskBarApps) { if (app != null) state.insert(8, app); }
-        state.insert(9, frontBg);
+        state.insert(1, windozBg);
+        state.insert(2, windozText);
+        state.insert(3, backBg);
+        state.insert(4, dozirc);
+        state.insert(5, dozircShadow);
+        state.insert(6, signText);
+        state.insert(7, signArrows);
+        state.insert(8, taskbar);
+        for (app in taskBarApps) { if (app != null) state.insert(9, app); }
+        state.insert(10, frontBg);
+        FlxTween.tween(frontBg, {alpha: 0}, 1, { type: 4, ease: FlxEase.quadInOut });
         state.add(browser);
         state.add(browserText);
         state.add(browserIcon);
         state.add(overlay);
         state.add(introBg);
+        state.add(introWindozBg);
         introBg.kill();
+        introWindozBg.kill();
         state.add(windozIntroText);
         windozIntroText.kill();
         state.add(fade);
@@ -358,7 +377,8 @@ class RetroOptionsState extends Module
     var delay:Float = 1.5;
     var easeType:FlxEase = FlxEase.quadInOut;
 
-    if (!introBg.alive) introBg.revive();
+    if (!introBg.alive) introWindozBg.revive();
+    if (!introWindozBg.alive) introWindozBg.revive();
     if (!windozIntroText.alive) windozIntroText.revive();
 
     FlxG.mouse.visible = false;
@@ -366,13 +386,15 @@ class RetroOptionsState extends Module
     if (FlxG.sound.music != null) FlxG.sound.music.stop();
     FunkinSound.playOnce(Paths.sound('menus/boot'), 1);
 
-    FlxTween.tween(introBg, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
+    FlxTween.tween(introWindozBg, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
       playMenuMusic();
       FlxG.mouse.visible = true;
+      introWindozBg.kill();
+    }});
+    FlxTween.tween(introBg, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
       introBg.kill();
     }});
     FlxTween.tween(windozIntroText, {alpha: 0}, 1, {startDelay: delay, ease: easeType, onComplete: _ -> {
-      playMenuMusic();
       windozIntroText.kill();
     }});
   }
@@ -474,10 +496,11 @@ class RetroOptionsState extends Module
         var bg = optionsState.members[0];
         if (bg != null && Std.isOfType(bg, FlxSprite)) {
           var bgSprite:FlxSprite = bg;
-          if (bgSprite.graphic != null && bgSprite.graphic.key != Paths.image(bgPath))
-          {
-            bgSprite.loadGraphic(Paths.image(bgPath));
-            bgSprite.setGraphicSize(Std.int(FlxG.width * 0.95));
+          if (!hasUpdatedBgSprite /*bgSprite.graphic != null && bgSprite.graphic.key != Paths.image(bgPath)*/) {
+            hasUpdatedBgSprite = true;
+            //bgSprite.loadGraphic(Paths.image(bgPath));
+            // bgSprite.setGraphicSize(Std.int(FlxG.width * 0.95));
+            bgSprite.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, 0xFF60dee8);
             bgSprite.shader = null;
           }
         }
@@ -740,8 +763,9 @@ class RetroOptionsState extends Module
       }
 
       // Animate the alpha of the front BG, making it seem like it's fading in and out
+      // This is now done with a tween in onCreate
       if (frontBg == null) return;
-      var fadeTime:Float = 1.3;
+      /*var fadeTime:Float = 1.3;
       if (frontBg.alpha <= 0) {
         isFrontBgFadingIn = true;
         FlxTween.tween(frontBg, {alpha: 0.2}, fadeTime, { ease: FlxEase.quadInOut,
@@ -750,7 +774,7 @@ class RetroOptionsState extends Module
             FlxTween.tween(frontBg, {alpha: 0}, fadeTime, { ease: FlxEase.quadInOut });
           }
         });
-      }
+      }*/
     }
   }
 

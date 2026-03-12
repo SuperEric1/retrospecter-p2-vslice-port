@@ -1,6 +1,7 @@
 import funkin.play.notes.notekind.NoteKind;
 
 class NoAnimationNote extends NoteKind {
+	// This is kinda useless but i'm lazy to rename the kinds in all charts
 	public function new() {
 		super('No Animation', 'No Animation Note', null, [], true); // id, description, styleId, params, noanim
 	}

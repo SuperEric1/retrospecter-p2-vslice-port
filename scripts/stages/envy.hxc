@@ -574,6 +574,8 @@ class EnvyStage extends Stage
   override function onGameOver(event:ScriptEvent)
   {
     super.onGameOver(event);
+    var bf = getBoyfriend();
+    FlxTween.angle(bf, 70, -70, 4, { ease: FlxEase.sineInOut, type: 4 });
     PlayState.instance.camGame.filters = [];
   }
 

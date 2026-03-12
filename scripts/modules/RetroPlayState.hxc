@@ -1855,13 +1855,17 @@ class RetroPlayState extends Module {
           poisonSprite.visible = false;
           poisonSprite.active = false;
           poisonSprite.kill();
+          return;
       }
+      
+      poisonSprite.zIndex += 2; // okay this might fix it this time
     }
-    if (poisonText != null && poisonSprite.active) {
+
+    /*if (poisonText != null && poisonSprite.active) {
       var commaSeparated:Bool = true;
       poisonText.text = FlxStringUtil.formatMoney(poisonAmount, false, commaSeparated);
       poisonText.visible = true;
-    }
+    }*/
   }
 
   function doVocalThing(?mult:Float = 1.2)
