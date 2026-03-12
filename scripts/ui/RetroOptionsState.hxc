@@ -377,7 +377,7 @@ class RetroOptionsState extends Module
     var delay:Float = 1.5;
     var easeType:FlxEase = FlxEase.quadInOut;
 
-    if (!introBg.alive) introWindozBg.revive();
+    if (!introBg.alive) introBg.revive();
     if (!introWindozBg.alive) introWindozBg.revive();
     if (!windozIntroText.alive) windozIntroText.revive();
 
