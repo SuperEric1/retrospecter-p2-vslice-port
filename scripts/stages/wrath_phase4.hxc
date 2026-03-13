@@ -63,6 +63,7 @@ class WrathPhase4Stage extends Stage
   var geyserM:StageProp;
   var geyserR:StageProp;
   var gateFront:StageProp;
+  var spotlight:FunkinSprite;
 
   var sectionOneSprites:Array<FunkinSprite> = [];
   var sectionTwoSprites:Array<FunkinSprite> = [];
@@ -222,6 +223,21 @@ class WrathPhase4Stage extends Stage
 
     sakuTower = makeSprite('sakuTower', cityX + 450, cityY - 500, 1.666, 0.45, 0.3);
     sectionTwoSprites.push(sakuTower);
+
+    spotlight = FunkinSprite.create(cityX - 250 - 150, cityY - 300, 'Phase4/titlestate/spot');
+    spotlight.loadTextureAtlas('Phase4/titlestate/spot', 'shared', {
+      applyStageMatrix: true
+    });
+    spotlight.animation.addBySymbol('idle', 'SpotLight Animation', 24, true);
+    spotlight.animation.play('idle', true);
+    spotlight.scrollFactor.set(0.45, 0.3);
+    spotlight.scale.set(1.2, 1.2);
+    spotlight.updateHitbox();
+    spotlight.alpha = 0.6;
+    spotlight.blend = 0;
+    spotlight.antialiasing = false;
+    PlayState.instance.add(spotlight);
+    sectionTwoSprites.push(spotlight);
 
     // Create front buildings
     buildingsFront = makeSprite('buildingsFront', cityX + 660, cityY + 800, 1.12, 0.5, 0.33);
@@ -585,6 +601,7 @@ class WrathPhase4Stage extends Stage
         gateFront.y += 0.1;
         izzyCloud.y += 0.05;
         izzyTower.y += 0.05;
+        spotlight.y += 0.1;
       }
       // Optimization thingies
       if (curStep >= 2475 && loadedPart < 1) {

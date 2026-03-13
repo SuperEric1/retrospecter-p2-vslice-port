@@ -801,7 +801,6 @@ class RetroMainMenu extends MusicBeatState
 
   function goBack():Void
   {
-    trace("BACK: Interact complete.");
     canNavigate = false;
     rememberedSelectedIndex = selectedIndex;
     FunkinSound.playOnce(Paths.sound('cancelMenu'));

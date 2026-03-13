@@ -184,8 +184,8 @@ class RetroFreeplay extends Module {
     var curVariation:String = data[1] ?? '';
     var curWeekId:String = event.capsule?.freeplayData?.levelId ?? '';
 
-    trace(curSongId + ' - ' + curVariation + ' - ' + curWeekId);
-    trace(prevSongId + ' - ' + prevWeekId);
+    //trace(curSongId + ' - ' + curVariation + ' - ' + curWeekId);
+    //trace(prevSongId + ' - ' + prevWeekId);
 
     if (curSongId != prevSongId) {
       updateBackingCardTexts(curSongId, curWeekId, curVariation);
@@ -225,7 +225,7 @@ class RetroFreeplay extends Module {
         var customTexts:BackingCardTexts = songConfig.get(curSongId);
         if (customTexts == null && curWeekId != '' && curWeekId != null) {
           customTexts = songConfig.get(curWeekId);
-          trace('usando config da semana');
+          //trace('usando config da semana');
         }
 
         var textsToApply:BackingCardTexts;
@@ -248,8 +248,8 @@ class RetroFreeplay extends Module {
           textsToApply = defaultTexts;
           usingDefault = true;
         }
-        trace(customTexts);
-        trace(textsToApply);
+        //trace(customTexts);
+        //trace(textsToApply);
 
         if (textsToApply != null) {
           if (textsToApply.funnyScroll != null && backingCard.funnyScroll != null && backingCard.funnyScroll.text != textsToApply.funnyScroll) backingCard.funnyScroll.updateText(textsToApply.funnyScroll);
@@ -286,8 +286,8 @@ class RetroFreeplay extends Module {
           }*/
 
           var targetImg:String = textsToApply.bgImage;
-          trace('targetImg: ' + targetImg);
-          trace('curBgImage: ' + curBgImage);
+          //trace('targetImg: ' + targetImg);
+          //trace('curBgImage: ' + curBgImage);
           var isRetroBg = targetImg != defaultTexts.bgImage;
           var titleScale = isRetroBg ? ALBUM_SCALE : 1;
           var targetAngle = isRetroBg ? ALBUM_ANGLE : 0;

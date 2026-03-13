@@ -113,7 +113,7 @@ class RetroPVE_VideoModule extends Module
 
     if (filePath == null)
     {
-      trace('ALERT: The video is null! How did you come across this?');
+      //trace('ALERT: The video is null! How did you come across this?');
       return;
     }
 
@@ -234,9 +234,9 @@ class RetroPVE_VideoModule extends Module
 
     if (instant || Math.abs(videoError) > VIDEO_RESYNC_THRESHOLD)
     {
-      trace('VIDEO NEEDS RESYNC!');
-      trace('Video error: ' + Std.int(Math.abs(videoError)) + 'ms');
-      trace('Resyncing video to ' + Std.int(expectedVideoTime) + 'ms (was ' + Std.int(video.videoSprite.bitmap.time) + 'ms)');
+      //trace('VIDEO NEEDS RESYNC!');
+      //trace('Video error: ' + Std.int(Math.abs(videoError)) + 'ms');
+      //trace('Resyncing video to ' + Std.int(expectedVideoTime) + 'ms (was ' + Std.int(video.videoSprite.bitmap.time) + 'ms)');
       video.videoSprite.pause();
       video.videoSprite.bitmap.time = expectedVideoTime;
       if (resume) video.videoSprite.resume();

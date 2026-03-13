@@ -1486,20 +1486,18 @@ class RetroTitleState extends MusicBeatState
     a.y += toAdd;
     addBg(a);
 
-    try {
-      var spotlight = new FlxAtlasSprite(90, 150 + toAdd, Paths.animateAtlas('Phase4/titlestate/spot'));
-      if (spotlight != null) {
-        spotlight.anim.play('SpotLight Animation', true, false, true);
-        spotlight.scrollFactor.set(0, 0);
-        spotlight.scale.set(0.34, 0.34);
-        spotlight.updateHitbox();
-        spotlight.alpha = 0.6;
-        spotlight.blend = 0;
-        addBg(spotlight);
-      }
-    } catch (e:Dynamic) {
-      trace("Spotlight asset não encontrado: " + e);
-    }
+    var spotlight = FunkinSprite.create(90, 150 + toAdd, 'Phase4/titlestate/spot');
+    spotlight.loadTextureAtlas('Phase4/titlestate/spot', 'shared', {
+      applyStageMatrix: true
+    });
+    spotlight.animation.addBySymbol('idle', 'SpotLight Animation', 24);
+    spotlight.animation.play('idle', true, false);
+    spotlight.scrollFactor.set(0, 0);
+    spotlight.scale.set(0.34, 0.34);
+    spotlight.updateHitbox();
+    spotlight.alpha = 0.6;
+    spotlight.blend = 0;
+    addBg(spotlight);
 
     // Cores para as luzes
     phase4_colors = [0xFF31A2FD, 0xFF31FD8C, 0xFFFB33F5, 0xFFFD4531, 0xFFFBA633];

@@ -41,7 +41,6 @@ class RetroSave extends Module
     }
 
     _initialized = true;
-    trace("[RetroSave] Debug mode carregado: " + debug);
   }
 
   public function new()

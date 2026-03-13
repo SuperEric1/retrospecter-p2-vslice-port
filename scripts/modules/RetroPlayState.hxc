@@ -1586,6 +1586,8 @@ class RetroPlayState extends Module {
     var zIndex = PlayState.instance.playerStrumline.zIndex + 2;
     var yOffset = 20;
     var path:String = 'greed/papers/';
+    FunkinMemory.cacheTexture(Paths.image('notes/splash/coin', 'shared'));
+    FunkinMemory.cacheTexture(Paths.image('notes/splash/bee', 'shared'));
 
     for (i in 0...4) {
       var sprite:FunkinSprite = FunkinSprite.create(0, 0, path + 'stack' + i);
@@ -1857,7 +1859,7 @@ class RetroPlayState extends Module {
           poisonSprite.kill();
           return;
       }
-      
+
       poisonSprite.zIndex += 2; // okay this might fix it this time
     }
 

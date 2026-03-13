@@ -467,7 +467,6 @@ class SweetTalkSong extends Song
         var opponentStrum = playState.opponentStrumline.strumlineNotes.members[i];
 
         if (playerStrum != null) {
-          trace('intersect player');
           playerStrum.y = defaultPlayerStrumY[i] + FlxG.random.float(-35, 35);
         }
         if (opponentStrum != null) {
