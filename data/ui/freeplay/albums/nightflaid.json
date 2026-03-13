@@ -3,6 +3,6 @@
   "name": "Vs. RetroSpecter Part Two: Infernadise, Vol. 2",
   "artists": ["RetroSpecter & Kamex"],
   "albumArtAsset": "freeplay/albumRoll/nightflaid_my_beloved",
-  "albumTitleAsset": "freeplay/albumRoll/expansion2-text",
-  "albumTitleOffsets": [0, 0]
+  "albumTitleAsset": "freeplay/logos/Nightflaid",
+  "albumTitleOffsets": [-65, -10]
 }

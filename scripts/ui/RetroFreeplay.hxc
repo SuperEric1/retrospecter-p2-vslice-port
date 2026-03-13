@@ -27,6 +27,9 @@ class RetroFreeplay extends Module {
   var tmpBg:FunkinSprite;
   var backingImagePos = [];
 
+  final ALBUM_SCALE = 0.65;
+  final ALBUM_ANGLE = 10;
+
   var defaultTexts:BackingCardTexts = null;
   var defaultAlbumAngle:Float = 0.0;
 
@@ -191,6 +194,23 @@ class RetroFreeplay extends Module {
     }
   }
 
+  public override function onUpdate(event:ScriptEvent):Void {
+    super.onUpdate(event);
+    var freeplayState:FreeplayState = FlxG.state.subState;
+    if (freeplayState.currentCharacterId != "bf") return;
+    if (!isInFreeplay) return;
+
+    // This is so the title gets updated if it is doing the intro anim
+    var isRetroBg = curBgImage != '' && curBgImage != defaultTexts.bgImage;
+    var titleScale = isRetroBg ? ALBUM_SCALE : 1;
+    var targetAngle = isRetroBg ? ALBUM_ANGLE : 0;
+    if (!freeplayState.albumRoll.albumTitle.visible) {
+      freeplayState.albumRoll.albumTitle.scale.set(titleScale, titleScale);
+      freeplayState.albumRoll.albumTitle.angle = isRetroBg ? 10 : 0;
+      freeplayState.albumRoll.albumTitle.updateHitbox();
+    }
+  }
+
   function updateBackingCardTexts(curSongId:String, curWeekId:String, ?variation:String):Void {
     //if (FlxG.state == null || !Std.isOfType(FlxG.state, FreeplayState)) return;
 
@@ -268,6 +288,12 @@ class RetroFreeplay extends Module {
           var targetImg:String = textsToApply.bgImage;
           trace('targetImg: ' + targetImg);
           trace('curBgImage: ' + curBgImage);
+          var isRetroBg = targetImg != defaultTexts.bgImage;
+          var titleScale = isRetroBg ? ALBUM_SCALE : 1;
+          var targetAngle = isRetroBg ? ALBUM_ANGLE : 0;
+          freeplayState.albumRoll.albumTitle.scale.set(titleScale, titleScale);
+          freeplayState.albumRoll.albumTitle.angle = isRetroBg ? 10 : 0;
+          freeplayState.albumRoll.albumTitle.updateHitbox();
           if (targetImg != null && targetImg != curBgImage) {
             curBgImage = targetImg;
             freeplayState.backingImage.loadGraphic(Paths.image(targetImg));

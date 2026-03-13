@@ -3,6 +3,6 @@
   "name": "Vs. RetroSpecter Part Two: Infernadise, Vol. 2",
   "artists": ["RetroSpecter & Kamex"],
   "albumArtAsset": "freeplay/albumRoll/hiveless",
-  "albumTitleAsset": "freeplay/albumRoll/expansion2-text",
-  "albumTitleOffsets": [0, 0]
+  "albumTitleAsset": "freeplay/logos/Hiveless",
+  "albumTitleOffsets": [-100, -20]
 }
