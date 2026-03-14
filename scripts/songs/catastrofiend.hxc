@@ -92,7 +92,7 @@ class CatastrofiendSong extends Song
     super.onCountdownStart(event);
     hasPlayedEndCutscene = false;
 
-    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedCutscene = true;
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedCutscene = true;
 
     if (!hasPlayedCutscene)
     {
