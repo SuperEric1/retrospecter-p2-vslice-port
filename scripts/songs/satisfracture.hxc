@@ -13,6 +13,7 @@ import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.play.GameOverSubState;
 import funkin.util.ReflectUtil;
+import funkin.util.TouchUtil;
 import funkin.play.PlayState;
 import funkin.audio.FunkinSound;
 import funkin.data.song.SongRegistry;
@@ -86,7 +87,7 @@ class SatisfractureSong extends Song
 
   function introCutscene() {
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) return;
-    playState.togglePauseButton();
+    playState.togglePauseButton(true);
     playState.isInCutscene = true;
     playState.mayPauseGame = false;
 
