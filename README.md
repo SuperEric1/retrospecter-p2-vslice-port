@@ -10,10 +10,11 @@ TODO:
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
 - [ ] Acid death
+- [ ] Atrocean's note mechanic
+- [ ] Update main menu
 - [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Intro for options menu
 - [ ] Pause menu with custom music based on the opp/stage
-- [ ] Hydra note is not pausing when pausing the game
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
@@ -27,6 +28,7 @@ TODO:
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Review mechanics
 - [ ] Dialogues...?
+- [X] Hydra note is not pausing when pausing the game
 - [X] Sweet talk difficulties
 - [X] Poison note notesplashes
 - [X] Song length timer

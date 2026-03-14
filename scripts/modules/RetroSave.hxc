@@ -61,9 +61,12 @@ class RetroSave extends Module
       resetOneTimeFlags();
     }
 
-    /*if (FlxG.save?.data?.BotMode != null && FlxG.save?.data?.BotMode.toLowerCase() != 'off') {
-      FlxG.save.data.BotMode = "off";
-    }*/
+    var isCh34t1ng:String = Save.instance.modOptions.get('botplay');
+    if (isCh34t1ng != null && (isCh34t1ng.isBotActive || isCh34t1ng.startWithBotplay)) {
+      isCh34t1ng.isBotActive = false;
+      isCh34t1ng.startWithBotplay = false;
+      Save.instance.flush();
+    }
   }
 
   function setupSave():Void {
@@ -129,6 +132,8 @@ class RetroSave extends Module
     //FlxG.save?.data?.BotMode = skillIssueLine[FlxG.random.int(0, skillIssueLine.length - 1)];
 
     // uncomment once it has been updated
-    //FlxG.save?.data?.BotMode = 'off';
+    Save.instance.modOptions.get('botplay').isBotActive = false;
+    Save.instance.modOptions.get('botplay').startWithBotplay = false;
+    Save.instance.flush();
   }
 }

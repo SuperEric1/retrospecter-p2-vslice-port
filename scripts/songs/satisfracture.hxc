@@ -3,6 +3,10 @@ import flixel.FlxSprite;
 import flixel.math.FlxBasePoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import funkin.ui.FullScreenScaleMode;
+import flixel.util.FlxTimerManager;
 import flixel.util.FlxTimer;
 import funkin.Conductor;
 import funkin.play.song.Song;
@@ -20,19 +24,26 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
 import funkin.ui.FullScreenScaleMode;
 
+import supereric.retrospecter.modules.RetroLanguage;
+
 class SatisfractureSong extends Song
 {
   var tweens = [];
   var pausedTweens = [];
 
+  var ghostTap = Constants.GHOST_TAPPING;
   var hasPlayedInGameCutscene:Bool;
   var hasPlayedEndCutscene:Bool;
+  var skipText:FlxText;
+  var cutsceneSkipped:Bool = false;
+  var canSkipCutscene:Bool = false;
+  var cutsceneTimerManager:FlxTimerManager;
+  var cutsceneSounds:Array<FunkinSound> = [];
   var isDoingEnough:Bool = false;
-  var ghostTap = Constants.GHOST_TAPPING;
 
-  var beepSound: FunkinSound;
-  var micSound: FunkinSound;
-  var cutsceneMusic: FunkinSound;
+  var beepSound:FunkinSound;
+  var micSound:FunkinSound;
+  var cutsceneMusic:FunkinSound;
 
   var cutsceneConductor:Conductor;
   var bgSprite:FunkinSprite;
@@ -79,6 +90,20 @@ class SatisfractureSong extends Song
     playState.isInCutscene = true;
     playState.mayPauseGame = false;
 
+    skipText = new FlxText(0, 618 * FullScreenScaleMode.wideScale.y, 0,
+      RetroLanguage.tf('cutscene.text.skip', [' ' + PlayState.instance.controls.getDialogueNameFromToken("CUTSCENE_ADVANCE", true) + ' ']), 20);
+    if (FlxG.onMobile) {
+      skipText.text = RetroLanguage.tf('cutscene.text.skip', [RetroLanguage.t('cutscene.text.skip.pausebutton', 'Pause Button')]);
+    }
+    skipText.fieldWidth = 1000 * FullScreenScaleMode.wideScale.x;
+    skipText.screenCenter(0x01);
+    skipText.setFormat(Paths.font('vcr.ttf'), 40, 0xFFFFFFFF, "right", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    skipText.scrollFactor.set();
+    skipText.borderSize = 2;
+    skipText.alpha = 0;
+    PlayState.instance.currentStage.add(skipText);
+    skipText.cameras = [PlayState.instance.camCutscene];
+
     var bfPos:Array<Float> = [
       PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.x,
       PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y
@@ -98,25 +123,30 @@ class SatisfractureSong extends Song
     var cutsceneDelay = 1.5;
 
     cutsceneConductor = new Conductor();
+    cutsceneConductor.forceBPM(140);
     cutsceneConductor.onBeatHit.add(onCutsceneBeatHit);
+    cutsceneMusic = FunkinSound.load(Paths.music("freakyMenu/freakyMenu"), true);
+    cutsceneMusic.volume = 0;
+    cutsceneMusic.play(false);
+    cutsceneTimerManager = new FlxTimerManager();
 
     // Início
-    new FlxTimer().start(0.1, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(0.1, function(tmr) {
       FlxTween.tween(bgSprite, {alpha: 0}, 1.7, null, function() {
         bgSprite.visible = false;
       });
     });
 
     // Câmera vai até boyfriend.
-    new FlxTimer().start(cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(cutsceneDelay, function(tmr) {
       playState.tweenCameraToPosition(bfPos[0] + -50, bfPos[1] - 100, 1.5, FlxEase.quadInOut); //x, y, rot? eu acho
     });
     // beep + micsound
-    new FlxTimer().start(1.7 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(1.7 + cutsceneDelay, function(tmr) {
       playStage.getBoyfriend().playAnimation('singUP', true);
       beepSound.play();
     });
-    new FlxTimer().start(1.723 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(1.723 + cutsceneDelay, function(tmr) {
       micSound.play();
     });
     /* after beep (o jogo ja muda pro idle)
@@ -124,26 +154,48 @@ class SatisfractureSong extends Song
       playStage.getBoyfriend().playAnimation('idle', true);
     }); */
     // retro acorda
-    new FlxTimer().start(2.65 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(2.65 + cutsceneDelay, function(tmr) {
       retro.playAnimation('intro', true);
     });
 
     // Cutscene acaba.
-    new FlxTimer().start(6.3 + cutsceneDelay, function(tmr) {
-      PlayState.instance.isInCutscene = false;
-      PlayState.instance.startCountdown();
-
-      PlayState.instance.togglePauseButton(true);
-      PlayState.instance.isInCutscene = false;
-      PlayState.instance.mayPauseGame = true;
+    new FlxTimer(cutsceneTimerManager).start(6.3 - 0.5 + cutsceneDelay, function(tmr) {
+      cutsceneSkipped = true;
+      canSkipCutscene = false;
+      FlxTween.tween(skipText, {alpha: 0}, 0.5, {
+        ease: FlxEase.quadIn,
+        onComplete: _ ->
+        {
+          skipText.visible = false;
+        }
+      });
+    });
+    new FlxTimer(cutsceneTimerManager).start(6.3 + cutsceneDelay, function(tmr) {
+      skipCutscene();
     });
   }
 
+  function skipCutscene():Void {
+    cutsceneMusic.stop();
+    cutsceneTimerManager.clear();
+
+    PlayState.instance.togglePauseButton(true);
+    PlayState.instance.isInCutscene = false;
+    PlayState.instance.mayPauseGame = true;
+    PlayState.instance.startCountdown();
+
+    skipText.visible = false;
+  }
+
   function loadIntroSounds() {
+    cutsceneSounds = [];
     beepSound = FunkinSound.load(Paths.sound("beep"), true);
     beepSound.volume = 1;
+    cutsceneSounds.push(beepSound);
+
     micSound = FunkinSound.load(Paths.sound("phase1intro"), true);
     micSound.volume = 1;
+    cutsceneSounds.push(micSound);
   }
 
   public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
@@ -232,9 +284,13 @@ class SatisfractureSong extends Song
 
   function onCutsceneBeatHit()
   {
-    if (PlayState.instance.currentStage.getGirlfriend().isAnimationFinished())
-    {
+    //if (PlayState.instance.currentStage.getGirlfriend().isAnimationFinished()) {
       PlayState.instance.currentStage.getGirlfriend().dance(true);
+      //}
+    if (cutsceneConductor.currentBeat % 2 == 0) {
+      PlayState.instance.currentStage.getNamedProp('velasma').dance(true);
+      PlayState.instance.currentStage.getNamedProp('serpenscheme').dance(true);
+      PlayState.instance.currentStage.getNamedProp('cat').dance(true);
     }
     if (PlayState.instance.currentStage.getBoyfriend().isAnimationFinished()
       && PlayState.instance.currentStage.getBoyfriend().getCurrentAnimation() != 'singUP')
@@ -270,6 +326,10 @@ class SatisfractureSong extends Song
   override function onDestroy(event)
 	{
 		super.onDestroy(event);
+    cutsceneSounds = [];
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+    isDoingEnough = false;
 		resetTweens();
 	}
 
@@ -318,7 +378,7 @@ class SatisfractureSong extends Song
   {
     super.onSongRetry(event);
 
-    playState.mayPauseGame = true;
+    //playState.mayPauseGame = true;
     hasPlayedInGameCutscene = true;
     hasPlayedEndCutscene = false;
     isDoingEnough = false;
@@ -330,16 +390,74 @@ class SatisfractureSong extends Song
     PlayState.instance.healthBarBG.alpha = 1;
   }
 
+  var isMobilePauseButtonPressed:Bool = false;
+
+  function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (cutsceneTimerManager != null) cutsceneTimerManager.update(event.elapsed);
+    if (cutsceneConductor != null && cutsceneMusic != null)
+    {
+      cutsceneConductor.update(cutsceneMusic.time);
+    }
+
+    if (FlxG.onMobile)
+    {
+      isMobilePauseButtonPressed = TouchUtil.overlapsComplex(PlayState.instance.pauseButton) && TouchUtil.justPressed;
+    }
+
+    if ((PlayState.instance.controls.CUTSCENE_ADVANCE || isMobilePauseButtonPressed) && !cutsceneSkipped)
+    {
+      if (!canSkipCutscene)
+      {
+        if (skipText != null)
+        {
+          FlxTween.tween(skipText, {alpha: 1}, 0.5, {ease: FlxEase.quadOut});
+          new FlxTimer().start(0.5, _ ->
+          {
+            canSkipCutscene = true;
+          });
+        }
+      }
+    }
+    if ((PlayState.instance.controls.CUTSCENE_ADVANCE || isMobilePauseButtonPressed) && !cutsceneSkipped && canSkipCutscene)
+    {
+      cutsceneSkipped = true;
+      hasPlayedCutscene = true;
+      PlayState.instance.camCutscene.fade(0xFF000000, 0.5, false, null, true);
+      for (sound in cutsceneSounds) {
+        if (sound == null) continue;
+        sound.fadeOut(0.5, 0);
+      }
+
+      new FlxTimer().start(0.5, _ ->
+      {
+        PlayState.instance.justUnpaused = true;
+        PlayState.instance.camCutscene.fade(0xFF000000, 0.5, true, null, true);
+        PlayState.instance.currentStage.getDad().dance(true);
+        PlayState.instance.currentStage.getBoyfriend().dance(true);
+        skipCutscene();
+        for (sound in cutsceneSounds) {
+          if (sound == null) continue;
+          sound.stop();
+        }
+      });
+    }
+  }
+
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-    isDoingEnough = false;
+
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
 
+    cutsceneSkipped = false;
+    canSkipCutscene = false;
+    cutsceneTimerManager = null;
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
     isDoingEnough = false;

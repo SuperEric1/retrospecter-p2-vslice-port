@@ -10,6 +10,7 @@ import flixel.math.FlxMath;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import flixel.util.FlxStringUtil;
+import flixel.util.FlxTimerManager;
 import funkin.util.HapticUtil;
 import funkin.play.notes.Strumline;
 import funkin.play.notes.NoteSprite;
@@ -60,6 +61,7 @@ class RetroPlayState extends Module {
 
   var tweens = [];
   var pausedTweens = [];
+  var globalTimerManager:FlxTimerManager;
   var hasCachedTextures:Bool = false;
   var hasLoadedUIElements:Bool = false;
 
@@ -373,7 +375,7 @@ class RetroPlayState extends Module {
       var barCutPercent:Float = 1 - (currentHealthCap / Constants.HEALTH_MAX);
       if (retroGameUI != null && !isPractice) retroGameUI.scriptCall('setHealthBarCut', [barCutPercent, 0]);
 
-      insatianHolesTimer = new FlxTimer().start(baseTime, function(tmr:FlxTimer) {
+      insatianHolesTimer = new FlxTimer(globalTimerManager).start(baseTime, function(tmr:FlxTimer) {
         if (PlayState.instance == null) {
           insatianHolesTimer = null;
           return;
@@ -512,7 +514,7 @@ class RetroPlayState extends Module {
         hmpInstructionPlayed = true;
         hmpInstructionText.visible = true;
         FlxTween.tween(hmpInstructionText, {alpha: 0.6}, 1.5, {ease: FlxEase.quadIn});
-        new FlxTimer().start(4, function(tmr:FlxTimer) {
+        new FlxTimer(globalTimerManager).start(4, function(tmr:FlxTimer) {
           hmpInstructionText.visible = false;
         });
       }
@@ -680,6 +682,7 @@ class RetroPlayState extends Module {
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
     mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
+    globalTimerManager = new FlxTimerManager();
 
     songId = PlayState.instance?.currentChart?.song?.id ?? '';
 
@@ -862,7 +865,7 @@ class RetroPlayState extends Module {
 
     isDrugged = true;
 
-    izzyMechanicTimer = new FlxTimer().start(6, function(tmr:FlxTimer) { // Ao completar o timer
+    izzyMechanicTimer = new FlxTimer(globalTimerManager).start(6, function(tmr:FlxTimer) { // Ao completar o timer
       if (PlayState.instance == null) {
         izzyMechanicTimer = null;
         return;
@@ -1005,7 +1008,7 @@ class RetroPlayState extends Module {
         lockSprite.animation.play('unlocked' + dirName, false);
         // Esconde o sprite após a animação terminar
         var dir = direction;
-        new FlxTimer().start(0.6, function(tmr:FlxTimer) {
+        new FlxTimer(globalTimerManager).start(0.6, function(tmr:FlxTimer) {
           if (PlayState.instance == null) return;
           if (lockSprite != null && !isStrumLocked.get(dir)) lockSprite.visible = false;
         });
@@ -1218,7 +1221,7 @@ class RetroPlayState extends Module {
     hydraBeamStates.set(dir, 1);
 
     // Após a animação de start, começar o loop
-    hydraBeamTimers[dir] = new FlxTimer().start(0.125, function(tmr:FlxTimer) { // 3 frames a 24fps = 0.125s
+    hydraBeamTimers[dir] = new FlxTimer(globalTimerManager).start(0.125, function(tmr:FlxTimer) { // 3 frames a 24fps = 0.125s
       if (PlayState.instance == null) return;
       if (beamSprite == null || !beamSprite.exists) return;
 
@@ -1226,7 +1229,7 @@ class RetroPlayState extends Module {
       hydraBeamStates.set(dir, 2);
 
       // Manter o loop por alguns segundos
-      hydraBeamTimers[dir] = new FlxTimer().start(6.3, function(tmr2:FlxTimer) {
+      hydraBeamTimers[dir] = new FlxTimer(globalTimerManager).start(6.3, function(tmr2:FlxTimer) {
         if (PlayState.instance == null) return;
         if (beamSprite == null || !beamSprite.exists) return;
 
@@ -1234,7 +1237,7 @@ class RetroPlayState extends Module {
         hydraBeamStates.set(dir, 3);
 
         // Esconder após a animação de end
-        hydraBeamTimers[dir] = new FlxTimer().start(0.25, function(tmr3:FlxTimer) { // 6 frames a 24fps = 0.25s
+        hydraBeamTimers[dir] = new FlxTimer(globalTimerManager).start(0.25, function(tmr3:FlxTimer) { // 6 frames a 24fps = 0.25s
           if (PlayState.instance == null) return;
           if (beamSprite == null) return;
 
@@ -1253,6 +1256,8 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
+
+    if (globalTimerManager != null) globalTimerManager.update(event.elapsed);
 
     if (forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre')) {
       if (!spectreHit) {
@@ -1516,12 +1521,16 @@ class RetroPlayState extends Module {
       }
     }
 
-    // Skill issue check (re-enable once it updates.)
-    /*var isCh34t1ng:String = FlxG.save?.data?.BotMode ?? "off";
-    isCh34t1ng = isCh34t1ng.toLowerCase();
-    if (isCh34t1ng != null && (isCh34t1ng == "on" || isCh34t1ng == true || isCh34t1ng != "off")) {
+    // Skill issue check
+    var isCh34t1ng:String = Save.instance.modOptions.get('botplay');
+    //isCh34t1ng = isCh34t1ng.toLowerCase();
+    if (isCh34t1ng != null && (isCh34t1ng.isBotActive || isCh34t1ng.startWithBotplay)) {
+      if (isCh34t1ng.overrideScores) {
+        isCh34t1ng.overrideScores = false;
+        Save.instance.flush();
+      }
       funnyVar = true;
-    }*/
+    }
 
   }
 
@@ -1877,7 +1886,7 @@ class RetroPlayState extends Module {
     isDoingVocalThing = true;
     PlayState.instance.vocals.opponentVolume = 0;
     PlayState.instance.vocals.playerVolume = 0;
-    new FlxTimer().start(delay, function(tmr) {
+    new FlxTimer(globalTimerManager).start(delay, function(tmr) {
       if (PlayState.instance == null) return;
       PlayState.instance.vocals.opponentVolume = 1;
       PlayState.instance.vocals.playerVolume = 1;
@@ -1912,6 +1921,7 @@ class RetroPlayState extends Module {
 	  super.onSongRetry(event);
     if (PlayState.instance == null) return;
     if (!isRetro) return;
+    if (globalTimerManager != null) globalTimerManager.clear();
     PlayState.instance.camHUD.alpha = 1;
     PlayState.instance.camHUD.angle = 0;
     if (healthBarOgPos != null && healthBarOgPos.length > 0) {
@@ -2069,6 +2079,7 @@ class RetroPlayState extends Module {
           ModuleHandler.getModule('RetroSave').scriptCall('youThoughtLol', []);
           PlayState.instance.moveToGameOver();
           PlayState.instance.disableKeys = false; // for some reason it was disabling the keys after restarting so this fixes it
+          PlayState.instance.isPlayerDying = false;
         }
       });
 
@@ -2139,6 +2150,7 @@ class RetroPlayState extends Module {
 	{
 		super.onDestroy(event);
     if (PlayState.instance == null) return;
+    if (globalTimerManager != null) globalTimerManager.clear();
     loadedMechanics = [];
     hasLoadedUIElements = false;
     poisonSprite = null;
