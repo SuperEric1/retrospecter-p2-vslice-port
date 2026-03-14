@@ -75,6 +75,7 @@ class RetroPlayState extends Module {
   var ogPlayerStrumScales:Array<Float> = [];
   var ogOppStrumScales:Array<Float> = [];
   var ogDadId:String = null;
+  var ogBfId:String = null;
   var songId:String = null;
 
   var poisonSprite:FunkinSprite;
@@ -134,6 +135,10 @@ class RetroPlayState extends Module {
   var hmpMoneyGain:Array<Int> = [31446, 23148];
   var hmpMoneyLoss:Array<Int> = [-6289, -4629];
   var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
+
+  // Atrocean Notes - Jumpscare com efeito
+  var atroDarkness:FunkinSprite;
+  var atroHitCounter:Int = 0; // Caso ultrapasse de 3, matar o jogador.
 
   // Misc
   var loadedMechanics:Array<String> = []; // here we will store the names of the loaded mechanics for the current song (set by the song's scripts)
@@ -402,9 +407,13 @@ class RetroPlayState extends Module {
 
       poisonAmount++;
       updatePoisonCounter();
-      if (k == 'poison')
+      if (k == 'poison') {
         FlxG.sound.play(Paths.sound('acid'));
-      else {
+        if (ogBfId == 'bf-retrospecter' || ogBfId == 'bf-wind') {
+          GameOverSubState.blueBallSuffix = '-acid';
+          GameOverSubState.animationSuffix = '-acid';
+        }
+      } else {
         if (!loadedMechanics.contains('weblock')) {
           trace('LOADED UNLOADED MECHANIC: weblock');
           loadedMechanics.push('weblock');
@@ -462,6 +471,20 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+
+      if (atroDarkness != null) {
+        var startDelay:Float = atroHitCounter <= 0 ? 2 : 0.3;
+        FlxTween.cancelTweensOf(atroDarkness);
+        atroDarkness.alpha = 1;
+        tweens.push(FlxTween.tween(atroDarkness, { alpha: 0 }, 4, { startDelay: startDelay, ease: FlxEase.quadOut, onComplete: function(_) {
+          // placeholder while the other effect isn't added
+          atroHitCounter = 0;
+        } }));
+      }
+
+      atroHitCounter++;
+
+      if (atroHitCounter > 3) PlayState.instance.health -= Constants.HEALTH_MAX * 1.5;
 
       FlxG.sound.play(Paths.sound('noteSounds/Atrocean'));
       event.doesNotesplash = false;
@@ -675,6 +698,8 @@ class RetroPlayState extends Module {
     isRetro = StringTools.startsWith(noteStyle, 'retro') || StringTools.startsWith(noteStyle, 'player');
     if (!isRetro) return;
 
+    GameOverSubState.musicSuffix = '-skillissue';
+
     if (!hasCachedTextures) cacheEverything(); // cache things here instead of when the game opens.
 
     isDownscroll = Preferences.downscroll;
@@ -688,6 +713,7 @@ class RetroPlayState extends Module {
 
     if (!hasLoadedUIElements) {
       ogDadId = PlayState.instance.currentStage.getDad().characterId;
+      ogBfId = PlayState.instance.currentStage.getBoyfriend().characterId;
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
       loadUIElements();
@@ -729,6 +755,19 @@ class RetroPlayState extends Module {
           FunkinMemory.cacheSound(Paths.sound("noteSounds/Insatian", "shared"));
           FunkinMemory.cacheTexture(Paths.image('gluttony/hole', 'shared')); // insatian's hole LOL
         }
+        if (loadedMechanics.contains('atrocean')) {
+          atroHitCounter = 0;
+          FunkinMemory.cacheSound(Paths.sound("noteSounds/Atrocean", "shared"));
+          atroDarkness = FunkinSprite.create(0, 0, 'envy/darkness');
+          atroDarkness.scrollFactor.set(0, 0);
+          atroDarkness.setGraphicSize(FlxG.width * 1.5);
+          atroDarkness.cameras = [PlayState.instance.camHUD];
+          atroDarkness.updateHitbox();
+          atroDarkness.screenCenter(0x01);
+          atroDarkness.zIndex = 0;
+          atroDarkness.alpha = 0;
+          PlayState.instance.add(atroDarkness);
+        }
       }
 
       hasLoadedUIElements = true;
@@ -748,6 +787,7 @@ class RetroPlayState extends Module {
     healthBarBgOgPos = [PlayState.instance.healthBarBG.x, PlayState.instance.healthBarBG.y];
 
     saveStrumPos();
+    checkSkillIssue();
   }
 
   function saveStrumPos():Void {
@@ -1520,18 +1560,6 @@ class RetroPlayState extends Module {
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
       }
     }
-
-    // Skill issue check
-    var isCh34t1ng:String = Save.instance.modOptions.get('botplay');
-    //isCh34t1ng = isCh34t1ng.toLowerCase();
-    if (isCh34t1ng != null && (isCh34t1ng.isBotActive || isCh34t1ng.startWithBotplay)) {
-      if (isCh34t1ng.overrideScores) {
-        isCh34t1ng.overrideScores = false;
-        Save.instance.flush();
-      }
-      funnyVar = true;
-    }
-
   }
 
   public function setMechanics(names:Array<String>) {
@@ -1567,6 +1595,18 @@ class RetroPlayState extends Module {
       if (alwaysVisibleKinds.contains(holdNote.noteData.kind)) continue;
       holdNote.alpha = clampedOppAlpha;
       if (holdNote.cover != null) holdNote.cover.alpha = clampedOppAlpha;
+    }
+  }
+
+  function checkSkillIssue():Void {
+    var isCh34t1ng:String = Save.instance.modOptions.get('botplay');
+    //isCh34t1ng = isCh34t1ng.toLowerCase();
+    if (isCh34t1ng != null && (isCh34t1ng.isBotActive || isCh34t1ng.startWithBotplay)) {
+      if (isCh34t1ng.overrideScores) {
+        isCh34t1ng.overrideScores = false;
+        Save.instance.flush();
+      }
+      funnyVar = true;
     }
   }
 
@@ -1931,6 +1971,12 @@ class RetroPlayState extends Module {
 
     updatePoisonCounter(ogDadId ?? null);
 
+    if (atroDarkness != null) {
+      FlxTween.cancelTweensOf(atroDarkness);
+      atroDarkness.alpha = 0;
+    }
+    atroHitCounter = 0;
+
     hmpActive = false;
     hmpSpeed = 0;
     hmpIsAtLimit = false;
@@ -2030,6 +2076,8 @@ class RetroPlayState extends Module {
   {
     super.onGameOver(event);
     if (izzyMechanicTimer != null) unscrambleStrumline(true, true);
+
+    if (GameOverSubState.blueBallSuffix == "-acid") FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf-loss-sfx-acid'));
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void
@@ -2163,7 +2211,9 @@ class RetroPlayState extends Module {
     spectreOppHit = false;
     funnyVar = false;
     ogDadId = null;
+    ogBfId = null;
     songId = null;
+    atroHitCounter = 0;
     destroyHiveminePapers();
     hmpActive = false;
     hmpAnimating = false;
@@ -2241,6 +2291,8 @@ class RetroPlayState extends Module {
 			if (tween != null) tween.active = true;
 		}
 		pausedTweens = [];
+
+    checkSkillIssue();
 	}
 
 	override function onPause(event)
@@ -2261,6 +2313,8 @@ class RetroPlayState extends Module {
 				pausedTweens.push(tween);
 			}
 		}
+
+    checkSkillIssue();
 	}
 
   function onCreate(event:ScriptEvent):Void

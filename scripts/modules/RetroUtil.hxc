@@ -220,7 +220,7 @@ class RetroUtil extends Module
     });
     if (slot >= 0) _splashTween[slot] = tween;
 
-    splash.animation.play(SPLASH_ANIM_NAMES[note.noteData.data % 4]);
+    splash.animation.play(SPLASH_ANIM_NAMES[note.noteData.data % 4], true);
   }
 
   // This one is meant to be used in song scripts.

@@ -109,6 +109,34 @@
       "offsets": [-270, -70],
       "frameRate": 24,
       "frameIndices": []
+    },
+    {
+      "name": "firstDeath-acid",
+      "prefix": "BF dies0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death",
+      "scale": 1.055,
+      "offsets": [-270, -70],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "deathLoop-acid",
+      "prefix": "BF Dead Loop0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death",
+      "scale": 1.055,
+      "offsets": [-270, -70],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "deathConfirm-acid",
+      "prefix": "BF Dead confirm0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death",
+      "scale": 1.055,
+      "offsets": [-270, -70],
+      "frameRate": 24,
+      "frameIndices": []
     }
   ],
   "flipX": true

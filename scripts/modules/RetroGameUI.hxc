@@ -207,7 +207,7 @@ class RetroGameUI extends Module {
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/hiveless/bar');
           isHivemine = true;
         case 'atrocean':
-          defaultScale = [0.53, 0.53];
+          defaultScale = [0.45, 0.45];
           healthBgYOffset = -70;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/atrocean/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/atrocean/bar');

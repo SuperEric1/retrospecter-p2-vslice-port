@@ -9,7 +9,6 @@ TODO:
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
-- [ ] Acid death
 - [ ] Atrocean's note mechanic
 - [ ] Update main menu
 - [ ] Checkpoint event (+ add to all songs that have it)
@@ -28,6 +27,7 @@ TODO:
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Review mechanics
 - [ ] Dialogues...?
+- [X] Acid death
 - [X] Hydra note is not pausing when pausing the game
 - [X] Sweet talk difficulties
 - [X] Poison note notesplashes
