@@ -57,7 +57,7 @@ class BFRetroCharacter extends MultiSparrowCharacter
           this.playAnimation('hey', true, true);
           return;
         case "GF Sing": // this is in ectospasm, it's an animation note
-          PlayState.instance.currentStage.getGirlfriend().animation.play('cheer');
+          PlayState.instance.currentStage.getGirlfriend().playAnimation('cheer');
           return;
       }
     }

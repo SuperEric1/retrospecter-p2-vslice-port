@@ -1,0 +1,118 @@
+{
+  "version": "1.0.0",
+  "name": "Doz",
+  "assetPath": "characters/atlases/doz",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "dozircDefault",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "animations": [
+    {
+      "name": "singDOWN",
+      "prefix": "!Animations/Dozirc Down Note",
+      "animType": "symbol",
+      "offsets": [-278, -220],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "!Animations/Dozirc Left Note",
+      "animType": "symbol",
+      "offsets": [-119, -165],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "!Animations/Dozirc Up Note",
+      "animType": "symbol",
+      "offsets": [-224, -128],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "!Animations/Dozirc Right Note",
+      "animType": "symbol",
+      "offsets": [-262, -165],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sleep",
+      "prefix": "!Animations/Dozric powerDOWN",
+      "animType": "symbol",
+      "offsets": [-13, -67],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "error",
+      "prefix": "!Animations/Dozric 404",
+      "animType": "symbol",
+      "offsets": [24, 2],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "idle",
+      "prefix": "!Animations/Dozirc Idle",
+      "animType": "symbol",
+      "offsets": [-1091, -52],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "yawn",
+      "prefix": "!Animations/Dozirc yawn",
+      "animType": "symbol",
+      "offsets": [-45, -48],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "awaken",
+      "prefix": "!Animations/Dozric powerUP",
+      "animType": "symbol",
+      "offsets": [0, -94],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "snore",
+      "prefix": "!Animations/Dozirc snore",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "snoreloop",
+      "prefix": "!Animations/Dozirc snore",
+      "animType": "symbol",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sleepidle",
+      "prefix": "!Animations/Dozirc Idle",
+      "animType": "symbol",
+      "offsets": [-1091, -52],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    }
+  ],
+  "flipX": false
+}

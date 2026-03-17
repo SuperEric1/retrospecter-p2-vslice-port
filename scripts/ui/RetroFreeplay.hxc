@@ -40,39 +40,47 @@ class RetroFreeplay extends Module {
 
     var bgPath = 'freeplay/backgrounds/';
 
-    songConfig.set('1-wrath', {
+    songConfig.set('01-wrath', {
       bgImage: bgPath + 'wrath_blur',
       funnyScroll: 'TEST TEXT',
     });
-    songConfig.set('2-wrath_extras', {
+    songConfig.set('02-wrath_extras', {
       bgImage: bgPath + 'wrath_blur',
     });
 
-    songConfig.set('3-pride', {
+    songConfig.set('03-pride', {
       bgImage: bgPath + 'pride_blur',
     });
-    songConfig.set('4-pride_extras', {
+    songConfig.set('04-pride_extras', {
       bgImage: bgPath + 'pride_blur',
     });
 
-    songConfig.set('5-gluttony', {
+    songConfig.set('05-gluttony', {
       bgImage: bgPath + 'gluttony_blur',
     });
-    songConfig.set('6-gluttony_extras', {
+    songConfig.set('06-gluttony_extras', {
       bgImage: bgPath + 'gluttony_blur',
     });
 
-    songConfig.set('7-greed', {
+    songConfig.set('07-greed', {
       bgImage: bgPath + 'greed_blur',
     });
-    songConfig.set('8-greed_extras', {
+    songConfig.set('08-greed_extras', {
       bgImage: bgPath + 'greed_blur',
     });
-    songConfig.set('9-envy', {
+
+    songConfig.set('09-envy', {
       bgImage: bgPath + 'envy_blur',
     });
     songConfig.set('10-envy_extras', {
       bgImage: bgPath + 'envy_blur',
+    });
+
+    songConfig.set('11-sloth', {
+      bgImage: bgPath + 'sloth_blur',
+    });
+    songConfig.set('11-sloth_extras', {
+      bgImage: bgPath + 'sloth_blur',
     });
 
 

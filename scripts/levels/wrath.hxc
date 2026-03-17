@@ -1,0 +1,27 @@
+import funkin.ui.story.Level;
+import funkin.save.Save;
+
+class WrathLevel extends Level
+{
+  function new()
+  {
+    super('01-wrath');
+  }
+
+  override function isUnlocked():Bool
+  {
+    return true;
+  }
+
+  override function getSongDisplayNames(difficultyId:String):Array<String>
+  {
+    if (Save.instance.hasBeatenLevel('01-wrath'))
+    {
+      return ["Satisfracture", "Spectral", "Apocalyptro", "Catastrofiend"];
+    }
+    else
+    {
+      return ["?"];
+    }
+  }
+}

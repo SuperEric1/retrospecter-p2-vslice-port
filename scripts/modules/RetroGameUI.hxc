@@ -39,6 +39,7 @@ import funkin.ui.FullScreenScaleMode;
 import funkin.effects.IntervalShake;
 import funkin.play.PlayStatePlaylist;
 import funkin.play.scoring.Scoring;
+import StringTools;
 import Math;
 
 import supereric.retrospecter.ui.RetroPauseMenu;
@@ -61,12 +62,14 @@ class RetroGameUI extends Module {
   var hudTextScale:Float = 0.47;
   var songLengthEnabled:Bool = true;
   var isHivemine:Bool = false;
+  var isDozirc:Bool = false;
 
   // Health Bars
-  var retroHealthBar:FlxBar;
   var retroHealthBarOverlay:FunkinSprite;
   var retroHealthBarFill:FunkinSprite;
   var retroHealthBarFillBG:FunkinSprite; // Fundo da barra (cor do oponente)
+  var dozircVertice1:FunkinSprite; // para dozirc
+  var dozircVertice2:FunkinSprite; // para dozirc
   var _fillClipRect:FlxRect = new FlxRect();
   var _fillBGClipRect:FlxRect = new FlxRect();
   var _overlayClipRect:FlxRect = new FlxRect();
@@ -154,7 +157,8 @@ class RetroGameUI extends Module {
       var isCustomHealthBar:Bool = true;
       var hivemineTextColor:Bool = null;
       isHivemine = false;
-      switch (playStage.getDad().characterId.toLowerCase()) {
+      isDozirc = StringTools.startsWith(playStage.getDad().characterId.toLowerCase(), 'doz');
+      switch (!isDozirc ? playStage.getDad().characterId.toLowerCase() : 'dozirc') {
         case 'phase1':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -115;
@@ -231,6 +235,14 @@ class RetroGameUI extends Module {
           insatianMunch.alpha = 0.9;
           insatianMunch.blend = 4;
           insatianMunch.cameras = [playState.camHUD];*/
+        case 'dozirc':
+          defaultScale = [0.43, 0.43];
+          healthBgYOffset = -90;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/dozirc/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/bar');
+          dozircVertice1 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
+          dozircVertice2 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
         case 'sakuromap2-atlas':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
@@ -253,22 +265,22 @@ class RetroGameUI extends Module {
       if (isCustomHealthBar) {
         ogBarOffsetY = healthBgYOffset;
         //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
-        retroHealthBarOverlay.camera = playState.camHUD;
+        retroHealthBarOverlay.cameras = [playState.camHUD];
         retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 5; //803
         retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarOverlay.screenCenter(0x01);
 
         // Configurar o fundo da barra (cor do oponente)
         retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 2;
-        retroHealthBarFillBG.camera = playState.camHUD;
+        retroHealthBarFillBG.cameras = [playState.camHUD];
         retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFillBG.screenCenter(0x01);
-        retroHealthBarFillBG.color = getIconColor(playStage.getDad().characterId.toLowerCase(), true); // Cor do oponente
+        retroHealthBarFillBG.color = getIconColor(!isDozirc ? playStage.getDad().characterId.toLowerCase() : 'dozirc', true); // Cor do oponente
         retroHealthBarFillBG.antialiasing = false;
 
         // Configurar o preenchimento da barra (cor do jogador)
         retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
-        retroHealthBarFill.camera = playState.camHUD;
+        retroHealthBarFill.cameras = [playState.camHUD];
         retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFill.screenCenter(0x01);
         retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
@@ -277,10 +289,37 @@ class RetroGameUI extends Module {
         // Guardar a largura original
         fillOriginalWidth = retroHealthBarFill.frameWidth;
 
-        // Adicionar na ordem correta: fundo -> preenchimento -> overlay
+        // Adicionar
         playState.add(retroHealthBarFillBG);
         playState.add(retroHealthBarFill);
         playState.add(retroHealthBarOverlay);
+
+        // Extras
+        if (isDozirc) {
+          dozircVertice1.scale.set(defaultScale[0], defaultScale[1]);
+          dozircVertice1.updateHitbox();
+          dozircVertice1.cameras = [playState.camHUD];
+          dozircVertice1.zIndex = retroHealthBarOverlay.zIndex - 1;
+          dozircVertice1.screenCenter(0x01);
+          dozircVertice1.y += 85;
+          dozircVertice1.x -= 360;
+          dozircVertice1.color = getIconColor(!isDozirc ? playStage.getDad().characterId.toLowerCase() : 'dozirc', false);
+          dozircVertice1.antialiasing = false;
+
+          dozircVertice2.scale.set(defaultScale[0], defaultScale[1]);
+          dozircVertice2.updateHitbox();
+          dozircVertice2.cameras = [playState.camHUD];
+          dozircVertice2.zIndex = retroHealthBarOverlay.zIndex - 1;
+          dozircVertice2.screenCenter(0x01);
+          dozircVertice2.y += 85;
+          dozircVertice2.x += 360;
+          dozircVertice2.flipX = true;
+          dozircVertice2.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), false);
+          dozircVertice2.antialiasing = false;
+
+          playState.add(dozircVertice1);
+          playState.add(dozircVertice2);
+        }
         /*if (insatianMunch != null) {
           insatianMunch.zIndex = retroHealthBarOverlay.zIndex;
           playState.add(insatianMunch);
@@ -559,15 +598,15 @@ class RetroGameUI extends Module {
     statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;
 
     // Update rating text with color
-    if (ratingTextDisplay.text != ratingData.name) ratingTextDisplay.text = ratingData.name;
-    if (ratingTextDisplay.color != ratingData.color) ratingTextDisplay.color = ratingData.color;
+    if (ratingTextDisplay?.text != ratingData.name) ratingTextDisplay.text = ratingData.name;
+    if (ratingTextDisplay?.color != ratingData.color) ratingTextDisplay.color = ratingData.color;
 
     // Position rating text right after "RANK: " text
     // Calculate the width of "RANK: " in the last line
     if (statsDisplay == null || statsDisplay?.textField == null) return;
     var ratingLabelWidth = statsDisplay?.textField?.getLineMetrics(2)?.width ?? 0;
-    ratingTextDisplay.x = statsDisplay.x + statsDisplay?.textField?.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
-    ratingTextDisplay.y = statsDisplay.y + (statsFontSizeOLD * 2); // 2 lines down
+    ratingTextDisplay?.x = statsDisplay.x + statsDisplay?.textField?.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
+    ratingTextDisplay?.y = statsDisplay.y + (statsFontSizeOLD * 2); // 2 lines down
   }
 
   function getVanillaRatingData(ratingPercent:Float, goods:Int):{name:String, color:FlxColor} {
@@ -874,15 +913,15 @@ class RetroGameUI extends Module {
   function getJudgement(judgement:String):{text:String, color:FlxColor} {
     switch (judgement) {
       case 'sick':
-        return {text: RetroLanguage.t('judgement.sick', 'SICK!!') + ' ', color: 0xFFffec44}; // #ffec44ff
+        return {text: RetroLanguage.t('judgement.sick', 'SICK!!') + ' ', color: 0xFFfccb0f}; // #fccb0f
       case 'good':
-        return {text: RetroLanguage.t('judgement.good', 'GOOD!') + ' ', color: 0xFF2457ff}; // #2457ffff
+        return {text: RetroLanguage.t('judgement.good', 'GOOD!') + ' ', color: 0xFF457ff4}; // #457ff4
       case 'bad':
-        return {text: RetroLanguage.t('judgement.bad', 'BAD') + ' ', color: 0xFFff4949}; // #ff4949ff
+        return {text: RetroLanguage.t('judgement.bad', 'BAD') + ' ', color: 0xFFf53e57}; // #f53e57
       case 'shit':
-        return {text: RetroLanguage.t('judgement.shit', 'SHIT') + ' ', color: 0xFFafaeae}; // #afaeaeff
+        return {text: RetroLanguage.t('judgement.shit', 'SHIT') + ' ', color: 0xFF7a7c7e}; // #7a7c7e
       case 'miss':
-        return {text: RetroLanguage.t('judgement.miss', 'MISS') + ' ', color: 0xFFe90606}; // #e90606ff
+        return {text: RetroLanguage.t('judgement.miss', 'MISS') + ' ', color: 0xFFf70200}; // #f70200
       default:
         return {text: '???', color: 0xFFFFFF};
     }
@@ -896,6 +935,7 @@ class RetroGameUI extends Module {
     cancelTweens(false);
     currentAccuracy = 0.0;
     isHivemine = false;
+    isDozirc = false;
   }
 
   override public function onCreate(event) {
@@ -999,8 +1039,8 @@ class RetroGameUI extends Module {
 
     isOppIconAnimated = false;
     isPlayerIconAnimated = false;
-    if (retroHealthBarFill != null) retroHealthBarFill.color = getIconColor(ogBfId);
-    if (retroHealthBarFillBG != null) retroHealthBarFillBG.color = getIconColor(ogDadId);
+    if (retroHealthBarFill != null) retroHealthBarFill.color = getIconColor(ogBfId, false);
+    if (retroHealthBarFillBG != null) retroHealthBarFillBG.color = getIconColor(!isDozirc ? ogDadId : 'dozirc', false);
 
     if (currentHealthCut > 0) resetHealthBarCut(0);
 
@@ -1088,6 +1128,8 @@ class RetroGameUI extends Module {
         return getRGB(175, 102, 206);
       case 'atrocean':
         return getRGB(18, 228, 118);
+      case 'dozirc':
+        return getRGB(227, 146, 18);
       case 'sakuromap2-atlas':
         return getRGB(169, 50, 140);
       case 'nightflaid_atlas':
@@ -1405,10 +1447,11 @@ class RetroGameUI extends Module {
 		if (event.eventData.eventKind == "RetroChangeCharacter") {
       var target = event.eventData.value.character;
       var characterId = event.eventData.value.newchar.toLowerCase();
+      isDozirc = StringTools.startsWith(characterId, 'doz');
 
       if (target == "bf") {
         isPlayerIconAnimated = false;
-			  retroHealthBarFill.color = getIconColor(characterId, true);
+			  retroHealthBarFill.color = getIconColor(!isDozirc ? characterId : 'dozirc', true);
         configureIcon('p1');
       }
       if (target == "dad") {

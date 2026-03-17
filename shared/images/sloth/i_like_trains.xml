@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<TextureAtlas imagePath="i_like_trains.png" width="15471" height="3333">
+	<SubTexture name="i_like_trains0001" x="1" y="1" width="1983" height="1617" frameX="-3642" frameY="-42" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0002" x="1" y="1" width="1983" height="1617" frameX="-3642" frameY="-42" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0003" x="4676" y="1" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0004" x="4676" y="1" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0005" x="9752" y="1" width="5718" height="1664" frameX="-0" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0006" x="9752" y="1" width="5718" height="1664" frameX="-0" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0007" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0008" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0009" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0010" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0011" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0012" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0013" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0014" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0015" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0016" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0017" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0018" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0019" x="10197" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0020" x="10197" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0021" x="9752" y="1" width="5718" height="1664" frameX="-0" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0022" x="9752" y="1" width="5718" height="1664" frameX="-0" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0023" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0024" x="1" y="1668" width="5073" height="1664" frameX="-514" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0025" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0026" x="5077" y="1668" width="5117" height="1664" frameX="-601" frameY="-0" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0027" x="1987" y="1" width="2686" height="1662" frameX="-514" frameY="-2" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0028" x="1987" y="1" width="2686" height="1662" frameX="-514" frameY="-2" frameWidth="5718" frameHeight="1664"/>
+	<SubTexture name="i_like_trains0029" x="1" y="1" width="1" height="1" frameX="-3642" frameY="-42" frameWidth="5718" frameHeight="1664"/>
+</TextureAtlas>

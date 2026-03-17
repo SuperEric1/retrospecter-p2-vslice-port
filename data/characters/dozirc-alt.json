@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "name": "Dozirc Alt",
+  "assetPath": "characters/atlases/dozirc",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.989,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "dozircDefault",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "!Animations/Dozirc Idle",
+      "animType": "symbol",
+      "offsets": [245, 235],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "!Animations/Dozirc Down Note",
+      "animType": "symbol",
+      "offsets": [-957, -633],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "!Animations/Dozirc Left Note",
+      "animType": "symbol",
+      "offsets": [-957, -623],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "!Animations/Dozirc Up Note",
+      "animType": "symbol",
+      "offsets": [-957, -633],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "!Animations/Dozirc Right Note",
+      "animType": "symbol",
+      "offsets": [-886, -643],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "error",
+      "prefix": "!Animations/Dozric 404",
+      "animType": "symbol",
+      "offsets": [-1072, -506],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

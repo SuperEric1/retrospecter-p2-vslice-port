@@ -1,0 +1,268 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.graphics.FunkinSprite;
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+
+class LullabyteSong extends Song
+{
+  var snoring:Bool = false;
+  var scarePlayed:Bool = false;
+  var scareReset:Bool = false;
+  var beat64Done:Bool = false;
+  var isDefaultBF:Bool = false;
+  var hasStoredStrums:Bool = false;
+
+  var defaultStrumX:Array<Float> = [];
+  var defaultStrumY:Array<Float> = [];
+
+  var flash:FunkinSprite;
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+
+  public function new()
+  {
+    super('lullabyte');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    snoring = false;
+    scarePlayed = false;
+    scareReset = false;
+    beat64Done = false;
+
+    flash = FunkinSprite.create();
+    flash.makeGraphic(1, 1, 0xFFFFFFFF);
+    flash.scrollFactor.set(0, 0);
+    flash.screenCenter();
+    flash.cameras = [PlayState.instance.camGame];
+    flash.visible = false;
+    flash.active = false;
+    PlayState.instance.add(flash, 'customFlash');
+    PlayState.instance.refresh();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    var bf = PlayState.instance.currentStage.getBoyfriend();
+    var dad = PlayState.instance.currentStage.getDad();
+
+    isDefaultBF = bf.characterId == 'bf-retrospecter';
+
+    dad.playAnimation('snore', true);
+    dad.danceEvery = 0;
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    if (!hasStoredStrums) storeDefaultStrumPositions();
+    snore();
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var beat = event.beat;
+
+    if (!beat64Done && beat >= 64 && beat <= 74 && hasStoredStrums) {
+      beat64Done = true;
+
+      var crochet = Conductor.instance.beatLengthMs;
+      createFlash(0xFFF76345, 9 /* multiply */, 0.3, crochet / 1000.0, FlxEase.cubeIn);
+
+      PlayState.instance.camGame.shake(0.003, 0.3);
+
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        if (strum == null) continue;
+        var dur = (crochet / 1000.0) * FlxG.random.float(253, 255);
+        tweens.push(FlxTween.tween(strum, {
+          y: defaultStrumY[i] + FlxG.random.float(-35, 35),
+          alpha: FlxG.random.float(0, 0.1),
+          angle: FlxG.random.float(-20, 20),
+          x: defaultStrumX[i] + FlxG.random.float(-35, 35)
+        }, dur, {ease: FlxEase.quadIn}));
+      }
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var curStep = event.step;
+
+    if (curStep % 16 == 0 && (curStep < 128 || curStep >= 1152)) snore();
+
+    if (curStep >= 128 && !snoring)
+    {
+      snoreLoop();
+      snoring = true;
+    }
+
+    var bf = PlayState.instance.currentStage.getBoyfriend();
+    var crochet = Conductor.instance.beatLengthMs;
+
+    if (curStep >= 258 && !scarePlayed)
+    {
+      scarePlayed = true;
+
+      bf.danceEvery = 0;
+
+      PlayState.instance.tweenCameraZoom(1.3, crochet / 1000.0, false, FlxEase.quadOut);
+
+      if (isDefaultBF) {
+        bf.playAnimation('boo', true);
+        PlayState.instance.cameraFollowPoint.setPosition(400, 50);
+      }
+      else {
+        bf.playAnimation('singLEFTmiss', true);
+        var camY = bf.cameraFocusPoint.y;
+        PlayState.instance.cameraFollowPoint.setPosition(400, camY);
+      }
+    }
+
+    if (curStep >= 268 && !scareReset)
+    {
+      scareReset = true;
+
+      bf.danceEvery = 2;
+      bf.playAnimation('idle', true);
+
+      PlayState.instance.cameraFollowPoint.setPosition(bf.cameraFocusPoint.x, bf.cameraFocusPoint.y);
+
+      PlayState.instance.tweenCameraZoom(1.0, crochet / 1000.0, false, FlxEase.quadOut);
+
+      // Re-enables camera follow with the correct lerp rate without snapping or tweening zoom
+      PlayState.instance.resetCamera(false, false, false);
+    }
+  }
+
+  function snore():Void
+  {
+    PlayState.instance?.currentStage?.getDad()?.playAnimation('snore', true);
+  }
+
+  function snoreLoop():Void
+  {
+    PlayState.instance?.currentStage?.getDad()?.playAnimation('snoreloop', false);
+  }
+
+  function createFlash(color:Int, blend:Int, alpha:Float, duration:Float, ease:Dynamic):Void
+  {
+    if (flash == null) return;
+    flash.active = true;
+    FlxTween.cancelTweensOf(flash);
+    flash.color = color;
+    flash.alpha = alpha;
+    flash.blend = blend;
+    var camZoom = PlayState.instance.currentCameraZoom;
+    var w = Math.ceil((FlxG.width + 50) / camZoom);
+    var h = Math.ceil((FlxG.height + 50) / camZoom);
+    flash.setGraphicSize(w, h);
+    flash.visible = true;
+    FlxTween.tween(flash, {alpha: 0}, duration, { ease: ease, onComplete: function(t:FlxTween) {
+        if (PlayState.instance != null && flash != null) {
+          flash.setGraphicSize(1, 1);
+          flash.visible = false;
+          flash.active = false;
+        }
+      } });
+  }
+
+  function storeDefaultStrumPositions():Void
+  {
+    if (PlayState.instance == null) return;
+
+    defaultStrumX = [];
+    defaultStrumY = [];
+
+    for (i in 0...4) {
+      var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      defaultStrumX.push(strum != null ? strum.x : 0);
+      defaultStrumY.push(strum != null ? strum.y : 0);
+    }
+
+    hasStoredStrums = true;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    snoring = false;
+    scarePlayed = false;
+    scareReset = false;
+    beat64Done = false;
+
+    var dad = PlayState.instance?.currentStage?.getDad();
+    var bf = PlayState.instance?.currentStage?.getBoyfriend();
+    dad.playAnimation('snore', true);
+    dad.danceEvery = 0;
+    bf.danceEvery = 2;
+
+    PlayState.instance?.resetCamera(false, false, false);
+    resetTweens();
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+      if (tween != null && !tween.finished) tween.active = true;
+    pausedTweens = [];
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+
+    snoring = false;
+    scarePlayed = false;
+    scareReset = false;
+    beat64Done = false;
+    flash = null;
+    defaultStrumX = [];
+    defaultStrumY = [];
+    hasStoredStrums = false;
+    PlayState.instance?.resetCamera(false, false, false);
+    resetTweens();
+  }
+
+  private function resetTweens():Void
+  {
+    for (tween in tweens)
+      if (tween != null) tween.cancel();
+    tweens = [];
+    pausedTweens = [];
+  }
+}

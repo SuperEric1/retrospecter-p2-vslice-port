@@ -45,7 +45,7 @@ class BFGluttonyCharacter extends MultiSparrowCharacter
         case "spectre":
           return;
         case "GF Sing": // this is in ectospasm, it's an animation note
-          PlayState.instance.currentStage.getGirlfriend().animation.play('cheer');
+          PlayState.instance.currentStage.getGirlfriend().playAnimation('cheer');
           return;
       }
     }

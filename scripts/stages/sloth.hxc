@@ -1,0 +1,214 @@
+import flixel.FlxG;
+import funkin.graphics.FunkinSprite;
+import flixel.util.FlxTimer;
+import funkin.Paths;
+import funkin.FunkinMemory;
+import funkin.audio.FunkinSound;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+
+class SlothStage extends Stage
+{
+  var bgX:Float = -2600;
+  var bgY:Float = -2000;
+
+  var rogato:FunkinSprite;
+  var train:FunkinSprite;
+  var trainSound:FunkinSound;
+
+  var train1:Bool = false;
+  var train2:Bool = false;
+  var train3:Bool = false;
+  var z:Int = 0;
+  var hasCreatedStage:Bool = false;
+
+  public function new()
+  {
+    super('sloth');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    train1 = false;
+    train2 = false;
+    train3 = false;
+    z = 0;
+
+    var factoryX = bgX + 300;
+
+    var bg5 = makeSpr('sloth/BG - 5', bgX + 300, bgY);
+    bg5.scrollFactor.set(0.6, 1);
+    bg5.zIndex = z++;
+    bg5.antialiasing = false;
+
+    var bg5swirl = makeSpr('sloth/BG - 5 clouds', bgX + 200, bgY + 700);
+    bg5swirl.scrollFactor.set(0.6, 1);
+    bg5swirl.zIndex = z++;
+    bg5swirl.antialiasing = false;
+
+    var bg5c = makeAnim('sloth/DozStage_Master', bgX, bgY - 193);
+    bg5c.animation.addByPrefix('Clouds', 'Clouds', 24, true);
+    bg5c.animation.play('Clouds');
+    bg5c.scrollFactor.set(0.7, 1);
+    bg5c.zIndex = z++;
+    bg5c.antialiasing = false;
+
+    var bg5s2 = makeAnim('sloth/DozStage_Master', bgX + factoryX + 2890, bgY - 120);
+    bg5s2.animation.addByPrefix('smoke2', 'smoke2', 24, true);
+    bg5s2.animation.play('smoke2');
+    bg5s2.scrollFactor.set(0.6, 1);
+    bg5s2.zIndex = z++;
+    bg5s2.antialiasing = false;
+
+    var bg5s1 = makeAnim('sloth/DozStage_Master', bgX + factoryX + 4400, bgY - 329);
+    bg5s1.animation.addByPrefix('smoke1', 'smoke1', 24, true);
+    bg5s1.animation.play('smoke1');
+    bg5s1.scrollFactor.set(0.6, 1);
+    bg5s1.zIndex = z++;
+
+    var bg4 = makeSpr('sloth/BG - 4', factoryX, bgY);
+    bg4.scrollFactor.set(0.6, 1);
+    bg4.zIndex = z++;
+
+    var bg3 = makeSpr('sloth/BG - 3', bgX + 200, bgY);
+    bg3.scrollFactor.set(0.75, 1);
+    bg3.zIndex = z++;
+
+    rogato = FunkinSprite.create(-1950, -1070);
+    rogato.loadSparrow('sloth/rogato');
+    rogato.animation.addByPrefix('idle', 'idle', 24, false);
+    rogato.scale.set(2, 2);
+    rogato.updateHitbox();
+    rogato.zIndex = z++;
+    add(rogato);
+
+    // Train
+    train = FunkinSprite.create(bgX - 500, bgY + 1335);
+    train.loadSparrow('sloth/titlestate/atrain');
+    train.animation.addByPrefix('rattling', 'reescaledTrain', 24, false);
+    train.animation.addByPrefix('init', 'nothing', 24, true);
+    train.animation.play('init', true);
+    train.scale.set(4.49, 4.49);
+    train.updateHitbox();
+    train.zIndex = z + 400;
+    add(train);
+
+    var bg1 = makeSpr('sloth/BG - 1', bgX, 3086 - 587 - 2000);
+    bg1.scrollFactor.set(0.97, 1);
+    bg1.zIndex = z + 401;
+
+    FunkinMemory.cacheSound(Paths.sound('train_passes', 'shared'));
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+
+    if (!hasCreatedStage) {
+      hasCreatedStage = true;
+      var bfId = getBoyfriend().characterId;
+      var bg2Path = (bfId == 'playable-dozirc' || bfId == 'dozirc-zzz-playable') ? 'sloth/BG - 2NODOZIRC' : 'sloth/BG - 2';
+      var bg2 = makeSpr(bg2Path, bgX, bgY);
+      bg2.zIndex = z++;
+    }
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    var beat = event.beat;
+
+    if (beat == 104 && !train1) { train1 = true; moveTrain(); }
+    if (beat == 204 && !train2) { train2 = true; moveTrain(); }
+    if (beat == 292 && !train3) { train3 = true; moveTrain(); }
+
+    if (beat % 2 == 0 && rogato != null) rogato?.animation?.play('idle', true);
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.BF && character.characterId == 'bf-retrospecter') {
+      character.idleSuffix = '-alt';
+      character.danceEvery = 2;
+    }
+  }
+
+  function moveTrain():Void
+  {
+    trainSound = FunkinSound.load(Paths.sound('train_passes', 'shared'), 0.5, false, false, true);
+
+    // 115 frames at 24fps before the train animation plays
+    new FlxTimer().start(115 / 24, function(_) {
+      if (train != null) train?.animation?.play('rattling', true);
+    });
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    if (trainSound != null) trainSound.pause();
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    if (trainSound != null) trainSound.resume();
+  }
+
+  override function onGameOver(event:ScriptEvent):Void
+  {
+    super.onGameOver(event);
+    stopTrainSound();
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    train1 = false;
+    train2 = false;
+    train3 = false;
+    if (train != null) train.animation.play('init', true);
+    stopTrainSound();
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    rogato = null;
+    train = null;
+    hasCreatedStage = false;
+    stopTrainSound();
+  }
+
+  function stopTrainSound():Void
+  {
+    if (trainSound == null) return;
+    trainSound.stop();
+    trainSound.destroy();
+    trainSound = null;
+  }
+
+  function makeSpr(imagePath:String, x:Float, y:Float):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadTexture(imagePath);
+    sprite.active = false;
+    add(sprite);
+    return sprite;
+  }
+
+  function makeAnim(imagePath:String, x:Float, y:Float):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.loadSparrow(imagePath);
+    add(sprite);
+    return sprite;
+  }
+}

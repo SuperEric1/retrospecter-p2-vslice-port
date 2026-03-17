@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "name": "Dozirc 2",
+  "assetPath": "characters/OtherSins/dozirc_unat",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.989,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "dozircDefault",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singUP",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "awaken",
+      "prefix": "Dozric powerUP",
+      "offsets": [78, 45],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sleep",
+      "prefix": "Dozric powerDOWN",
+      "offsets": [69, -3],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "yawn",
+      "prefix": "Dozirc yawn",
+      "offsets": [324, 101],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "snore",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "snoreloop",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sleepidle",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    }
+  ],
+  "flipX": false
+}

@@ -41,7 +41,7 @@ class BFWrathCharacter extends MultiSparrowCharacter
         case "spectre":
           return;
         case "GF Sing":
-          PlayState.instance.currentStage.getGirlfriend().animation.play('cheer');
+          PlayState.instance.currentStage.getGirlfriend().playAnimation('cheer');
           return;
       }
     }

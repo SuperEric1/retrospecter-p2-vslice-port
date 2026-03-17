@@ -397,7 +397,7 @@ class PreGluttonyStage extends Stage
       var dad = PlayState.instance.currentStage.getDad();
       if (dad != null) {
         dad.animation.finished = true;
-		    dad.animation.play('idle');
+		    dad.playAnimation('idle');
         dad.cameraFocusPoint.x += focusPoint[0];
         dad.cameraFocusPoint.y += focusPoint[1];
       }

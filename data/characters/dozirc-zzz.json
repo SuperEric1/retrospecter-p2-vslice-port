@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "name": "Dozirc Zzz",
+  "assetPath": "characters/OtherSins/dozirc_zzz",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1.989,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "zzz",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singUP",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": [0, 1]
+    },
+    {
+      "looped": true,
+      "name": "snore",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "looped": true,
+      "name": "snoreloop",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "sleepidle",
+      "prefix": "Dozirc snore",
+      "offsets": [115, 77],
+      "frameRate": 24
+    }
+  ],
+  "flipX": false
+}

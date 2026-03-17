@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "visible": false,
+  "name": "RetroSpecter (EXTRAS)",
+  "songs": ["ectospasm"],
+  "titleAsset": "storymenu/titles/wrath",
+  "background": "#2596be",
+  "props": []
+}

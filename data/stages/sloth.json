@@ -1,0 +1,23 @@
+{
+  "props": [],
+  "cameraZoom": 0.3,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [510, 620],
+      "cameraOffsets": [-650, -540]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-1130, 780],
+      "cameraOffsets": [800, 130]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 0],
+      "position": [10, 300]
+    }
+  },
+  "name": "Sloth"
+}

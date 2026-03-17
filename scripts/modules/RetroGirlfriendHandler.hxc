@@ -105,10 +105,7 @@ class RetroGirlfriendHandler extends Module {
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 
-    if (event.beat % 2 == 0)
-    {
-      if (speaker != null) speaker?.animation?.play('idle', true);
-    }
+    if (event.beat % 2 == 0 && speaker != null) speaker?.animation?.play('idle', true);
   }
 
   override public function onUpdate(event:UpdateScriptEvent)
@@ -131,16 +128,16 @@ class RetroGirlfriendHandler extends Module {
       // new positions
       var targetCoordX:Float = girlfriend.x + (girlfriend.width / 2) - (speaker.width / 2) + (girlfriend.width * currentOffset[0]);
       var targetCoordY:Float = girlfriend.y + (girlfriend.height / 1.5) - (speaker.height / 2) + (girlfriend.height * currentOffset[1]);
-      if (speaker.x != targetCoordX)
-        speaker.x = targetCoordX;
-      if (speaker.y != targetCoordY)
-        speaker.y = targetCoordY;
+      if (speaker?.x != targetCoordX)
+        speaker?.x = targetCoordX;
+      if (speaker?.y != targetCoordY)
+        speaker?.y = targetCoordY;
     }
 
-    speaker.visible = girlfriend.visible;
-    speaker.alpha = girlfriend.alpha;
+    speaker?.visible = girlfriend.visible;
+    speaker?.alpha = girlfriend.alpha;
 
-    if (!refreshed && speaker.exists) {
+    if (!refreshed && speaker?.exists) {
       speaker.antialiasing = girlfriend.antialiasing;
       speaker.scale.set(girlfriend.scale.x, girlfriend.scale.y);
       speaker.scrollFactor.set(girlfriend.scrollFactor.x, girlfriend.scrollFactor.y);

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bchim.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="chimney0000" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0001" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0002" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0003" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0004" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0005" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0006" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0007" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0008" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0009" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0010" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0011" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0012" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0013" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0014" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0015" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0016" x="0" y="0" width="993" height="830"/>
+	<SubTexture name="chimney0017" x="0" y="0" width="993" height="830"/>
+	<SubTexture name="chimney0018" x="0" y="0" width="993" height="830"/>
+	<SubTexture name="chimney0019" x="0" y="0" width="993" height="830"/>
+	<SubTexture name="chimney0020" x="998" y="840" width="986" height="830" frameX="-7" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0021" x="998" y="840" width="986" height="830" frameX="-7" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0022" x="998" y="840" width="986" height="830" frameX="-7" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0023" x="998" y="840" width="986" height="830" frameX="-7" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0024" x="2987" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0025" x="2987" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0026" x="2987" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0027" x="2987" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0028" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0029" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0030" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0031" x="0" y="840" width="988" height="830" frameX="-5" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0032" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0033" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0034" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0035" x="1003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0036" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0037" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0038" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0039" x="2003" y="0" width="990" height="830" frameX="-3" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0040" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+	<SubTexture name="chimney0041" x="1994" y="840" width="983" height="830" frameX="-10" frameY="0" frameWidth="993" frameHeight="830"/>
+</TextureAtlas>
