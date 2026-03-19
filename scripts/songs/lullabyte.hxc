@@ -155,12 +155,16 @@ class LullabyteSong extends Song
 
   function snore():Void
   {
-    PlayState.instance?.currentStage?.getDad()?.playAnimation('snore', true);
+    var dad = PlayState.instance.currentStage.getDad();
+    if (dad == null) return;
+    dad.playAnimation('snore', true);
   }
 
   function snoreLoop():Void
   {
-    PlayState.instance?.currentStage?.getDad()?.playAnimation('snoreloop', false);
+    var dad = PlayState.instance.currentStage.getDad();
+    if (dad == null) return;
+    dad.playAnimation('snoreloop', false);
   }
 
   function createFlash(color:Int, blend:Int, alpha:Float, duration:Float, ease:Dynamic):Void

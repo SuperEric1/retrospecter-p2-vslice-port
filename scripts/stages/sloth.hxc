@@ -1,6 +1,8 @@
 import flixel.FlxG;
 import funkin.graphics.FunkinSprite;
 import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import funkin.Paths;
 import funkin.FunkinMemory;
 import funkin.audio.FunkinSound;
@@ -22,6 +24,7 @@ class SlothStage extends Stage
   var train2:Bool = false;
   var train3:Bool = false;
   var z:Int = 0;
+  var isWideScreen:Bool = false;
   var hasCreatedStage:Bool = false;
 
   public function new()
@@ -37,6 +40,8 @@ class SlothStage extends Stage
     train2 = false;
     train3 = false;
     z = 0;
+
+    isWideScreen = FlxG.width > 1280;
 
     var factoryX = bgX + 300;
 
@@ -114,6 +119,35 @@ class SlothStage extends Stage
       var bg2Path = (bfId == 'playable-dozirc' || bfId == 'dozirc-zzz-playable') ? 'sloth/BG - 2NODOZIRC' : 'sloth/BG - 2';
       var bg2 = makeSpr(bg2Path, bgX, bgY);
       bg2.zIndex = z++;
+
+      // Borders for wide screens
+      if (isWideScreen) {
+        var camZoom = PlayState.instance.stageZoom;
+        var w = 2000;
+        var h = Math.ceil((FlxG.height + 50) / camZoom);
+        var color = 0xFF160900; // #160900
+
+        var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+        border1.x = bgX;
+        border1.screenCenter(0x10);
+        border1.scrollFactor.set(1, 0);
+        border1.zIndex = z + 403;
+        add(border1);
+        var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 4, h, color);
+        fillBorderLeft.zIndex = z + 402;
+        fillBorderLeft.x -= fillBorderLeft.width;
+        add(fillBorderLeft);
+
+        var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+        border2.x = bgX + 3510;
+        border2.screenCenter(0x10);
+        border2.scrollFactor.set(1, 0);
+        border2.zIndex = z + 404;
+        add(border2);
+        var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 4, h, color);
+        fillBorderRight.zIndex = z + 403;
+        add(fillBorderRight);
+      }
     }
   }
 
