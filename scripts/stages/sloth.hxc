@@ -136,6 +136,7 @@ class SlothStage extends Stage
         var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 4, h, color);
         fillBorderLeft.zIndex = z + 402;
         fillBorderLeft.x -= fillBorderLeft.width;
+        fillBorderLeft.scrollFactor.set(1, 0);
         add(fillBorderLeft);
 
         var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
@@ -146,6 +147,7 @@ class SlothStage extends Stage
         add(border2);
         var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 4, h, color);
         fillBorderRight.zIndex = z + 403;
+        fillBorderRight.scrollFactor.set(1, 0);
         add(fillBorderRight);
       }
     }
