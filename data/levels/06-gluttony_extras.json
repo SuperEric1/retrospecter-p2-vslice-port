@@ -3,6 +3,9 @@
   "name": "Insatian (EXTRAS)",
   "visible": false,
   "songs": [],
+  "capsule": {
+    "name": "GLUTTONY"
+  },
   "titleAsset": "storymenu/titles/gluto",
   "background": "#fb2844",
   "props": []

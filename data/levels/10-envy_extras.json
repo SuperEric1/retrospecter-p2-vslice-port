@@ -3,6 +3,9 @@
   "name": "Atrocean (EXTRAS)",
   "visible": false,
   "songs": [],
+  "capsule": {
+    "name": "ENVY"
+  },
   "titleAsset": "storymenu/titles/envy",
   "background": "#34b582",
   "props": []

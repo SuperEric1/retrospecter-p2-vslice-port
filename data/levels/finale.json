@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "FINALE",
   "songs": ["extirpatient"],
+  "capsule": {
+    "name": "FINALE"
+  },
   "titleAsset": "storymenu/titles/finale",
   "background": "#000000",
   "props": [

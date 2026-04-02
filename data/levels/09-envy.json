@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Atrocean",
   "songs": ["seasire", "macovet"],
+  "capsule": {
+    "name": "ENVY"
+  },
   "titleAsset": "storymenu/titles/envy",
   "background": "#34b582",
   "props": [

@@ -3,6 +3,9 @@
   "name": "Hivemine (EXTRAS)",
   "visible": false,
   "songs": [],
+  "capsule": {
+    "name": "GREED"
+  },
   "titleAsset": "storymenu/titles/greed",
   "background": "#b72ef3",
   "props": []

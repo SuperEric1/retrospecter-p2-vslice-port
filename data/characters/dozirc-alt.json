@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
   "name": "Dozirc Alt",
-  "assetPath": "characters/atlases/dozirc",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/dozirc",
   "singTime": 4,
   "isPixel": false,
   "scale": 1.989,

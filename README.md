@@ -2,17 +2,16 @@
 A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
 
 TODO:
-- [ ] Change `folderNames` inside RetroSave when we're gonna post the mod on gamebanana, adding whatever new folder name the mod gets
-- [ ] `addBySymbol()` all dozirc anims in the options menu
-- [ ] Catastrofiend subtitles
+- [ ] `addBySymbol()` all dozirc anims in the options menu (URGENT)
+- [ ] Catastrofiend subtitles and modchart
 - [ ] Saku note mechanic
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
 - [ ] Atrocean's note mechanic
+- [ ] Remaining extirpatient effects
 - [ ] Update main menu
 - [ ] Checkpoint event (+ add to all songs that have it)
-- [ ] Intro for options menu
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
@@ -27,6 +26,7 @@ TODO:
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Review mechanics
 - [ ] Dialogues...?
+- [X] Intro for options menu
 - [X] Acid death
 - [X] Hydra note is not pausing when pausing the game
 - [X] Sweet talk difficulties

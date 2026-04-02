@@ -1,3 +1,5 @@
+// Code by SuperEric
+
 package supereric.retrospecter.modules;
 
 import flixel.FlxG;
@@ -129,7 +131,7 @@ class RetroGameUI extends Module {
       downscroll = Preferences.downscroll;
       isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
       if (isMobileArrowScheme) downscroll = true;
-      judgementXOffset = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice ? -30 : -60;
+      judgementXOffset = isMobileArrowScheme ? -30 : -60;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -410,6 +412,7 @@ class RetroGameUI extends Module {
     if (PlayState.instance.isBotPlayMode) {
       score.text = 'BOTPLAY';
       score.x += judgementXOffset;
+      FlxTween.tween(score, {alpha: 0.5}, 1.5, {type: 4, ease: FlxEase.sineOut});
     }
 
     PlayState.instance.scoreText.alpha = 0;
@@ -932,6 +935,7 @@ class RetroGameUI extends Module {
     hasBeenCreated = false;
     isPlayerIconAnimated = false;
     isPlayerOppAnimated = false;
+    ogBarTexture = null;
     cancelTweens(false);
     currentAccuracy = 0.0;
     isHivemine = false;
@@ -1090,6 +1094,8 @@ class RetroGameUI extends Module {
         return getRGB(127, 31, 227);
       case 'bf-envy':
         return getRGB(30, 104, 120);
+      case 'bf-sloth':
+        return getRGB(55, 101, 120);
       case 'bf-lust':
         return getRGB(107, 27, 63);
 

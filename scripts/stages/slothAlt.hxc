@@ -11,25 +11,29 @@ import funkin.play.stage.Stage;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 
-class SlothStage extends Stage
+class SlothAltStage extends Stage
 {
   var bgX:Float = -2600;
   var bgY:Float = -2000;
 
-  var rogato:FunkinSprite;
+  var leftLights:Array<FunkinSprite> = [];
+  var rightLights:Array<FunkinSprite> = [];
+  var carLight:FunkinSprite;
+  var electricity:FunkinSprite;
   var train:FunkinSprite;
   var trainSound:FunkinSound;
 
   var train1:Bool = false;
   var train2:Bool = false;
   var train3:Bool = false;
+
   var z:Int = 0;
-  var isWideScreen:Bool = false;
+  var zBg2:Int = 0;
   var hasCreatedStage:Bool = false;
 
   public function new()
   {
-    super('sloth');
+    super('slothAlt');
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -41,69 +45,94 @@ class SlothStage extends Stage
     train3 = false;
     z = 0;
 
-    isWideScreen = FlxG.width > 1280;
+    var factoryX:Float = bgX + 340;
 
-    var factoryX = bgX + 300;
-
-    var bg5 = makeSpr('sloth/BG - 5', bgX + 300, bgY);
-    bg5.scrollFactor.set(0.6, 1);
+    var bg5 = makeSpr('sloth/altBG - 5', bgX + 400, bgY);
+    bg5.scale.set(0.5, 0.5);
+    bg5.scrollFactor.set(0.45, 1);
     bg5.zIndex = z++;
-    bg5.antialiasing = false;
 
-    var bg5swirl = makeSpr('sloth/BG - 5 clouds', bgX + 200, bgY + 700);
-    bg5swirl.scrollFactor.set(0.6, 1);
+    var bg5swirl = makeSpr('sloth/altBG - 5 clouds', bgX + 400, bgY + 100);
+    bg5swirl.scale.set(0.5, 0.5);
+    bg5swirl.scrollFactor.set(0.45, 1);
     bg5swirl.zIndex = z++;
-    bg5swirl.antialiasing = false;
 
-    var bg5c = makeAnim('sloth/DozStage_Master', bgX, bgY - 193);
-    bg5c.animation.addByPrefix('Clouds', 'Clouds', 24, true);
-    bg5c.animation.play('Clouds');
-    bg5c.scrollFactor.set(0.7, 1);
+    var bg5c = makeAnim('sloth/DozStage_MasterNightmare', bgX + 50, bgY + 500);
+    bg5c.animation.addByPrefix('clouds', 'clouds', 24, true);
+    bg5c.animation.play('clouds');
+    bg5c.scale.set(0.5, 0.5);
+    bg5c.scrollFactor.set(0.55, 1);
     bg5c.zIndex = z++;
-    bg5c.antialiasing = false;
 
-    var bg5s2 = makeAnim('sloth/DozStage_Master', bgX + factoryX + 2890, bgY - 120);
-    bg5s2.animation.addByPrefix('smoke2', 'smoke2', 24, true);
-    bg5s2.animation.play('smoke2');
-    bg5s2.scrollFactor.set(0.6, 1);
-    bg5s2.zIndex = z++;
-    bg5s2.antialiasing = false;
-
-    var bg5s1 = makeAnim('sloth/DozStage_Master', bgX + factoryX + 4400, bgY - 329);
+    var bg5s1 = makeAnim('sloth/DozStage_MasterNightmare', bgX + factoryX + 1933, bgY + 574);
     bg5s1.animation.addByPrefix('smoke1', 'smoke1', 24, true);
     bg5s1.animation.play('smoke1');
+    bg5s1.scale.set(0.5, 0.5);
     bg5s1.scrollFactor.set(0.6, 1);
     bg5s1.zIndex = z++;
 
-    var bg4 = makeSpr('sloth/BG - 4', factoryX, bgY);
+    var bg5s2 = makeAnim('sloth/DozStage_MasterNightmare', bgX + factoryX + 3443, bgY + 365);
+    bg5s2.animation.addByPrefix('smoke2', 'smoke2', 24, true);
+    bg5s2.animation.play('smoke2');
+    bg5s2.scale.set(0.5, 0.5);
+    bg5s2.scrollFactor.set(0.6, 1);
+    bg5s2.zIndex = z++;
+
+    var bg4 = makeSpr('sloth/altBG - 4', factoryX, bgY);
+    bg4.scale.set(0.5, 0.5);
     bg4.scrollFactor.set(0.6, 1);
     bg4.zIndex = z++;
 
-    var bg3 = makeSpr('sloth/BG - 3', bgX + 200, bgY);
-    bg3.scrollFactor.set(0.75, 1);
+    var bg3 = makeSpr('sloth/altBG - 3', bgX + 200, bgY);
+    bg3.scale.set(0.5, 0.5);
+    bg3.scrollFactor.set(0.8, 1);
     bg3.zIndex = z++;
 
-    rogato = FunkinSprite.create(-1950, -1070);
-    rogato.loadSparrow('sloth/rogato');
-    rogato.animation.addByPrefix('idle', 'idle', 24, false);
-    rogato.scale.set(2, 2);
-    rogato.updateHitbox();
-    rogato.zIndex = z++;
-    add(rogato);
+    electricity = makeAnim('sloth/electricity', bgX + 600 - 240, bgY + 600 - 220);
+    electricity.animation.addByPrefix('electricity', 'electricity', 24, true);
+    electricity.animation.addByPrefix('init', 'electricity0002', 24, false);
+    electricity.animation.play('init', true);
+    electricity.scale.set(0.5, 0.5);
+    electricity.scrollFactor.set(0.8, 1);
+    electricity.zIndex = z++;
 
-    // Train
-    train = FunkinSprite.create(bgX - 500, bgY + 1335);
-    train.loadSparrow('sloth/titlestate/atrain');
+    zBg2 = z++;
+
+    leftLights = [];
+    for (i in 0...5)
+    {
+      var lgt = makeSpr('sloth/left/${i + 1}', bgX + 1255, bgY + 1382);
+      lgt.alpha = 0.001;
+      lgt.zIndex = z++;
+      leftLights.push(lgt);
+    }
+
+    rightLights = [];
+    for (i in 0...3)
+    {
+      var lgt = makeSpr('sloth/right/${i + 1}', bgX + 2874, bgY + 1274);
+      lgt.alpha = 0.001;
+      lgt.zIndex = z++;
+      rightLights.push(lgt);
+    }
+
+    carLight = makeSpr('sloth/random flick-3', bgX + 3000 - 98, bgY + 2000 - 160);
+    carLight.alpha = 0.001;
+    carLight.zIndex = z++;
+
+    train = FunkinSprite.create(bgX + 850, bgY + 1520);
+    train.loadSparrow('sloth/titlestate/btrain');
     train.animation.addByPrefix('rattling', 'reescaledTrain', 24, false);
     train.animation.addByPrefix('init', 'nothing', 24, true);
     train.animation.play('init', true);
-    train.scale.set(4.49, 4.49);
+    train.scale.set(2.2, 2.2);
     train.updateHitbox();
     train.zIndex = z + 400;
     add(train);
 
-    var bg1 = makeSpr('sloth/BG - 1', bgX, 3086 - 587 - 2000);
-    bg1.scrollFactor.set(0.97, 1);
+    var bg1 = makeSpr('sloth/altBG -1', bgX, 3086 - 587 - 2000 - 600 - 30);
+    bg1.scale.set(0.5, 0.5);
+    bg1.scrollFactor.set(0.94, 1);
     bg1.zIndex = z + 401;
 
     FunkinMemory.cacheSound(Paths.sound('train_passes', 'shared'));
@@ -113,16 +142,19 @@ class SlothStage extends Stage
   {
     super.onSongLoaded(event);
 
-    if (!hasCreatedStage) {
+    if (!hasCreatedStage)
+    {
       hasCreatedStage = true;
-      var bfId = getBoyfriend().characterId;
-      var bg2Path = (bfId == 'playable-dozirc' || bfId == 'dozirc-zzz-playable') ? 'sloth/BG - 2NODOZIRC' : 'sloth/BG - 2';
+
+      var bfId = getBoyfriend()?.characterId ?? '';
+      var bg2Path = (bfId == 'playable-dozirc' || bfId == 'dozirc-zzz-playable') ? 'sloth/altBG - 2NODOZIRC' : 'sloth/altBG - 2';
       var bg2 = makeSpr(bg2Path, bgX, bgY);
-      bg2.zIndex = z++;
+      bg2.scale.set(0.5, 0.5);
+      bg2.zIndex = zBg2;
 
       // Borders for wide screens
       // TODO: make the border less wider for the gradient to not affect too much the stage
-      if (isWideScreen) {
+      if (FlxG.width > 1280 || true) {
         var camZoom = PlayState.instance.stageZoom;
         var w = 2000;
         var h = Math.ceil((FlxG.height + 50) / camZoom);
@@ -137,7 +169,6 @@ class SlothStage extends Stage
         var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 4, h, color);
         fillBorderLeft.zIndex = z + 402;
         fillBorderLeft.x -= fillBorderLeft.width;
-        fillBorderLeft.scrollFactor.set(1, 0);
         add(fillBorderLeft);
 
         var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
@@ -148,7 +179,6 @@ class SlothStage extends Stage
         add(border2);
         var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 4, h, color);
         fillBorderRight.zIndex = z + 403;
-        fillBorderRight.scrollFactor.set(1, 0);
         add(fillBorderRight);
       }
     }
@@ -160,30 +190,41 @@ class SlothStage extends Stage
 
     var beat = event.beat;
 
-    if (beat == 104 && !train1) { train1 = true; moveTrain(); }
-    if (beat == 204 && !train2) { train2 = true; moveTrain(); }
-    if (beat == 292 && !train3) { train3 = true; moveTrain(); }
-
-    if (beat % 2 == 0 && rogato != null) rogato?.animation?.play('idle', true);
+    if (beat == 116 && !train1) { train1 = true; moveTrain(); }
+    if (beat == 348 && !train2) { train2 = true; moveTrain(); }
+    if (beat == 568 && !train3) { train3 = true; moveTrain(); }
   }
 
-  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  // Called by slowstopper.hxc
+  public function togLightArr(name:String, n:Int):Void
   {
-    super.addCharacter(character, charType);
-
-    if (charType == CharacterType.BF && character.characterId == 'bf-retrospecter') {
-      character.idleSuffix = '-alt';
-      character.danceEvery = 2;
-    }
+    var arr = (name == 'left') ? leftLights : rightLights;
+    var count = Std.int(Math.min(n, arr.length));
+    for (i in 0...count)
+      arr[i].alpha = FlxG.random.bool(50) ? 1.0 : 0.001;
   }
 
-  function moveTrain():Void
-  {
+  // Called by slowstopper.hxc
+  public function randomCarLight():Void {
+    if (carLight != null)
+      carLight.alpha = FlxG.random.bool(35) ? 1.0 : 0.001;
+  }
+
+  // Called by slowstopper.hxc
+  public function playElectricity():Void {
+    if (electricity != null) electricity.animation.play('electricity', true);
+  }
+
+  // Called by slowstopper.hxc
+  // TODO: implement enemy title system
+  public function startEnemyTitle():Void {}
+
+  function moveTrain():Void {
     trainSound = FunkinSound.load(Paths.sound('train_passes', 'shared'), 0.5, false, false, true);
 
-    // 115 frames at 24fps before the train animation plays
-    new FlxTimer().start(115 / 24, function(_) {
-      if (train != null) train?.animation?.play('rattling', true);
+    // 100 frames at 24fps before the train animation plays
+    new FlxTimer().start(100.0 / 24.0, function(_) {
+      if (train != null) train.animation.play('rattling', true);
     });
   }
 
@@ -212,14 +253,18 @@ class SlothStage extends Stage
     train2 = false;
     train3 = false;
     if (train != null) train.animation.play('init', true);
+    if (electricity != null) electricity.animation.play('init', true);
     stopTrainSound();
   }
 
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
-    rogato = null;
+    electricity = null;
+    carLight = null;
     train = null;
+    leftLights = [];
+    rightLights = [];
     hasCreatedStage = false;
     stopTrainSound();
   }

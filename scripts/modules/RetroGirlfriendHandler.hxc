@@ -30,6 +30,7 @@ class RetroGirlfriendHandler extends Module {
     "gf-gluttony" => path + 'gluttony',
     "gf-greed" => path + 'greed',
     "gf-pride" => path + 'pride',
+    "gf-sloth" => path + 'sloth',
     "gf-envy" => path + 'envy',
   ];
   var refreshed:Bool = false;
@@ -56,6 +57,7 @@ class RetroGirlfriendHandler extends Module {
   ];
   var speakerOffsets:StringMap<String, Array<Float>> = [
     "gf-default" => [-0.05, 0.13],
+    "gf-sloth" => [-0.055, 0.0065],
     "gf-greed" => [-0.05, -0.04],
     "gf-gluttony" => [-0.01, -0.175],
     "gf-pride" => [-0.03, -0.13],
@@ -74,7 +76,7 @@ class RetroGirlfriendHandler extends Module {
     isRetro = StringTools.startsWith(noteStyle, 'retro') || StringTools.startsWith(noteStyle, 'player');
     if (!isRetro) return;
 
-    girlfriend = PlayState.instance.currentStage.getGirlfriend();
+    girlfriend = PlayState.instance.currentStage?.getGirlfriend() ?? null;
     if (!createdSpeaker) {
       reloadSpeaker();
       createdSpeaker = true;
@@ -111,7 +113,7 @@ class RetroGirlfriendHandler extends Module {
   override public function onUpdate(event:UpdateScriptEvent)
   {
     super.onUpdate(event);
-    if (PlayState.instance == null || !createdSpeaker || girlfriend == null || !girlfriend.alive || !girlfriend.visible) return;
+    if (PlayState.instance == null || !createdSpeaker || girlfriend == null || !girlfriend.alive) return;
 
     if (currentData != null) {
       // old positions
@@ -134,7 +136,7 @@ class RetroGirlfriendHandler extends Module {
         speaker?.y = targetCoordY;
     }
 
-    speaker?.visible = girlfriend.visible;
+    //speaker?.visible = girlfriend.visible;
     speaker?.alpha = girlfriend.alpha;
 
     if (!refreshed && speaker?.exists) {

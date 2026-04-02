@@ -805,13 +805,15 @@ class RetroPlayState extends Module {
       if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
         ogStrumsX.push(strum.x);
         ogStrumsY.push(strum.y);
-        ogPlayerStrumScales.push(strum.scale);
+        ogPlayerStrumScales.push(strum.scale.x);
+        ogPlayerStrumScales.push(strum.scale.y);
       }
       strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (ogOppStrumsX[i] == null && ogOppStrumsY[i] == null) {
         ogOppStrumsX.push(strum.x);
         ogOppStrumsY.push(strum.y);
-        ogOppStrumScales.push(strum.scale);
+        ogOppStrumScales.push(strum.scale.x);
+        ogOppStrumScales.push(strum.scale.y);
       }
     }
   }
@@ -2014,7 +2016,7 @@ class RetroPlayState extends Module {
         FlxTween.cancelTweensOf(note);
         note.x = ogStrumsX[i];
         note.y = ogStrumsY[i];
-        //note.scale.set(ogPlayerStrumScales[i]);
+        note.scale.set(ogOppStrumScales[i * 2], ogOppStrumScales[i * 2 + 1]);
         note.angle = 0;
         note.alpha = 1;
         note.colorTransform.redMultiplier = 1;
@@ -2029,7 +2031,7 @@ class RetroPlayState extends Module {
         FlxTween.cancelTweensOf(note);
         note.x = ogOppStrumsX[i];
         note.y = ogOppStrumsY[i];
-        //note.scale.set(ogOppStrumScales[i]);
+        note.scale.set(ogPlayerStrumScales[i * 2], ogPlayerStrumScales[i * 2 + 1]);
         note.angle = 0;
         note.alpha = 1;
         note.colorTransform.redMultiplier = 1;

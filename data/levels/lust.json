@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Sakuroma",
   "songs": ["hard-ache"],
+  "capsule": {
+    "name": "LUST"
+  },
   "titleAsset": "storymenu/titles/lust",
   "background": "#ba23b9",
   "props": [

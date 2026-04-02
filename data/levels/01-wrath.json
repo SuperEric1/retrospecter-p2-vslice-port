@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "RetroSpecter",
   "songs": ["satisfracture", "spectral", "apocalyptro", "catastrofiend"],
+  "capsule": {
+    "name": "WRATH"
+  },
   "titleAsset": "storymenu/titles/wrath",
   "background": "#2596be",
   "props": [

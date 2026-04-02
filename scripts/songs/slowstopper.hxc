@@ -1,0 +1,582 @@
+import flixel.FlxG;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.graphics.FunkinSprite;
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.save.Save;
+import supereric.retrospecter.modules.RetroUtil;
+
+class SlowstopperSong extends Song
+{
+  var downscroll:Bool = false;
+  var modcharts:Bool = true;
+  var isMobile = false;
+  var flashingLights:Bool = true;
+
+  var modIntroBeat:Bool = false;
+  var modRoughPulse:Bool = false;
+  var modMoveBFCam:Bool = false;
+  var modCalmPart:Bool = false;
+  var modGlitch:Bool = false;
+
+  var speed:Float = 0.0;
+  var globalOffset:Float = 0;
+
+  // Shuffled [0,1,2,3] used by glitch/moveBFCam to remap opponent strum positions
+  var savedData:Array<Int> = [0, 1, 2, 3];
+
+  // Strum defaults
+  var hasStoredStrums:Bool = false;
+  var defaultOpponentStrumX:Array<Float> = [];
+  var defaultOpponentStrumY:Array<Float> = [];
+  var defaultPlayerStrumX:Array<Float> = [];
+  var defaultPlayerStrumY:Array<Float> = [];
+  var ogPlayerStrumScales:Array<Float> = [];
+  var ogOppStrumScales:Array<Float> = [];
+
+  var flash:FunkinSprite;
+
+  var showLogo:Bool = false;
+
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+  var speedTween:FlxTween = null;
+  var camHUDYTween:FlxTween = null;
+
+  public function new()
+  {
+    super('slowstopper');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    downscroll = Preferences.downscroll;
+    modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    if (isMobile) downscroll = true;
+    flashingLights = Preferences.flashingLights;
+    showLogo = false;
+
+    if (PlayState.instance.startTimestamp <= 1000) {
+      var dad = PlayState.instance.currentStage.getDad();
+      dad.playAnimation('snore', true);
+      dad.danceEvery = 0;
+    }
+
+    flash = FunkinSprite.create();
+    flash.makeGraphic(1, 1, 0xFFFFFFFF);
+    flash.scrollFactor.set(0, 0);
+    flash.screenCenter();
+    flash.cameras = [PlayState.instance.camGame];
+    flash.visible = false;
+    flash.active = false;
+    PlayState.instance.add(flash, 'customFlash');
+    PlayState.instance.refresh();
+  }
+
+  override function onCountdownStart(event:ScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (PlayState.instance.startTimestamp <= 1000) {
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        if (strum == null) continue;
+        FlxTween.cancelTweensOf(strum, ['alpha']);
+        strum.alpha = 0;
+      }
+    }
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    if (!hasStoredStrums) storeDefaultStrumPositions();
+    if (!modcharts) return;
+
+    speed = 0.0;
+
+    if (PlayState.instance.startTimestamp <= 1000) {
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        if (strum == null) continue;
+        strum.y = defaultOpponentStrumY[i] + (100 * (isMobile ? -1 : 1));
+        strum.angle = FlxG.random.float(-45, 45);
+      }
+    }
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var beat = event.beat;
+    var crochet = Conductor.instance.beatLengthMs;
+
+    if (beat >= 96){
+      if (beat % 2 == 0)
+        PlayState.instance.currentStage?.scriptCall('togLightArr', ['left', 5]);
+      else
+        PlayState.instance.currentStage?.scriptCall('togLightArr', ['right', 3]);
+      PlayState.instance.currentStage?.scriptCall('randomCarLight', []);
+    }
+
+    if (modcharts) {
+      if (modIntroBeat) {
+        globalOffset = (beat % 2 == 0) ? 10.0 : -10.0;
+        var strum = PlayState.instance.opponentStrumline;
+        strum.x = defaultOpponentStrumX[4] + globalOffset;
+
+        /*for (i in 0...4) {
+          var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+          strum.x = defaultOpponentStrumX[i] + globalOffset;
+        }*/
+      }
+
+      if (modRoughPulse) {
+        var mult:Float = (beat % 2 == 0) ? 0.936 : 1.081;
+        for (i in 0...4) {
+          var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+          var baseScaleX = ogOppStrumScales[i * 2];
+          var baseScaleY = ogOppStrumScales[(i * 2) + 1];
+          strum.scale.set(baseScaleX * mult, baseScaleY * mult);
+        }
+      }
+
+      if (modGlitch && beat % 4 == 0) {
+        if (flashingLights) {
+          createFlash(0xFF2F2FFF, 9 /* multiply */, 0.6, crochet / 500.0, FlxEase.cubeOut);
+          PlayState.instance.camGame.shake(0.003, 0.15);
+        }
+        RetroUtil.addCameraZoom(0.005, 0.005);
+        savedData = shuffleData();
+      }
+
+      if (modMoveBFCam) {
+        PlayState.instance.camHUD.y = downscroll ? -20.0 : 20.0;
+        RetroUtil.addCameraZoom(0.0075, 0.01);
+        cancelCamHUDYTween();
+        camHUDYTween = FlxTween.tween(PlayState.instance.camHUD, {y: 0}, crochet / 1050.0, {ease: FlxEase.quartOut});
+      }
+
+      // Fall asleep
+      if (beat == 172) {
+        var dur = (crochet / 1000.0) * 28.0;
+        for (i in 0...4)
+        {
+          var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+          if (strum == null) continue;
+          tweens.push(FlxTween.tween(strum, {
+            y: defaultOpponentStrumY[i] + FlxG.random.float(-35, 35),
+            alpha: FlxG.random.float(0.4, 0.8),
+            angle: FlxG.random.float(-35, 35),
+            x: defaultOpponentStrumX[i] + FlxG.random.float(-50, 50)
+          }, dur, {ease: FlxEase.cubeIn}));
+        }
+      }
+    }
+
+    // Specific beat flashes
+    if (beat == 108 || beat == 140 || beat == 172 || beat == 204 || beat == 236 || beat == 300) {
+      if (flashingLights) {
+        createFlash(0xFFFCC36E, 0 /* add */, 0.15, crochet / 500.0, FlxEase.circOut);
+        PlayState.instance.camGame.shake(0.0045, 0.15);
+      }
+    }
+    if (beat >= 424 && beat < 428) {
+      if (flashingLights) {
+        createFlash(0xFF2F2FFF, 9 /* multiply */, 0.6, crochet / 1000.0, FlxEase.cubeOut);
+        PlayState.instance.camGame.shake(0.005, 0.15);
+      }
+      RetroUtil.addCameraZoom(0.005, 0.005);
+    }
+    if (beat == 428 && flashingLights) {
+      createFlash(0xFFFFFFFF, 0 /* add */, 0.7, crochet / 250.0, FlxEase.cubeOut);
+    }
+
+    handleTogglingBeats(beat, crochet);
+  }
+
+  function handleTogglingBeats(beat:Int, crochet:Float):Void
+  {
+    if (flashingLights) {
+      if (beat == 364) createFlash(0xFFFF421C, 9 /* multiply */, 0.6, crochet / 500.0, FlxEase.quadOut);
+      if (beat == 492) createFlash(0xFFFCB852, 0 /* add */, 0.45, crochet / 125.0, FlxEase.circOut);
+    }
+
+    if (!modcharts) return;
+
+    if (beat == 108) modIntroBeat = true;
+
+    if (beat == 172) {
+      modIntroBeat = false;
+      modRoughPulse = true;
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        strum.x = defaultOpponentStrumX[i];
+      }
+    }
+
+    if (beat == 235) modMoveBFCam = true;
+
+    if (beat == 364) {
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        var baseScaleX = ogOppStrumScales[i * 2];
+        var baseScaleY = ogOppStrumScales[(i * 2) + 1];
+        strum.scale.set(baseScaleX, baseScaleY);
+      }
+      modRoughPulse = false;
+      modMoveBFCam = false;
+      modCalmPart = true;
+      RetroUtil.addCameraZoom(0.00625, 0.0075);
+      cancelSpeedTween();
+      speedTween = FlxTween.num(speed, 100.0, 1.0, {ease: FlxEase.circOut}, function(n:Float) { speed = n; });
+    }
+
+    if (beat == 420) {
+      modCalmPart = false;
+      var strum = PlayState.instance.playerStrumline;
+      tweens.push(FlxTween.tween(strum, {x: defaultPlayerStrumX[4]}, 0.5, {ease: FlxEase.quadOut}));
+      /*for (i in 0...4) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        tweens.push(FlxTween.tween(strum, {x: defaultPlayerStrumX[i]}, 0.5, {ease: FlxEase.quadOut}));
+      }*/
+    }
+
+    if (beat == 428) {
+      modGlitch = true;
+      cancelSpeedTween();
+      speed = 0.0;
+      speedTween = FlxTween.num(0.0, 1.0, 0.5, {ease: FlxEase.circOut}, function(n:Float) { speed = n; });
+      savedData = shuffleData();
+    }
+
+    if (beat == 492) {
+      modGlitch = false;
+      PlayState.instance.camHUD.x = 0;
+      PlayState.instance.camHUD.y = 0;
+      for (i in 0...4) {
+        var opStrum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        opStrum.x = defaultOpponentStrumX[i];
+
+        var plStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        tweens.push(FlxTween.tween(plStrum, {x: defaultPlayerStrumX[i], y: defaultPlayerStrumY[i]}, 0.25, {ease: FlxEase.circOut}));
+      }
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (event.step >= 432 && !showLogo && PlayStatePlaylist.isStoryMode) {
+      showLogo = true;
+      PlayState.instance.currentStage?.scriptCall('startEnemyTitle', []);
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    if (!modcharts || !hasStoredStrums) return;
+
+    var time:Float = Conductor.instance.songPosition;
+
+    if (modGlitch) {
+      // camHUD X oscillates
+      PlayState.instance.camHUD.x = 35 * Math.cos(time / 500) * speed;
+
+      // Player strums oscillate
+      for (i in 0...4) {
+        var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        strum.y = defaultPlayerStrumY[i] + 12.5 * Math.cos(time / 500 + i) * speed;
+      }
+    }
+
+    if (modCalmPart && !isMobile) {
+      // Speed goes 0 - 100, so divide by 100 to get 0-1 multiplier
+      var t = speed / 100.0;
+      var offset:Float = (420 + 325 * Math.sin(time / 1000)) * t + 732 * (1 - t);
+
+      var plStrum = PlayState.instance.playerStrumline;
+      plStrum.x = -0.4 * 115 + offset;
+
+      var opStrum = PlayState.instance.opponentStrumline;
+      opStrum.alpha = Math.max((defaultOpponentStrumX[4] - -0.4 * 115 + offset) / 750.0, 0.45);
+
+      /*for (i in 0...4) {
+        var plStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        plStrum.x = i * 115 + offset;
+
+        var opStrum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        opStrum.alpha = Math.max((defaultOpponentStrumX[i] - i * 115 + offset) / 750.0, 0.45);
+      }*/
+    }
+
+    if (modMoveBFCam || modGlitch) {
+      var camX = PlayState.instance.camHUD.x;
+      var camY = PlayState.instance.camHUD.y;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumX[4] - camX + globalOffset;
+      //PlayState.instance.opponentStrumline.y = defaultOpponentStrumY[4] - camY;
+
+      for (i in 0...4) {
+        var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        strum.x = defaultOpponentStrumX[savedData[i]] - camX + globalOffset;
+        strum.y = defaultOpponentStrumY[savedData[i]] - camY;
+        // strum.x = defaultOpponentStrumX[savedData[i]] - camX + globalOffset;
+        // strum.y = defaultOpponentStrumY[savedData[i]] - camY;
+
+        // Sync notes pos
+        for (note in PlayState.instance.opponentStrumline.notes.members) {
+          if (note == null || !note.alive || !note.visible) continue;
+          var targetX = PlayState.instance.opponentStrumline.strumlineNotes.members[note.noteData.getDirection()].x;
+          if (note.x != targetX) {
+            note.x = targetX;
+          }
+        }
+      }
+    }
+  }
+
+  override function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+    if (event.eventData.eventKind == 'SlothEvents') {
+
+      switch (event.eventData.value.eventType)
+      {
+        case 'sleep': eventSleep();
+        case 'yawn': eventYawn();
+        case 'wakeUp': eventWakeUp();
+        case 'idler': eventIdler();
+      }
+    }
+  }
+
+  function eventSleep():Void
+  {
+    var dad = PlayState.instance?.currentStage?.getDad();
+    if (dad != null) { dad.playAnimation('sleep', false); dad.danceEvery = 0; }
+
+    if (!modcharts || !hasStoredStrums) return;
+    var crochet = Conductor.instance.beatLengthMs;
+    for (i in 0...4)
+    {
+      var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      tweens.push(FlxTween.tween(strum, {
+        y: defaultOpponentStrumY[i] + 75 + FlxG.random.float(-10, 10),
+        alpha: 0,
+        angle: FlxG.random.float(-25, 25),
+        x: defaultOpponentStrumX[i] + FlxG.random.float(-20, 20)
+      }, crochet / 400.0 + 0.2 * i, {ease: FlxEase.quadInOut}));
+    }
+  }
+
+  function eventYawn():Void
+  {
+    var dad = PlayState.instance?.currentStage?.getDad();
+    if (dad != null) { dad.playAnimation('yawn', false); dad.danceEvery = 1; }
+
+    if (!modcharts || !hasStoredStrums) return;
+    var crochet = Conductor.instance.beatLengthMs;
+    for (i in 0...4)
+    {
+      var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      tweens.push(FlxTween.tween(strum, {
+        y: defaultOpponentStrumY[i],
+        alpha: 1,
+        angle: 0,
+        x: defaultOpponentStrumX[i]
+      }, crochet / 200.0, {ease: FlxEase.backInOut}));
+    }
+  }
+
+  function eventWakeUp():Void
+  {
+    var dad = PlayState.instance?.currentStage?.getDad();
+    if (dad != null) dad.playAnimation('awaken', false);
+
+    PlayState.instance.currentStage?.scriptCall('playElectricity', []);
+
+    if (!modcharts || !hasStoredStrums) return;
+    var crochet = Conductor.instance.beatLengthMs;
+    for (i in 0...4)
+    {
+      var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      if (strum == null) continue;
+      tweens.push(FlxTween.tween(strum, {
+        y: defaultOpponentStrumY[i] + FlxG.random.float(-25, 25),
+        alpha: 0.75,
+        angle: FlxG.random.float(-10, 10),
+        x: defaultOpponentStrumX[i] + FlxG.random.float(-25, 25)
+      }, crochet / 500.0 + 0.2 * i, {ease: FlxEase.quadOut}));
+    }
+  }
+
+  function eventIdler():Void {
+    var dad = PlayState.instance?.currentStage?.getDad();
+    if (dad != null) dad.playAnimation('idle', true);
+  }
+
+  function createFlash(color:Int, blend:Int, alpha:Float, duration:Float, ease:Dynamic):Void
+  {
+    if (flash == null) return;
+    FlxTween.cancelTweensOf(flash);
+    flash.color = color;
+    flash.alpha = alpha;
+    flash.blend = blend;
+    flash.active = true;
+    var camZoom = PlayState.instance.currentCameraZoom;
+    var w = Math.ceil((FlxG.width + 50) / camZoom);
+    var h = Math.ceil((FlxG.height + 50) / camZoom);
+    flash.setGraphicSize(w, h);
+    flash.visible = true;
+    FlxTween.tween(flash, {alpha: 0}, duration, {
+      ease: ease,
+      onComplete: function(_) {
+        if (PlayState.instance != null && flash != null) {
+          flash.setGraphicSize(1, 1);
+          flash.visible = false;
+          flash.active = false;
+        }
+      }
+    });
+  }
+
+  function storeDefaultStrumPositions():Void {
+    hasStoredStrums = true;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
+    defaultPlayerStrumX = [];
+    defaultPlayerStrumY = [];
+
+    for (i in 0...4) {
+      var s = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+      defaultOpponentStrumX.push(s.x);
+      defaultOpponentStrumY.push(s.y);
+      ogOppStrumScales.push(s.scale.x);
+      ogOppStrumScales.push(s.scale.y);
+    }
+    for (i in 0...4) {
+      var s = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+      defaultPlayerStrumX.push(s.x);
+      defaultPlayerStrumY.push(s.y);
+      ogPlayerStrumScales.push(s.scale.x);
+      ogPlayerStrumScales.push(s.scale.y);
+    }
+
+    defaultOpponentStrumX.push(PlayState.instance.opponentStrumline.x);
+    defaultOpponentStrumY.push(PlayState.instance.opponentStrumline.y);
+    defaultPlayerStrumX.push(PlayState.instance.playerStrumline.x);
+    defaultPlayerStrumY.push(PlayState.instance.playerStrumline.y);
+  }
+
+  function shuffleData():Array<Int> {
+    var a:Array<Int> = [0, 1, 2, 3];
+    var i = 3;
+    while (i >= 1)
+    {
+      var j = FlxG.random.int(0, i);
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      i--;
+    }
+    return a;
+  }
+
+  function cancelSpeedTween():Void {
+    if (speedTween != null) { speedTween.cancel(); speedTween = null; }
+  }
+
+  function cancelCamHUDYTween():Void {
+    if (camHUDYTween != null) { camHUDYTween.cancel(); camHUDYTween = null; }
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    modIntroBeat = false;
+    modRoughPulse = false;
+    modMoveBFCam = false;
+    modCalmPart = false;
+    modGlitch = false;
+    globalOffset = 0;
+    speed = 0.0;
+    savedData = [0, 1, 2, 3];
+    showLogo = false;
+
+    cancelSpeedTween();
+    cancelCamHUDYTween();
+    resetTweens();
+
+    PlayState.instance.camHUD.x = 0;
+    PlayState.instance.camHUD.y = 0;
+
+    var dad = PlayState.instance.currentStage?.getDad();
+    if (dad != null) { dad.playAnimation('snore', true); dad.danceEvery = 0; }
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens) {
+      if (tween != null && !tween.finished) { tween.active = false; pausedTweens.push(tween); }
+    }
+    if (speedTween != null && !speedTween.finished) speedTween.active = false;
+    if (camHUDYTween != null && !camHUDYTween.finished) camHUDYTween.active = false;
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+      if (tween != null && !tween.finished) tween.active = true;
+    pausedTweens = [];
+    if (speedTween != null && !speedTween.finished) speedTween.active = true;
+    if (camHUDYTween != null && !camHUDYTween.finished) camHUDYTween.active = true;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+
+    cancelSpeedTween();
+    cancelCamHUDYTween();
+    resetTweens();
+
+    hasStoredStrums = false;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
+    defaultPlayerStrumX = [];
+    defaultPlayerStrumY = [];
+    flash = null;
+  }
+
+  private function resetTweens():Void
+  {
+    for (tween in tweens) {
+      if (tween != null) tween.cancel();
+    }
+    tweens = [];
+    pausedTweens = [];
+  }
+}

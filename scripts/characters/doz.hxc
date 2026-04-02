@@ -1,0 +1,57 @@
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.Preferences;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+
+class DozCharacter extends AnimateAtlasCharacter {
+	function new() {
+		super('doz');
+	}
+
+	override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+    if (PlayState.instance == null) return;
+
+    if (event.eventData.eventKind == "PlayAnimation") {
+      this.canPlayOtherAnims = true;
+      this.playAnimation(event.eventData.value.anim, true, true);
+    }
+  }
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
+		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
+			switch (event.note.noteData.kind)
+			{
+				case "Fake Note":
+					return;
+			}
+		}
+		super.onNoteHit(event);
+	}
+
+  function onCreate(event) {
+		super.onCreate(event);
+	}
+
+	// Load custom notestyle.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+
+    var downscroll = Preferences.downscroll;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    var strumStyle:String = 'dozirc_' + (downscroll ? 'down' : 'up');
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+	}
+}

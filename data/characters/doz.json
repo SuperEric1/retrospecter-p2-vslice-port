@@ -1,7 +1,8 @@
 {
   "version": "1.0.0",
-  "name": "Doz",
-  "assetPath": "characters/atlases/doz",
+  "name": "Dozirc (Doz)",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/doz",
   "singTime": 4,
   "isPixel": false,
   "scale": 1,

@@ -3,6 +3,7 @@
   "name": "Vs. RetroSpecter Part Two: Infernadise, Vol. 1",
   "artists": ["RetroSpecter & Kamex"],
   "albumArtAsset": "freeplay/albumRoll/zerktro",
+  "albumOSTName": "Infernadise Vol. 1",
   "albumTitleAsset": "freeplay/logos/Zerktro",
   "albumTitleOffsets": [-65, 10]
 }

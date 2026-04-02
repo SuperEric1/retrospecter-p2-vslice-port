@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Izzurius",
   "songs": ["egobrainiac", "superbio"],
+  "capsule": {
+    "name": "PRIDE"
+  },
   "titleAsset": "storymenu/titles/pride",
   "background": "#21363f",
   "props": [

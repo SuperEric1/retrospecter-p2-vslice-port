@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Dozirc",
   "songs": ["lullabyte", "slowstopper"],
+  "capsule": {
+    "name": "SLOTH"
+  },
   "titleAsset": "storymenu/titles/sloth",
   "background": "#c26d58",
   "props": [

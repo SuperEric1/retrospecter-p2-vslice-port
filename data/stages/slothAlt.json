@@ -1,0 +1,25 @@
+{
+  "props": [],
+  "cameraZoom": 0.58,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "scale": 0.5125,
+      "zIndex": 300,
+      "position": [270, 80],
+      "cameraOffsets": [-350, -320]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [-510, 60],
+      "cameraOffsets": [350, 40]
+    },
+    "gf": {
+      "scale": 0.5,
+      "zIndex": 100,
+      "cameraOffsets": [0, 0],
+      "position": [-20, -60]
+    }
+  },
+  "name": "Sloth Alt"
+}

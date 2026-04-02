@@ -107,7 +107,7 @@ class MacovetSong extends Song
     }
     for (note in PlayState.instance.opponentStrumline.notes.members) {
       if (note == null || !note.alive || !note.visible) continue;
-      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      var targetAngle = PlayState.instance.opponentStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
       if (note.angle != targetAngle) {
         note.angle = targetAngle;
       }

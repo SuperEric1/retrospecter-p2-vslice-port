@@ -115,10 +115,10 @@ class RetroMainMenu extends MusicBeatState
 
     var data:ModMetadata = null;
 
-    for (name in RetroSave.folderNames) {
-      if (data != null) continue;
-      data = PolymodHandler.modFileSystem.getMetadata(name);
-    }
+    /*for (name in RetroSave.folderNames) {
+      if (data != null) continue;*/
+      data = PolymodHandler.modFileSystem.getMetadataById('retrospecter-p2-port');
+    //}
 
     if (data != null) {
       retroV = data.modVersion.version?.join(".")?.substr(0, 3) ?? '1.0';

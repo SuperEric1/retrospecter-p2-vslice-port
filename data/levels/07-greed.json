@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Hivemine",
   "songs": ["sweet-talk", "embuzzle", "deadfine"],
+  "capsule": {
+    "name": "GREED"
+  },
   "titleAsset": "storymenu/titles/greed",
   "background": "#b72ef3",
   "props": [

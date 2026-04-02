@@ -1,5 +1,7 @@
 import funkin.play.character.SparrowCharacter;
 import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.Preferences;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;

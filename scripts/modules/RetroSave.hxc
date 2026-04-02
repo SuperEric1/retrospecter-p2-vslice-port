@@ -29,11 +29,11 @@ class RetroSave extends Module
     if (_initialized) return;
 
     var data:ModMetadata = null;
-    for (name in folderNames) {
-      if (data != null) break;
+    /*for (name in folderNames) {
+      if (data != null) break;*/
       // Tenta pegar o metadata via Polymod
-      data = PolymodHandler.modFileSystem.getMetadata(name); // use getMetadataById and remove the foldernames when the new patch arrives.
-    }
+      data = PolymodHandler.modFileSystem.getMetadataById('retrospecter-p2-port');
+    //}
 
     if (data != null) {
       debug = data.metadata?.get("debug") ?? "false";

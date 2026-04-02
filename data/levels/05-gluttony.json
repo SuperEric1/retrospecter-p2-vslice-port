@@ -2,6 +2,9 @@
   "version": "1.0.0",
   "name": "Insatian",
   "songs": ["glunisher", "gutlery"],
+  "capsule": {
+    "name": "GLUTTONY"
+  },
   "titleAsset": "storymenu/titles/gluto",
   "background": "#fb2844",
   "props": [
