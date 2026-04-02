@@ -269,4 +269,9 @@ class LullabyteSong extends Song
     tweens = [];
     pausedTweens = [];
   }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
 }
