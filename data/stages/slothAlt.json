@@ -1,18 +1,18 @@
 {
   "props": [],
-  "cameraZoom": 0.58,
+  "cameraZoom": 0.64,
   "version": "1.0.0",
   "characters": {
     "bf": {
       "scale": 0.5125,
       "zIndex": 300,
       "position": [270, 80],
-      "cameraOffsets": [-350, -320]
+      "cameraOffsets": [-370, -277]
     },
     "dad": {
       "zIndex": 200,
       "position": [-510, 60],
-      "cameraOffsets": [350, 40]
+      "cameraOffsets": [350, 100]
     },
     "gf": {
       "scale": 0.5,

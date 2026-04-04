@@ -2,7 +2,6 @@
 A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
 
 TODO:
-- [ ] `addBySymbol()` all dozirc anims in the options menu (URGENT)
 - [ ] Catastrofiend subtitles and modchart
 - [ ] Saku note mechanic
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
@@ -24,8 +23,9 @@ TODO:
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
-- [ ] Review mechanics
+- [ ] Review mechanics for better accuracy
 - [ ] Dialogues...?
+- [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)
 - [X] Intro for options menu
 - [X] Acid death
 - [X] Hydra note is not pausing when pausing the game

@@ -68,6 +68,11 @@ class SlowstopperSong extends Song
       var dad = PlayState.instance.currentStage.getDad();
       dad.playAnimation('snore', true);
       dad.danceEvery = 0;
+      PlayState.instance.iconP2.configure({
+        id: 'zzz',
+        scale: 0.75,
+        offsets: [15, 0],
+      });
     }
 
     flash = FunkinSprite.create();
@@ -85,7 +90,16 @@ class SlowstopperSong extends Song
   {
     super.onCountdownStart(event);
 
-    if (PlayState.instance.startTimestamp <= 1000) {
+    if (PlayState.instance.startTimestamp <= 10000) {
+      var dad = PlayState.instance.currentStage.getDad();
+      dad.playAnimation('snore', true);
+      dad.danceEvery = 0;
+      PlayState.instance.iconP2.configure({
+        id: 'zzz',
+        scale: 0.75,
+        offsets: [15, 0],
+      });
+
       for (i in 0...4) {
         var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
         if (strum == null) continue;
@@ -103,11 +117,11 @@ class SlowstopperSong extends Song
 
     speed = 0.0;
 
-    if (PlayState.instance.startTimestamp <= 1000) {
+    if (PlayState.instance.startTimestamp <= 10000) {
       for (i in 0...4) {
         var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
         if (strum == null) continue;
-        strum.y = defaultOpponentStrumY[i] + (100 * (isMobile ? -1 : 1));
+        strum.y = defaultOpponentStrumY[i] + 100;
         strum.angle = FlxG.random.float(-45, 45);
       }
     }
@@ -301,7 +315,7 @@ class SlowstopperSong extends Song
 
     if (modGlitch) {
       // camHUD X oscillates
-      PlayState.instance.camHUD.x = 35 * Math.cos(time / 500) * speed;
+      PlayState.instance.camHUD.x = (!isMobile ? 35 : 15) * Math.cos(time / 500) * speed;
 
       // Player strums oscillate
       for (i in 0...4) {
@@ -374,6 +388,11 @@ class SlowstopperSong extends Song
   {
     var dad = PlayState.instance?.currentStage?.getDad();
     if (dad != null) { dad.playAnimation('sleep', false); dad.danceEvery = 0; }
+    PlayState.instance.iconP2.configure({
+      id: 'zzz',
+      scale: 0.75,
+      offsets: [15, 0],
+    });
 
     if (!modcharts || !hasStoredStrums) return;
     var crochet = Conductor.instance.beatLengthMs;
@@ -401,6 +420,7 @@ class SlowstopperSong extends Song
     {
       var strum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
       if (strum == null) continue;
+      FlxTween.cancelTweensOf(strum);
       tweens.push(FlxTween.tween(strum, {
         y: defaultOpponentStrumY[i],
         alpha: 1,
@@ -416,6 +436,7 @@ class SlowstopperSong extends Song
     if (dad != null) dad.playAnimation('awaken', false);
 
     PlayState.instance.currentStage?.scriptCall('playElectricity', []);
+    dad.initHealthIcon(true);
 
     if (!modcharts || !hasStoredStrums) return;
     var crochet = Conductor.instance.beatLengthMs;

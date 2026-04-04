@@ -127,6 +127,26 @@ class RetroOptionsState extends Module
 
     dozirc = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozirc.setGraphicSize(Std.int(dozirc.width * 1));
+    // dude
+    dozirc.animation.addBySymbol('anims/default', 'anims/default', 24);
+    dozirc.animation.addBySymbol('anims/black', 'anims/black', 24);
+    dozirc.animation.addBySymbol('anims/oops', 'anims/oops', 24);
+    dozirc.animation.addBySymbol('anims/controls', 'anims/controls', 24);
+    dozirc.animation.addBySymbol('anims/cofused', 'anims/confused', 24);
+    dozirc.animation.addBySymbol('anims/signAlone', 'anims/signAlone', 24);
+    dozirc.animation.addBySymbol('anims/down', 'anims/down', 24);
+    dozirc.animation.addBySymbol('anims/up', 'anims/up', 24);
+    dozirc.animation.addBySymbol('anims/evil', 'anims/evil', 24);
+    dozirc.animation.addBySymbol('anims/cpu', 'anims/cpu', 24);
+    dozirc.animation.addBySymbol('anims/gpu', 'anims/gpu', 24);
+    dozirc.animation.addBySymbol('anims/glasses', 'anims/glasses', 24);
+    dozirc.animation.addBySymbol('anims/pause', 'anims/pause', 24);
+    dozirc.animation.addBySymbol('anims/online', 'anims/online', 24);
+    dozirc.animation.addBySymbol('anims/offline', 'anims/offline', 24);
+    dozirc.animation.addBySymbol('anims/low', 'anims/low', 24);
+    dozirc.animation.addBySymbol('anims/glow', 'anims/glow', 24);
+    dozirc.animation.addBySymbol('anims/clock', 'anims/clock', 24);
+    dozirc.animation.addBySymbol('anims/shake', 'anims/shake', 24);
     dozirc.animation.play('anims/default', false, false, true);
     dozirc.scrollFactor.set(0, 0);
     dozirc.visible = true;
@@ -139,6 +159,7 @@ class RetroOptionsState extends Module
 
     dozircShadow = new FlxAtlasSprite(0, 0, Paths.animateAtlas('ui/menu/options/dozirc', 'shared'));
     dozircShadow.setGraphicSize(Std.int(dozircShadow.width * 1));
+    dozircShadow.animation.addBySymbol('anims/black', 'anims/black', 24);
     dozircShadow.animation.play('anims/black', false, false, true);
     dozircShadow.scrollFactor.set(0, 0);
     dozircShadow.visible = true;
