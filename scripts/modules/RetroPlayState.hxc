@@ -38,6 +38,7 @@ import funkin.modding.events.HitNoteScriptEvent;
 import haxe.ds.IntMap;
 import StringTools;
 
+import funkin.modding.base.ScriptedFlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 import funkin.graphics.shaders.WiggleEffectRuntime;
 import funkin.graphics.shaders.WiggleEffectType;
@@ -137,6 +138,11 @@ class RetroPlayState extends Module {
   var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
 
   // Atrocean Notes - Jumpscare com efeito
+  var atroWaveAmplitude:Float = 0;
+  var atroWaveFrequency:Float = 0;
+  var atroWaveSpeed:Float = 0;
+  var atroMechanicTimer:FlxTimer = null;
+  var atroMechanicTweens:Array<FlxTween> = [];
   var atroDarkness:FunkinSprite;
   var atroHitCounter:Int = 0; // Caso ultrapasse de 3, matar o jogador.
 
@@ -472,19 +478,97 @@ class RetroPlayState extends Module {
         return;
       }
 
-      if (atroDarkness != null) {
-        var startDelay:Float = atroHitCounter <= 0 ? 2 : 0.3;
-        FlxTween.cancelTweensOf(atroDarkness);
-        atroDarkness.alpha = 1;
-        tweens.push(FlxTween.tween(atroDarkness, { alpha: 0 }, 4, { startDelay: startDelay, ease: FlxEase.quadOut, onComplete: function(_) {
-          // placeholder while the other effect isn't added
-          atroHitCounter = 0;
-        } }));
-      }
-
-      atroHitCounter++;
+      atroHitCounter += 1;
+      atroWaveSpeed = atroHitCounter * 0.9;
+      atroWaveFrequency = atroHitCounter * 0.4;
+      atroWaveAmplitude = atroHitCounter * 0.03;
 
       if (atroHitCounter > 3) PlayState.instance.health -= Constants.HEALTH_MAX * 1.5;
+
+      if (wiggleShader == null) {
+        wiggleShader = new WiggleEffectRuntime(0, 0, 0, WiggleEffectType.FLAG);
+        wiggleFilter = new ShaderFilter(wiggleShader);
+
+        if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [];
+        PlayState.instance.camHUD.filters.push(wiggleFilter);
+
+        /*hudWaterShader = ScriptedFlxRuntimeShader.init('RetroHUDWaterShader');
+        hudWaterFilter = new ShaderFilter(hudWaterShader);
+
+        hudWaterShader.setFloat('uIntensity', 1.5);
+        hudWaterShader.setFloat('uSpeed', 1.5);
+
+        if (PlayState.instance.camHUD.filters == null) PlayState.instance.camHUD.filters = [];
+        PlayState.instance.camHUD.filters.push(hudWaterFilter);*/
+      }
+
+      if (solidCameraSprite != null) {
+        if (!solidCameraSprite.alive) solidCameraSprite.revive();
+        FlxTween.cancelTweensOf(solidCameraSprite);
+        solidCameraSprite.makeSolidColor(FlxG.width + 50, FlxG.height + 50, FlxColor.fromRGB(76, 255, 148));
+        solidCameraSprite.cameras = [PlayState.instance.camHUD];
+        solidCameraSprite.screenCenter();
+        solidCameraSprite.alpha = 0.8;
+        solidCameraSprite.blend = 9;
+        solidCameraSprite.visible = true;
+      }
+
+      if (atroDarkness != null && atroHitCounter <= 3) {
+        var startDelay:Float = atroHitCounter <= 0 ? 4 : 0.3;
+        var time:Float = atroHitCounter <= 0 ? 4 : 4.5;
+
+        FlxTween.cancelTweensOf(atroDarkness);
+        atroDarkness.alpha = 1;
+        var barOverlay = retroGameUI.scriptCall('getOverlay', []);
+        barOverlay.colorTransform.redOffset = -200;
+        barOverlay.colorTransform.blueOffset = -200;
+        barOverlay.colorTransform.greenOffset = -200;
+        PlayState.instance.iconP1.colorTransform.redOffset = -200;
+        PlayState.instance.iconP1.colorTransform.blueOffset = -200;
+        PlayState.instance.iconP1.colorTransform.greenOffset = -200;
+
+        if (atroMechanicTweens != null) {
+          for (tween in atroMechanicTweens)
+            if (tween != null) tween.cancel();
+          atroMechanicTweens = [];
+        }
+
+        tweens.push(FlxTween.tween(atroDarkness, { alpha: 0 }, time, { startDelay: startDelay, ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(solidCameraSprite, { alpha: 0 }, time, { startDelay: startDelay, ease: FlxEase.quadOut}));
+        atroMechanicTweens.push(FlxTween.tween(barOverlay.colorTransform, { redOffset: 0, blueOffset: 0, greenOffset: 0 }, time, { startDelay: startDelay, ease: FlxEase.quadOut}));
+        atroMechanicTweens.push(FlxTween.tween(PlayState.instance.iconP1.colorTransform, { redOffset: 0, blueOffset: 0, greenOffset: 0 }, time, { startDelay: startDelay, ease: FlxEase.quadOut}));
+
+        atroMechanicTweens.push(
+          FlxTween.num(wiggleShader.waveAmplitude, atroWaveAmplitude, 1.5, {ease: FlxEase.linear, onUpdate: function(twn:FlxTween) {
+            if (wiggleShader == null) return;
+            wiggleShader.waveAmplitude = twn.value;
+          }})
+        );
+        atroMechanicTweens.push(
+          FlxTween.num(wiggleShader.waveFrequency, atroWaveFrequency, 1.5, {ease: FlxEase.linear, onUpdate: function(twn:FlxTween) {
+            if (wiggleShader == null) return;
+            wiggleShader.waveFrequency = twn.value;
+          }})
+        );
+        atroMechanicTweens.push(
+          FlxTween.num(wiggleShader.waveSpeed, atroWaveSpeed, 1.5, {ease: FlxEase.linear, onUpdate: function(twn:FlxTween) {
+            if (wiggleShader == null) return;
+            wiggleShader.waveSpeed = twn.value;
+          }})
+        );
+
+        if (atroMechanicTimer != null) {
+          atroMechanicTimer.cancel();
+          atroMechanicTimer = null;
+        }
+        atroMechanicTimer = new FlxTimer(globalTimerManager).start(6, function(tmr:FlxTimer) {
+          if (PlayState.instance == null) {
+            atroMechanicTimer = null;
+            return;
+          }
+          resetAtroMechanic(false);
+        });
+      }
 
       FlxG.sound.play(Paths.sound('noteSounds/Atrocean'));
       event.doesNotesplash = false;
@@ -827,7 +911,7 @@ class RetroPlayState extends Module {
     tweens = tweens.filter(function(t) return t != null && t.active);
   }
 
-  function removeInsatianHoles(?instant = false):Void {
+  function removeInsatianHoles(?instant:Bool = false):Void {
     for (hole in holeSprites) {
       if (hole == null) continue;
       if (instant) {
@@ -848,6 +932,84 @@ class RetroPlayState extends Module {
     if (insatianHolesTimer != null) {
       insatianHolesTimer.cancel();
       insatianHolesTimer = null;
+    }
+  }
+
+  function resetAtroMechanic(?instant:Bool = false):Void {
+    // If it's not instant, we tween the values
+    if (!instant) {
+      var tweenTime:Float = 7;
+
+      atroMechanicTweens.push(
+      FlxTween.num(atroWaveAmplitude, 0, tweenTime, {ease: FlxEase.linear, onUpdate: function(twn:FlxTween) {
+          if (wiggleShader == null) return;
+          wiggleShader.waveAmplitude = twn.value;
+        }})
+      );
+      atroMechanicTweens.push(
+        FlxTween.num(atroWaveFrequency, 0, tweenTime, {ease: FlxEase.linear, onUpdate: function(twn:FlxTween) {
+          if (wiggleShader == null) return;
+          wiggleShader.waveFrequency = twn.value;
+        }})
+      );
+      /*atroMechanicTweens.push(
+        FlxTween.num(atroWaveSpeed, 0, 4.7, {ease: FlxEase.quadOut, onUpdate: function(twn:FlxTween) {
+          if (wiggleShader == null) return;
+          wiggleShader.waveSpeed = twn.value;
+        }})
+      );*/
+
+      // After the values are tweened to 0, we call the function again but this time as "instant"
+      atroMechanicTimer = new FlxTimer(globalTimerManager).start(tweenTime + 0.01, function(tmr:FlxTimer) {
+        if (PlayState.instance == null) {
+          atroMechanicTimer = null;
+          return;
+        }
+        resetAtroMechanic(true);
+      });
+    } else {
+      if (wiggleShader != null) {
+        PlayState.instance.camHUD.filters.remove(wiggleFilter);
+        wiggleShader = null;
+        wiggleFilter = null;
+      }
+      if (solidCameraSprite != null) {
+        FlxTween.cancelTweensOf(solidCameraSprite);
+        solidCameraSprite.alpha = 0;
+        solidCameraSprite.visible = false;
+        solidCameraSprite.kill();
+      }
+
+      atroWaveFrequency = 0;
+      atroWaveAmplitude = 0;
+      atroWaveSpeed = 0;
+      atroHitCounter = 0;
+
+      if (atroDarkness != null) {
+        FlxTween.cancelTweensOf(atroDarkness);
+        atroDarkness.alpha = 0;
+      }
+      if (atroMechanicTweens != null) {
+        for (tween in atroMechanicTweens)
+          if (tween != null) tween.cancel();
+        atroMechanicTweens = [];
+      }
+
+      if (atroMechanicTimer != null) {
+        atroMechanicTimer.cancel();
+        atroMechanicTimer = null;
+      }
+
+      var barOverlay = retroGameUI.scriptCall('getOverlay', []);
+      FlxTween.cancelTweensOf(barOverlay.colorTransform);
+      barOverlay.colorTransform.redOffset = 0;
+      barOverlay.colorTransform.blueOffset = 0;
+      barOverlay.colorTransform.greenOffset = 0;
+      var iconP1 = PlayState.instance.iconP1.colorTransform;
+      FlxTween.cancelTweensOf(iconP1);
+      iconP1.redOffset = 0;
+      iconP1.blueOffset = 0;
+      iconP1.greenOffset = 0;
     }
   }
 
@@ -940,6 +1102,7 @@ class RetroPlayState extends Module {
 
         PlayState.instance.camHUD.angle = 0;
         if (solidCameraSprite != null && clearCamera) {
+          FlxTween.cancelTweensOf(solidCameraSprite);
           solidCameraSprite.alpha = 0;
           solidCameraSprite.visible = false;
           solidCameraSprite.kill();
@@ -1370,7 +1533,7 @@ class RetroPlayState extends Module {
       }*/
     }
 
-    if (isDrugged && wiggleShader != null) {
+    if (wiggleShader != null) {
       wiggleShader.update(event.elapsed);
     }
 
@@ -1973,11 +2136,7 @@ class RetroPlayState extends Module {
 
     updatePoisonCounter(ogDadId ?? null);
 
-    if (atroDarkness != null) {
-      FlxTween.cancelTweensOf(atroDarkness);
-      atroDarkness.alpha = 0;
-    }
-    atroHitCounter = 0;
+    resetAtroMechanic(true);
 
     hmpActive = false;
     hmpSpeed = 0;
@@ -1995,6 +2154,13 @@ class RetroPlayState extends Module {
     /*if (poisonText != null) {
       poisonText.visible = false;
     }*/
+
+    if (atroMechanicTweens != null) {
+      for (tween in atroMechanicTweens) {
+        if (tween != null) tween.cancel();
+      }
+      atroMechanicTweens = [];
+    }
 
     removeInsatianHoles(true);
 
@@ -2080,6 +2246,12 @@ class RetroPlayState extends Module {
     if (izzyMechanicTimer != null) unscrambleStrumline(true, true);
 
     if (GameOverSubState.blueBallSuffix == "-acid") FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf-loss-sfx-acid'));
+
+    if (atroMechanicTweens != null) {
+      for (tween in atroMechanicTweens)
+        if (tween != null) tween.cancel();
+      atroMechanicTweens = [];
+    }
   }
 
   override public function onSongEvent(event:SongEventScriptEvent):Void
@@ -2275,7 +2447,11 @@ class RetroPlayState extends Module {
 		for (tween in tweens) {
 			if (tween != null) tween.cancel();
 		}
+		for (tween in atroMechanicTweens) {
+			if (tween != null) tween.cancel();
+		}
 		tweens = [];
+    atroMechanicTweens = [];
 		pausedTweens = [];
 	}
 
@@ -2308,6 +2484,14 @@ class RetroPlayState extends Module {
     }
 
 		for (tween in tweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+		for (tween in atroMechanicTweens)
 		{
 			if (tween != null)
 			{

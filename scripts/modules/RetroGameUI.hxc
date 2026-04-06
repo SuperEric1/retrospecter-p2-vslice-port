@@ -1164,6 +1164,10 @@ class RetroGameUI extends Module {
     }
   }
 
+  public function getOverlay():FlxSprite {
+    return retroHealthBarOverlay;
+  }
+
   public function updateBarTexture(charId:String) {
     var f:String = 'ui/healthBars/';
     ogBarTexture = null;

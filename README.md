@@ -10,6 +10,7 @@ TODO:
 - [ ] Atrocean's note mechanic
 - [ ] Remaining extirpatient effects
 - [ ] Update main menu
+- [ ] Remaining title screen bgs
 - [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
