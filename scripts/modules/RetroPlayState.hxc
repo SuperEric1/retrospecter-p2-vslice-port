@@ -190,11 +190,12 @@ class RetroPlayState extends Module {
     }
   }
 
-  var hurtNotes = [
+  var hurtNotes:Array<String> = [
     'poison', 'izzyNote', 'chain', 'autoChain',
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
     'spectre', 'insatianNote', 'cashNote', 'autoCash',
     'hivemoreNote', "hivelessNote", "atroceanNote",
+    'dozircNote',
     'none'
   ];
 
@@ -483,7 +484,7 @@ class RetroPlayState extends Module {
       atroWaveFrequency = atroHitCounter * 0.4;
       atroWaveAmplitude = atroHitCounter * 0.03;
 
-      if (atroHitCounter > 3) PlayState.instance.health -= Constants.HEALTH_MAX * 1.5;
+      if (atroHitCounter > 3 && !isPractice) PlayState.instance.health -= Constants.HEALTH_MAX * 1.5;
 
       if (wiggleShader == null) {
         wiggleShader = new WiggleEffectRuntime(0, 0, 0, WiggleEffectType.FLAG);
@@ -665,8 +666,33 @@ class RetroPlayState extends Module {
     }
 
     if (k == 'sakuNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
       FlxG.sound.play(Paths.sound('noteSounds/Saku'));
       event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+    }
+
+    if (k == 'dozircNote') {
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+
+      if (!loadedMechanics.contains('weblock')) {
+        trace('LOADED UNLOADED MECHANIC: weblock');
+        loadedMechanics.push('weblock');
+        loadWebLockSprites();
+      }
+
+      FlxG.sound.play(Paths.sound('noteSounds/Dozirc'));
+      event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
     }
 
     if (hurtNotes.contains(k) && event.judgement == 'bad') {
@@ -837,7 +863,13 @@ class RetroPlayState extends Module {
         }
         if (loadedMechanics.contains('insatian')) {
           FunkinMemory.cacheSound(Paths.sound("noteSounds/Insatian", "shared"));
+          FunkinMemory.cacheTexture(Paths.image('notes/splash/eatmepls', 'shared'));
           FunkinMemory.cacheTexture(Paths.image('gluttony/hole', 'shared')); // insatian's hole LOL
+        }
+        if (loadedMechanics.contains('dozirc')) {
+          FunkinMemory.cacheTexture(Paths.image('notes/Dozirc_Note_Assets', 'shared'));
+          FunkinMemory.cacheTexture(Paths.image('notes/splash/dozirc', 'shared'));
+          FunkinMemory.cacheSound(Paths.sound("noteSounds/Dozirc", "shared"));
         }
         if (loadedMechanics.contains('atrocean')) {
           atroHitCounter = 0;

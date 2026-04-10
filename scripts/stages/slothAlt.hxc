@@ -8,6 +8,7 @@ import funkin.FunkinMemory;
 import funkin.audio.FunkinSound;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 
@@ -39,6 +40,8 @@ class SlothAltStage extends Stage
   override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['dozirc']]);
 
     train1 = false;
     train2 = false;
