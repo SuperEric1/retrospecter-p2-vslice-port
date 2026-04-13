@@ -409,7 +409,7 @@ class RetroDialogue extends Module
     escButton = new FunkinSprite(0, 0);
     escButton.loadSparrow('ui/menu/back_button');
     escButton.animation.addByPrefix('idle', 'button0003', 1, true);
-    escButton.animation.addByPrefix('press', 'button0001', 1, true);
+    escButton.animation.addByPrefix('press', 'button0002', 1, true);
     escButton.animation.play('idle');
     escButton.scale.set(0.35, 0.35);
     escButton.updateHitbox();
