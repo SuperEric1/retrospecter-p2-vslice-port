@@ -371,7 +371,7 @@ class RetroDialogue extends Module
 
     // Texto de skip
     skipHintText = new FlxText(0, 0, 0, '', 22);
-    skipHintText.setFormat(Paths.font(DEFAULT_FONT), 35, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    skipHintText.setFormat(Paths.font(DEFAULT_FONT), FlxG.height / 15, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
       skipHintText.text = RetroLanguage.tf('dialogue.text.skip', [PlayState.instance.controls.getDialogueNameFromToken("BACK", true)]);
     } else {
@@ -389,7 +389,7 @@ class RetroDialogue extends Module
 
     // texto de continuar
     continueHintText = new FlxText(0, 0, 0, '', 22);
-    continueHintText.setFormat(Paths.font(DEFAULT_FONT), 24, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    continueHintText.setFormat(Paths.font(DEFAULT_FONT), FlxG.height / 20, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
       continueHintText.text = RetroLanguage.tf('dialogue.text.continue', [RetroLanguage.tf('dialogue.text.press', ['ENTER'])]);
     } else {
@@ -504,7 +504,7 @@ class RetroDialogue extends Module
     if (line.exists('specificTextPosition'))
     {
       var arr:Array<String> = line.get('specificTextPosition').split(';');
-      if (arr.length >= 2) { dialogueText.x = Std.parseFloat(arr[0]); dialogueText.y = Std.parseFloat(arr[1]); }
+      if (arr.length >= 2) { dialogueText.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + Std.parseFloat(arr[0]); dialogueText.y = Std.parseFloat(arr[1]); }
     }
     else { dialogueText.x = TEXT_DEFAULT_X; dialogueText.y = TEXT_DEFAULT_Y; }
 
@@ -557,7 +557,7 @@ class RetroDialogue extends Module
 
     // ---- AJUSTE DE OVERFLOW ----
     dialogueText.text = fullText;
-    var textMaxY = boxSprite.y + boxSprite.height - 5;
+    var textMaxY = boxSprite.y + boxSprite.height - 3;
     var currentFontSize:Int = fontSize;
     while ((dialogueText.y + dialogueText.height) > textMaxY && currentFontSize > TEXT_MIN_FONT_SIZE) {
       currentFontSize = Std.int(currentFontSize * 0.8);
@@ -808,12 +808,12 @@ class RetroDialogue extends Module
           pressBack = true;
           pressAccept = false;
         } else {
-          escButton.animation.play('idle', true);
+          escButton.animation.play('idle');
         }
       }
 
       if (escButton.active && escButton.visible && TouchUtil.overlapsComplex(escButton) && TouchUtil.justPressed) {
-        escButton.animation.play('press', true);
+        escButton.animation.play('press');
       }
     }
 
