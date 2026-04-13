@@ -488,7 +488,7 @@ class RetroDialogue extends Module
     var textAlign:String = line.exists('textAlign') ? line.get('textAlign') : 'left';
 
     TEXT_DEFAULT_X = boxSprite.x + 40;
-    TEXT_DEFAULT_Y = boxSprite.y + 20;
+    TEXT_DEFAULT_Y = boxSprite.y + 40;
     dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, FlxTextBorderStyle.OUTLINE);
     dialogueText.antialiasing = aaOn;
     dialogueText.borderSize = 3;
@@ -589,7 +589,6 @@ class RetroDialogue extends Module
         nameText.x = boxSprite.x + boxSprite.width - nameText.fieldWidth - nameMarginX;
       case 'center':
         nameText.x = boxSprite.x + (boxSprite.width / 2 - nameText.fieldWidth / 2);
-        nameText.y = boxSprite.y + boxSprite.height - (nameText.height / 2);
       default:
         nameText.x = TEXT_DEFAULT_X + nameMarginX;
     }
@@ -598,6 +597,7 @@ class RetroDialogue extends Module
     nameTextBG.makeSolidColor(nameText.fieldWidth + 50, nameText.height - 12, 0xFF000000);
     nameTextBG.updateHitbox();
     nameTextBG.y = boxSprite.y - nameTextBG.height;
+    if (namePos == 'center') nameTextBG.y = boxSprite.y + boxSprite.height - (nameTextBG.height * 0.8);
     nameText.y = nameTextBG.y;
     nameTextBG.x = nameText.x + (nameText.fieldWidth / 2) - (nameTextBG.width / 2);
     nameTextBG.y = nameText.y + (nameText.height / 2) - (nameTextBG.height / 2);
@@ -720,7 +720,7 @@ class RetroDialogue extends Module
     if (line.exists(posKey))
     {
       var arr:Array<String> = line.get(posKey).split(';');
-      if (arr.length >= 2) { sprite.x = Std.parseFloat(arr[0]); sprite.y = Std.parseFloat(arr[1]); }
+      if (arr.length >= 2) { sprite.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + Std.parseFloat(arr[0]); sprite.y = Std.parseFloat(arr[1]); }
     }
 
     if (line.exists(sclKey))

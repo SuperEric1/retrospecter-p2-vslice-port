@@ -2,18 +2,42 @@ import flixel.FlxG;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 class GlunisherSong extends Song
 {
+  var hasPlayedInGameCutscene:Bool;
+
   public function new()
   {
     super('glunisher');
+
+    hasPlayedInGameCutscene = false;
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+
+    hasPlayedInGameCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
+
+    if (!hasPlayedInGameCutscene) {
+      hasPlayedInGameCutscene = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['glunisher story', 'pre', function() {
+        PlayState.instance.startCountdown();
+      }]);
+    }
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

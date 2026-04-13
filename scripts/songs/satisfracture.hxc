@@ -61,7 +61,7 @@ class SatisfractureSong extends Song
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
-    PlayState.instance.startTimestamp = 115000; // tests
+    //PlayState.instance.startTimestamp = 115000; // tests
 
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedInGameCutscene = true;
 
