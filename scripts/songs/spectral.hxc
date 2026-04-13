@@ -19,6 +19,7 @@ import funkin.graphics.shaders.DropShadowShader;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
 import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
 import funkin.ui.FullScreenScaleMode;
@@ -64,13 +65,12 @@ class SpectralSong extends Song
       playState.camHUD.visible = false;
 
       //buildProps(true); // preparar props para a cutscene
-      loadSounds();
-      introCutscene();
+      //loadSounds();
     }
 
   }
 
-  function buildProps(hide:Bool = false) {
+  /*function buildProps(hide:Bool = false) {
     bgFlames = playStage.getNamedProp("flames");
     if (hide) {
       bgFlamesY = playStage.getNamedProp("flames").y;
@@ -178,7 +178,7 @@ class SpectralSong extends Song
     roarSound.volume = 1;
     groundShakeSound.volume = 1;
     firstSlam.volume = 1;
-  }
+  }*/
 
   public function onStepHit(event) {
     super.onStepHit(event);

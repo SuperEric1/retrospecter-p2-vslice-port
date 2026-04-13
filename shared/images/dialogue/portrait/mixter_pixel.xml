@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="mixter_pixel.png" width="868" height="88">
+	<SubTexture name="mixter_pixel_closedeyes" x="529" y="0" width="81" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_courteous" x="440" y="0" width="84" height="88" frameX="-8" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_eyebrow" x="615" y="0" width="81" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_handy" x="0" y="0" width="107" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_ideia" x="336" y="0" width="99" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_kappa" x="701" y="0" width="81" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_mimi" x="112" y="0" width="107" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_neutral" x="787" y="0" width="81" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+	<SubTexture name="mixter_pixel_shows_to_dd" x="224" y="0" width="107" height="88" frameX="-11" frameY="-8" frameWidth="124" frameHeight="96"/>
+</TextureAtlas>

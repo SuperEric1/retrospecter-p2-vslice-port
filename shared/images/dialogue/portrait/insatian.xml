@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="insatian.png" width="1997" height="2298">
+	<SubTexture name="insatian_blushing" x="521.25" y="1410" width="510.75" height="405.75" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_confuse" x="625.5" y="619.5" width="405.75" height="565.5" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_eyeroll_pointing" x="771.75" y="0" width="405.75" height="615.75" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_feral1" x="0" y="1003.5" width="570.75" height="402.75" frameX="-153.75" frameY="-144" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_happy_eyesclose" x="0" y="1410" width="517.5" height="405.75" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_hungry" x="1590.75" y="513.75" width="405.75" height="509.25" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_idea" x="0" y="1819.5" width="509.25" height="478.5" frameX="-135.75" frameY="-68.25" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_neutral" x="1548.75" y="1539.75" width="405.75" height="501.75" rotated="true" frameX="-143.25" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_pointing_back_talk" x="1181.25" y="0" width="405.75" height="564.75" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_pointing_self_pride" x="1181.25" y="568.5" width="405.75" height="557.25" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_pre_feral" x="513" y="1819.5" width="509.25" height="451.5" frameX="-135.75" frameY="-95.25" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_question" x="1035.75" y="1129.5" width="510" height="405.75" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_raise_hands_excited" x="0" y="544.5" width="621.75" height="455.25" frameX="-135.75" frameY="-91.5" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_sniff1" x="1590.75" y="0" width="405.75" height="510" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_sniff_talk" x="1590.75" y="1026.75" width="405.75" height="509.25" rotated="true" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_worry_looking_away" x="1035.75" y="1539" width="509.25" height="405.75" frameX="-135.75" frameY="-141" frameWidth="779.25" frameHeight="546.75"/>
+	<SubTexture name="insatian_yelling" x="0" y="0" width="768" height="540.75" frameX="-9.75" frameY="-6" frameWidth="779.25" frameHeight="546.75"/>
+</TextureAtlas>

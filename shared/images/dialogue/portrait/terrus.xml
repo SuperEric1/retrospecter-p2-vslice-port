@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="terrus.png" width="1632" height="548">
+	<SubTexture name="terrus_hmm" x="617" y="0" width="505" height="452" frameX="-0" frameY="-0" frameWidth="505" frameHeight="452"/>
+	<SubTexture name="terrus_neutral_mic" x="0" y="0" width="612" height="548" frameX="-0" frameY="-0" frameWidth="612" frameHeight="548"/>
+	<SubTexture name="terrus_neutral_no_mic" x="1127" y="0" width="505" height="452" frameX="-0" frameY="-0" frameWidth="505" frameHeight="452"/>
+</TextureAtlas>

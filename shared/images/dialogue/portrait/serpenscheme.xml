@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="serpenscheme.png" width="1691" height="1552">
+	<SubTexture name="serpenscheme__annoyed" x="0" y="864" width="777" height="688" rotated="true" frameX="-249" frameY="-77" frameWidth="1100" frameHeight="854"/>
+	<SubTexture name="serpenscheme_nervous" x="787" y="864" width="777" height="688" rotated="true" frameX="-249" frameY="-77" frameWidth="1100" frameHeight="854"/>
+	<SubTexture name="serpenscheme_neutral" x="1003" y="0" width="688" height="777" frameX="-249" frameY="-77" frameWidth="1100" frameHeight="854"/>
+	<SubTexture name="serpenscheme_run" x="0" y="0" width="993" height="854" frameX="-74" frameY="-0" frameWidth="1100" frameHeight="854"/>
+</TextureAtlas>

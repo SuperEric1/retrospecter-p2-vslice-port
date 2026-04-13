@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="minsatian.png" width="2658" height="2392">
+	<SubTexture name="minsatian_annoyed1" x="869" y="0" width="593" height="687" rotated="true" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_annoyedpointing" x="1982" y="1384" width="676" height="593" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_blush" x="0" y="1201" width="687" height="593" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_burger" x="0" y="585" width="826" height="611" frameX="-15" frameY="-0" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_eyeroll" x="831" y="692" width="603" height="687" rotated="true" frameX="-15" frameY="-8" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_lickingchops" x="0" y="0" width="864" height="580" frameX="-0" frameY="-31" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_neutral1" x="1467" y="0" width="593" height="687" rotated="true" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_neutralspeak" x="1439" y="692" width="593" height="687" rotated="true" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_question" x="0" y="1799" width="687" height="593" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_slightsmile" x="692" y="1384" width="593" height="687" rotated="true" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_smug" x="1290" y="1384" width="687" height="593" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_surprised" x="2065" y="0" width="593" height="687" rotated="true" frameX="-15" frameY="-18" frameWidth="900" frameHeight="611"/>
+	<SubTexture name="minsatian_thinking" x="2037" y="692" width="605" height="687" rotated="true" frameX="-15" frameY="-6" frameWidth="900" frameHeight="611"/>
+</TextureAtlas>

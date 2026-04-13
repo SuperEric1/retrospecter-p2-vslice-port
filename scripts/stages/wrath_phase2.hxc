@@ -19,6 +19,7 @@ import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import StringTools;
 import funkin.audio.FunkinSound;
+import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayStatePlaylist;
 import funkin.effects.IntervalShake;
 import funkin.Preferences;
@@ -521,7 +522,10 @@ class WrathPhase2Stage extends Stage
 
       buildProps(true);
       loadSounds();
-      introCutscene();
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['spectral story', 'pre', function() {
+        introCutscene();
+      }]);
     }
   }
 
@@ -808,10 +812,15 @@ class WrathPhase2Stage extends Stage
 
     // Cutscene acaba
     new FlxTimer().start(4.75, function(tmr) {
-      PlayState.instance.isInCutscene = false;
-      PlayState.instance.startCountdown();
-      PlayState.instance.togglePauseButton(true);
-      PlayState.instance.mayPauseGame = true;
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['spectral story', 'post', function() {
+        PlayState.instance.isInCutscene = false;
+        PlayState.instance.startCountdown();
+        new FlxTimer().start(0.2, function(tmr) {
+          PlayState.instance.togglePauseButton(true);
+          PlayState.instance.mayPauseGame = true;
+        });
+      }]);
     });
   }
 

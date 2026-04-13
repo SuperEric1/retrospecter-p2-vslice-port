@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="fallipe.png" width="460" height="466">
+	<SubTexture name="fallipe_neutral" x="0" y="0" width="460" height="466" frameX="-0" frameY="-0" frameWidth="460" frameHeight="466"/>
+</TextureAtlas>

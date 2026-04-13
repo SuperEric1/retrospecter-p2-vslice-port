@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="dozirc.png" width="5738" height="1481">
+	<SubTexture name="dozirc_eyes_close_serious" x="0" y="0" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_eyes_red_serious" x="1148.25" y="0" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_flipped" x="2296.5" y="0" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_huh" x="3444.75" y="0" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_idle_second" x="4593" y="0" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_neutral1" x="0" y="742.5" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_neutral_serious" x="1148.25" y="742.5" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_question" x="2296.5" y="742.5" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_sleep" x="3444.75" y="742.5" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+	<SubTexture name="dozirc_yawn" x="4593" y="742.5" width="1144.5" height="738.75" frameX="-9.75" frameY="-0" frameWidth="1162.5" frameHeight="738.75"/>
+</TextureAtlas>

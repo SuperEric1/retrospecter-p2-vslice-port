@@ -28,8 +28,12 @@ nightflaid.static.text.7 = "CONTACTING MIGHTFLAID"
 nightflaid.static.text.8 = "INTRIGUING SPECIMEN"
 nightflaid.static.rareText.1 = "WAR'S ALWAYS THE SAME"
 
+dialogue.text.press = "Press {0}"
+dialogue.text.continue = "({0} to continue )"
+dialogue.text.skip = "{0} to Skip"
 cutscene.text.skip = "Skip [{0}]"
-cutscene.text.skip.pausebutton = "Pause Button"
+action.button.pause = "Pause Button"
+action.button.tap = "Tap"
 
 # - OPTIONS -
 options.mod_desc = "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)"

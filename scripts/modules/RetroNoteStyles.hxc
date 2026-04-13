@@ -1,6 +1,9 @@
 package supereric.retrospecter.modules;
 
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import funkin.data.notestyle.NoteStyleRegistry;
 import funkin.FunkinMemory;
 import funkin.Conductor;
@@ -30,6 +33,15 @@ class RetroNoteStyles extends Module {
 	// Originally "amplification" from Funkin's source code.
 	final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
 
+	// Custom strumline backgrounds
+	var strumBackgroundOpacity:Float = 0;
+	var playerStrumBackground:FlxSprite = null;
+	var opponentStrumBackground:FlxSprite = null;
+	var hasBuiltStrumBackgrounds:Bool = false;
+
+	// Other variables
+	var oppStrum:Strumline = null;
+	var playerStrum:Strumline = null;
 	var _playerStyle:String = null;
 	var _opponentStyle:String = null;
 	var currentOppStyle:String = null;
@@ -77,9 +89,7 @@ class RetroNoteStyles extends Module {
 	var oppExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
 	var playerExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
 
-	/**
-	 * Whether the gambiarra™ should run for each side.
-	 */
+	// Whether the gambiarra™ should run for each side.
 	var hasOppStrumAnimOffsets:Bool = false;
 	var hasPlayerStrumAnimOffsets:Bool = false;
 
@@ -97,6 +107,10 @@ class RetroNoteStyles extends Module {
 		if (!isRetro) return;
 
 		applyCustomNoteStyles();
+		if (!hasBuiltStrumBackgrounds) {
+			buildStrumBackgrounds();
+			hasBuiltStrumBackgrounds = true;
+		}
 	}
 
 	public override function onSongStart(event:ScriptEvent):Void
@@ -151,6 +165,43 @@ class RetroNoteStyles extends Module {
 				hasPlayerStrumAnimOffsets = playerStrumAnimOffsets.keys().hasNext();
 			}
 		}
+	}
+
+	/// BACKGROUND_PAD value from Strumline (private static final, so we mirror it here).
+	static final BACKGROUND_PAD:Int = 16;
+
+	private function buildStrumBackgrounds():Void {
+		strumBackgroundOpacity = Preferences.strumlineBackgroundOpacity / 100.0;
+		oppStrum = PlayState.instance.opponentStrumline;
+		playerStrum = PlayState.instance.playerStrumline;
+
+		if (strumBackgroundOpacity <= 0) return;
+
+		oppStrum.background.alpha = 0;
+		playerStrum.background.alpha = 0;
+
+		var gradientColors:Array<Int> = playerStrum.isDownscroll ? [FlxColor.TRANSPARENT, FlxColor.fromRGBFloat(0, 0, 0, 0.5), 0xFF000000, 0xFF000000] : [0xFF000000, 0xFF000000, 0x00000000];
+		var baseBgWidth:Int = Std.int(Strumline.KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2);
+
+		opponentStrumBackground = buildGradientSprite(baseBgWidth, gradientColors);
+		opponentStrumBackground.x = -BACKGROUND_PAD;
+		oppStrum.add(opponentStrumBackground);
+		oppStrum.refresh();
+
+		// Player strumline gets a wider background in mobile arrow mode.
+		var playerBgWidth:Int = mobileArrowsActive ? Std.int(baseBgWidth * 1.84) : baseBgWidth;
+		playerStrumBackground = buildGradientSprite(playerBgWidth, gradientColors);
+		playerStrumBackground.x = mobileArrowsActive ? (-BACKGROUND_PAD - 100) : -BACKGROUND_PAD;
+		playerStrum.add(playerStrumBackground);
+		playerStrum.refresh();
+	}
+
+	private function buildGradientSprite(width:Int, colors:Array<Int>):FlxSprite {
+		var sprite:FlxSprite = FlxGradient.createGradientFlxSprite(width, FlxG.height + 5, colors, 1, 90, true);
+		sprite.scrollFactor.set(0, 0);
+		sprite.zIndex = 0;
+		sprite.alpha = strumBackgroundOpacity;
+		return sprite;
 	}
 
 	/**
@@ -289,6 +340,22 @@ class RetroNoteStyles extends Module {
 		if (hasPlayerStrumAnimOffsets) {
 			applyStrumAnimOffsets(PlayState.instance.playerStrumline, playerStrumAnimOffsets, playerExpectedOffsets);
 		}
+
+		// Sync gradient backgrounds every frame.
+		if (opponentStrumBackground != null && oppStrum != null) {
+			var targetAlpha = strumBackgroundOpacity * oppStrum.alpha;
+			if (opponentStrumBackground.visible != oppStrum.background.visible) opponentStrumBackground.visible = oppStrum.background.visible;
+			if (opponentStrumBackground.y != 0) opponentStrumBackground.y = 0;
+			if (opponentStrumBackground.visible && opponentStrumBackground.alpha != targetAlpha) opponentStrumBackground.alpha = targetAlpha;
+			if (oppStrum.background.visible && oppStrum.background.alpha != 0) oppStrum.background.alpha = 0;
+		}
+		if (playerStrumBackground != null && playerStrum != null) {
+			var targetAlpha = strumBackgroundOpacity * playerStrum.alpha;
+			if (playerStrumBackground.visible != playerStrum.background.visible) playerStrumBackground.visible = playerStrum.background.visible;
+			if (playerStrumBackground.y != 0) playerStrumBackground.y = 0;
+			if (playerStrumBackground.visible && playerStrumBackground.alpha != targetAlpha) playerStrumBackground.alpha = targetAlpha;
+			if (playerStrum.background.visible && playerStrum.background.alpha != 0) playerStrum.background.alpha = 0;
+		}
 	}
 
 	public function onNoteHit(event:HitNoteScriptEvent):Void {
@@ -377,6 +444,13 @@ class RetroNoteStyles extends Module {
 
 	override function onDestroy(event:ScriptEvent) {
 		super.onDestroy(event);
+
+		opponentStrumBackground = null;
+		playerStrumBackground = null;
+		oppStrum = null;
+		playerStrum = null;
+		hasBuiltStrumBackgrounds = false;
+
 		// Resetar estilos para que eles não arrastem pra próxima música se ela não tiver um style setado.
 		isRetro = null;
 		_opponentStyle = null;
@@ -394,5 +468,6 @@ class RetroNoteStyles extends Module {
 		hasPlayerStrumAnimOffsets = false;
 		oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
 		playerExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+		strumBackgroundOpacity = 0;
 	}
 }

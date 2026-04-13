@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="rogato.png" width="2225" height="2009">
+	<SubTexture name="rogato_battery_dead" x="1179" y="604.8" width="538.8" height="352.2" rotated="true" frameX="-324.59999999999997" frameY="-181.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_embarred_nervous" x="1627.2" y="1071.6" width="522.6" height="415.8" frameX="-198" frameY="-304.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_idea" x="0" y="1525.2" width="532.8" height="484.2" rotated="true" frameX="-303" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_idle" x="0" y="989.4" width="601.8" height="532.8" frameX="-178.79999999999998" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_nervous_sorry" x="1627.2" y="1490.3999999999999" width="522.6" height="415.8" frameX="-198" frameY="-304.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_oh_question" x="535.8" y="1525.2" width="532.8" height="480" rotated="true" frameX="-303" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_sad" x="1071.6" y="1525.2" width="532.8" height="432" rotated="true" frameX="-288.59999999999997" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_short_circuit" x="0" y="0" width="730.1999999999999" height="540.6" frameX="-162.6" frameY="-179.4" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_sleeping" x="1209.6" y="960" width="414.59999999999997" height="538.8" frameX="-324.59999999999997" frameY="-181.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_sleepy" x="1179" y="0" width="549.6" height="601.8" rotated="true" frameX="-178.79999999999998" frameY="-170.4" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_wake_up" x="604.8" y="989.4" width="601.8" height="532.8" frameX="-178.79999999999998" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_wave_bye" x="1731.6" y="0" width="493.2" height="532.8" frameX="-303" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_wave_hi" x="1731.6" y="535.8" width="493.2" height="532.8" frameX="-303" frameY="-187.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_worried" x="0" y="543.6" width="709.8" height="442.8" frameX="-93.6" frameY="-277.2" frameWidth="960" frameHeight="720"/>
+	<SubTexture name="rogato_worried_questionmark" x="733.1999999999999" y="0" width="442.8" height="709.8" rotated="true" frameX="-93.6" frameY="-277.2" frameWidth="960" frameHeight="720"/>
+</TextureAtlas>

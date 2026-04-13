@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="aino.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="aino_happy0000" x="0" y="0" width="321" height="341"/>
+	<SubTexture name="aino_worried0000" x="0" y="346" width="321" height="341"/>
+</TextureAtlas>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="saku.png" width="2148" height="2106">
+	<SubTexture name="saku_angry" x="1834.4" y="832" width="300.8" height="412" frameX="-164" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_blowkiss" x="948" y="1257.6000000000001" width="400" height="422.40000000000003" frameX="-131.20000000000002" frameY="-217.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_blush" x="432" y="1277.6000000000001" width="407.20000000000005" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_buzz" x="948" y="841.6" width="472" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_confused" x="843.2" y="1684" width="366.40000000000003" height="422.40000000000003" frameX="-131.20000000000002" frameY="-217.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_enraged" x="485.6" y="841.6" width="458.40000000000003" height="432" rotated="true" frameX="-139.20000000000002" frameY="-181.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_flirt" x="1723.2" y="1673.6000000000001" width="356.8" height="422.40000000000003" frameX="-132" frameY="-217.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_giggle" x="1352" y="1257.6000000000001" width="407.20000000000005" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_hand_spread" x="0" y="0" width="591.2" height="411.20000000000005" frameX="-40" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_happy" x="410.40000000000003" y="1693.6000000000001" width="366.40000000000003" height="412" frameX="-164" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_horny" x="1763.2" y="1248" width="349.6" height="412" frameX="-140.8" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_introduce" x="1810.4" y="0" width="337.6" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_lewd_threaten" x="0" y="415.20000000000005" width="481.6" height="440" rotated="true" frameX="-102.4" frameY="-158.4" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_neutral_normal" x="1810.4" y="416" width="316" height="412" frameX="-151.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_neutral_handsdown" x="967.2" y="0" width="428" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_phone1" x="1424" y="832" width="406.40000000000003" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_phone_speak1" x="0" y="1690.4" width="406.40000000000003" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_pointing" x="0" y="859.2" width="480" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_rage" x="485.6" y="841.6" width="458.40000000000003" height="432" rotated="true" frameX="-139.20000000000002" frameY="-181.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_sad_tease" x="1399.2" y="0" width="407.20000000000005" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_showing_off" x="485.6" y="415.20000000000005" width="477.6" height="422.40000000000003" frameX="-131.20000000000002" frameY="-217.60000000000002" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_sigh" x="967.2" y="416" width="428" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_smug" x="1352" y="1673.6000000000001" width="367.20000000000005" height="432" frameX="-121.60000000000001" frameY="-208" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_surprised" x="1399.2" y="416" width="407.20000000000005" height="412" frameX="-131.20000000000002" frameY="-228" frameWidth="640" frameHeight="640"/>
+	<SubTexture name="saku_thinking" x="0" y="1275.2" width="428" height="411.20000000000005" frameX="-131.20000000000002" frameY="-228.8" frameWidth="640" frameHeight="640"/>
+</TextureAtlas>

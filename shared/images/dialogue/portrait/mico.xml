@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="mico.png" width="2353" height="412">
+	<SubTexture name="mico_annoyed" x="0" y="0" width="586.3000000000001" height="411.95000000000005" frameX="-0" frameY="-0.55" frameWidth="586.3000000000001" frameHeight="412.50000000000006"/>
+	<SubTexture name="mico_laughing" x="589.0500000000001" y="0" width="586.3000000000001" height="411.95000000000005" frameX="-0" frameY="-0.55" frameWidth="586.3000000000001" frameHeight="412.50000000000006"/>
+	<SubTexture name="mico_neutral" x="1178.1000000000001" y="0" width="586.3000000000001" height="411.95000000000005" frameX="-0" frameY="-0.55" frameWidth="586.3000000000001" frameHeight="412.50000000000006"/>
+	<SubTexture name="mico_serious" x="1767.15" y="0" width="586.3000000000001" height="411.95000000000005" frameX="-0" frameY="-0.55" frameWidth="586.3000000000001" frameHeight="412.50000000000006"/>
+</TextureAtlas>

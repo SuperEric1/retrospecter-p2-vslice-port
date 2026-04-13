@@ -25,7 +25,7 @@ TODO:
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Review mechanics for better accuracy
-- [ ] Dialogues...?
+- [X] Dialogues...?
 - [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)
 - [X] Intro for options menu
 - [X] Acid death

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="hivemine.png" width="3936" height="1647">
+	<SubTexture name="hivemine_suspicious" x="693.5" y="479" width="540.5" height="503" frameX="-477" frameY="-147" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_eyeroll" x="0" y="987" width="821" height="539" frameX="-538" frameY="-111" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_gaze" x="1035.5" y="0" width="666.5" height="474" frameX="-499" frameY="-176" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_mischievously" x="2797" y="1024" width="682.5" height="623" frameX="-538" frameY="-27" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_money_eyes" x="1707" y="0" width="990" height="478.5" frameX="-364.5" frameY="-171.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_open_arms" x="2571.5" y="503.5" width="1336.5" height="515.5" frameX="-213.5" frameY="-134.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_pathetic" x="2702" y="0" width="540.5" height="498.5" frameX="-477" frameY="-151.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_presenting_herself" x="0" y="0" width="1030.5" height="446.5" frameX="-374.5" frameY="-203.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_questioning" x="1239" y="483.5" width="634" height="503" frameX="-477" frameY="-147" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_reserving" x="1728.5" y="1024" width="1063.5" height="583.5" frameX="-275.5" frameY="-66.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_shocked" x="826" y="991.5" width="897.5" height="562.5" frameX="-175.5" frameY="-87.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_slight_smile_closed_mouth" x="3247.5" y="0" width="688.5" height="498.5" frameX="-477" frameY="-151.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_slight_smile_open_mouth" x="0" y="451.5" width="688.5" height="498.5" frameX="-477" frameY="-151.5" frameWidth="1600" frameHeight="650"/>
+	<SubTexture name="hivemine_exclaimed" x="1878" y="483.5" width="688.5" height="503" frameX="-477" frameY="-147" frameWidth="1600" frameHeight="650"/>
+</TextureAtlas>

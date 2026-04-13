@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="maku.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="maku_cheer0000" x="0" y="0" width="827" height="529"/>
+	<SubTexture name="maku_closedeyes0000" x="0" y="534" width="827" height="529"/>
+	<SubTexture name="maku_flushed0000" x="0" y="1068" width="827" height="529"/>
+	<SubTexture name="maku_sad0000" x="0" y="1602" width="827" height="529"/>
+	<SubTexture name="maku_surprised0000" x="0" y="2136" width="827" height="529"/>
+	<SubTexture name="maku_neutral0000" x="0" y="2670" width="827" height="529"/>
+	<SubTexture name="maku_heh0000" x="0" y="3204" width="827" height="529"/>
+</TextureAtlas>

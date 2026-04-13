@@ -108,6 +108,63 @@ class RetroLanguage extends Module
       throw('[RetroLanguage] ERROR reading translation file: ' + e);
       isLoaded = false;
     }
+
+    loadDialogueLang(currentLanguage);
+  }
+
+  /**
+   * Carrega o arquivo de idioma dos diálogos e mescla as
+   * chaves no mapa de translations principal.
+   */
+  private static function loadDialogueLang(langCode:String):Void
+  {
+    var path:String = Paths.txt('lang/dialogues/' + langCode);
+
+    if (!Assets.exists(path))
+    {
+      if (langCode != 'en_US')
+      {
+        trace('[RetroLanguage] Dialogo lang ' + langCode + ' nao encontrado, usando en_US.');
+        path = Paths.txt('lang/dialogues/en_US');
+      }
+      if (!Assets.exists(path))
+      {
+        trace('[RetroLanguage] Arquivo de idioma de dialogos nao encontrado, pulando.');
+        return;
+      }
+    }
+
+    try
+    {
+      var fileContent:String = Assets.getText(path);
+      var lines:Array<String> = fileContent.split('\n');
+      var count:Int = 0;
+
+      for (line in lines)
+      {
+        line = StringTools.trim(line);
+        if (line == '' || line.charAt(0) == '#') continue;
+
+        var separatorIndex:Int = line.indexOf('=');
+        if (separatorIndex == -1) continue;
+
+        var key:String = StringTools.trim(line.substring(0, separatorIndex));
+        var value:String = StringTools.trim(line.substring(separatorIndex + 1));
+
+        if (value.length >= 2 && value.charAt(0) == '"' && value.charAt(value.length - 1) == '"')
+          value = value.substring(1, value.length - 1);
+
+        value = processEscapeChars(value);
+        translations.set(key, value);
+        count++;
+      }
+
+      trace('[RetroLanguage] Dialogo lang mesclado: ' + count + ' chaves adicionadas.');
+    }
+    catch (e:Dynamic)
+    {
+      trace('[RetroLanguage] ERRO ao carregar dialogo lang: ' + e);
+    }
   }
 
   /**
@@ -163,7 +220,6 @@ class RetroLanguage extends Module
 
     if (values != null && values.length > 0) {
       for (i in 0...values.length) {
-        // Converte o valor para string explicitamente antes de usar
         var val:String = Std.string(values[i]);
         finalText = StringTools.replace(finalText, '{' + i + '}', val);
       }

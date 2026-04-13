@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ice.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ice_sad0000" x="0" y="0" width="454" height="452"/>
+	<SubTexture name="ice_flushed0000" x="0" y="457" width="454" height="452"/>
+	<SubTexture name="ice_happy0000" x="459" y="0" width="454" height="452"/>
+	<SubTexture name="ice_cry0000" x="459" y="457" width="454" height="452"/>
+</TextureAtlas>

@@ -2057,7 +2057,7 @@ class RetroPlayState extends Module {
     // descartado à favor do novo sprite de poison
     // se for editar propriedades, estao no onupdate
     /*poisonText = new FlxText(0, 0, 0, '0', 1);
-    poisonText.setFormat(Paths.font('EastSeaDokdo-Regular.ttf'), 1, 0xFF000000, 'center');
+    poisonText.setFormat(Paths.font('EastSeaDokdo.ttf'), 1, 0xFF000000, 'center');
     poisonText.cameras = [PlayState.instance.camHUD];
     // poisonText.zIndex = PlayState.instance.iconP1.zIndex + 4;
     poisonText.visible = false;

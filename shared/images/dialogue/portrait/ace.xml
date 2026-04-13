@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ace.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="ace_heh0000" x="0" y="0" width="407" height="384"/>
+	<SubTexture name="ace_surprised0000" x="0" y="389" width="407" height="384"/>
+	<SubTexture name="ace_ew0000" x="412" y="0" width="407" height="384"/>
+	<SubTexture name="ace_worried0000" x="412" y="389" width="407" height="384"/>
+	<SubTexture name="ace_haha0000" x="824" y="0" width="407" height="384"/>
+	<SubTexture name="ace_neutral0000" x="824" y="389" width="407" height="384"/>
+	<SubTexture name="ace_happy0000" x="1236" y="0" width="407" height="384"/>
+	<SubTexture name="ace_confused0000" x="1648" y="0" width="407" height="384"/>
+	<SubTexture name="ace_flushed0000" x="1236" y="389" width="407" height="384"/>
+	<SubTexture name="ace_disappointed0000" x="1648" y="389" width="407" height="384"/>
+</TextureAtlas>

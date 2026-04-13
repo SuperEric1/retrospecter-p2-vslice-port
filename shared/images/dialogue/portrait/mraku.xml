@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="mraku.png" width="2057" height="2123">
+	<SubTexture name="mraku_blushing" x="1661" y="0" width="396" height="525" rotated="true" frameX="-129" frameY="-151" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_confused1" x="0" y="552" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_confused_sleepy" x="530" y="552" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_doze_off" x="1590" y="1598" width="371" height="525" rotated="true" frameX="-129" frameY="-176" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_gross" x="849" y="0" width="401" height="525" rotated="true" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_grumble" x="0" y="958" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_nervous" x="530" y="958" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_neutral" x="1060" y="530" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_pointing" x="1255" y="0" width="401" height="525" rotated="true" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_shappy" x="1060" y="936" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_sleepy1" x="1060" y="1342" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_sleepy_mirror" x="0" y="1364" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_surprised" x="530" y="1364" width="525" height="401" frameX="-129" frameY="-146" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_thinking" x="1590" y="1060" width="371" height="533" rotated="true" frameX="-129" frameY="-176" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_wink" x="1590" y="530" width="399" height="525" rotated="true" frameX="-129" frameY="-148" frameWidth="808" frameHeight="547"/>
+	<SubTexture name="mraku_yawn" x="0" y="0" width="844" height="547" frameX="-0" frameY="-0" frameWidth="853" frameHeight="547"/>
+</TextureAtlas>

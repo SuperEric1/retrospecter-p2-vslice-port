@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="hivemine.png" width="146" height="2101">
+	<SubTexture name="Up0070" x="0" y="0" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0071" x="0" y="162" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0072" x="0" y="324" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0073" x="0" y="486" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0074" x="0" y="648" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0075" x="0" y="648" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0076" x="0" y="810" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0077" x="0" y="972" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0078" x="0" y="1134" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0079" x="0" y="1296" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0080" x="0" y="1458" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0081" x="0" y="1620" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0082" x="0" y="1782" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+	<SubTexture name="Up0083" x="0" y="1944" width="146" height="157" frameX="-48" frameY="-48" frameWidth="258" frameHeight="257"/>
+</TextureAtlas>

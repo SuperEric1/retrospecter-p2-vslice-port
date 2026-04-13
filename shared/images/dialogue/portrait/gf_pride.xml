@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="gf_pride.png" width="374" height="350">
+	<SubTexture name="gf_pride_neutral" x="0" y="0" width="373.5" height="350.25" frameX="-0" frameY="-0.75" frameWidth="373.5" frameHeight="351"/>
+</TextureAtlas>

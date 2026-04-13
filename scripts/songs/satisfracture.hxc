@@ -21,6 +21,7 @@ import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.stage.StageProp;
 import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
 import funkin.ui.FullScreenScaleMode;
@@ -60,7 +61,7 @@ class SatisfractureSong extends Song
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
-    //PlayState.instance.startTimestamp = 115000; // tests
+    PlayState.instance.startTimestamp = 115000; // tests
 
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) hasPlayedInGameCutscene = true;
 
@@ -70,16 +71,19 @@ class SatisfractureSong extends Song
 
       playState.camHUD.visible = false;
 
-      bgSprite = new FunkinSprite(0, 0);
+      /*bgSprite = new FunkinSprite(0, 0);
       bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
       bgSprite.cameras = [PlayState.instance.camCutscene]; // Show over the HUD but below the video.
       bgSprite.zIndex = 100000;
-      bgSprite.visible = true;
+      bgSprite.visible = false;
       PlayState.instance.add(bgSprite);
-      PlayState.instance.refresh();
+      PlayState.instance.refresh();*/
 
       loadIntroSounds();
-      introCutscene();
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['satisfracture story', 'pre', function() {
+        introCutscene();
+      }]);
     }
 
   }
@@ -87,6 +91,7 @@ class SatisfractureSong extends Song
 
   function introCutscene() {
     if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) return;
+    //bgSprite.visible = true;
     playState.togglePauseButton(true);
     playState.isInCutscene = true;
     playState.mayPauseGame = false;
@@ -94,7 +99,7 @@ class SatisfractureSong extends Song
     skipText = new FlxText(0, 618 * FullScreenScaleMode.wideScale.y, 0,
       RetroLanguage.tf('cutscene.text.skip', [' ' + PlayState.instance.controls.getDialogueNameFromToken("CUTSCENE_ADVANCE", true) + ' ']), 20);
     if (FlxG.onMobile) {
-      skipText.text = RetroLanguage.tf('cutscene.text.skip', [RetroLanguage.t('cutscene.text.skip.pausebutton', 'Pause Button')]);
+      skipText.text = RetroLanguage.tf('cutscene.text.skip', [RetroLanguage.t('action.button.pause', 'Pause Button')]);
     }
     skipText.fieldWidth = 1000 * FullScreenScaleMode.wideScale.x;
     skipText.screenCenter(0x01);
@@ -133,9 +138,9 @@ class SatisfractureSong extends Song
 
     // Início
     new FlxTimer(cutsceneTimerManager).start(0.1, function(tmr) {
-      FlxTween.tween(bgSprite, {alpha: 0}, 1.7, null, function() {
+      /*FlxTween.tween(bgSprite, {alpha: 0}, 1.7, null, function() {
         bgSprite.visible = false;
-      });
+      });*/
     });
 
     // Câmera vai até boyfriend.
@@ -177,8 +182,8 @@ class SatisfractureSong extends Song
   }
 
   function skipCutscene():Void {
-    cutsceneMusic.stop();
-    cutsceneTimerManager.clear();
+    if (cutsceneMusic != null) cutsceneMusic.stop();
+    if (cutsceneTimerManager != null) cutsceneTimerManager.clear();
 
     PlayState.instance.togglePauseButton(true);
     PlayState.instance.isInCutscene = false;
@@ -285,6 +290,7 @@ class SatisfractureSong extends Song
 
   function onCutsceneBeatHit()
   {
+    if (!PlayState.instance.isInCutscene) return;
     //if (PlayState.instance.currentStage.getGirlfriend().isAnimationFinished()) {
       PlayState.instance.currentStage.getGirlfriend().dance(true);
       //}

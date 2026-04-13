@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="torrendous.png" width="438" height="924">
+	<SubTexture name="torrendous_annoyed" x="0" y="0" width="438" height="459.5" frameX="-0.5" frameY="-0" frameWidth="438.5" frameHeight="459.5"/>
+	<SubTexture name="torrendous_neutral" x="0" y="464.5" width="438" height="459.5" frameX="-0.5" frameY="-0" frameWidth="438.5" frameHeight="459.5"/>
+</TextureAtlas>

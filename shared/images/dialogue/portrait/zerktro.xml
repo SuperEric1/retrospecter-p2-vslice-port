@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="zerktro.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="zerktro_veryangry0000" x="0" y="0" width="580" height="452"/>
+	<SubTexture name="zerktro_flushed0000" x="0" y="457" width="580" height="452"/>
+	<SubTexture name="zerktro_meh0000" x="0" y="914" width="580" height="452"/>
+	<SubTexture name="zerktro_sad0000" x="585" y="0" width="580" height="452"/>
+	<SubTexture name="zerktro_happy0000" x="1170" y="0" width="580" height="452"/>
+	<SubTexture name="zerktro_smile0000" x="585" y="457" width="580" height="452"/>
+	<SubTexture name="zerktro_angry_open0000" x="585" y="914" width="580" height="452"/>
+	<SubTexture name="zerktro_angry_closed0000" x="1170" y="457" width="580" height="452"/>
+</TextureAtlas>

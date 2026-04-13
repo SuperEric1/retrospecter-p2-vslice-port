@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="pendu.png" width="3768" height="3259">
+	<SubTexture name="pendu_areyoucalmnow" x="1753" y="0" width="672" height="857" rotated="true" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_hi_wave" x="0" y="2590" width="857" height="669" frameX="-118" frameY="-456" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_neutral" x="3107" y="0" width="661" height="857" rotated="true" frameX="-118" frameY="-464" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_ponders" x="1091" y="1091" width="854" height="699" frameX="-121" frameY="-426" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_question" x="1091" y="1795" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_reading_normal" x="931" y="0" width="817" height="1086" rotated="true" frameX="-20" frameY="-308" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_reading_surprised_angry" x="0" y="1091" width="1086" height="817" frameX="-20" frameY="-308" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_right_sad" x="2812" y="862" width="858" height="661" frameX="-118" frameY="-464" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_righthead_hmph" x="0" y="1913" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_sad_angry" x="1950" y="862" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_shouting_both" x="0" y="0" width="926" height="985" frameX="-99" frameY="-140" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_sigh_growl" x="2430" y="0" width="672" height="857" rotated="true" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_sorry" x="1953" y="1539" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_surprised_left" x="1953" y="2216" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_talk_left" x="862" y="2472" width="857" height="672" frameX="-118" frameY="-453" frameWidth="1125" frameHeight="1125"/>
+	<SubTexture name="pendu_talk_right" x="2815" y="1528" width="858" height="661" frameX="-118" frameY="-464" frameWidth="1125" frameHeight="1125"/>
+</TextureAtlas>

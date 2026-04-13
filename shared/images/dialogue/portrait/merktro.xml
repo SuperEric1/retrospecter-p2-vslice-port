@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="merktro.png" width="2306" height="2328">
+	<SubTexture name="merktro_angry1" x="775" y="1497" width="628" height="384" frameX="-0" frameY="-188" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_angry_baggie" x="2" y="625" width="945" height="439" frameX="-0" frameY="-133" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_angry_pointing_self" x="1000" y="2" width="986" height="384" frameX="-0" frameY="-188" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_annoyed" x="634" y="1926" width="628" height="378" frameX="-0" frameY="-194" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_confused" x="1896" y="390" width="378" height="682" rotated="true" frameX="-0" frameY="-194" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_flex" x="2" y="2" width="994" height="619" frameX="-0" frameY="-0" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_furious1" x="2" y="1068" width="927" height="425" frameX="-0" frameY="-147" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_furious_hand" x="2" y="1497" width="769" height="425" frameX="-0" frameY="-147" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_looking_around" x="933" y="1068" width="697" height="406" frameX="-0" frameY="-166" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_neutral" x="1407" y="1478" width="628" height="378" frameX="-0" frameY="-194" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_sad_baggie" x="951" y="625" width="941" height="415" frameX="-0" frameY="-157" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_shocked" x="2" y="1926" width="628" height="400" frameX="-0" frameY="-172" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_smug" x="1634" y="1076" width="670" height="378" frameX="-0" frameY="-194" frameWidth="994" frameHeight="619"/>
+	<SubTexture name="merktro_thinking_squinting" x="1266" y="1885" width="628" height="378" frameX="-0" frameY="-194" frameWidth="994" frameHeight="619"/>
+</TextureAtlas>

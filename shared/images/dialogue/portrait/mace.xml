@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="mace.png" width="1767" height="1474">
+	<SubTexture name="mace_blush0000" x="599" y="0" width="384" height="482" frameX="-26" frameY="-0" frameWidth="434" frameHeight="482"/>
+	<SubTexture name="mace_confused0000" x="486" y="1029" width="479" height="441" rotated="true" frameX="-3" frameY="-3" frameWidth="450" frameHeight="482"/>
+	<SubTexture name="mace_happy0000" x="599" y="487" width="385" height="481" frameX="-12" frameY="-0" frameWidth="434" frameHeight="482"/>
+	<SubTexture name="mace_neutral0000" x="989" y="487" width="385" height="481" frameX="-9" frameY="-0" frameWidth="397" frameHeight="482"/>
+	<SubTexture name="mace_relieved1" x="1384" y="0" width="383" height="469" frameX="-6" frameY="-0" frameWidth="406" frameHeight="469"/>
+	<SubTexture name="mace_smug0000" x="1384" y="474" width="382" height="469" frameX="-10" frameY="-0" frameWidth="397" frameHeight="482"/>
+	<SubTexture name="mace_surprised0000" x="0" y="1029" width="481" height="445" rotated="true" frameX="-6" frameY="-0" frameWidth="453" frameHeight="482"/>
+	<SubTexture name="mace_upset0000" x="988" y="0" width="391" height="482" frameX="-12" frameY="-0" frameWidth="434" frameHeight="482"/>
+	<SubTexture name="mace_worried0000" x="970" y="973" width="390" height="476" frameX="-13" frameY="-5" frameWidth="434" frameHeight="482"/>
+	<SubTexture name="mace_shout" x="1365" y="973" width="396" height="468" frameX="-0" frameY="-0" frameWidth="396" frameHeight="468"/>
+	<SubTexture name="mace_papers_nervous" x="0" y="0" width="594" height="561" frameX="-0" frameY="-0" frameWidth="594" frameHeight="561"/>
+	<SubTexture name="mace_relieved_smile" x="0" y="566" width="561" height="458" rotated="true" frameX="-0" frameY="-0" frameWidth="458" frameHeight="561"/>
+</TextureAtlas>

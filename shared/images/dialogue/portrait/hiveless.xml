@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="hiveless.png" width="4024" height="2268">
+	<SubTexture name="hiveless_charge_you" x="1108" y="511" width="1057.5" height="556.5" frameX="-283" frameY="-243.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_cocky" x="2003" y="1342.5" width="555.5" height="498" frameX="-345.5" frameY="-302" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_confused" x="0" y="716" width="1029.5" height="693.5" frameX="-150" frameY="-106.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_dramatic_pointing" x="2176.5" y="0" width="1058.5" height="659.5" frameX="-285.5" frameY="-140.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_evil_laughing" x="3141.5" y="1171" width="714.5" height="498" frameX="-318" frameY="-302" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_extremely_socked" x="0" y="0" width="1103" height="711" frameX="-241" frameY="-89" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_glare" x="2563.5" y="1342.5" width="555.5" height="498" frameX="-345.5" frameY="-302" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_hands_on_chest" x="0" y="1414.5" width="963" height="690.5" frameX="-214" frameY="-109.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_maniacal_crazy" x="1108" y="0" width="1063.5" height="506" frameX="-8" frameY="-294" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_show_hands" x="3141.5" y="668" width="726" height="498" frameX="-345.5" frameY="-302" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_show_tailtip" x="1034.5" y="1072.5" width="963.5" height="687.5" frameX="-366" frameY="-112.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_slightly_shocked" x="2170.5" y="664.5" width="966" height="673" frameX="-150" frameY="-127" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_taunting_mocking" x="3240" y="0" width="783.5" height="663" frameX="-344" frameY="-137" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_thinking_right" x="3124" y="1674" width="555.5" height="502.5" frameX="-345.5" frameY="-297.5" frameWidth="1350" frameHeight="800"/>
+	<SubTexture name="hiveless_thinking_up" x="968" y="1765" width="555.5" height="502.5" frameX="-345.5" frameY="-297.5" frameWidth="1350" frameHeight="800"/>
+</TextureAtlas>

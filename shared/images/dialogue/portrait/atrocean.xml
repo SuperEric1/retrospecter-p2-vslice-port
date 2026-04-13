@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="atrocean.png" width="7729" height="1017">
+	<SubTexture name="atrocean_annoyed" x="2742" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_confused" x="3456" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_creepy_blush" x="750" y="0" width="654" height="461" frameX="-265" frameY="-379" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_dissapointed" x="4170" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_fake_ashamed" x="3778" y="478" width="644" height="535" frameX="-252" frameY="-305" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_fake_concerned" x="714" y="471" width="704" height="469" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_fake_excited" x="4432" y="478" width="644" height="535" frameX="-252" frameY="-305" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_fake_tears_close" x="4884" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_fake_tears_open" x="5598" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_growl" x="6312" y="0" width="703" height="468" frameX="-253" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_introduce" x="2251" y="478" width="799" height="485" frameX="-252" frameY="-355" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_laugh" x="5086" y="478" width="644" height="535" frameX="-252" frameY="-305" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_manic" x="1414" y="0" width="654" height="461" frameX="-265" frameY="-379" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_menacing" x="2078" y="0" width="654" height="461" frameX="-265" frameY="-379" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_move_fingies" x="1428" y="471" width="813" height="469" frameX="-234" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_neutral" x="7025" y="0" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_puppy_eyes" x="0" y="0" width="740" height="412" frameX="-253" frameY="-429" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_rag_shake" x="6394" y="478" width="1144" height="539" frameX="-28" frameY="-361" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_sigh" x="0" y="422" width="704" height="468" frameX="-252" frameY="-372" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_smug" x="5740" y="478" width="644" height="535" frameX="-252" frameY="-305" frameWidth="1200" frameHeight="930"/>
+	<SubTexture name="atrocean_talking" x="3060" y="478" width="708" height="485" frameX="-252" frameY="-355" frameWidth="1200" frameHeight="930"/>
+</TextureAtlas>

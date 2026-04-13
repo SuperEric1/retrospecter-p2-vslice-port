@@ -1,0 +1,942 @@
+package supereric.retrospecter.modules;
+
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import funkin.ui.FullScreenScaleMode;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+import funkin.save.Save;
+import funkin.modding.module.Module;
+import funkin.audio.FunkinSound;
+import funkin.Paths;
+import funkin.util.TouchUtil;
+import openfl.Assets;
+import haxe.ds.StringMap;
+import funkin.mobile.input.ControlsHandler;
+import StringTools;
+
+import supereric.retrospecter.modules.RetroLanguage;
+
+class RetroDialogue extends Module
+{
+  public static var instance:RetroDialogue;
+
+  private static var dialoguePre:StringMap<Array<Dynamic>> = new StringMap();
+  private static var dialoguePost:StringMap<Array<Dynamic>> = new StringMap();
+  private static var isDataLoaded:Bool = false;
+
+  // State
+  private var isActive:Bool = false;
+  private var currentLines:Array<Dynamic> = [];
+  private var currentLineIndex:Int = 0;
+  private var curDialogueFont:String = null;
+  private var onCompleteCallback:Dynamic = null;
+  private var skipNextFadeOut:Bool = false;
+  private var isFadingOut:Bool = false;
+  private var fadeTween:FlxTween = null;
+  private var hasDiacritics:Bool = false;
+  private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf'];
+  private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
+  private var playerLang:String = "en_US";
+
+  // Typewriter
+  private var fullText:String = '';
+  private var displayedChars:Int = 0;
+  private var charTimer:Float = 0;
+  private var isTyping:Bool = false;
+  private var currentSpeed:Float = 0.05;
+
+  // Controle de avanço
+  private var timedNextTimer:Float = -1;
+  private var inputCooldown:Float = 0;
+  private var currentUnableToPress:Bool = false;
+  private var currentCantSkip:Bool = false;
+  private var currentAutoConfirm:Bool = false;
+  private var currentSoundPath:String = '';
+  private var curResetIntroText:Bool = false;
+  private var curSkipIntro:Bool = false;
+
+  // Sprites
+  private var screenOverlay:FunkinSprite;
+  private var escButton:FunkinSprite;
+  private var boxSprite:FunkinSprite;
+  private var innerSprite:FunkinSprite;
+  private var portraitLeft:FunkinSprite;
+  private var portraitRight:FunkinSprite;
+  private var portraitMid:FunkinSprite;
+  private var portraitFront:FunkinSprite;
+  private var nameText:FlxText;
+  private var nameTextBG:FlxText;
+  private var dialogueText:FlxText;
+  private var skipHintText:FlxText;
+  private var continueHintText:FlxText;
+  private var curSoundEffect:FunkinSound = null;
+  private var curSimpleSound:FunkinSound = null;
+  private var curSound:FunkinSound = null;
+
+  private var hasCreatedSprites:Bool = false;
+  private var currentBoxName:String = '';
+  private var loadedAtlasLeft:String = '';
+  private var loadedAtlasRight:String = '';
+  private var loadedAtlasMid:String = '';
+  private var loadedAtlasFront:String = '';
+
+  // Configs
+  private static final DEFAULT_FONT:String = 'Kenyan Coffee Rg.otf';
+  private static final BOX_Y:Float = 450;
+  private var TEXT_DEFAULT_X:Float = 80;
+  private var TEXT_DEFAULT_Y:Float = 490;
+  private static final TEXT_MIN_FONT_SIZE:Int = 22;
+  private static final INPUT_COOLDOWN_SEC:Float = 0.15;
+
+  private static final Z_OVERLAY:Int = 900000;
+  private static final Z_BOX:Int = 900010;
+  private static final Z_INNER:Int = 900015;
+  private static final Z_PORTRAIT:Int = 900005;
+  private static final Z_PORTRAIT_FRONT:Int = 900025;
+  private static final Z_TEXT:Int = 900020;
+  private static final Z_SKIP:Int = 900035;
+
+  public function new() {
+    super('RetroDialogue', 110);
+    instance = this;
+  }
+
+  override public function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    if (!isDataLoaded) {
+      loadDialogueData();
+      isDataLoaded = true;
+    }
+  }
+
+  private static function loadDialogueData():Void
+  {
+    var path:String = Paths.txt('dialogues');
+    if (!Assets.exists(path)) {
+      trace('[RetroDialogue] dialogues.txt nao encontrado: ' + path);
+      return;
+    }
+
+    var content:String = Assets.getText(path);
+    var lines:Array<String> = content.split('\n');
+
+    var currentId:String = null;
+    var currentSection:String = null;
+    var preLines:Array<Dynamic> = null;
+    var postLines:Array<Dynamic> = null;
+
+    for (rawLine in lines)
+    {
+      rawLine = StringTools.trim(rawLine);
+      if (rawLine == '' || StringTools.startsWith(rawLine, '#')) continue;
+
+      if (StringTools.startsWith(rawLine, '@'))
+      {
+        if (currentId != null) {
+          if (preLines != null && preLines.length > 0) dialoguePre.set(currentId, preLines);
+          if (postLines != null && postLines.length > 0) dialoguePost.set(currentId, postLines);
+        }
+        currentId = rawLine.substring(1);
+        preLines = [];
+        postLines = [];
+        currentSection = null;
+        continue;
+      }
+
+      if (rawLine == 'PRE') { currentSection = 'pre'; continue; }
+      if (rawLine == 'POST') { currentSection = 'post'; continue; }
+
+      if (currentId != null && currentSection != null) {
+        var lineData:StringMap<String> = parseDialogueLine(rawLine);
+        if (currentSection == 'pre') preLines.push(lineData);
+        else postLines.push(lineData);
+      }
+    }
+
+    if (currentId != null) {
+      if (preLines != null && preLines.length > 0) dialoguePre.set(currentId, preLines);
+      if (postLines != null && postLines.length > 0) dialoguePost.set(currentId, postLines);
+    }
+
+    trace('[RetroDialogue] dialogues.txt carregado.');
+  }
+
+  private static function parseDialogueLine(raw:String):StringMap<String>
+  {
+    var result:StringMap<String> = new StringMap();
+    var parts:Array<String> = raw.split('|');
+    for (part in parts)
+    {
+      var sep:Int = part.indexOf('=');
+      if (sep == -1) continue;
+      var key:String = StringTools.trim(part.substring(0, sep));
+      var val:String = StringTools.trim(part.substring(sep + 1));
+      val = StringTools.replace(val, '\\pipe', '|');
+      val = StringTools.replace(val, '\\eq', '=');
+      val = StringTools.replace(val, '\\n', '\n');
+      val = StringTools.replace(val, '\\\\', '\\');
+      result.set(key, val);
+    }
+    return result;
+  }
+
+  /**
+   * Inicia um diálogo.
+   * @param convId      ID da conversa
+   * @param section     "pre" ou "post"
+   * @param onComplete  Callback chamado ao fim do diálogo (ou skip)
+   */
+  public function startDialogue(convId:String, section:String, onComplete:Dynamic):Void
+  {
+    if (PlayState.instance == null) {
+      trace('[RetroDialogue] startDialogue: PlayState nulo!');
+      if (onComplete != null) onComplete();
+      return;
+    }
+
+    var lines:Array<Dynamic> = (section == 'pre') ? dialoguePre.get(convId) : dialoguePost.get(convId);
+    if (lines == null || lines.length == 0) {
+      trace('[RetroDialogue] Sem linhas para: ' + convId + ' [' + section + ']');
+      if (onComplete != null) onComplete();
+      return;
+    }
+
+    PlayState.instance.togglePauseButton(false);
+
+    playerLang = Save.instance.modOptions.get("retroLanguage", "en_US") ?? "en_US";
+    if (diacriticsLanguages.contains(playerLang)) hasDiacritics = true;
+    else hasDiacritics = false;
+
+    onCompleteCallback = onComplete;
+    currentLines = lines;
+    currentLineIndex = 0;
+    isActive = true;
+    currentSoundPath = '';
+    inputCooldown = INPUT_COOLDOWN_SEC;
+
+    PlayState.instance.camCutscene.visible = true;
+    PlayState.instance.disableKeys = true;
+
+    if (!hasCreatedSprites) createSprites();
+    showAll();
+    applyLine(currentLines[0]);
+  }
+
+  public function stopDialogue(?callComplete:Bool = true):Void
+  {
+    if (!isActive) return;
+    if (fadeTween != null) { fadeTween.cancel(); fadeTween = null; }
+    isFadingOut = false;
+    skipNextFadeOut = false;
+    isActive = false;
+    isTyping = false;
+    timedNextTimer = -1;
+    currentLines = [];
+    currentLineIndex = 0;
+
+    if (callComplete && FlxG.sound.music != null) FlxG.sound.music.stop();
+    hideAll();
+
+    if (PlayState.instance != null) {
+      PlayState.instance.disableKeys = false;
+      PlayState.instance.camCutscene.visible = true;
+      PlayState.instance.camCutscene.alpha = 1;
+    }
+
+    if (callComplete) {
+      PlayState.instance.togglePauseButton(true);
+      PlayState.instance.camGame.visible = true;
+
+      if (onCompleteCallback != null) {
+        var cb:Dynamic = onCompleteCallback;
+        onCompleteCallback = null;
+        cb();
+      }
+    }
+
+    if (curSound != null && curSound != FlxG.sound.music) curSound.stop();
+    if (curSoundEffect != null && curSoundEffect != FlxG.sound.music) curSoundEffect.stop();
+    if (curSimpleSound != null && curSimpleSound != FlxG.sound.music) curSimpleSound.stop();
+    if (callComplete && FlxG.sound.music != null) FlxG.sound.music.stop();
+  }
+
+  private function createSprites():Void
+  {
+    var ps = PlayState.instance;
+    var cam = ps.camCutscene;
+
+    // Fundo da tela
+    screenOverlay = new FunkinSprite(0, 0);
+    screenOverlay.makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), 0xFFFFFFFF);
+    screenOverlay.color = FlxColor.BLACK;
+    screenOverlay.scrollFactor.set(0, 0);
+    screenOverlay.cameras = [cam];
+    screenOverlay.screenCenter();
+    screenOverlay.zIndex = Z_OVERLAY;
+    screenOverlay.alpha = 0;
+    screenOverlay.visible = false;
+    ps.add(screenOverlay);
+
+    // Fundo da caixa
+    boxSprite = new FunkinSprite(0, BOX_Y);
+    boxSprite.loadGraphic(Paths.image('dialogue/fill', 'shared'));
+    boxSprite.scrollFactor.set(0, 0);
+    boxSprite.cameras = [cam];
+    boxSprite.screenCenter(0x01);
+    boxSprite.zIndex = Z_BOX;
+    boxSprite.visible = false;
+    ps.add(boxSprite);
+    currentBoxName = 'fill';
+
+    // Overlay da caixa
+    innerSprite = new FunkinSprite(0, BOX_Y);
+    innerSprite.loadGraphic(Paths.image('dialogue/boxOverlay', 'shared'));
+    innerSprite.scrollFactor.set(0, 0);
+    innerSprite.cameras = [cam];
+    innerSprite.screenCenter(0x01);
+    innerSprite.color = FlxColor.BLACK;
+    innerSprite.zIndex = Z_INNER;
+    innerSprite.visible = false;
+    ps.add(innerSprite);
+
+    // Portraits
+    portraitLeft = new FunkinSprite(0, 0);
+    portraitLeft.scrollFactor.set(0, 0);
+    portraitLeft.cameras = [cam];
+    portraitLeft.zIndex = Z_PORTRAIT;
+    portraitLeft.visible = false;
+    ps.add(portraitLeft);
+
+    portraitRight = new FunkinSprite(0, 0);
+    portraitRight.scrollFactor.set(0, 0);
+    portraitRight.cameras = [cam];
+    portraitRight.zIndex = Z_PORTRAIT;
+    portraitRight.visible = false;
+    ps.add(portraitRight);
+
+    portraitMid = new FunkinSprite(0, 0);
+    portraitMid.scrollFactor.set(0, 0);
+    portraitMid.cameras = [cam];
+    portraitMid.zIndex = Z_PORTRAIT;
+    portraitMid.visible = false;
+    ps.add(portraitMid);
+
+    portraitFront = new FunkinSprite(0, 0);
+    portraitFront.scrollFactor.set(0, 0);
+    portraitFront.cameras = [cam];
+    portraitFront.zIndex = Z_PORTRAIT_FRONT;
+    portraitFront.visible = false;
+    ps.add(portraitFront);
+
+    // Texto do nome do personagem
+    nameText = new FlxText(0, 0, Std.int(FlxG.width / 2), '', 36);
+    nameText.setFormat(Paths.font(DEFAULT_FONT), 36, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    nameText.scrollFactor.set(0, 0);
+    //nameText.textField.background = true;
+    //nameText.textField.backgroundColor = 0xFF000000;
+    nameText.wordWrap = false;
+    nameText.borderSize = 1.5;
+    nameText.cameras = [cam];
+    nameText.zIndex = Z_TEXT;
+    nameText.visible = false;
+    ps.add(nameText);
+
+    nameTextBG = FunkinSprite.create(0, 0);
+    nameTextBG.makeSolidColor(1, 1, 0xFF000000);
+    nameTextBG.scrollFactor.set(0, 0);
+    nameTextBG.cameras = [cam];
+    nameTextBG.zIndex = Z_TEXT - 1;
+    nameTextBG.visible = false;
+    ps.add(nameTextBG);
+
+    // Texto do diálogo
+    dialogueText = new FlxText(0, TEXT_DEFAULT_Y, Std.int(FlxG.width - 160), '', 48);
+    dialogueText.setFormat(Paths.font(DEFAULT_FONT), 48, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    dialogueText.wordWrap = true;
+    dialogueText.scrollFactor.set(0, 0);
+    //dialogueText.textField.background = true;
+    dialogueText.borderSize = 2;
+    dialogueText.cameras = [cam];
+    dialogueText.zIndex = Z_TEXT;
+    dialogueText.visible = false;
+    ps.add(dialogueText);
+
+    // Texto de skip
+    skipHintText = new FlxText(0, 0, 0, '', 22);
+    skipHintText.setFormat(Paths.font(DEFAULT_FONT), 35, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
+      skipHintText.text = RetroLanguage.tf('dialogue.text.skip', [PlayState.instance.controls.getDialogueNameFromToken("BACK", true)]);
+    } else {
+      skipHintText.text = RetroLanguage.tf('dialogue.text.skip', ['ESC']);
+    }
+    skipHintText.scrollFactor.set(0, 0);
+    skipHintText.x = /*(FullScreenScaleMode.gameCutoutSize.x / 2) +*/ 40;
+    skipHintText.y = 30;
+    skipHintText.borderSize = 2.5;
+    skipHintText.cameras = [cam];
+    skipHintText.zIndex = Z_SKIP;
+    skipHintText.visible = false;
+    skipHintText.letterSpacing = -1;
+    ps.add(skipHintText);
+
+    // texto de continuar
+    continueHintText = new FlxText(0, 0, 0, '', 22);
+    continueHintText.setFormat(Paths.font(DEFAULT_FONT), 24, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
+      continueHintText.text = RetroLanguage.tf('dialogue.text.continue', [RetroLanguage.tf('dialogue.text.press', ['ENTER'])]);
+    } else {
+      continueHintText.text = RetroLanguage.tf('dialogue.text.continue', [RetroLanguage.t('action.button.tap', 'Tap').toUpperCase()]);
+    }
+    continueHintText.scrollFactor.set(0, 0);
+    continueHintText.x = FlxG.width - continueHintText.fieldWidth - 30;
+    continueHintText.y = FlxG.height - continueHintText.fieldHeight - 30;
+    continueHintText.cameras = [cam];
+    continueHintText.zIndex = Z_SKIP - 1;
+    continueHintText.alpha = 0.6;
+    continueHintText.borderSize = 2.5;
+    continueHintText.visible = false;
+    continueHintText.letterSpacing = -1;
+    ps.add(continueHintText);
+
+    escButton = new FunkinSprite(0, 0);
+    escButton.loadSparrow('ui/menu/back_button');
+    escButton.animation.addByPrefix('idle', 'button0003', 1, true);
+    escButton.animation.addByPrefix('press', 'button0001', 1, true);
+    escButton.animation.play('idle');
+    escButton.scale.set(0.35, 0.35);
+    escButton.updateHitbox();
+    escButton.scrollFactor.set(0, 0);
+    escButton.cameras = [cam];
+    escButton.x = FlxG.width - escButton.width - 40;
+    escButton.y = 30;
+    escButton.zIndex = Z_SKIP + 1;
+    escButton.active = FlxG.onMobile && !ControlsHandler.usingExternalInputDevice;
+    escButton.visible = FlxG.onMobile && !ControlsHandler.usingExternalInputDevice;
+    ps.add(escButton);
+
+    ps.refresh();
+    hasCreatedSprites = true;
+    loadedAtlasLeft = '';
+    loadedAtlasRight = '';
+    loadedAtlasMid = '';
+    loadedAtlasFront = '';
+  }
+
+  private function showAll():Void {
+    screenOverlay.visible = true;
+    boxSprite.visible = true;
+    innerSprite.visible = true;
+    nameText.visible = true;
+    nameTextBG.visible = true;
+    dialogueText.visible = true;
+    skipHintText.visible = true;
+  }
+
+  private function hideAll():Void {
+    screenOverlay.visible = false;
+    boxSprite.visible = false;
+    innerSprite.visible = false;
+    portraitLeft.visible = false;
+    portraitRight.visible = false;
+    portraitMid.visible = false;
+    portraitFront.visible = false;
+    nameText.visible = false;
+    nameTextBG.visible = false;
+    dialogueText.visible = false;
+    skipHintText.visible = false;
+    continueHintText.visible = false;
+    escButton.visible = false;
+  }
+
+  private function applyLine(line:StringMap<String>):Void
+  {
+    // ---- TEXTO ----
+    var textKey:String = line.exists('textKey') ? line.get('textKey') : '';
+    var prefix:String = line.exists('prefix') ? line.get('prefix') : '';
+    var rawText:String = RetroLanguage.t(textKey, 'Retro have two dicks');
+    if (prefix != '') rawText = prefix + rawText;
+
+    var speed:Float = line.exists('speed') ? Std.parseFloat(line.get('speed')) : 0.05;
+    if (speed <= 0) speed = 0.001;
+    fullText = rawText;
+    currentSpeed = (fullText.length > 0) ? speed / (fullText.length * 1) : 0;
+    displayedChars = 0;
+    charTimer = 0;
+    isTyping = rawText.length > 0;
+    dialogueText.text = '';
+
+    var fontName:String = line.exists('font') ? line.get('font') : (curDialogueFont != null ? curDialogueFont : DEFAULT_FONT);
+    if (!Assets.exists(Paths.font(fontName)) || (noDiacriticsFonts.contains(fontName) && hasDiacritics)) fontName = DEFAULT_FONT;
+    curDialogueFont = fontName;
+    var fontSize:Int = line.exists('fontSize') ? Std.int(Std.parseFloat(line.get('fontSize'))) : dialogueText.size;
+
+    var textColorHex:String = line.exists('textColor') ? line.get('textColor') : 'FFFFFF';
+    var textColor:FlxColor = FlxColor.fromString('#' + textColorHex);
+    if (!line.exists('textColor')) textColor = dialogueText.color;
+
+    var useBorder:Bool = line.exists('textBorder') && line.get('textBorder') == 'true';
+    var borderColorHex:String = line.exists('borderColor') ? line.get('borderColor') : '000000';
+    var aaOn:Bool = !(line.exists('sansAtialiasing') && line.get('sansAtialiasing') == 'true');
+    var textAlign:String = line.exists('textAlign') ? line.get('textAlign') : 'left';
+
+    TEXT_DEFAULT_X = boxSprite.x + 40;
+    TEXT_DEFAULT_Y = boxSprite.y + 20;
+    dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, FlxTextBorderStyle.OUTLINE);
+    dialogueText.antialiasing = aaOn;
+    dialogueText.borderSize = 3;
+    dialogueText.visible = true;
+    dialogueText.fieldWidth = boxSprite.width * 0.96;
+    dialogueText.x = TEXT_DEFAULT_X;
+    dialogueText.y = TEXT_DEFAULT_Y;
+    if (useBorder) dialogueText.borderColor = FlxColor.fromString('#' + borderColorHex);
+    else dialogueText.borderColor = 0xFF000000;
+
+    continueHintText.visible = false;
+
+    if (line.exists('specificTextPosition'))
+    {
+      var arr:Array<String> = line.get('specificTextPosition').split(';');
+      if (arr.length >= 2) { dialogueText.x = Std.parseFloat(arr[0]); dialogueText.y = Std.parseFloat(arr[1]); }
+    }
+    else { dialogueText.x = TEXT_DEFAULT_X; dialogueText.y = TEXT_DEFAULT_Y; }
+
+    // ---- FUNDO DA CAIXA ----
+    var fillColorHex:String = line.exists('boxFill') ? line.get('boxFill') : '000000';
+    var fillVisible:Bool = !(line.exists('fillVisible') && line.get('fillVisible') == 'false');
+    boxSprite.color = FlxColor.fromString('#' + fillColorHex);
+    boxSprite.visible = fillVisible;
+
+    // ---- OVERLAY DA CAIXA ----
+    var innerColorHex:String = line.exists('innerColor') ? line.get('innerColor') : '000000';
+    var innerAlpha:Float = line.exists('innerAlpha') ? Std.parseFloat(line.get('innerAlpha')) : 1;
+    var innerVisible:Bool = !(line.exists('innerVisible') && line.get('innerVisible') == 'false');
+    var changeBox:String = line.exists('changeBox') ? line.get('changeBox') : 'boxOverlay';
+
+    if (changeBox != currentBoxName) {
+      currentBoxName = changeBox;
+      innerSprite.loadGraphic(Paths.image('dialogue/' + changeBox, 'shared'));
+      innerSprite.screenCenter(0x01);
+      innerSprite.y = BOX_Y;
+    }
+    innerSprite.color = FlxColor.fromString('#' + innerColorHex);
+    innerSprite.alpha = innerAlpha;
+    innerSprite.visible = innerVisible && fillVisible;
+
+    // ---- FUNDO ----
+    var gameCameraVisible:Bool = line.exists('gameCameraVisible') ? line.get('gameCameraVisible') : PlayState.instance.camGame.visible;
+    var overlayAlpha:Float = line.exists('overlayAlpha') ? Std.parseFloat(line.get('overlayAlpha')) : false;
+    var overlayFillHex:String = line.exists('overlayFill') ? line.get('overlayFill') : false;
+    if (overlayFillHex) screenOverlay.color = FlxColor.fromString('#' + overlayFillHex)
+    else screenOverlay.color;
+    screenOverlay.alpha = overlayAlpha > 0 ? overlayAlpha : screenOverlay.alpha;
+
+    PlayState.instance.camGame.visible = gameCameraVisible;
+    //PlayState.instance.camHUD.visible = gameCameraVisible;
+
+    // TODO: hideEverythingExceptOverlay oculta box/portraits mas mantém overlay visível
+    if (line.exists('hideEverythingExceptOverlay') && line.get('hideEverythingExceptOverlay') == 'true') {
+      boxSprite.visible = false;
+      innerSprite.visible = false;
+      nameText.visible = false;
+      dialogueText.visible = false;
+    }
+
+    // ---- PORTRAITS ----
+    applyPortrait(line, 'Left',  portraitLeft,  loadedAtlasLeft);
+    applyPortrait(line, 'Right', portraitRight, loadedAtlasRight);
+    applyPortrait(line, 'Mid',   portraitMid,   loadedAtlasMid);
+    applyPortrait(line, 'Front', portraitFront, loadedAtlasFront);
+
+    // ---- AJUSTE DE OVERFLOW ----
+    dialogueText.text = fullText;
+    var textMaxY = boxSprite.y + boxSprite.height - 5;
+    var currentFontSize:Int = fontSize;
+    while ((dialogueText.y + dialogueText.height) > textMaxY && currentFontSize > TEXT_MIN_FONT_SIZE) {
+      currentFontSize = Std.int(currentFontSize * 0.8);
+      if (currentFontSize < TEXT_MIN_FONT_SIZE) currentFontSize = TEXT_MIN_FONT_SIZE;
+      dialogueText.size = currentFontSize;
+    }
+    dialogueText.text = '';
+
+    // ---- NOME DO PERSONAGEM ----
+    var charName:String = line.exists('name') ? line.get('name') : '';
+    var namePos:String = line.exists('namePosition') ? line.get('namePosition') : 'left';
+    var nameColorHex:String = line.exists('nameColor') ? line.get('nameColor') : 'FFFFFF';
+    var nameFontName:String = line.exists('nameFont') ? line.get('nameFont') : DEFAULT_FONT;
+    if (!Assets.exists(Paths.font(nameFontName))) nameFontName = DEFAULT_FONT;
+    var useNameBorder:Bool = line.exists('nameBorder') && line.get('nameBorder') == 'true';
+    var nameBorderHex:String = line.exists('nameBorderColor') ? line.get('nameBorderColor') : '000000';
+
+    nameText.setFormat(Paths.font(nameFontName), 60, FlxColor.fromString('#' + nameColorHex), 'center', FlxTextBorderStyle.OUTLINE);
+    if (useNameBorder) nameText.borderColor = FlxColor.fromString('#' + nameBorderHex);
+    else nameText.borderColor = FlxColor.TRANSPARENT;
+    nameText.text = charName.toUpperCase();
+    nameText.fieldWidth = 0;
+    //nameText.y = boxSprite.y - nameText.height;
+
+    var nameMarginX:Float = 100;
+    switch (namePos)
+    {
+      case 'right':
+        nameText.x = boxSprite.x + boxSprite.width - nameText.fieldWidth - nameMarginX;
+      case 'center':
+        nameText.x = boxSprite.x + (boxSprite.width / 2 - nameText.fieldWidth / 2);
+        nameText.y = boxSprite.y + boxSprite.height - (nameText.height / 2);
+      default:
+        nameText.x = TEXT_DEFAULT_X + nameMarginX;
+    }
+    nameText.visible = charName != '';
+    nameTextBG.visible = charName != '';
+    nameTextBG.makeSolidColor(nameText.fieldWidth + 50, nameText.height - 12, 0xFF000000);
+    nameTextBG.updateHitbox();
+    nameTextBG.y = boxSprite.y - nameTextBG.height;
+    nameText.y = nameTextBG.y;
+    nameTextBG.x = nameText.x + (nameText.fieldWidth / 2) - (nameTextBG.width / 2);
+    nameTextBG.y = nameText.y + (nameText.height / 2) - (nameTextBG.height / 2);
+
+    // ---- CONTROLE DE INPUT ----
+    curResetIntroText = line.exists('resetIntroText') && line.get('resetIntroText') == 'true';
+    curSkipIntro = line.exists('skipIntro') && line.get('skipIntro') == 'true';
+    currentUnableToPress = line.exists('unableToPress') && line.get('unableToPress') == 'true';
+    currentCantSkip = line.exists('cantSkip') && line.get('cantSkip') == 'true';
+    currentAutoConfirm = line.exists('autoConfirm') && line.get('autoConfirm') == 'true';
+    skipNextFadeOut = line.exists('abrupt') && line.get('abrupt') == 'true';
+
+    var skipVisible:Bool = !(line.exists('skipIsVisible') && line.get('skipIsVisible') == 'false');
+    skipHintText.visible = skipVisible && !currentCantSkip;
+
+    // ---- AUTO-AVANÇO ----
+    timedNextTimer = -1;
+    if (line.exists('startTimedNext'))
+    {
+      timedNextTimer = Std.parseFloat(line.get('startTimedNext'));
+      currentUnableToPress = true;
+    }
+    // Linhas marcadas como fim: avança sozinho após 0.1s
+    if (line.exists('end') && line.get('end') == 'true')
+    {
+      timedNextTimer = 0.1;
+      currentUnableToPress = true;
+    }
+
+    // ---- SONS ----
+    if (line.exists('soundPath')) currentSoundPath = line.get('soundPath');
+    if (line.exists('sound') && currentSoundPath != '') {
+      if (curSound != null && curSound != FlxG.sound.music) curSound.stop();
+      curSound = FunkinSound.playOnce(Paths.sound(currentSoundPath + line.get('sound')));
+    }
+    if (line.exists('soundEffect')) {
+      if (curSoundEffect != null && curSoundEffect != FlxG.sound.music) curSoundEffect.stop();
+      curSoundEffect = FunkinSound.playOnce(Paths.sound(line.get('soundEffect'), 'shared'));
+    }
+    if (line.exists('simpleSound')) {
+      if (curSimpleSound != null && curSimpleSound != FlxG.sound.music) curSimpleSound.stop();
+      curSimpleSound = FunkinSound.playOnce(Paths.sound(line.get('simpleSound'), 'shared'));
+    }
+
+    // ---- EVENTS ----
+    if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
+
+    if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
+
+    if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
+    if (line.exists('ambienceFadeVolume') && FlxG.sound.music != null) FlxG.sound.music.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
+    if (line.exists('fadeMusicVolume') && FlxG.sound.music != null) FlxG.sound.music.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
+    if (line.exists('changeMusicVolume') && FlxG.sound.music != null) FlxG.sound.music.volume = Std.parseFloat(line.get('changeMusicVolume'));
+
+    // ---- TODO ----
+    // focusPoint / forceAllTimeFocus → mover câmera do jogo para um ponto na cena
+    // shake / shakeAll / shakeFront / screenShake → efeitos de trepidação
+    // nightflaidEvent             → evento especial da Nightflaid (centraliza sprite, fundo preto, efeitos)
+    // cameraZoom / forceZoom / cameraSpeed → controle de zoom da câmera da cena
+    // prideOverlayVisible / prideAnim → overlay animado de pride
+    // sakuQuote / funRetroQuote / bfQuote / zerktroGfQuote / etc → slots de fala alternativa por personagem ativo
+    // changeMusicVolume / fadeMusicVolume / fadeMusicSpeed / slowlyFadeMusic → controle de volume da música
+    // deathBoxVisible / deathBoxY → caixa da morte (UI específica da Nightflaid)
+    // usingIntroInput             → modo especial de input do intro (avanço por tempo, não por botão)
+    // startSaku / sakuEvent / hivemineEvent / ectospasmEvent → eventos de história específicos de personagem
+    // fadeGameToBlack / endDarkness / outroFinalFade / fadeEndText / fadeOut → fades de cena
+    // gameCameraVisible           → mostra/oculta câmera do jogo durante o diálogo
+    // changeDialogueAlpha / changeDialogueY → animação do próprio container de diálogo
+    // colorBlend / useBlend       → blend mode em sprites de portrait
+    // changeDarkScaleX            → escala do sprite de escuridão de fundo
+    // changeParticlesAlpha        → alpha das partículas de cena (stages com partículas)
+    // isOutro / skipOutro / skipNightflaid → marcadores de controle de fluxo do outro
+    // nightThing / usingNightflaidColors / nightFlaidEvent → modo visual exclusivo da Nightflaid
+    // fadeMixterImg               → fade da imagem flutuante especial do Mixter
+    // scaleTweenPenduLight / fadeInPenduLight / fadePendu / startPenduEvent → eventos do Pendulumbra
+    // abrupt                      → transição abrupta (sem fade) para a próxima linha
+    // doAlphaThing / changeAlpha  → fade de elementos específicos
+    // resetBox / resetIntroText / resetIntroTextButDontCenter → reset de estado do box/intro
+    // ignoreFirstLineInStory      → pula a primeira linha em modo história
+    // startInvisible / startSkipInvisible → começa com sprites invisíveis
+    // cutsceneSkipVisible         → visibilidade do botão de skip da cutscene
+    // setTime / ambienceSpeed     → controle de tempo/velocidade de ambience
+  }
+
+  private function applyPortrait(line:StringMap<String>, slot:String, sprite:FunkinSprite, currentAtlas:String):Void
+  {
+    var visKey:String = 'portrait' + slot + 'Visible';
+    var sprKey:String = 'portrait' + slot;
+    var posKey:String = 'portrait' + slot + 'Position';
+    var sclKey:String = 'portrait' + slot + 'Scale';
+    var flpKey:String = 'portrait' + slot + 'Flip';
+
+    var visible:Bool = line.exists(visKey) ? line.get(visKey) == 'true' : false;
+    sprite.visible = visible;
+    if (!visible) return;
+
+    if (line.exists(sprKey))
+    {
+      var frameName:String = line.get(sprKey);
+      var atlasName:String = getAtlasName(frameName);
+
+      if (atlasName != currentAtlas)
+      {
+        sprite.frames = Paths.getSparrowAtlas('dialogue/portrait/' + atlasName, 'shared');
+        if (slot == 'Left') loadedAtlasLeft = atlasName;
+        else if (slot == 'Right') loadedAtlasRight = atlasName;
+        else if (slot == 'Mid') loadedAtlasMid = atlasName;
+        else loadedAtlasFront = atlasName;
+      }
+
+      if (sprite.frames != null)
+      {
+        if (!sprite.animation.exists(frameName))
+          sprite.animation.addByPrefix(frameName, frameName, 24, false);
+        sprite.animation.play(frameName, true);
+        sprite.updateHitbox();
+      }
+    }
+
+    if (line.exists(posKey))
+    {
+      var arr:Array<String> = line.get(posKey).split(';');
+      if (arr.length >= 2) { sprite.x = Std.parseFloat(arr[0]); sprite.y = Std.parseFloat(arr[1]); }
+    }
+
+    if (line.exists(sclKey))
+    {
+      var arr:Array<String> = line.get(sclKey).split(';');
+      if (arr.length >= 2)
+      {
+        sprite.scale.set(Std.parseFloat(arr[0]), Std.parseFloat(arr[1]));
+        sprite.updateHitbox();
+      }
+    }
+
+    sprite.flipX = line.exists(flpKey) && line.get(flpKey) == 'true';
+  }
+
+  private function getAtlasName(frameName:String):String
+  {
+    var parts:Array<String> = frameName.split('_');
+    var best:String = parts[0];
+    var candidate:String = '';
+    for (i in 0...parts.length - 1) {
+      candidate = (candidate == '') ? parts[i] : candidate + '_' + parts[i];
+      if (Assets.exists(Paths.image('dialogue/portrait/' + candidate, 'shared')))
+        best = candidate;
+    }
+    return best;
+  }
+
+  override public function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (!isActive) return;
+    if (PlayState.instance == null) {
+      stopDialogue(false);
+      return;
+    }
+    if (PlayState.instance.isGamePaused) return;
+    if (isFadingOut) return;
+
+    var elapsed:Float = event.elapsed;
+    if (inputCooldown > 0) inputCooldown -= elapsed;
+
+    // Typewriter
+    if (isTyping) {
+      charTimer += elapsed;
+      var prevChars:Int = displayedChars;
+      while (charTimer >= currentSpeed && displayedChars < fullText.length) {
+        charTimer -= currentSpeed;
+        displayedChars++;
+      }
+      if (displayedChars != prevChars)
+        dialogueText.text = fullText.substring(0, displayedChars);
+      if (displayedChars >= fullText.length) {
+        isTyping = false;
+        if (currentAutoConfirm && timedNextTimer < 0)
+          timedNextTimer = 0.0;
+      }
+    } else if (fullText.length > 0 && curResetIntroText && !continueHintText.visible) continueHintText.visible = true;
+
+    // Avanço automático (startTimedNext)
+    if (timedNextTimer >= 0 && !isTyping)
+    {
+      timedNextTimer -= elapsed;
+      if (timedNextTimer <= 0) {
+        timedNextTimer = -1;
+        nextLine();
+        return;
+      }
+    }
+
+    // Botão de ESC do mobile
+    if (escButton != null && escButton.active && escButton.visible != skipHintText.visible) escButton.visible = skipHintText.visible;
+
+    if (inputCooldown > 0) return;
+
+    var pressAccept:Bool = PlayState.instance.controls.CUTSCENE_ADVANCE || FlxG.keys.justPressed.ENTER || ((!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) && FlxG.mouse.justPressed) || FlxG.keys.justPressed.SPACE;
+    var pressBack:Bool = PlayState.instance.controls.BACK || FlxG.keys.justPressed.ESCAPE;
+
+    // Controles do mobile
+    if (FlxG.onMobile) {
+      if (TouchUtil.justReleased) {
+        pressAccept = true;
+
+        if (TouchUtil.overlapsComplex(escButton)) {
+          pressBack = true;
+          pressAccept = false;
+        } else {
+          escButton.animation.play('idle', true);
+        }
+      }
+
+      if (escButton.active && escButton.visible && TouchUtil.overlapsComplex(escButton) && TouchUtil.justPressed) {
+        escButton.animation.play('press', true);
+      }
+    }
+
+    if (pressBack && !currentCantSkip) {
+      beginFadeOut();
+      return;
+    }
+
+    if (pressAccept && !currentUnableToPress) {
+      if (isTyping) {
+        displayedChars = fullText.length;
+        dialogueText.text = fullText;
+        isTyping = false;
+      } else { nextLine(); }
+    }
+  }
+
+  private function nextLine():Void
+  {
+    currentLineIndex++;
+    if (currentLineIndex >= currentLines.length) {
+      beginFadeOut();
+      return;
+    }
+    inputCooldown = INPUT_COOLDOWN_SEC;
+    applyLine(currentLines[currentLineIndex]);
+  }
+
+  override public function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    stopDialogue(false);
+  }
+
+  override public function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    stopDialogue(false);
+  }
+
+  override public function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    isActive = false;
+    isTyping = false;
+    if (fadeTween != null) { fadeTween.cancel(); fadeTween = null; }
+    isFadingOut = false;
+    skipNextFadeOut = false;
+    hasCreatedSprites = false;
+    onCompleteCallback = null;
+    currentLines = [];
+    screenOverlay = null;
+    boxSprite = null;
+    innerSprite = null;
+    portraitLeft = null;
+    portraitRight = null;
+    portraitMid = null;
+    portraitFront = null;
+    nameText = null;
+    dialogueText = null;
+    skipHintText = null;
+    loadedAtlasLeft = '';
+    loadedAtlasRight = '';
+    loadedAtlasMid = '';
+    loadedAtlasFront = '';
+    currentBoxName = '';
+    curSoundEffect = null;
+    curSimpleSound = null;
+    curSound = null;
+    curResetIntroText = null;
+    curSkipIntro = null;
+  }
+
+  private function beginFadeOut():Void
+  {
+    if (skipNextFadeOut || PlayState.instance == null) {
+      stopDialogue(true);
+      return;
+    }
+
+    isFadingOut = true;
+    // Bloqueia qualquer interação durante o fade
+    PlayState.instance.disableKeys = true;
+
+    fadeTween = FlxTween.tween(PlayState.instance.camCutscene, { alpha: 0 }, 1, { ease: FlxEase.quadIn, onComplete: function(_){
+        fadeTween = null;
+        isFadingOut = false;
+        stopDialogue(true);
+      }
+    });
+  }
+
+  private function playAmbienceThemeFrom(themeName:String):Void
+  {
+    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+
+    FunkinSound.setMusic(FunkinSound.load(Paths.sound('ambiences/' + themeName), 0.15, true));
+    FlxG.sound.music.play(true);
+  }
+
+  private function startSatisfractureEvent():Void
+  {
+    PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0.7, true, function() {
+      skipHintText.visible = true;
+    }, true);
+    screenOverlay.color = FlxColor.fromString('#4bffcc');
+    screenOverlay.alpha = 0.2;
+    screenOverlay.blend = 7;
+    boxSprite.visible = false;
+    innerSprite.visible = false;
+    PlayState.instance.camGame.visible = true;
+  }
+
+  private function resetIntroText():Void {
+    dialogueText.alignment = 'center';
+    dialogueText.fieldWidth = Std.int(1280 * 0.8);
+    dialogueText.size = 40;
+    //dialogueText.height += 10;
+    dialogueText.screenCenter();
+    dialogueText.y -= 20;
+    skipHintText.visible = false;
+    escButton.visible = false;
+    continueHintText.visible = false;
+  }
+
+}
