@@ -1,0 +1,34 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+import Std;
+
+/* This event mimicks an event from Pych Engine.
+ * It changes Girlfriend's danceEvery.
+ */
+
+class RetroSetGFSpeed extends SongEvent {
+  function new() {
+    super('SetGFSpeed');
+  }
+
+  override function getTitle() {
+    return "Add Cam Zoom";
+  }
+
+  override function handleEvent(data) {
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
+    PlayState.instance.currentStage.getGirlfriend().danceEvery = data.getFloat('value') ?? 1;
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "value",
+        title: "Dance Every",
+        defaultValue: 0,
+        type: "int"
+      }
+    ];
+  }
+}

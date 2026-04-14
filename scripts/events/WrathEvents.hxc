@@ -7,7 +7,7 @@ class WrathEvents extends SongEvent {
   }
 
   override function getTitle() {
-    return "Phase 3 Events";
+    return "Wrath Events";
   }
 
   override function handleEvent(data) {
@@ -26,8 +26,20 @@ class WrathEvents extends SongEvent {
           "Phase3 geysers" => 0,
           "Phase3 eruption" => 1,
           "Phase3 sink" => 2,
+
+          "shakeChange" => 3,
+          "weirdPulse" => 4,
+          "resetNote" => 5,
+          "uniqueReturn" => 6,
+          "setSwayVal" => 7,
         ]
-      }
+      },
+      {
+        name: "value1",
+        title: "Valor 1",
+        defaultValue: '',
+        type: "string"
+      },
     ];
   }
 }

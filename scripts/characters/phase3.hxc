@@ -13,7 +13,7 @@ class PhaseThreeCharacter extends SparrowCharacter {
 		super('phase3');
 	}
 
-	function onNoteHit(event:HitNoteScriptEvent) {
+	/*function onNoteHit(event:HitNoteScriptEvent) {
 		if (PlayState.instance == null) return;
 
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
@@ -27,7 +27,7 @@ class PhaseThreeCharacter extends SparrowCharacter {
 			}
 		}
 		super.onNoteHit(event);
-	}
+	}*/
 
 	override public function onUpdate(event):Void {
     super.onUpdate(event);

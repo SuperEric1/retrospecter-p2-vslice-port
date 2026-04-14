@@ -154,6 +154,7 @@
       "frameIndices": []
     },
     {
+      "looped": true,
       "name": "deathLoop-acid",
       "prefix": "BF Dead Loop acid",
       "assetPath": "characters/BfSkins/death/default_bf_death_acid",

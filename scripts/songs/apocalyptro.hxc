@@ -1,90 +1,387 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.math.FlxBasePoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.play.song.Song;
 import funkin.save.Save;
 import funkin.Conductor;
+import funkin.Preferences;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.GameOverSubState;
-import funkin.util.ReflectUtil;
 import funkin.play.PlayStatePlaylist;
 import funkin.ui.FullScreenScaleMode;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.song.Song;
+import funkin.save.Save;
 
 class ApocalyptroSong extends Song
 {
   var hasPlayedCutscene:Bool;
-  var hasFadedUi:Bool = false;
-  var tweens = [];
-  var pausedTweens = [];
+  var hasPlayedDialogue:Bool;
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+
+  var playState:PlayState;
+  var playStage = null;
+
+  var modcharts:Bool = true;
+  var hasStoredStrums:Bool = false;
+  var isOgBf:Bool = false;
+
+  var flag592:Bool = false;
+  var flag794:Bool = false;
+  var flag796:Bool = false;
+  var flag800:Bool = false;
+  var flag804:Bool = false;
+  var showLogo:Bool = false;
+
+  var shakeStrength:Float = 0;
+  var shakeMult:Array<Float> = [1, 1];
+  var alterNate:Bool = false;
+  var cameraSwayVal:Float = 0; // Set via chart event
+
+  var originalCamHUDHeight:Float = -1;
+
+  var defaultOpponentStrumX:Array<Float> = [];
+  var defaultOpponentStrumY:Array<Float> = [];
+  var defaultPlayerStrumX:Array<Float> = [];
+  var defaultPlayerStrumY:Array<Float> = [];
+
+  var bfFocusPoint:Array<Float> = [];
+  var dadFocusPoint:Array<Float> = [];
 
   public function new()
   {
     super('apocalyptro');
-
-    hasPlayedCutscene = false;
   }
 
-  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
+    resetFlags();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
+
+    isOgBf = playStage.getBoyfriend().characterId == 'bf-retrospecter';
+
+    if (bfFocusPoint[0] == null) bfFocusPoint = [playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y];
+    if (dadFocusPoint[0] == null) dadFocusPoint = [playStage.getDad().cameraFocusPoint.x, playStage.getDad().cameraFocusPoint.y];
+  }
+
+  override function onCountdownStart(event:ScriptEvent):Void
   {
     super.onCountdownStart(event);
+    if (originalCamHUDHeight < 0) originalCamHUDHeight = playState.camHUD.height;
+    playState.camHUD.height = originalCamHUDHeight + 20;
 
-    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+    if (!PlayStatePlaylist.isStoryMode) {
+      hasPlayedCutscene = true;
+      hasPlayedDialogue = true;
+    }
+
+    if (hasPlayedCutscene && !hasPlayedDialogue)
+    {
+      hasPlayedDialogue = true;
+      event.cancel();
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['apocalyptro story', 'pre', function() {
+        playState.startCountdown();
+      }]);
+    }
 
     if (!hasPlayedCutscene)
     {
       hasPlayedCutscene = true;
-      event.cancel(); // CANCEL THE COUNTDOWN!
+      event.cancel();
 
       VideoCutscene.play(Paths.videos('Apocalyptro_Intro'));
     }
   }
 
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    if (!hasStoredStrums && modcharts) storeDefaultStrumPositions();
+  }
+
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGamePaused) return;
-    if (PlayState.instance.isGameOverState) return;
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
 
     var curBeat = event.beat;
-    if (curBeat == 796) {
+    if (!isOgBf) return;
+
+    if (!flag592 && curBeat >= 592) {
+      flag592 = true;
+      // Focus camera on dad because i'm lazy to add the event in the chart editor
+      playState.cameraFollowPoint.setPosition(playStage.getDad().cameraFocusPoint.x, playStage.getDad().cameraFocusPoint.y);
+      playState.tweenCameraZoom(PlayState.instance.stageZoom, 1.2, true, FlxEase.quadOut);
+    }
+
+    if (!flag794 && curBeat >= 794) {
+      flag794 = true;
+      playState.cameraFollowPoint.setPosition(playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y);
+    }
+
+    if (!flag796 && curBeat >= 796) {
+      flag796 = true;
       playStage.getBoyfriend().danceEvery = 0;
       playStage.getBoyfriend().playAnimation('brow', true);
-    } else if (curBeat == 800) {
+      playState.tweenCameraZoom(1.3, Conductor.instance.beatLengthMs / 1000, false, FlxEase.quadOut);
+    }
+
+    if (!flag800 && curBeat >= 800)
+    {
+      flag800 = true;
       playStage.getBoyfriend().playAnimation('sex', true);
+      playState.tweenCameraZoom(playState.stageZoom, Conductor.instance.beatLengthMs / 1000, false, FlxEase.quadOut);
+      playState.cameraFollowPoint.setPosition(playStage.getDad().cameraFocusPoint.x, playStage.getDad().cameraFocusPoint.y);
+    }
+
+    if (!flag804 && curBeat >= 804) {
+      flag804 = true;
       playStage.getBoyfriend().danceEvery = 1;
     }
   }
 
-  public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
+  override public function onStepHit(event:SongTimeScriptEvent) {
     super.onStepHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGameOverState) return;
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
 
-    if (event.step == 1723) {
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
+    var curStep = event.step;
+
+    // TODO: Start enemy title animation (story mode)
+    if (!showLogo && curStep >= 16 && PlayStatePlaylist.isStoryMode) {
+      showLogo = true;
+      // Here we should show the enemy's title but we don't have the module for it yet.
     }
-    if (event.step == 1732) {
-      hasFadedUi = true;
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 3)  / 1000, {ease: FlxEase.linear}));
-    }
-    if (event.step >= 1744 && event.step <= 2150) { // caso o jogador lague
-      PlayState.instance.playerStrumline.alpha = 1;
+
+    for (holdNote in playState.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        shakeStrength += 0.0125 * shakeMult[1];
+      }
     }
   }
 
-  override function onDestroy(event)
-	{
-		super.onDestroy(event);
-		resetTweens();
-	}
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    bfFocusPoint = [];
+    dadFocusPoint = [];
+    hasPlayedCutscene = false;
+    hasPlayedDialogue = false;
+    resetTweens();
+  }
 
-	private function resetTweens()
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
+
+    var elapsed:Float = event.elapsed;
+    var curBeat:Int = Conductor.instance.currentBeat;
+    var curStep:Int = Conductor.instance.currentStep;
+    var songPos:Float = Conductor.instance.songPosition;
+
+    if (modcharts) {
+      playState.camHUD.y = -5 + (8 + cameraSwayVal * 2) * Math.cos(songPos / 1000);
+      playState.camHUD.x = (4 + cameraSwayVal * 2) * Math.cos(songPos / 500);
+      playState.camHUD.angle = -cameraSwayVal * Math.cos(songPos / 1000);
+    }
+
+    if (shakeStrength > 0.01)
+    {
+      var shakeSpeed:Float = 6.5 * elapsed;
+      playState.camGame.shake(shakeStrength / 10, 0.04);
+      playState.camHUD.shake(shakeStrength / 15, 0.04);
+      shakeStrength = shakeStrength + (0 - shakeStrength) * shakeSpeed;
+    }
+  }
+
+  override function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+    super.onNoteHit(event);
+    if (event.note.noteData.getMustHitNote()) return;
+    shakeStrength += 0.025 * shakeMult[0];
+  }
+
+  override function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == "EnvyEvents" && !playState.startingSong) {
+      var eventType = value.eventType;
+      var rawValue:String = value.value1 ?? '';
+      var numValue:Float = rawValue != '' ? Std.parseFloat(rawValue) : 0.0;
+
+      switch (eventType) {
+        case 'weirdPulse':
+          weirdPulse();
+        case 'resetNote':
+          resetNote();
+        case 'uniqueReturn':
+          uniqueReturn(numValue, FlxEase.backOut);
+        case 'shakeChange':
+          var parts = rawValue.split(',');
+          shakeMult[0] = Std.parseFloat(StringTools.trim(parts[0]));
+          shakeMult[1] = Std.parseFloat(StringTools.trim(parts[1]));
+        case 'setSwayVal':
+          cameraSwayVal = numValue;
+      }
+    }
+  }
+
+  override function onGameOver(event:ScriptEvent):Void
+  {
+    super.onGameOver(event);
+    playStage.getBoyfriend().danceEvery = 0;
+  }
+
+  override function onPause(event:ScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+    {
+      if (tween != null && !tween.finished) tween.active = true;
+    }
+    pausedTweens = [];
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    playStage.getBoyfriend().danceEvery = 1;
+    playStage.getBoyfriend().cameraFocusPoint.x = bfFocusPoint[0];
+    playStage.getBoyfriend().cameraFocusPoint.y = bfFocusPoint[1];
+    playStage.getDad().cameraFocusPoint.x = dadFocusPoint[0];
+    playStage.getDad().cameraFocusPoint.y = dadFocusPoint[1];
+    resetTweens();
+    resetFlags();
+  }
+
+  function weirdPulse():Void
+  {
+    if (!modcharts || !hasStoredStrums) return;
+    var val:Float = alterNate ? 15.0 : -15.0;
+
+    for (i in 0...4) {
+      var oppStrum = playState.opponentStrumline.strumlineNotes.members[i];
+      var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
+
+      var sign:Float = (i % 2 == 0) ? 1.0 : -1.0;
+
+      if (oppStrum != null) oppStrum.y = defaultOpponentStrumY[i] + val * sign;
+      if (playerStrum != null) playerStrum.y = defaultPlayerStrumY[i] + val * sign;
+    }
+
+    alterNate = !alterNate;
+    uniqueReturn(Conductor.instance.beatLengthMs / 500.0, FlxEase.backOut);
+  }
+
+  function resetNote():Void
+  {
+    if (!hasStoredStrums) return;
+    for (i in 0...4) {
+      var oppStrum = playState.opponentStrumline.strumlineNotes.members[i];
+      var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
+
+      FlxTween.cancelTweensOf(oppStrum);
+      tweens.push(FlxTween.tween(oppStrum, { x: defaultOpponentStrumX[i], y: defaultOpponentStrumY[i] }, 0.5, { ease: FlxEase.quadOut }));
+
+      FlxTween.cancelTweensOf(playerStrum);
+      tweens.push(FlxTween.tween(playerStrum, { x: defaultPlayerStrumX[i], y: defaultPlayerStrumY[i] }, 0.5, { ease: FlxEase.quadOut }));
+    }
+  }
+
+  function uniqueReturn(time:Float, easeName:String):Void
+  {
+    if (!modcharts || !hasStoredStrums) return;
+
+    for (i in 0...4) {
+      var oppStrum = playState.opponentStrumline.strumlineNotes.members[i];
+      var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
+
+      FlxTween.cancelTweensOf(oppStrum);
+      tweens.push(FlxTween.tween(oppStrum, { x: defaultOpponentStrumX[i], y: defaultOpponentStrumY[i], angle: 0.0 }, time, { ease: easeName }));
+
+      FlxTween.cancelTweensOf(playerStrum);
+      tweens.push(FlxTween.tween(playerStrum, { x: defaultPlayerStrumX[i], y: defaultPlayerStrumY[i], angle: 0.0 }, time, { ease: easeName }));
+    }
+  }
+
+  function storeDefaultStrumPositions():Void
+  {
+    if (playState == null) return;
+    hasStoredStrums = true;
+
+    for (i in 0...4) {
+      var oppStrum = playState.opponentStrumline.strumlineNotes.members[i];
+      var playerStrum = playState.playerStrumline.strumlineNotes.members[i];
+
+      defaultOpponentStrumX.push(oppStrum != null ? oppStrum.x : 0.0);
+      defaultOpponentStrumY.push(oppStrum != null ? oppStrum.y : 0.0);
+      defaultPlayerStrumX.push(playerStrum != null ? playerStrum.x : 0.0);
+      defaultPlayerStrumY.push(playerStrum != null ? playerStrum.y : 0.0);
+    }
+  }
+
+  function resetFlags():Void
+  {
+    hasPlayedCutscene = false;
+    hasPlayedDialogue = false;
+    flag592 = false;
+    flag794 = false;
+    flag796 = false;
+    flag800 = false;
+    flag804 = false;
+    showLogo = false;
+    shakeStrength = 0.0;
+    alterNate = false;
+    cameraSwayVal = 0.0;
+    hasStoredStrums = false;
+    defaultOpponentStrumX = [];
+    defaultOpponentStrumY = [];
+    defaultPlayerStrumX = [];
+    defaultPlayerStrumY = [];
+    shakeMult = [1, 1];
+  }
+
+  private function resetTweens()
 	{
 		for (tween in tweens)
 		{
@@ -94,54 +391,6 @@ class ApocalyptroSong extends Song
 		tweens = [];
 		pausedTweens = [];
 	}
-
-	override function onResume(event)
-	{
-		super.onResume(event);
-		for (tween in pausedTweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = true;
-			}
-		}
-		pausedTweens = [];
-	}
-
-	override function onPause(event)
-	{
-		super.onPause(event);
-		pausedTweens = [];
-		for (tween in tweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-	}
-
-  /**
-   * Don't replay the cutscene between restarts.
-   */
-  function onSongRetry(event:ScriptEvent)
-  {
-    super.onSongRetry(event);
-
-    playState.mayPauseGame = true;
-    hasPlayedCutscene = true;
-    hasFadedUi = false;
-  }
-
-  function onCreate(event:ScriptEvent):Void
-  {
-    super.onCreate(event);
-
-    hasPlayedCutscene = false;
-    playState = PlayState.instance;
-    playStage = PlayState.instance.currentStage;
-  }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
   {

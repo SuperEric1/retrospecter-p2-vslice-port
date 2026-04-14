@@ -1352,7 +1352,7 @@ class RetroPlayState extends Module {
       chainText.y = isMobile ? (FlxG.height / 2) + (FlxG.height / 6) : strum.strumlineNotes.members[0].y - 10;
     } else chainText.y = strum.strumlineNotes.members[0].y + strum.strumlineNotes.members[0].height + 10;
     chainText.scrollFactor.set(0, 0);
-    chainText.zIndex = strum.strumlineNotes.members[3].zIndex + 1;
+    chainText.zIndex = strum.zIndex + 1;
     chainText.cameras = [PlayState.instance.camHUD];
     chainText.text = RetroLanguage.t('instruction.chainNote', 'MASH TO BREAK FREE');
     chainText.visible = false;
@@ -1694,7 +1694,6 @@ class RetroPlayState extends Module {
       }
     }
 
-    // Detecção de notas longas sendo pressionadas
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
@@ -1702,15 +1701,26 @@ class RetroPlayState extends Module {
           checkHealthCap();
         }
       }
+    }
+  }
 
-      if (!isDoingVocalThing && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && Conductor.instance.songPosition % (holdNote.fullSustainLength / 10) < 10) {
-        //trace(Conductor.instance.songPosition % (holdNote.fullSustainLength));
-        doVocalThing(0.1);
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (!isRetro) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var isSpectreActive:Bool = forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre');
+
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (!isDoingVocalThing && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) {
+        doVocalThing(0.2);
       }
 
-      if (hmpActive && retroGameUI != null && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && Conductor.instance.songPosition % (holdNote.fullSustainLength / 10) < 5) {
-        //Conductor.instance.songPosition % (holdNote.fullSustainLength / 5) < 10
-        //throw Conductor.instance.songPosition % (holdNote.fullSustainLength / 10);
+      if (hmpActive && retroGameUI != null && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS && event.step % 2 == 0) {
         var moneyToLose:Float = 0;
         switch (songId.toLowerCase()) {
           case 'sweet-talk':
@@ -1720,39 +1730,21 @@ class RetroPlayState extends Module {
         }
         retroGameUI.scriptCall('spawnHivemineMoney', [holdNote.noteData.getDirection(), moneyToLose]);
       }
-    }
 
-    /*var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
-    var cover = event.note.holdNoteSprite.cover;
-    var targetAlpha = strum.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
-    //if (targetAlpha == 1) targetAlpha = strum.alpha;
-    if (event.note.isHoldNote && cover.alpha != targetAlpha) {
-      cover.alpha = targetAlpha;
-    }*/
-
-    /*for (note in PlayState.instance.playerStrumline.notes.members) {
-      if (note == null || !note.alive) continue;
-      var cover = holdNote.holdNoteSprite.cover;
-      var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[event.note.noteData.getDirection()].alpha;
-      if (cover.alpha != targetAlpha) {
-        cover.alpha = targetAlpha;
-      }
-    }*/
-
-    // Update hold covers so they match the actual opacity of the notes because they are really weird sometimes
-    var isSpectreActive:Bool = forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre');
-    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
-      if (holdNote == null || !holdNote.alive) continue;
+      // Update hold covers alpha to match
       if (holdNote.hitNote && !isSpectreActive) {
-        var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
+        var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
       }
     }
-    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
+
+      // Update hold covers to match
       if (holdNote.hitNote && !isSpectreActive) {
-        var targetAlpha = PlayState.instance.playerStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
+        var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
       }
@@ -2430,6 +2422,7 @@ class RetroPlayState extends Module {
     webLockActive = false;
     wiggleShader = null;
     wiggleFilter = null;
+    isDoingVocalThing = false;
 
     removeInsatianHoles(true);
 

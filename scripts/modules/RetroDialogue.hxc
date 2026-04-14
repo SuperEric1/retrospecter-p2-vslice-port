@@ -35,6 +35,7 @@ class RetroDialogue extends Module
   private var isActive:Bool = false;
   private var currentLines:Array<Dynamic> = [];
   private var currentLineIndex:Int = 0;
+  private var currentSection:String = '';
   private var curDialogueFont:String = null;
   private var onCompleteCallback:Dynamic = null;
   private var skipNextFadeOut:Bool = false;
@@ -44,6 +45,7 @@ class RetroDialogue extends Module
   private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf'];
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
   private var playerLang:String = "en_US";
+  private var ambienceTheme:FunkinSound;
 
   // Typewriter
   private var fullText:String = '';
@@ -61,6 +63,7 @@ class RetroDialogue extends Module
   private var currentSoundPath:String = '';
   private var curResetIntroText:Bool = false;
   private var curSkipIntro:Bool = false;
+  private var destroyOnEnd:Bool = false;
 
   // Sprites
   private var screenOverlay:FunkinSprite;
@@ -93,7 +96,7 @@ class RetroDialogue extends Module
   private var TEXT_DEFAULT_X:Float = 80;
   private var TEXT_DEFAULT_Y:Float = 490;
   private static final TEXT_MIN_FONT_SIZE:Int = 22;
-  private static final INPUT_COOLDOWN_SEC:Float = 0.15;
+  private static final INPUT_COOLDOWN_SEC:Float = 0.1;
 
   private static final Z_OVERLAY:Int = 900000;
   private static final Z_BOX:Int = 900010;
@@ -129,7 +132,7 @@ class RetroDialogue extends Module
     var lines:Array<String> = content.split('\n');
 
     var currentId:String = null;
-    var currentSection:String = null;
+    //var currentSection:String = null;
     var preLines:Array<Dynamic> = null;
     var postLines:Array<Dynamic> = null;
 
@@ -164,6 +167,8 @@ class RetroDialogue extends Module
     if (currentId != null) {
       if (preLines != null && preLines.length > 0) dialoguePre.set(currentId, preLines);
       if (postLines != null && postLines.length > 0) dialoguePost.set(currentId, postLines);
+
+      destroyOnEnd = postLines == null || postLines.length == 0;
     }
 
     trace('[RetroDialogue] dialogues.txt carregado.');
@@ -220,7 +225,12 @@ class RetroDialogue extends Module
     currentLineIndex = 0;
     isActive = true;
     currentSoundPath = '';
+    currentSection = section;
     inputCooldown = INPUT_COOLDOWN_SEC;
+    if (ambienceTheme != null) {
+      ambienceTheme.stop();
+      ambienceTheme.destroy();
+    }
 
     PlayState.instance.camCutscene.visible = true;
     PlayState.instance.disableKeys = true;
@@ -242,7 +252,10 @@ class RetroDialogue extends Module
     currentLines = [];
     currentLineIndex = 0;
 
-    if (callComplete && FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (callComplete && ambienceTheme != null) {
+      ambienceTheme.stop();
+      ambienceTheme.destroy();
+    }
     hideAll();
 
     if (PlayState.instance != null) {
@@ -262,10 +275,16 @@ class RetroDialogue extends Module
       }
     }
 
-    if (curSound != null && curSound != FlxG.sound.music) curSound.stop();
-    if (curSoundEffect != null && curSoundEffect != FlxG.sound.music) curSoundEffect.stop();
-    if (curSimpleSound != null && curSimpleSound != FlxG.sound.music) curSimpleSound.stop();
-    if (callComplete && FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (curSound != null && curSound != ambienceTheme) curSound.stop();
+    if (curSoundEffect != null && curSoundEffect != ambienceTheme) curSoundEffect.stop();
+    if (curSimpleSound != null && curSimpleSound != ambienceTheme) curSimpleSound.stop();
+
+    if (destroyOnEnd || currentSection == 'post') {
+      destroyAllSprites();
+      destroyOnEnd = false;
+    }
+
+    currentSection = '';
   }
 
   private function createSprites():Void
@@ -274,7 +293,7 @@ class RetroDialogue extends Module
     var cam = ps.camCutscene;
 
     // Fundo da tela
-    screenOverlay = new FunkinSprite(0, 0);
+    screenOverlay = FunkinSprite.create(0, 0);
     screenOverlay.makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), 0xFFFFFFFF);
     screenOverlay.color = FlxColor.BLACK;
     screenOverlay.scrollFactor.set(0, 0);
@@ -286,7 +305,7 @@ class RetroDialogue extends Module
     ps.add(screenOverlay);
 
     // Fundo da caixa
-    boxSprite = new FunkinSprite(0, BOX_Y);
+    boxSprite = FunkinSprite.create(0, BOX_Y);
     boxSprite.loadGraphic(Paths.image('dialogue/fill', 'shared'));
     boxSprite.scrollFactor.set(0, 0);
     boxSprite.cameras = [cam];
@@ -297,7 +316,7 @@ class RetroDialogue extends Module
     currentBoxName = 'fill';
 
     // Overlay da caixa
-    innerSprite = new FunkinSprite(0, BOX_Y);
+    innerSprite = FunkinSprite.create(0, BOX_Y);
     innerSprite.loadGraphic(Paths.image('dialogue/boxOverlay', 'shared'));
     innerSprite.scrollFactor.set(0, 0);
     innerSprite.cameras = [cam];
@@ -308,28 +327,28 @@ class RetroDialogue extends Module
     ps.add(innerSprite);
 
     // Portraits
-    portraitLeft = new FunkinSprite(0, 0);
+    portraitLeft = FunkinSprite.create(0, 0);
     portraitLeft.scrollFactor.set(0, 0);
     portraitLeft.cameras = [cam];
     portraitLeft.zIndex = Z_PORTRAIT;
     portraitLeft.visible = false;
     ps.add(portraitLeft);
 
-    portraitRight = new FunkinSprite(0, 0);
+    portraitRight = FunkinSprite.create(0, 0);
     portraitRight.scrollFactor.set(0, 0);
     portraitRight.cameras = [cam];
     portraitRight.zIndex = Z_PORTRAIT;
     portraitRight.visible = false;
     ps.add(portraitRight);
 
-    portraitMid = new FunkinSprite(0, 0);
+    portraitMid = FunkinSprite.create(0, 0);
     portraitMid.scrollFactor.set(0, 0);
     portraitMid.cameras = [cam];
     portraitMid.zIndex = Z_PORTRAIT;
     portraitMid.visible = false;
     ps.add(portraitMid);
 
-    portraitFront = new FunkinSprite(0, 0);
+    portraitFront = FunkinSprite.create(0, 0);
     portraitFront.scrollFactor.set(0, 0);
     portraitFront.cameras = [cam];
     portraitFront.zIndex = Z_PORTRAIT_FRONT;
@@ -406,7 +425,7 @@ class RetroDialogue extends Module
     continueHintText.letterSpacing = -1;
     ps.add(continueHintText);
 
-    escButton = new FunkinSprite(0, 0);
+    escButton = FunkinSprite.create(0, 0);
     escButton.loadSparrow('ui/menu/back_button');
     escButton.animation.addByPrefix('idle', 'button0003', 1, true);
     escButton.animation.addByPrefix('press', 'button0002', 1, true);
@@ -428,6 +447,43 @@ class RetroDialogue extends Module
     loadedAtlasRight = '';
     loadedAtlasMid = '';
     loadedAtlasFront = '';
+  }
+
+  private function destroyAllSprites():Void
+  {
+    if (!hasCreatedSprites) return;
+    screenOverlay.destroy();
+    boxSprite.destroy();
+    innerSprite.destroy();
+    portraitLeft.destroy();
+    portraitRight.destroy();
+    portraitMid.destroy();
+    portraitFront.destroy();
+    nameText.destroy();
+    nameTextBG.destroy();
+    dialogueText.destroy();
+    skipHintText.destroy();
+    continueHintText.destroy();
+    escButton.destroy();
+
+    if (ambienceTheme != null) {
+      ambienceTheme.stop();
+      ambienceTheme.destroy();
+    }
+    if (curSound != null) {
+      curSound.stop();
+      curSound.destroy();
+    }
+    if (curSoundEffect != null) {
+      curSoundEffect.stop();
+      curSoundEffect.destroy();
+    }
+    if (curSimpleSound != null) {
+      curSimpleSound.stop();
+      curSimpleSound.destroy();
+    }
+
+    hasCreatedSprites = false;
   }
 
   private function showAll():Void {
@@ -630,15 +686,15 @@ class RetroDialogue extends Module
     // ---- SONS ----
     if (line.exists('soundPath')) currentSoundPath = line.get('soundPath');
     if (line.exists('sound') && currentSoundPath != '') {
-      if (curSound != null && curSound != FlxG.sound.music) curSound.stop();
+      if (curSound != null && curSound != ambienceTheme) curSound.stop();
       curSound = FunkinSound.playOnce(Paths.sound(currentSoundPath + line.get('sound')));
     }
     if (line.exists('soundEffect')) {
-      if (curSoundEffect != null && curSoundEffect != FlxG.sound.music) curSoundEffect.stop();
+      if (curSoundEffect != null && curSoundEffect != ambienceTheme) curSoundEffect.stop();
       curSoundEffect = FunkinSound.playOnce(Paths.sound(line.get('soundEffect'), 'shared'));
     }
     if (line.exists('simpleSound')) {
-      if (curSimpleSound != null && curSimpleSound != FlxG.sound.music) curSimpleSound.stop();
+      if (curSimpleSound != null && curSimpleSound != ambienceTheme) curSimpleSound.stop();
       curSimpleSound = FunkinSound.playOnce(Paths.sound(line.get('simpleSound'), 'shared'));
     }
 
@@ -648,9 +704,9 @@ class RetroDialogue extends Module
     if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
 
     if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
-    if (line.exists('ambienceFadeVolume') && FlxG.sound.music != null) FlxG.sound.music.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
-    if (line.exists('fadeMusicVolume') && FlxG.sound.music != null) FlxG.sound.music.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
-    if (line.exists('changeMusicVolume') && FlxG.sound.music != null) FlxG.sound.music.volume = Std.parseFloat(line.get('changeMusicVolume'));
+    if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
+    if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
+    if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
 
     // ---- TODO ----
     // focusPoint / forceAllTimeFocus → mover câmera do jogo para um ponto na cena
@@ -733,7 +789,7 @@ class RetroDialogue extends Module
       }
     }
 
-    sprite.flipX = line.exists(flpKey) && line.get(flpKey) == 'true';
+    if (line.exists(flpKey)) sprite.flipX = line.get(flpKey) == 'true';
   }
 
   private function getAtlasName(frameName:String):String
@@ -857,8 +913,11 @@ class RetroDialogue extends Module
   override public function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
+    destroyAllSprites();
     isActive = false;
     isTyping = false;
+    destroyOnEnd = false;
+    currentSection = '';
     if (fadeTween != null) { fadeTween.cancel(); fadeTween = null; }
     isFadingOut = false;
     skipNextFadeOut = false;
@@ -885,6 +944,7 @@ class RetroDialogue extends Module
     curSound = null;
     curResetIntroText = null;
     curSkipIntro = null;
+    ambienceTheme = null;
   }
 
   private function beginFadeOut():Void
@@ -904,14 +964,21 @@ class RetroDialogue extends Module
         stopDialogue(true);
       }
     });
+
+    if (ambienceTheme != null) ambienceTheme.fadeOut(1, 0);
+    if (curSound != null) curSound.fadeOut(1, 0);
+    if (curSoundEffect != null) curSoundEffect.fadeOut(1, 0);
+    if (curSimpleSound != null) curSimpleSound.fadeOut(1, 0);
   }
 
   private function playAmbienceThemeFrom(themeName:String):Void
   {
-    if (FlxG.sound.music != null) FlxG.sound.music.stop();
+    if (ambienceTheme != null) ambienceTheme.stop();
+    // if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
-    FunkinSound.setMusic(FunkinSound.load(Paths.sound('ambiences/' + themeName), 0.15, true));
-    FlxG.sound.music.play(true);
+    ambienceTheme = FunkinSound.load(Paths.sound('ambiences/' + themeName), 0.15, true);
+    ambienceTheme.play();
+    //FlxG.sound.music.play(true);
   }
 
   private function startSatisfractureEvent():Void

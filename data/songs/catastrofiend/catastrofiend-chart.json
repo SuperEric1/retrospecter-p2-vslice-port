@@ -7,6 +7,258 @@
   },
   "generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
   "events": [
+		{
+    "t": 0,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 14545.4545454545,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 58181.8181818182,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 60000,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 61818.1818181818,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 63636.3636363636,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 65454.5454545454,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 67272.7272727273,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 69090.9090909091,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 70909.0909090909,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 72727.2727272727,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 74545.4545454545,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 76363.6363636364,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 78181.8181818182,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 80000,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 81818.1818181818,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 83636.3636363637,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 85454.5454545455,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 174545.454545455,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 203636.363636364,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 261818.181818182,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 263636.363636364,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 265454.545454546,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 267272.727272728,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 269090.90909091,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 270909.090909091,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 272727.272727273,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 274545.454545455,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 276363.636363637,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 278181.818181819,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 280000.000000001,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 281818.181818182,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 283636.363636364,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 285454.545454546,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
+  {
+    "t": 287272.727272728,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 2
+    }
+  },
+  {
+    "t": 289090.90909091,
+    "e": "SetGFSpeed",
+    "v": {
+      "value": 1
+    }
+  },
     {
       "t": 174545.454545455,
       "e": "ScrollSpeed",

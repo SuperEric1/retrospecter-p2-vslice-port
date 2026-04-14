@@ -27,7 +27,7 @@ class RetroNoteStyles extends Module {
 		super("RetroNoteStyles");
 	}
 
-	final mobileArrowsActive:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+	var mobileArrowsActive:Bool = false;
 	var isRetro:Bool = null;
 
 	// Originally "amplification" from Funkin's source code.
@@ -35,8 +35,8 @@ class RetroNoteStyles extends Module {
 
 	// Custom strumline backgrounds
 	var strumBackgroundOpacity:Float = 0;
-	var playerStrumBackground:FlxSprite = null;
-	var opponentStrumBackground:FlxSprite = null;
+	var playerStrumBackground:FunkinSprite = null;
+	var opponentStrumBackground:FunkinSprite = null;
 	var hasBuiltStrumBackgrounds:Bool = false;
 
 	// Other variables
@@ -101,10 +101,20 @@ class RetroNoteStyles extends Module {
 		}
 	}
 
-	override function onSongLoaded(event) {
+	public override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+		// Oh my god. These signals are so good.
+		FlxG.signals.postUpdate.remove(updatePost); // Removing it first so it doesn't stack after reloading.
+    FlxG.signals.postUpdate.add(updatePost);
+  }
+
+	public override function onSongLoaded(event) {
 		super.onSongLoaded(event);
 		if (isRetro == null) isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
 		if (!isRetro) return;
+		mobileArrowsActive = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
 		applyCustomNoteStyles();
 		if (!hasBuiltStrumBackgrounds) {
@@ -334,27 +344,39 @@ class RetroNoteStyles extends Module {
 		if (PlayState.instance == null) return;
 		if (!isRetro) return;
 
-		if (hasOppStrumAnimOffsets) {
-			applyStrumAnimOffsets(PlayState.instance.opponentStrumline, oppStrumAnimOffsets, oppExpectedOffsets);
-		}
-		if (hasPlayerStrumAnimOffsets) {
-			applyStrumAnimOffsets(PlayState.instance.playerStrumline, playerStrumAnimOffsets, playerExpectedOffsets);
-		}
+		// Moved to postUpdate in onCreate (function below)
+	}
 
-		// Sync gradient backgrounds every frame.
-		if (opponentStrumBackground != null && oppStrum != null) {
-			var targetAlpha = strumBackgroundOpacity * oppStrum.alpha;
-			if (opponentStrumBackground.visible != oppStrum.background.visible) opponentStrumBackground.visible = oppStrum.background.visible;
-			if (opponentStrumBackground.y != 0) opponentStrumBackground.y = 0;
-			if (opponentStrumBackground.visible && opponentStrumBackground.alpha != targetAlpha) opponentStrumBackground.alpha = targetAlpha;
-			if (oppStrum.background.visible && oppStrum.background.alpha != 0) oppStrum.background.alpha = 0;
-		}
-		if (playerStrumBackground != null && playerStrum != null) {
-			var targetAlpha = strumBackgroundOpacity * playerStrum.alpha;
-			if (playerStrumBackground.visible != playerStrum.background.visible) playerStrumBackground.visible = playerStrum.background.visible;
-			if (playerStrumBackground.y != 0) playerStrumBackground.y = 0;
-			if (playerStrumBackground.visible && playerStrumBackground.alpha != targetAlpha) playerStrumBackground.alpha = targetAlpha;
-			if (playerStrum.background.visible && playerStrum.background.alpha != 0) playerStrum.background.alpha = 0;
+	private function updatePost():Void {
+		if (PlayState.instance == null) return;
+		if (!isRetro) return;
+
+		try {
+			if (hasOppStrumAnimOffsets) {
+				applyStrumAnimOffsets(PlayState.instance.opponentStrumline, oppStrumAnimOffsets, oppExpectedOffsets);
+			}
+			if (hasPlayerStrumAnimOffsets) {
+				applyStrumAnimOffsets(PlayState.instance.playerStrumline, playerStrumAnimOffsets, playerExpectedOffsets);
+			}
+
+			// Sync gradient backgrounds every frame.
+			if (opponentStrumBackground != null && oppStrum != null) {
+				var targetAlpha = strumBackgroundOpacity * oppStrum.alpha;
+				if (opponentStrumBackground.visible != oppStrum.visible) opponentStrumBackground.visible = oppStrum.visible;
+				if (opponentStrumBackground.y != -1) opponentStrumBackground.y = -1;
+				if (opponentStrumBackground.visible && opponentStrumBackground.alpha != targetAlpha) opponentStrumBackground.alpha = targetAlpha;
+				if (oppStrum.background.visible && oppStrum.background.alpha != 0) oppStrum.background.alpha = 0;
+			}
+			if (playerStrumBackground != null && playerStrum != null) {
+				var targetAlpha = strumBackgroundOpacity * playerStrum.alpha;
+				if (playerStrumBackground.visible != playerStrum.visible) playerStrumBackground.visible = playerStrum.visible;
+				if (playerStrumBackground.y != -1) playerStrumBackground.y = -1;
+				if (playerStrumBackground.visible && playerStrumBackground.alpha != targetAlpha) playerStrumBackground.alpha = targetAlpha;
+				if (playerStrum.background.visible && playerStrum.background.alpha != 0) playerStrum.background.alpha = 0;
+			}
+		} catch (e:Dynamic) {
+			FlxG.signals.postUpdate.remove(updatePost); // Removing
+			throw e;
 		}
 	}
 
@@ -440,6 +462,20 @@ class RetroNoteStyles extends Module {
 
 	function adjustOppStrums():Void {
 		PlayState.instance.opponentStrumline.enterMiniMode(0.4 * screenRatio);
+	}
+
+	public function getUnderlay(isPlayer:Bool):FunkinSprite {
+		return isPlayer ? playerStrumBackground : opponentStrumBackground;
+	}
+
+	public override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+		if (PlayState.instance == null) return;
+		if (!isRetro) return;
+		if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
 	}
 
 	override function onDestroy(event:ScriptEvent) {

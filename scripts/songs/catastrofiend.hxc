@@ -30,16 +30,18 @@ class CatastrofiendSong extends Song
   var bgSprite:FunkinSprite;
   var flashMultiply:FunkinSprite;
   var flashAdd:FunkinSprite;
+  var didIntroAnim:Bool = false;
   var didHide:Bool = false;
   var didShowStrum:Bool = false;
   var hasCreatedSprites:Bool = false;
+  var hasStoredStrums:Bool = false;
+  var retroNoteStyles = null;
 
   // Sistema para rastrear voicelines já tocadas
   var playedVoicelines:IntMap<Int, Bool>;
   var voicelineData:Array<VoicelineInfo>;
 
   // Modchart variables
-  var beatLength:Float = 0;
   var isDownScroll:Bool = false;
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
@@ -47,7 +49,6 @@ class CatastrofiendSong extends Song
   var enabledUnderlay:Bool = false;
 
   // Beat timing arrays
-  var introBeatTime:Int = 11;
   var smallFlashTime:Array<Int> = [32, 192];
   var strumPatternTime:Array<StrumPattern> = [
     {start: 15, stop: 384, finished: false},
@@ -122,15 +123,23 @@ class CatastrofiendSong extends Song
   {
     super.onSongLoaded(event);
 
-    /*var notes = PlayState.instance.playerStrumline.strumlineNotes.members;
-    for (i in 0...4)
-    {
-      var strum = notes[i];
+    if (retroNoteStyles == null) retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
+
+    if (PlayState.instance.startTimestamp <= 10000) {
       if (modcharts)
       {
-        strum.alpha = 0;
+        for (note in PlayState.instance.playerStrumline.strumlineNotes.members)
+        {
+          FlxTween.cancelTweensOf(note, ['alpha']);
+          note.alpha = 0;
+        }
       }
-    }*/
+
+      var underlay = retroNoteStyles.scriptCall('getUnderlay', [true]);
+      if (underlay != null) underlay.colorTransform.alphaOffset = -255;
+    } else {
+      didIntroAnim = true;
+    }
   }
 
   public override function onSongStart(event:ScriptEvent):Void
@@ -138,35 +147,30 @@ class CatastrofiendSong extends Song
     super.onSongStart(event);
 
     // Store default strum positions
-    /*var playerStrums = PlayState.instance.playerStrumline;
-    for (i in 0...4)
-    {
-      var strum = playerStrums.strumlineNotes.members[i];
-      defaultPlayerStrumX.push(strum.x);
-      defaultPlayerStrumY.push(strum.y);
-      // Move strums down if modcharts enabled
-      if (modcharts)
+    var playerStrums = PlayState.instance.playerStrumline;
+    if (!hasStoredStrums) {
+      for (strum in playerStrums.strumlineNotes)
       {
-        strum.y += 800;
-        strum.alpha = 1;
+        defaultPlayerStrumX.push(strum.x);
+        defaultPlayerStrumY.push(strum.y);
+
       }
-    }*/
-
-    // Setup modchart
-    setupModchart();
-  }
-
-  function setupModchart():Void
-  {
-    if (PlayState.instance == null) return;
-
-    // Get beat length
-    var conductor = Conductor.instance;
-    beatLength = conductor.stepCrochet / 1000; // Step length in seconds
-
-    // Check if downscroll
-    isDownscroll = Preferences.downscroll;
-    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
+      defaultPlayerStrumX.push(playerStrums.x);
+      defaultPlayerStrumY.push(playerStrums.y);
+      hasStoredStrums = true;
+    }
+    if (PlayState.instance.startTimestamp <= 10000) {
+      FlxG.signals.postUpdate.addOnce(function() {
+          if (modcharts && !didIntroAnim)
+          {
+            for (strum in playerStrums.strumlineNotes)
+            {
+              strum.y += 800;
+              strum.alpha = 1;
+            }
+          }
+      });
+    }
   }
 
   public override function onUpdate(event:UpdateScriptEvent):Void
@@ -177,8 +181,8 @@ class CatastrofiendSong extends Song
 
     if (modcharts)
     {
-      //strumMovePattern();
-      updateGreenColor();
+      strumMovePattern();
+      updateGreenColor(event.elapsed);
     }
   }
 
@@ -196,7 +200,7 @@ class CatastrofiendSong extends Song
 
     if (modcharts)
     {
-      //introEvent(event.beat);
+      introEvent(event.beat);
       greenPulseEvent(event.beat);
     }
 
@@ -233,56 +237,41 @@ class CatastrofiendSong extends Song
 
   function strumMovePattern():Void
   {
-    if (PlayState.instance == null) return;
-
-    var conductor = Conductor.instance;
-    var currentBeat = conductor.currentBeat;
-    var songPosition = conductor.songPosition;
-    var crochet = conductor.crochet;
-
-    for (pattern in strumPatternTime)
+    if (!hasStoredStrums) return;
+    for (r in strumPatternTime)
     {
-      if (!pattern.finished)
-      {
-        if (currentBeat >= pattern.start && currentBeat < pattern.stop)
-        {
-          var beat = songPosition / crochet;
-          var offset = Math.cos(beat * Math.PI / 2);
+      if (r.finished) continue;
+      var curBeat:Int = Conductor.instance.currentBeat;
 
-          var playerStrums = PlayState.instance.playerStrumline;
-          if (playerStrums != null)
-          {
-            for (i in 0...4)
-            {
-              var strum = playerStrums.strumlineNotes.members[i];
-              strum.y = defaultPlayerStrumY[i] + (5 * offset);
-            }
+      if (curBeat >= r.start && curBeat < r.stop) {
+          var beat:Float = Conductor.instance.songPosition / Conductor.instance.beatLengthMs;
+          var offset:Float = Math.cos(beat * Math.PI / 2.0) * 5.0;
+
+          for (i in 0...4) {
+            PlayState.instance.playerStrumline.strumlineNotes.members[i].y = defaultPlayerStrumY[i] + offset;
           }
-        }
-
-        else if (currentBeat > pattern.stop)
-        {
-          pattern.finished = true;
-        }
+      }
+      else if (curBeat >= r.stop)
+      {
+        r.finished = true;
       }
     }
   }
 
   function introEvent(beat:Int):Void
   {
-    if (beat == introBeatTime)
-    {
-      var playerStrums = PlayState.instance.playerStrumline;
-      if (playerStrums != null)
-      {
-        for (i in 0...4)
-        {
-          var strum = playerStrums.strumlineNotes.members[i];
-          strum.alpha = 1;
-          var tween = FlxTween.tween(strum, {y: defaultPlayerStrumY[i]}, beatLength * 4, {ease: FlxEase.backOut});
-          tweens.push(tween);
-        }
+    if (hasStoredStrums && !didIntroAnim && beat >= 11) {
+      var beatLength:Float = Conductor.instance.beatLengthMs / 1000;
+      didIntroAnim = true;
+      for (i in 0...4) {
+        var playerStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        FlxTween.cancelTweensOf(playerStrum);
+        playerStrum.alpha = 1;
+        tweens.push(FlxTween.tween(playerStrum, {y: defaultPlayerStrumY[i]}, beatLength * 4, {ease: FlxEase.backOut}));
       }
+
+      var underlay = retroNoteStyles.scriptCall('getUnderlay', [true]);
+      if (underlay != null) tweens.push(FlxTween.tween(underlay.colorTransform, {alphaOffset: 0}, beatLength * 4, {ease: FlxEase.quadIn}));
     }
   }
 
@@ -305,7 +294,7 @@ class CatastrofiendSong extends Song
       {
         if (beat % 4 == 0)
         {
-          greenIntensity = 1.0;
+          greenIntensity = 2;
         }
       }
     }
@@ -361,42 +350,27 @@ class CatastrofiendSong extends Song
     }
   }
 
-  function updateGreenColor():Void
+  function updateGreenColor(elapsed:Float):Void
   {
-    // Se a intensidade for maior que 0, precisamos atualizar a cor
-    // Usamos 0.001 para evitar cálculos desnecessários quando já está "invisível"
     if (greenIntensity > 0.001)
     {
       // DECAIMENTO:
-      // O valor 2.0 define a velocidade do fade.
       // Quanto maior o número, mais rápido volta ao normal.
-      // Tente valores entre 1.5 (lento/onírico) e 4.0 (rápido/snappy).
-      var decaySpeed:Float = 3.0;
+      var decaySpeed:Float = 4.0;
 
       // Essa fórmula faz o valor deslizar suavemente de onde está para 0
-      greenIntensity = FlxMath.lerp(greenIntensity, 0, FlxG.elapsed * decaySpeed);
+      greenIntensity = FlxMath.lerp(greenIntensity, 0, elapsed * decaySpeed);
 
-      // APLICAÇÃO DA COR:
-      var playerStrums = PlayState.instance.playerStrumline;
-      if (playerStrums != null)
+      for (strum in PlayState.instance.playerStrumline.strumlineNotes)
       {
-        for (i in 0...4)
-        {
-          var strum = playerStrums.strumlineNotes.members[i];
-          if (strum != null && strum.colorTransform != null)
-          {
-             // Mistura a cor normal (1.0) com a cor alien (0.6, 1.39, 1.13)
-             // baseada na greenIntensity atual.
-             strum.colorTransform.redMultiplier = FlxMath.lerp(1.0, 0.6, greenIntensity);
-             strum.colorTransform.greenMultiplier = FlxMath.lerp(1.0, 1.39, greenIntensity);
-             strum.colorTransform.blueMultiplier = FlxMath.lerp(1.0, 1.13, greenIntensity);
-          }
-        }
+        if (strum.colorTransform.redMultiplier == 0.3) continue; // Essa cor é pra quando o strum está locked, então a gente não vai querer mexer.
+        strum.colorTransform.redMultiplier = FlxMath.lerp(1.0, 0.6, greenIntensity);
+        strum.colorTransform.greenMultiplier = FlxMath.lerp(1.0, 1.39, greenIntensity);
+        strum.colorTransform.blueMultiplier = FlxMath.lerp(1.0, 1.13, greenIntensity);
       }
     }
     else
     {
-      // Opcional: Força o valor exato de 0 quando estiver muito baixo para garantir a cor original perfeita
       greenIntensity = 0;
     }
   }
@@ -404,6 +378,8 @@ class CatastrofiendSong extends Song
   public function onStepHit(event) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
     var dad = PlayState.instance.currentStage.getDad();
 
     var currentStep = event.step;
@@ -473,6 +449,8 @@ class CatastrofiendSong extends Song
 	{
 		super.onDestroy(event);
     hasCreatedSprites = false;
+    retroNoteStyles = null;
+    didIntroAnim = false;
 		resetTweens();
 	}
 
@@ -545,9 +523,15 @@ class CatastrofiendSong extends Song
     super.onCreate(event);
 
     hasPlayedEndCutscene = false;
+    hasStoredStrums = false;
     didHide = false;
     didShowStrum = false;
+    didIntroAnim = false;
     flashingLights = Preferences.flashingLights ?? false;
+
+    // Check if downscroll
+    isDownscroll = Preferences.downscroll;
+    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
 
     // Resetar o sistema de voicelines
     playedVoicelines = new IntMap();

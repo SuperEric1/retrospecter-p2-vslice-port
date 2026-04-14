@@ -220,7 +220,7 @@ class EmbuzzleSong extends Song
 
     var curStep = event.step;
 
-    // Start enemy title animation (story mode)
+    // TODO: Start enemy title animation (story mode)
     if (curStep >= 1296 && !showLogo && PlayStatePlaylist.isStoryMode) {
       showLogo = true;
       // Here we should show the enemy's title but we don't have the module for it yet.
