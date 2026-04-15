@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="saku.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="saku giggle0000" x="2668" y="2581" width="802" height="862" frameX="-232" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0001" x="2668" y="2581" width="802" height="862" frameX="-232" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0002" x="0" y="3447" width="802" height="862" frameX="-232" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0003" x="0" y="3447" width="802" height="862" frameX="-232" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0004" x="1802" y="2581" width="866" height="862" frameX="-205" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0005" x="1802" y="2581" width="866" height="862" frameX="-205" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0006" x="1854" y="1720" width="904" height="859" frameX="-189" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0007" x="1854" y="1720" width="904" height="859" frameX="-189" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0008" x="0" y="1720" width="931" height="861" frameX="-178" frameY="-73" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0009" x="0" y="1720" width="931" height="861" frameX="-178" frameY="-73" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0010" x="1934" y="0" width="948" height="862" frameX="-169" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0011" x="1934" y="0" width="948" height="862" frameX="-169" frameY="-72" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0012" x="973" y="857" width="958" height="859" frameX="-163" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0013" x="973" y="857" width="958" height="859" frameX="-163" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0014" x="0" y="859" width="966" height="861" frameX="-160" frameY="-73" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0015" x="0" y="859" width="966" height="861" frameX="-160" frameY="-73" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0016" x="0" y="0" width="973" height="859" frameX="-156" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0017" x="0" y="0" width="973" height="859" frameX="-156" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0018" x="973" y="0" width="961" height="857" frameX="-160" frameY="-77" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0019" x="973" y="0" width="961" height="857" frameX="-160" frameY="-77" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0020" x="931" y="1720" width="923" height="859" frameX="-183" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0021" x="931" y="1720" width="923" height="859" frameX="-183" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0022" x="1604" y="3447" width="802" height="858" frameX="-232" frameY="-76" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0023" x="1604" y="3447" width="802" height="858" frameX="-232" frameY="-76" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0024" x="802" y="3447" width="802" height="859" frameX="-232" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0025" x="802" y="3447" width="802" height="859" frameX="-232" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0026" x="802" y="3447" width="802" height="859" frameX="-232" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0027" x="802" y="3447" width="802" height="859" frameX="-232" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku giggle0028" x="802" y="3447" width="802" height="859" frameX="-232" frameY="-75" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0000" x="2406" y="3447" width="787" height="856" frameX="-235" frameY="-78" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0001" x="2882" y="1735" width="719" height="841" frameX="-273" frameY="-93" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0002" x="3902" y="3447" width="709" height="833" frameX="-279" frameY="-101" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0003" x="3193" y="3447" width="709" height="847" frameX="-279" frameY="-87" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0004" x="3794" y="2596" width="861" height="847" frameX="-207" frameY="-87" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0005" x="1934" y="862" width="861" height="857" frameX="-207" frameY="-77" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0006" x="901" y="2581" width="901" height="863" frameX="-190" frameY="-71" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0007" x="0" y="2581" width="901" height="866" frameX="-190" frameY="-68" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0008" x="2882" y="0" width="912" height="868" frameX="-185" frameY="-67" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0009" x="2882" y="868" width="912" height="867" frameX="-185" frameY="-67" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0010" x="3794" y="866" width="888" height="866" frameX="-196" frameY="-69" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0011" x="3794" y="0" width="888" height="866" frameX="-196" frameY="-69" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0012" x="3794" y="1732" width="864" height="864" frameX="-209" frameY="-71" frameWidth="1272" frameHeight="969"/>
+	<SubTexture name="saku idle0013" x="3794" y="1732" width="864" height="864" frameX="-209" frameY="-71" frameWidth="1272" frameHeight="969"/>
+</TextureAtlas>

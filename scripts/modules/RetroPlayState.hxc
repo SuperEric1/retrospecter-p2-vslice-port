@@ -968,6 +968,7 @@ class RetroPlayState extends Module {
   }
 
   function resetAtroMechanic(?instant:Bool = false):Void {
+    if (!loadedMechanics.contains('atrocean')) return;
     // If it's not instant, we tween the values
     if (!instant) {
       var tweenTime:Float = 7;

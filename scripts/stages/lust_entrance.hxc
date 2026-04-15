@@ -1,0 +1,248 @@
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.graphics.FunkinSprite;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.graphics.shaders.DropShadowShader;
+import funkin.save.Save;
+
+class LustEntrance extends Stage {
+  static final BGX:Float = -1000;
+  static final BGY:Float = -700;
+
+  var shaderColor1:FlxColor = FlxColor.fromString('#ffadfb');
+
+  var bg:FlxSprite;
+  var window:FlxSprite;
+  var entraceLight:FlxSprite;
+  var feeling:FlxSprite;
+  var leftCameos:FunkinSprite;
+  var rightCameos:FunkinSprite;
+  var dudeLeft:FlxSprite;
+  var dudeRight:FlxSprite;
+  var anotherLayer:FlxSprite;
+  var bgFront:FlxSprite;
+  var lady:FlxSprite;
+  var theonepiece:FlxSprite;
+  var cr:FlxSprite;
+  var lights:FlxSprite;
+  var crf:FlxSprite;
+
+  public function new()
+  {
+    super('lust_entrance');
+  }
+
+  override function onCreate(event:ScriptEvent):Void {
+    super.onCreate(event);
+
+    bg = FunkinSprite.create(BGX, BGY, 'lust/Club Stage');
+    add(bg);
+
+    window = FunkinSprite.create(BGX, BGY, 'lust/window glow');
+    window.blend = 0;
+    window.alpha = 0.5;
+    add(window);
+    FlxTween.tween(window, {alpha: 0.2}, 1, {type: 4, ease: FlxEase.quadOut});
+
+    entraceLight = FunkinSprite.create(939, -422);
+    entraceLight.frames = Paths.getSparrowAtlas('lust/light');
+    entraceLight.animation.addByPrefix('entraceLight', 'light idle', 24, false);
+    entraceLight.scale.set(2.41, 2.41);
+    entraceLight.updateHitbox();
+    add(entraceLight);
+
+    feeling = FunkinSprite.create(-152, -366);
+    feeling.frames = Paths.getSparrowAtlas('lust/feeling');
+    feeling.animation.addByPrefix('feeling', 'feeling', 24, false);
+    add(feeling);
+
+    leftCameos = FunkinSprite.create(-1300, 130);
+    leftCameos.frames = Paths.getSparrowAtlas('lust/left');
+    leftCameos.animation.addByPrefix('idle', 'idle', 24, false);
+    leftCameos.animation.play('idle', true);
+    leftCameos.scale.set(1.4, 1.4);
+    leftCameos.updateHitbox();
+    add(leftCameos);
+
+    rightCameos = FunkinSprite.create(2600, 130);
+    rightCameos.frames = Paths.getSparrowAtlas('lust/right');
+    rightCameos.animation.addByPrefix('idle', 'idle', 24, false);
+    rightCameos.animation.play('idle', true);
+    rightCameos.scale.set(1.4, 1.4);
+    rightCameos.updateHitbox();
+    add(rightCameos);
+
+    dudeLeft = FunkinSprite.create(905, -318);
+    dudeLeft.frames = Paths.getSparrowAtlas('lust/sentinel');
+    dudeLeft.animation.addByPrefix('idle', 'idle', 24, false);
+    add(dudeLeft);
+
+    dudeRight = FunkinSprite.create(2158, -318);
+    dudeRight.frames = Paths.getSparrowAtlas('lust/sentinel');
+    dudeRight.flipX = true;
+    dudeRight.animation.addByPrefix('idle', 'idle', 24, false);
+    add(dudeRight);
+
+    anotherLayer = FunkinSprite.create(834, 237, 'lust/anotherLayer');
+    add(anotherLayer);
+
+    bgFront = FunkinSprite.create(2247 - 454 - 454 - 93, 1348 - 424 - 424 + 149, 'lust/clubFront');
+    bgFront.zIndex = 110;
+    add(bgFront);
+
+    lady = FunkinSprite.create(2300, 130);
+    lady.frames = Paths.getSparrowAtlas('lust/lady');
+    lady.animation.addByPrefix('idle', 'idle', 24, false);
+    lady.scale.set(0.75, 0.75);
+    lady.updateHitbox();
+    add(lady);
+
+    theonepiece = FunkinSprite.create(2220, 650, 'lust/theonepiece');
+    add(theonepiece);
+
+    cr = FunkinSprite.create(BGX, BGY, 'lust/Club Rail');
+    add(cr);
+
+    crf = FunkinSprite.create(BGX, BGY, 'lust/Club Rail front');
+    crf.zIndex = 310;
+    add(crf);
+
+    lights = FunkinSprite.create(-830, 892);
+    lights.frames = Paths.getSparrowAtlas('lust/lights');
+    lights.animation.addByPrefix('lights', 'lights', 24, false);
+    add(lights);
+
+    // Borders for wide screens
+    if (FlxG.width > 1280) {
+      var camZoom = PlayState.instance.stageZoom;
+      var w = 700;
+      var h = Math.ceil((FlxG.height + 50) / camZoom);
+      var color = 0xFF13000e; // #13000e
+
+      var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+      border1.x = bg.x - 160;
+      border1.screenCenter(0x10);
+      border1.scrollFactor.set(1, 0);
+      border1.zIndex = 500;
+      add(border1);
+      var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+      fillBorderLeft.zIndex = border1.zIndex - 1;
+      fillBorderLeft.x -= fillBorderLeft.width;
+      fillBorderLeft.scrollFactor.set(1, 0);
+      add(fillBorderLeft);
+
+      var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+      border2.x = bg.x + bg.width - 480;
+      border2.screenCenter(0x10);
+      border2.scrollFactor.set(1, 0);
+      border2.zIndex = 501;
+      add(border2);
+      var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+      fillBorderRight.zIndex = border2.zIndex - 1;
+      fillBorderRight.scrollFactor.set(1, 0);
+      add(fillBorderRight);
+    }
+  }
+
+
+
+  /*override function onUpdate(event:UpdateScriptEvent):Void {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    PlayState.instance.cameraFollowPoint.y = bg.x + bg.height;
+  }*/
+
+  function playIdleAnimations():Void {
+    entraceLight?.animation?.play('entraceLight', true);
+    lights?.animation?.play('lights', true);
+    feeling?.animation?.play('feeling', true);
+    dudeLeft?.animation?.play('idle', true);
+    dudeRight?.animation?.play('idle', true);
+    leftCameos?.animation?.play('idle', true);
+    rightCameos?.animation?.play('idle', true);
+    lady?.animation?.play('idle', true);
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (event.beat % 2 == 0) playIdleAnimations();
+  }
+
+  override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    getBoyfriend().shader = null;
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    var rim = null;
+      if (Save.instance.modOptions.get('retroShaders')) {
+        rim = new DropShadowShader();
+        //rim.setAdjustColor(-1, 0, -4, 0); // brilho, hue, contraste e saturação
+        rim.color = shaderColor1;
+        rim.antialiasAmt = 0;
+      }
+
+    if (charType == CharacterType.BF && character.characterId == 'bf-retrospecter') {
+      character.idleSuffix = '-alt';
+      //character.danceEvery = 2;
+
+      if (rim != null) {
+        character.shader = rim;
+        rim.attachedSprite = character;
+        rim.color = FlxColor.WHITE;
+        rim.angle = 40;
+        rim.distance = 5;
+        rim.threshold = -1;
+        character.animation.onFrameChange.add(function() {
+          if (getBoyfriend() == null) return;
+          rim.updateFrameInfo(getBoyfriend()?.frame);
+        });
+      }
+    }
+    if (charType == CharacterType.GF) {
+      character.antialiasing = false;
+
+      if (rim != null) {
+        character.shader = rim;
+        rim.attachedSprite = character;
+        rim.angle = 90;
+        rim.distance = 5;
+        rim.threshold = -1;
+        character.animation.onFrameChange.add(function() {
+          rim.updateFrameInfo(getGirlfriend().frame);
+        });
+      }
+    }
+    if (charType == CharacterType.DAD) {
+      if (rim != null) {
+        character.shader = rim;
+        rim.attachedSprite = character;
+        rim.color = FlxColor.WHITE;
+        rim.angle = 40;
+        rim.distance = 5;
+        rim.threshold = -1;
+        character.animation.onFrameChange.add(function() {
+          rim.updateFrameInfo(getDad().frame);
+        });
+      }
+    }
+  }
+}

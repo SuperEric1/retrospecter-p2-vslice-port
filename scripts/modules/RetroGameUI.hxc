@@ -245,6 +245,12 @@ class RetroGameUI extends Module {
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/bar');
           dozircVertice1 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
           dozircVertice2 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
+        case 'sakuroma':
+          defaultScale = [0.45, 0.45];
+          healthBgYOffset = -75;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/saku/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/saku/bar');
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/saku/bar');
         case 'sakuromap2-atlas':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
@@ -1136,6 +1142,8 @@ class RetroGameUI extends Module {
         return getRGB(18, 228, 118);
       case 'dozirc':
         return getRGB(227, 146, 18);
+      case 'sakuroma':
+        return getRGB(248, 54, 107);
       case 'sakuromap2-atlas':
         return getRGB(169, 50, 140);
       case 'nightflaid_atlas':
@@ -1150,12 +1158,15 @@ class RetroGameUI extends Module {
 
   function getRGB(R:Int, G:Int, B:Int):Void { return FlxColor.fromRGB(R, G, B); }
 
-  public function updateBarColor(char:CharacterType, color:FlxColor = p2BarColor, ?tween:Bool = false, ?tweenTime:Float = 1, ?tweenEase:FlxEase = FlxEase.circOut):Void {
+  public function updateBarColor(char:CharacterType, ?color:FlxColor = p2BarColor, ?tween:Bool = false, ?tweenTime:Float = 1, ?tweenEase:FlxEase = FlxEase.circOut):Void {
     var oppBar = retroHealthBarFillBG;
     var playerBar = retroHealthBarFill;
     var targetBar = (char == CharacterType.DAD) ? oppBar : playerBar;
 
+    if (targetBar.color == color) return;
+
     if (tween) {
+      FlxTween.cancelTweensOf(targetBar, ['color']);
       FlxTween.color(targetBar, tweenTime, targetBar.color, color, {
         ease: tweenEase,
       });

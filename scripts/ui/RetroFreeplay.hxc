@@ -83,6 +83,13 @@ class RetroFreeplay extends Module {
       bgImage: bgPath + 'sloth_blur',
     });
 
+    songConfig.set('12-lust', {
+      bgImage: bgPath + 'lust_blur',
+    });
+    songConfig.set('13-lust_extras', {
+      bgImage: bgPath + 'lust_blur',
+    });
+
 
     songConfig.set('waitkeeper', {
       bgImage: bgPath + 'pnim',

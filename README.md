@@ -16,6 +16,8 @@ TODO:
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
+- [ ] Gamepad controls support
+- [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song info popup at the start of songs using PlayState.instance.currentChart... for the info

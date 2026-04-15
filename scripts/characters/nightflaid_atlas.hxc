@@ -84,7 +84,6 @@ class NightflaidCharacter extends AnimateAtlasCharacter
 
   function setOppAnimation(anim:String):Void
   {
-
     if (anim == null) anim = '';
 
     // Get character configuration
@@ -113,6 +112,12 @@ class NightflaidCharacter extends AnimateAtlasCharacter
       if (colorData.digideathScreenShake != null) digideathScreenShake = colorData.digideathScreenShake;
       if (colorData.digideathNoteDrain != null) digideathNoteDrain = colorData.digideathNoteDrain;
       if (colorData.digiMulti != null) digiMulti = colorData.digiMulti;
+    }
+    if (anim == 'DAD') {
+      retroGameUI?.scriptCall('updateBarColor', [CharacterType.BF, Constants.COLOR_HEALTH_BAR_GREEN, true]); // Set player bar to default fnf bar color
+    } else { // else we return to normal
+      var playerColor = retroGameUI?.scriptCall('getIconColor', [PlayState.instance.currentStage.getBoyfriend().characterId, false]);
+      retroGameUI?.scriptCall('updateBarColor', [CharacterType.BF, playerColor, true]);
     }
     // Fade UI if garcello
     if (anim == 'GARCELLO' && !hasFadenUI)

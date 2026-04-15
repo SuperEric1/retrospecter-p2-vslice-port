@@ -32,6 +32,7 @@ class WrathPhase3Stage extends Stage
     var lavaflowR:FunkinSprite;
     var frontbg:FunkinSprite;
     var frontbgLava:FunkinSprite;
+    var frontbgLava2:FunkinSprite;
 
     var geyserL:FunkinSprite;
     var geyserM:FunkinSprite;
@@ -244,6 +245,12 @@ class WrathPhase3Stage extends Stage
         frontbgLava.antialiasing = false;
         add(frontbgLava);
 
+        frontbgLava2 = frontbgLava.clone();
+        frontbgLava2.y += 50;
+        frontbgLava2.x += frontbg.width / 2;
+        frontbgLava2.zIndex = frontbgLava.zIndex - 1;
+        add(frontbgLava2);
+
         createRocks();
 
         lavabgfix = FunkinSprite.create(lavarockL.x, lavarockL.y + 84);
@@ -355,7 +362,7 @@ class WrathPhase3Stage extends Stage
             hasCreatedStage = true;
 
             // Borders for wide screens
-            if (FlxG.width > 1280) {
+            if (true || FlxG.width > 1280) {
                 var camZoom = PlayState.instance.stageZoom;
                 var w = 500;
                 var h = Math.ceil((FlxG.height + 50) / camZoom);
@@ -364,24 +371,24 @@ class WrathPhase3Stage extends Stage
                 var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
                 border1.x = bg.x + 10;
                 border1.screenCenter(0x10);
-                border1.scrollFactor.set(1, 0);
-                border1.zIndex = 500;
+                border1.scrollFactor.set(bg.scrollFactor.x, 0);
+                border1.zIndex = bg.zIndex + 1;
                 add(border1);
                 var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
                 fillBorderLeft.zIndex = border1.zIndex - 1;
                 fillBorderLeft.x -= fillBorderLeft.width;
-                fillBorderLeft.scrollFactor.set(1, 0);
+                fillBorderLeft.scrollFactor.set(bg.scrollFactor.x, 0);
                 add(fillBorderLeft);
 
                 var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
-                border2.x = bg.x + bg.width - 20;
+                border2.x = bg.x + bg.width - 380;
                 border2.screenCenter(0x10);
-                border2.scrollFactor.set(1, 0);
-                border2.zIndex = 501;
+                border2.scrollFactor.set(bg.scrollFactor.x, 0);
+                border2.zIndex = bg.zIndex + 1;
                 add(border2);
                 var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
                 fillBorderRight.zIndex = border2.zIndex - 1;
-                fillBorderRight.scrollFactor.set(1, 0);
+                fillBorderRight.scrollFactor.set(bg.scrollFactor.x, 0);
                 add(fillBorderRight);
             }
         }
