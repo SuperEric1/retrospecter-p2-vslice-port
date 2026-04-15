@@ -362,14 +362,14 @@ class RetroNoteStyles extends Module {
 			// Sync gradient backgrounds every frame.
 			if (opponentStrumBackground != null && oppStrum != null) {
 				var targetAlpha = strumBackgroundOpacity * oppStrum.alpha;
-				if (opponentStrumBackground.visible != oppStrum.visible) opponentStrumBackground.visible = oppStrum.visible;
+				if (opponentStrumBackground.visible != oppStrum.background.visible) opponentStrumBackground.visible = oppStrum.background.visible;
 				if (opponentStrumBackground.y != -1) opponentStrumBackground.y = -1;
 				if (opponentStrumBackground.visible && opponentStrumBackground.alpha != targetAlpha) opponentStrumBackground.alpha = targetAlpha;
 				if (oppStrum.background.visible && oppStrum.background.alpha != 0) oppStrum.background.alpha = 0;
 			}
 			if (playerStrumBackground != null && playerStrum != null) {
 				var targetAlpha = strumBackgroundOpacity * playerStrum.alpha;
-				if (playerStrumBackground.visible != playerStrum.visible) playerStrumBackground.visible = playerStrum.visible;
+				if (playerStrumBackground.visible != playerStrum.background.visible) playerStrumBackground.visible = playerStrum.background.visible;
 				if (playerStrumBackground.y != -1) playerStrumBackground.y = -1;
 				if (playerStrumBackground.visible && playerStrumBackground.alpha != targetAlpha) playerStrumBackground.alpha = targetAlpha;
 				if (playerStrum.background.visible && playerStrum.background.alpha != 0) playerStrum.background.alpha = 0;
