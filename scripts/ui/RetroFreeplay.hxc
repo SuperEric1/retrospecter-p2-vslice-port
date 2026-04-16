@@ -79,14 +79,14 @@ class RetroFreeplay extends Module {
     songConfig.set('11-sloth', {
       bgImage: bgPath + 'sloth_blur',
     });
-    songConfig.set('11-sloth_extras', {
+    songConfig.set('12-sloth_extras', {
       bgImage: bgPath + 'sloth_blur',
     });
 
-    songConfig.set('12-lust', {
+    songConfig.set('13-lust', {
       bgImage: bgPath + 'lust_blur',
     });
-    songConfig.set('13-lust_extras', {
+    songConfig.set('14-lust_extras', {
       bgImage: bgPath + 'lust_blur',
     });
 
