@@ -297,7 +297,7 @@ class NightflaidStage extends Stage
     midsongVideoLoaded = false;
 
     // Create black bars sprite for video letterboxing
-    if (midsongVideoBlackBars != null) midsongVideo.destroy();
+    if (midsongVideoBlackBars != null) midsongVideoBlackBars.destroy();
     midsongVideoBlackBars = FunkinSprite.create(0, 0);
     midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF160000); //#160000
     midsongVideoBlackBars.scrollFactor.set(0, 0);
