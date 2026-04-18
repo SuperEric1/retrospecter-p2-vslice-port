@@ -908,6 +908,7 @@ class RetroPlayState extends Module {
 
   function saveStrumPos():Void {
     // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
+    // actually, what the hell I was doing? need to check this later
     ogStrumsX = [];
     ogStrumsY = [];
     ogPlayerStrumScales = [];

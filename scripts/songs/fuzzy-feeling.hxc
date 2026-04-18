@@ -4,6 +4,7 @@ import funkin.Conductor;
 import funkin.Preferences;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.play.notes.Strumline;
 import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
@@ -23,6 +24,8 @@ class FuzzyFeelingSong extends Song
   var hasPlayedDialogue:Bool = false;
   var defaultStrumX:Array<Float> = [];
   var defaultStrumY:Array<Float> = [];
+  var ogPlayerStrumScales:Array<Float> = [];
+  var ogOppStrumScales:Array<Float> = [];
   var defaultOpponentStrumlineX:Float = 0;
   var defaultOpponentStrumlineY:Float = 0;
   var defaultPlayerStrumlineX:Float = 0;
@@ -46,7 +49,7 @@ class FuzzyFeelingSong extends Song
   var p2Pulse:Bool = false;
   var p2FastPulse:Bool = false;
 
-  var actorScale:Float = 0.7;
+  var actorScale:Float = 1;
   var opponentAlpha:Float = 1;
 
   var s1fadein:Bool = false;
@@ -146,10 +149,14 @@ class FuzzyFeelingSong extends Song
     for (s in playState.opponentStrumline.strumlineNotes) {
       defaultStrumX.push(s.x);
       defaultStrumY.push(s.y);
+      ogOppStrumScales.push(s.scale.x);
+      ogOppStrumScales.push(s.scale.y);
     }
     for (s in playState.playerStrumline.strumlineNotes) {
       defaultStrumX.push(s.x);
       defaultStrumY.push(s.y);
+      ogPlayerStrumScales.push(s.scale.x);
+      ogPlayerStrumScales.push(s.scale.y);
     }
 
     defaultOpponentStrumlineX = playState.opponentStrumline.x;
@@ -157,8 +164,10 @@ class FuzzyFeelingSong extends Song
     defaultPlayerStrumlineX = playState.playerStrumline.x;
     defaultPlayerStrumlineY = playState.playerStrumline.y;
 
-    // (defaultStrum7X - defaultStrum0X) / 2 - 42 - 50
-    middlePoint = ((defaultStrumX[7] - defaultStrumX[0]) / 2) - 92;
+    // ((defaultStrumX[7] - defaultStrumX[0]) / 2) - 92
+    var bgPadding = 16;
+    var strumWidth:Int = Std.int(Strumline.KEY_COUNT * Strumline.NOTE_SPACING + bgPadding * 2);
+    middlePoint = (FlxG.width / 2) - ((isMobile ? Std.int(strumWidth * 1.84) : strumWidth) / 2);
   }
 
   function getStrum(luaIndex:Int)
@@ -220,15 +229,17 @@ class FuzzyFeelingSong extends Song
     }
 
     if (p2HalfPulse || p2Pulse || p2FastPulse) {
-      if (actorScale > 0.7) actorScale -= elapsed;
-      for (s in playState.opponentStrumline.strumlineNotes) {
-        s.scale.set(actorScale, actorScale);
+      if (actorScale > 1) actorScale -= elapsed;
+      for (i in 0...4) {
+        var s = playState.opponentStrumline.strumlineNotes.members[i];
+        s.scale.set(ogOppStrumScales[i * 2] * actorScale, ogOppStrumScales[(i * 2) + 1] * actorScale);
       }
     }
     if (p1HalfPulse || p1Pulse || p1FastPulse) {
-      if (actorScale > 0.7) actorScale -= elapsed;
-      for (s in playState.playerStrumline.strumlineNotes) {
-        s.scale.set(actorScale, actorScale);
+      if (actorScale > 1) actorScale -= elapsed;
+      for (i in 0...4) {
+        var s = playState.playerStrumline.strumlineNotes.members[i];
+        s.scale.set(ogPlayerStrumScales[i * 2] * actorScale, ogPlayerStrumScales[(i * 2) + 1] * actorScale);
       }
     }
   }
@@ -279,15 +290,17 @@ class FuzzyFeelingSong extends Song
     }
 
     if (p2FastPulse && curStep % 2 == 0) {
-      actorScale = 0.85;
-      for (s in playState.opponentStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      actorScale = 0.85 / 0.7;
+      for (i in 0...4) {
+        var s = playState.opponentStrumline.strumlineNotes.members[i];
+        s.scale.set(ogOppStrumScales[i * 2] * actorScale, ogOppStrumScales[(i * 2) + 1] * actorScale);
       }
     }
     if (p1FastPulse && curStep % 2 == 0) {
-      actorScale = 0.85;
-      for (s in playState.playerStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      actorScale = 0.85 / 0.7;
+      for (i in 0...4) {
+        var s = playState.playerStrumline.strumlineNotes.members[i];
+        s.scale.set(ogPlayerStrumScales[i * 2] * actorScale, ogPlayerStrumScales[(i * 2) + 1] * actorScale);
       }
     }
   }
@@ -415,27 +428,31 @@ class FuzzyFeelingSong extends Song
 
     // Pulse beat effects
     if (p2HalfPulse && beat % 2 == 0) {
-      actorScale = 0.85;
-      for (s in playState.opponentStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      actorScale = 0.85 / 0.7;
+      for (i in 0...4) {
+        var s = playState.opponentStrumline.strumlineNotes.members[i];
+        s.scale.set(ogOppStrumScales[i * 2] * actorScale, ogOppStrumScales[(i * 2) + 1] * actorScale);
       }
     } else if (p2Pulse) {
-      actorScale = 0.85;
-      for (s in playState.opponentStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      actorScale = 0.85 / 0.7;
+      for (i in 0...4) {
+        var s = playState.opponentStrumline.strumlineNotes.members[i];
+        s.scale.set(ogOppStrumScales[i * 2] * actorScale, ogOppStrumScales[(i * 2) + 1] * actorScale);
       }
     }
 
     if (p1HalfPulse && beat % 2 == 0) {
-      actorScale = 0.85;
-      for (s in playState.playerStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      actorScale = 0.85 / 0.7;
+      for (i in 0...4) {
+        var s = playState.playerStrumline.strumlineNotes.members[i];
+        s.scale.set(ogPlayerStrumScales[i * 2] * actorScale, ogPlayerStrumScales[(i * 2) + 1] * actorScale);
       }
     } else if (p1Pulse) {
-      actorScale = 0.85;
+      actorScale = 0.85 / 0.7;
       if (beat < 292) RetroUtil.addCameraZoom(0.03, 0.04);
-      for (s in playState.playerStrumline.strumlineNotes) {
-        s.scale.set(0.85, 0.85);
+      for (i in 0...4) {
+        var s = playState.playerStrumline.strumlineNotes.members[i];
+        s.scale.set(ogPlayerStrumScales[i * 2] * actorScale, ogPlayerStrumScales[(i * 2) + 1] * actorScale);
       }
     }
   }
@@ -498,7 +515,7 @@ class FuzzyFeelingSong extends Song
     p2HalfPulse = false;
     p2Pulse = false;
     p2FastPulse = false;
-    actorScale = 0.7;
+    actorScale = 1;
     s1fadein = false;
     s2fadein = false;
     s3fadein = false;
@@ -530,6 +547,8 @@ class FuzzyFeelingSong extends Song
     hasPlayedDialogue = false;
     defaultStrumX = [];
     defaultStrumY = [];
+    ogPlayerStrumScales = [];
+    ogOppStrumScales = [];
     resetFlags();
     playState = null;
   }
