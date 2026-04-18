@@ -66,6 +66,7 @@ class NightflaidStage extends Stage
   var midsongVideo:FunkinVideoSprite; // Pre-created video sprite
   var midsongVideoBlackBars:FunkinSprite; // Black bars for video
   var midsongVideoPlaying:Bool = false; // Track if video is currently playing
+  var midsongVideoPlayed:Bool = false; // Track if video has played already
   var midsongVideoLoaded:Bool = false; // Check if video has loaded correcly
   var hasVideoSpriteBeenCreated:Bool = false;
 
@@ -296,18 +297,19 @@ class NightflaidStage extends Stage
     midsongVideoLoaded = false;
 
     // Create black bars sprite for video letterboxing
+    if (midsongVideoBlackBars != null) midsongVideo.destroy();
     midsongVideoBlackBars = FunkinSprite.create(0, 0);
-    midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF000000);
-    //midsongVideoBlackBars.zIndex = 298; // Just behind video
+    midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF160000); //#160000
     midsongVideoBlackBars.scrollFactor.set(0, 0);
     midsongVideoBlackBars.visible = false;
     midsongVideoBlackBars.active = false;
-    PlayState.instance.add(midsongVideoBlackBars);
+    midsongVideoBlackBars.zIndex = 120;
+    add(midsongVideoBlackBars);
 
-    // Create video sprite early so it's added before other unbeatable elements
-    // This ensures correct rendering order without z-index issues
+    // oh my god why didn't i know you could just add() before :sob:
+    if (midsongVideo != null) midsongVideo.destroy();
     midsongVideo = new FunkinVideoSprite(0, 0);
-    midsongVideo.zIndex = 0;
+    midsongVideo.zIndex = 130;
     midsongVideo.scrollFactor.set(0, 0);
 
     if (midsongVideo.load(Paths.videos('nightflaid')))
@@ -332,6 +334,7 @@ class NightflaidStage extends Stage
         midsongVideo.visible = false;
 
         midsongVideoPlaying = false;
+        midsongVideoPlayed = true;
         midsongVideoLoaded = false;
       }, true);
 
@@ -344,6 +347,7 @@ class NightflaidStage extends Stage
         midsongVideo.visible = false;
 
         midsongVideoPlaying = false;
+        midsongVideoPlayed = true;
         midsongVideoLoaded = false;
       }, true);
     }
@@ -357,8 +361,8 @@ class NightflaidStage extends Stage
     midsongVideo.active = false; // Don't update until we play
 
     hasVideoSpriteBeenCreated = true;
-    PlayState.instance.add(midsongVideo);
-    PlayState.instance.refresh();
+    add(midsongVideo);
+    //PlayState.instance.refresh();
   }
 
   function makeSprite(name:String, imageName:String, x:Float, y:Float):StageProp
@@ -1157,6 +1161,7 @@ class NightflaidStage extends Stage
     midsongVideoBlackBars.active = true;
     midsongVideoBlackBars.visible = true;
     midsongVideoPlaying = true;
+    midsongVideoPlayed = true;
 
     midsongVideo.play();
 
@@ -1179,6 +1184,7 @@ class NightflaidStage extends Stage
     PlayState.instance.cameraFollowPoint.setPosition((getDad().cameraFocusPoint.x + getBoyfriend().cameraFocusPoint.x) / 2, getDad().cameraFocusPoint.y);
 
     stopGradientStripes();
+    if (midsongVideoPlayed) initializeMidsongVideo(); // rebuild the video
 
     if (staticSprite != null) staticSprite.visible = false;
     if (spookieText != null) {
@@ -1223,6 +1229,7 @@ class NightflaidStage extends Stage
     hasCreatedStage = false;
     hasCreatedUnbeatable = false;
     midsongVideoPlaying = false;
+    midsongVideoPlayed = false;
     midsongVideoLoaded = false;
     finalFadeout = false;
     resetFlags();
