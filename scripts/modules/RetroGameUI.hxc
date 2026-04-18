@@ -190,12 +190,6 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
-        case 'izzy':
-          defaultScale = [0.4, 0.4];
-          healthBgYOffset = -100;
-          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/izzy/overlay');
-          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
-          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/izzy/bar');
         case 'hivemine':
           // se mexer aqui, nao esquecer de mexer na funcao de updateBarTexture também.
           defaultScale = [0.55, 0.55];
