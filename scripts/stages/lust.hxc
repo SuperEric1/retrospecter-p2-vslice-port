@@ -1,0 +1,304 @@
+import flixel.FlxG;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
+import funkin.graphics.FunkinSprite;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.character.BaseCharacter;
+import funkin.play.character.CharacterType;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.save.Save;
+import funkin.Paths;
+
+class LustStage extends Stage
+{
+  var bgX:Float = -1000;
+  var bgY:Float = -700;
+
+  var heartFrames:Array<Int> = [0, 1, 2, 3, 4, 0, 4, 0];
+  var danced:Bool = false;
+  var hasCreatedStage:Bool = false;
+
+  var bg:FunkinSprite;
+  var hooks:FunkinSprite;
+  var chairs:FunkinSprite;
+  var cameoLeft:FunkinSprite;
+  var tables:FunkinSprite;
+  var cameoBar:FunkinSprite;
+  var bar:FunkinSprite;
+  var bars:FunkinSprite;
+  var dfloor:FunkinSprite;
+  var cameoMid:FunkinSprite;
+  var atrocean:FunkinSprite;
+  var frontB:FunkinSprite;
+  var heart:FunkinSprite;
+  var fgBottom:FunkinSprite;
+  var fgCages:FunkinSprite;
+  var fgLeftTable:FunkinSprite;
+  var cameoRight:FunkinSprite;
+  var foreCL:FunkinSprite;
+  var foreCR:FunkinSprite;
+  var chairr:FunkinSprite;
+  var dozirc:FunkinSprite;
+  var fgCurtain:FunkinSprite;
+  var bgddd:FunkinSprite;
+
+  public function new() {
+    super('lust');
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    if (hasCreatedStage) return;
+
+    var songId = PlayState.instance?.currentChart?.songName ?? '';
+    var isCatwalk = songId.toLowerCase() == 'catwalk';
+
+    buildStage(isCatwalk, Save.instance.modOptions.get('retroSuggestive'));
+  }
+
+  function buildStage(?isCatwalk:Bool, ?suggestiveEnabled:Bool = false):Void
+  {
+    bg = makeStaticSprite('lust/Background', bgX, bgY);
+    bg.antialiasing = false;
+    add(bg);
+
+    hooks = makeMastSprite(suggestiveEnabled ? 'Sex toys' : 'SFW hooks');
+    hooks.antialiasing = false;
+    add(hooks);
+
+    chairs = makeMastSprite('BG chairs');
+    chairs.antialiasing = false;
+    add(chairs);
+
+    if (!isCatwalk) {
+      cameoLeft = makeSparrowSprite('lust/heartmelterbg_lesbians', 228 - 1000 + 2, 1079 - 700);
+      cameoLeft.animation.addByPrefix('anim', "Heartmelter_BGCameos_fartable instance 1", 24, false);
+      cameoLeft.animation.play('anim');
+      cameoLeft.antialiasing = false;
+      add(cameoLeft);
+    }
+
+    tables = makeMastSprite('BG tables');
+    tables.antialiasing = false;
+    add(tables);
+
+    if (!isCatwalk) {
+      cameoBar = makeSparrowSprite('lust/heartmelterbg_bartender', 3646 - 1000 + 320, 816 - 430 - 100);
+      cameoBar.animation.addByPrefix('anim', "HeartmelterBGCameo_Bartender instance 1", 24, false);
+      cameoBar.animation.play('anim');
+      cameoBar.antialiasing = false;
+      add(cameoBar);
+    }
+
+    bar = makeMastSprite('Barr');
+    add(bar);
+
+    bars = makeMastSprite('Bar stools');
+    add(bars);
+
+    dfloor = makeSparrowSprite('lust/saku-master', bgX, bgY);
+    dfloor.animation.addByPrefix('doo', "Dance floor", 0);
+    dfloor.animation.play('doo');
+    add(dfloor);
+
+    if (!isCatwalk) {
+      cameoMid = makeSparrowSprite('lust/heartmelterbg_aino', 2842 - 1000 - 50, 1021 - 440);
+      cameoMid.animation.addByIndices('danceLeft', "BG_Cameo_Aino instance 1", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], '', 24, false);
+      cameoMid.animation.addByIndices('danceRight', "BG_Cameo_Aino instance 1", [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], '', 24, false);
+      add(cameoMid);
+
+      atrocean = makeSparrowSprite('lust/mercerrus', 228 - 1000 + 52, 1079 - 700 + 135);
+      atrocean.animation.addByPrefix('anim', "idle", 24, false);
+      atrocean.animation.play('anim');
+      add(atrocean);
+
+      frontB = makeSparrowSprite('lust/stageFront', 635, 543);
+      frontB.animation.addByPrefix('anim', "Dance Floor Animated", 0);
+      frontB.animation.play('anim');
+      frontB.zIndex = 150;
+      add(frontB);
+    }
+
+
+    heart = makeMastSprite('Heart');
+    heart.animation.curAnim.curFrame = 0;
+    add(heart);
+
+    fgBottom = makeMastSprite('FG_Bottom');
+    add(fgBottom);
+
+    fgCages = makeMastSprite('FG_cages');
+    add(fgCages);
+
+    if (isCatwalk) {
+      fgLeftTable = makeMastSprite('FG_LeftTable');
+      add(fgLeftTable);
+    }
+    else {
+      cameoRight = makeSparrowSprite('lust/heartmelterbg_bonmecha', 3646 - 1000 - 3, 816 - 430);
+      cameoRight.animation.addByPrefix('anim', "HeratmelterBGCameos_BonMecha instance 1", 24, false);
+      cameoRight.animation.play('anim');
+      add(cameoRight);
+
+      if (PlayState.instance?.currentChart?.characters?.player != 'playable-hivemine') {
+        var dadZ = 300;
+
+        foreCL = makeSparrowSprite('lust/ForeCrowd', -430, 1230);
+        foreCL.animation.addByPrefix('LeftTable_Bop', 'LeftTable_Bop', 24, false);
+        foreCL.animation.play('LeftTable_Bop');
+        foreCL.zIndex = dadZ + 3;
+        add(foreCL);
+
+        foreCR = FunkinSprite.create(1420, 1060);
+        foreCR.frames = Paths.getSparrowAtlas('lust/ForeCrowd');
+        foreCR.animation.addByPrefix('RIghttable_bop', 'RIghttable_bop', 24, false);
+        foreCR.animation.play('RIghttable_bop');
+        foreCR.zIndex = dadZ + 3;
+        add(foreCR);
+
+        chairr = makeStaticSprite('lust/chair', 2935, 645);
+        add(chairr);
+
+        dozirc = makeSparrowSprite('lust/dozirc', 2580, 1079 - 700 + 135 + 490);
+        dozirc.animation.addByPrefix('anim', "idle", 24, false);
+        dozirc.zIndex = dadZ + 4;
+        add(dozirc);
+      }
+    }
+
+    fgCurtain = makeMastSprite('FG_curtain');
+    fgCurtain.zIndex = 350;
+    add(fgCurtain);
+
+    bgddd = makeStaticSprite('lust/pole', 20, -458);
+    bgddd.scale.set(2.16, 2.16);
+    bgddd.updateHitbox();
+    bgddd.zIndex = 190;
+    add(bgddd);
+
+    // Borders for wide screens
+    if (FlxG.width > 1280) {
+      var camZoom = PlayState.instance.stageZoom;
+      var w = 700;
+      var h = Math.ceil((FlxG.height + 50) / camZoom);
+      var color = 0xFF13000e; // #13000e
+
+      var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+      border1.x = bg.x - 170;
+      border1.screenCenter(0x10);
+      border1.scrollFactor.set(1, 0);
+      border1.zIndex = 500;
+      add(border1);
+      var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+      fillBorderLeft.zIndex = border1.zIndex - 1;
+      fillBorderLeft.x -= fillBorderLeft.width;
+      fillBorderLeft.scrollFactor.set(1, 0);
+      add(fillBorderLeft);
+
+      var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+      border2.x = bg.x + bg.width - 450;
+      border2.screenCenter(0x10);
+      border2.scrollFactor.set(1, 0);
+      border2.zIndex = 501;
+      add(border2);
+      var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+      fillBorderRight.zIndex = border2.zIndex - 1;
+      fillBorderRight.scrollFactor.set(1, 0);
+      add(fillBorderRight);
+    }
+
+    PlayState.instance.currentStage.refresh(); // zIndexes were being fucked up so this is necessary
+    hasCreatedStage = true;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    /*event.cancel();
+    FlxG.signals.postUpdate.addOnce(function() {
+      PlayState.instance.startCountdown();
+    });*/
+  }
+
+  function makeMastSprite(animName:String):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(bgX, bgY);
+    sprite.loadSparrow('lust/saku-master');
+    sprite.animation.addByPrefix(animName, animName, 0);
+    sprite.animation.play(animName);
+    return sprite;
+  }
+
+  function makeSparrowSprite(path:String, x:Float, y:Float):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(x, y);
+    sprite.frames = Paths.getSparrowAtlas(path);
+    return sprite;
+  }
+
+  function makeStaticSprite(path:String, x:Float, y:Float):FunkinSprite
+  {
+    var sprite = FunkinSprite.create(x, y, path);
+    return sprite;
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+
+    var beat = event.beat;
+
+    if (heart != null && heart?.animation?.curAnim != null)
+      heart.animation.curAnim.curFrame = heartFrames[beat % 8];
+
+    if (dfloor != null && dfloor?.animation?.curAnim != null)
+      dfloor.animation.curAnim.curFrame = beat % 2;
+
+    if (frontB != null && frontB?.animation?.curAnim != null)
+      frontB.animation.curAnim.curFrame = beat % 2;
+
+    if (beat % 2 == 0 && hasCreatedStage) {
+      frontB.animation.play('anim', true);
+      cameoBar.animation.play('anim', true);
+      cameoRight.animation.play('anim', true);
+      cameoLeft.animation.play('anim', true);
+      foreCL.animation.play('LeftTable_Bop', true);
+      foreCR.animation.play('RIghttable_bop', true);
+      atrocean.animation.play('anim', true);
+      dozirc.animation.play('anim', true);
+    }
+
+    cameoMid.animation.play(danced ? 'danceLeft' : 'danceRight');
+
+    danced = !danced;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    danced = false;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    hasCreatedStage = false;
+    danced = false;
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.BF && character.characterId == 'bf-retrospecter') {
+      character.idleSuffix = '-alt';
+
+    } else if (charType == CharacterType.GF) {
+      character.antialiasing = false;
+    }
+  }
+}

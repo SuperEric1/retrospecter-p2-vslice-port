@@ -41,6 +41,7 @@ class RetroDialogue extends Module
   private var skipNextFadeOut:Bool = false;
   private var isFadingOut:Bool = false;
   private var fadeTween:FlxTween = null;
+  private var needsPrideOverlay:Bool = false;
   private var hasDiacritics:Bool = false;
   private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf'];
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
@@ -70,6 +71,7 @@ class RetroDialogue extends Module
   private var escButton:FunkinSprite;
   private var boxSprite:FunkinSprite;
   private var innerSprite:FunkinSprite;
+  private var prideOverlay:FunkinSprite;
   private var portraitLeft:FunkinSprite;
   private var portraitRight:FunkinSprite;
   private var portraitMid:FunkinSprite;
@@ -93,8 +95,8 @@ class RetroDialogue extends Module
   // Configs
   private static final DEFAULT_FONT:String = 'Kenyan Coffee Rg.otf';
   private static final BOX_Y:Float = 450;
-  private var TEXT_DEFAULT_X:Float = 80;
-  private var TEXT_DEFAULT_Y:Float = 490;
+  private var TEXT_DEFAULT_X:Float = 0;
+  private var TEXT_DEFAULT_Y:Float = 0;
   private static final TEXT_MIN_FONT_SIZE:Int = 22;
   private static final INPUT_COOLDOWN_SEC:Float = 0.1;
 
@@ -215,6 +217,7 @@ class RetroDialogue extends Module
     }
 
     PlayState.instance.togglePauseButton(false);
+    if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = false;
 
     playerLang = Save.instance.modOptions.get("retroLanguage", "en_US") ?? "en_US";
     if (diacriticsLanguages.contains(playerLang)) hasDiacritics = true;
@@ -234,6 +237,14 @@ class RetroDialogue extends Module
 
     PlayState.instance.camCutscene.visible = true;
     PlayState.instance.disableKeys = true;
+
+    needsPrideOverlay = false;
+    for (dialogueLine in lines) {
+      if (dialogueLine.exists('prideOverlayVisible')) {
+        needsPrideOverlay = true;
+        break;
+      }
+    }
 
     if (!hasCreatedSprites) createSprites();
     showAll();
@@ -267,6 +278,7 @@ class RetroDialogue extends Module
     if (callComplete) {
       PlayState.instance.togglePauseButton(true);
       PlayState.instance.camGame.visible = true;
+      if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = true;
 
       if (onCompleteCallback != null) {
         var cb:Dynamic = onCompleteCallback;
@@ -295,7 +307,7 @@ class RetroDialogue extends Module
     // Fundo da tela
     screenOverlay = FunkinSprite.create(0, 0);
     screenOverlay.makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), 0xFFFFFFFF);
-    screenOverlay.color = FlxColor.BLACK;
+    screenOverlay.color = FlxColor.WHITE;
     screenOverlay.scrollFactor.set(0, 0);
     screenOverlay.cameras = [cam];
     screenOverlay.screenCenter();
@@ -325,6 +337,18 @@ class RetroDialogue extends Module
     innerSprite.zIndex = Z_INNER;
     innerSprite.visible = false;
     ps.add(innerSprite);
+    if (needsPrideOverlay) {
+      prideOverlay = new FunkinSprite(0, BOX_Y);
+      prideOverlay.frames = Paths.getSparrowAtlas('dialogue/prideOverlay', 'shared');
+      prideOverlay.animation.addByPrefix('izzy', 'izzy', 0, true);
+      prideOverlay.animation.addByPrefix('pride', 'pride', 0, true);
+      prideOverlay.screenCenter(0x01);
+      prideOverlay.scrollFactor.set(0, 0);
+      prideOverlay.cameras = [cam];
+      prideOverlay.zIndex = Z_INNER + 1;
+      prideOverlay.visible = false;
+      ps.add(prideOverlay);
+    }
 
     // Portraits
     portraitLeft = FunkinSprite.create(0, 0);
@@ -500,6 +524,7 @@ class RetroDialogue extends Module
     screenOverlay.visible = false;
     boxSprite.visible = false;
     innerSprite.visible = false;
+    if (prideOverlay != null) prideOverlay.visible = false;
     portraitLeft.visible = false;
     portraitRight.visible = false;
     portraitMid.visible = false;
@@ -585,14 +610,26 @@ class RetroDialogue extends Module
     innerSprite.color = FlxColor.fromString('#' + innerColorHex);
     innerSprite.alpha = innerAlpha;
     innerSprite.visible = innerVisible && fillVisible;
+    if (prideOverlay != null) {
+      var prideVisible:Bool = line.exists('prideOverlayVisible') ? line.get('prideOverlayVisible') == 'true' : prideOverlay.visible;
+      prideOverlay.visible = prideVisible;
+      if (prideVisible) {
+        dialogueText.borderColor = FlxColor.TRANSPARENT;
+        dialogueText.x -= 5;
+        innerSprite.visible = false;
+        boxSprite.visible = false;
+      }
+      if (prideVisible && line.exists('prideAnim')) prideOverlay.animation.play(line.get('prideAnim'), false);
+    }
 
     // ---- FUNDO ----
     var gameCameraVisible:Bool = line.exists('gameCameraVisible') ? line.get('gameCameraVisible') : PlayState.instance.camGame.visible;
-    var overlayAlpha:Float = line.exists('overlayAlpha') ? Std.parseFloat(line.get('overlayAlpha')) : false;
-    var overlayFillHex:String = line.exists('overlayFill') ? line.get('overlayFill') : false;
-    if (overlayFillHex) screenOverlay.color = FlxColor.fromString('#' + overlayFillHex)
-    else screenOverlay.color;
-    screenOverlay.alpha = overlayAlpha > 0 ? overlayAlpha : screenOverlay.alpha;
+    var overlayAlpha:Float = line.exists('overlayAlpha') ? Std.parseFloat(line.get('overlayAlpha')) : screenOverlay.alpha;
+    var overlayFillHex:Bool = line.exists('overlayFill') && FlxColor.fromString('#' + line.get('overlayFill')) != null;
+    if (overlayFillHex) screenOverlay.color = FlxColor.fromString('#' + line.get('overlayFill'));
+    screenOverlay.alpha = overlayAlpha;
+    if (overlayFillHex == '000000') screenOverlay.visible = false;
+    else screenOverlay.visible = true;
 
     PlayState.instance.camGame.visible = gameCameraVisible;
     //PlayState.instance.camHUD.visible = gameCameraVisible;
@@ -603,6 +640,7 @@ class RetroDialogue extends Module
       innerSprite.visible = false;
       nameText.visible = false;
       dialogueText.visible = false;
+      if (prideOverlay != null) prideOverlay.visible = false;
     }
 
     // ---- PORTRAITS ----
@@ -831,6 +869,7 @@ class RetroDialogue extends Module
         dialogueText.text = fullText.substring(0, displayedChars);
       if (displayedChars >= fullText.length) {
         isTyping = false;
+        inputCooldown = 0;
         if (currentAutoConfirm && timedNextTimer < 0)
           timedNextTimer = 0.0;
       }
@@ -917,6 +956,7 @@ class RetroDialogue extends Module
     isActive = false;
     isTyping = false;
     destroyOnEnd = false;
+    needsPrideOverlay = false;
     currentSection = '';
     if (fadeTween != null) { fadeTween.cancel(); fadeTween = null; }
     isFadingOut = false;
@@ -927,6 +967,7 @@ class RetroDialogue extends Module
     screenOverlay = null;
     boxSprite = null;
     innerSprite = null;
+    prideOverlay = null;
     portraitLeft = null;
     portraitRight = null;
     portraitMid = null;

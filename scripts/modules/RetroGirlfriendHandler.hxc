@@ -32,6 +32,7 @@ class RetroGirlfriendHandler extends Module {
     "gf-pride" => path + 'pride',
     "gf-sloth" => path + 'sloth',
     "gf-envy" => path + 'envy',
+    "gf-lust" => path + 'lust',
   ];
   var refreshed:Bool = false;
 
@@ -59,6 +60,7 @@ class RetroGirlfriendHandler extends Module {
     "gf-default" => [-0.05, 0.13],
     "gf-sloth" => [-0.055, 0.0065],
     "gf-greed" => [-0.05, -0.04],
+    "gf-lust" => [-0.05, 0.12],
     "gf-gluttony" => [-0.01, -0.175],
     "gf-pride" => [-0.03, -0.13],
     "gf-envy" => [-0.03, -0.1],
@@ -128,8 +130,8 @@ class RetroGirlfriendHandler extends Module {
         speaker.y = targetCoordY;*/
     } else {
       // new positions
-      var targetCoordX:Float = girlfriend.x + (girlfriend.width / 2) - (speaker.width / 2) + (girlfriend.width * currentOffset[0]);
-      var targetCoordY:Float = girlfriend.y + (girlfriend.height / 1.5) - (speaker.height / 2) + (girlfriend.height * currentOffset[1]);
+      var targetCoordX:Float = girlfriend.x + (girlfriend.width / 2) - (speaker?.width / 2) + (girlfriend.width * currentOffset[0]);
+      var targetCoordY:Float = girlfriend.y + (girlfriend.height / 1.5) - (speaker?.height / 2) + (girlfriend.height * currentOffset[1]);
       if (speaker?.x != targetCoordX)
         speaker?.x = targetCoordX;
       if (speaker?.y != targetCoordY)

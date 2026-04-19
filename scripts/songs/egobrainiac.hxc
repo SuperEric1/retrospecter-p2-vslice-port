@@ -19,6 +19,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
 import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
+import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.notes.Strumline;
 
@@ -27,6 +28,7 @@ class EgobrainiacSong extends Song
   var tweens = [];
   var pausedTweens = [];
 
+  var hasPlayedDialogue:Bool = false;
   var isMobile:Bool;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
@@ -54,6 +56,16 @@ class EgobrainiacSong extends Song
     izzyPercent = 14;
     didLastThing = false;
 
+    if (!hasPlayedDialogue && PlayStatePlaylist.isStoryMode)
+    {
+      hasPlayedDialogue = true;
+      event.cancel();
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['egobrainiac story', 'pre', function() {
+        PlayState.instance.startCountdown();
+      }]);
+    }
   }
 
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
@@ -241,6 +253,7 @@ class EgobrainiacSong extends Song
 		super.onDestroy(event);
 		resetTweens();
 		didLastThing = false;
+    hasPlayedDialogue = false;
 	}
 
 	private function resetTweens()

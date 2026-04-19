@@ -24,7 +24,6 @@ class HardAcheSong extends Song
   public function new()
   {
     super('hard-ache');
-
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void

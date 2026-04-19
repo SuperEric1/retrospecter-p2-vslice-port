@@ -229,7 +229,7 @@ dialogue.hard-ache_story.post.9 = "\n(Agora, como convenço minha querida \"irm�
 
 # [heartmelter story]
 dialogue.heartmelter_story.pre.0 = ""
-dialogue.heartmelter_story.pre.1 = "Ai. Não! Querida, certifique-se de pegar aquele ponto de ontem ali! Juro que estou vendo crescer lentamente...!"
+dialogue.heartmelter_story.pre.1 = "Ai.No! Querida, certifique-se de pegar aquele ponto de ontem ali! Juro que estou vendo crescer lentamente...!"
 dialogue.heartmelter_story.pre.2 = "S-Sim, senhora! Imediatamente!"
 dialogue.heartmelter_story.pre.3 = "(*Suspiro* Por que fui parar nessa de limpar o chão?)"
 dialogue.heartmelter_story.pre.4 = "(Entãão... É aqui que a festa está, hein?)"

@@ -17,7 +17,7 @@ import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
 import funkin.Paths;
 
-class LustStage extends Stage
+class LustTwoStage extends Stage
 {
   var bgX:Float = -1000;
   var bgY:Float = -700;
@@ -98,9 +98,9 @@ class LustStage extends Stage
     fgCages = makeAnimSprite('FG_cages', 'FG_cages', bgX, bgY);
     fgCages.antialiasing = false;
 
-    // Foreground curtains (above boyfriend)
+    // Foreground curtains
     fgCurtains = makeAnimSprite('FG_curtains', 'FG_curtains', bgX, bgY);
-    fgCurtains.zIndex = getBoyfriend() != null ? getBoyfriend().zIndex + 1 : 200;
+    fgCurtains.zIndex = 305;
     fgCurtains.antialiasing = false;
 
     hasCreatedStage = true;
@@ -110,7 +110,6 @@ class LustStage extends Stage
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    setupShaders();
   }
 
   function makeSprite(name:String, imageName:String, x:Float, y:Float):StageProp
@@ -130,18 +129,6 @@ class LustStage extends Stage
     sprite.animation.play(animName);
     PlayState.instance.add(sprite, name);
     return sprite;
-  }
-
-  function setupShaders():Void
-  {
-    // This would need the actual shader implementation
-    // For now, this is a placeholder for the mosaic censorship shader setup
-    if (!Save.instance.modOptions.get('retroSuggestive')) return;
-
-    // The shader setup would go here
-    // Similar to the Lua code's runHaxeCode section
-    // But since we don't have the actual shader class imported,
-    // we'll leave this as a TODO for now
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void

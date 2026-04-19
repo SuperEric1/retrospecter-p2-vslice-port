@@ -1,0 +1,47 @@
+import flixel.FlxG;
+import funkin.play.song.Song;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
+import funkin.save.Save;
+
+class HeartmelterSong extends Song
+{
+  var hasPlayedDialogue:Bool = false;
+
+  public function new()
+  {
+    super('heartmelter');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+  }
+
+  override function onCountdownStart(event:ScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+    if (!hasPlayedDialogue && !PlayStatePlaylist.isStoryMode)
+    {
+      hasPlayedDialogue = true;
+      event.cancel();
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['heartmelter story', 'pre', function() {
+        PlayState.instance.startCountdown();
+      }]);
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    hasPlayedDialogue = false;
+  }
+
+  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  {
+    return !Save.instance.hasBeatenSong(this.id, null);
+  }
+}
