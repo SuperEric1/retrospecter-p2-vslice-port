@@ -26,7 +26,9 @@ TODO:
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Replace the modified note assets with the original mod assets to implement notestyles later
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
+- [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy
+- [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Fix reseting strum scales to default when restarting song
 - [X] Dialogues...?
 - [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)

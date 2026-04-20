@@ -16,6 +16,8 @@ class ChainNote extends NoteKind {
 		event.note.x += -18;
 		event.note.yOffset += -100;
 
+		event.note.lowPriority = true;
+
 		event.note.frames = Paths.getSparrowAtlas('notes/ChainNotes');
 		if (downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');

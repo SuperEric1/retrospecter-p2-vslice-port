@@ -6,6 +6,7 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import funkin.Conductor;
 import funkin.Preferences;
 import funkin.save.Save;
@@ -24,6 +25,9 @@ class LustTwoStage extends Stage
 
   var heartFrames:Array<Int> = [0, 1, 2, 3, 4, 0, 4, 0];
   var hasCreatedStage:Bool = false;
+
+  var p:Bool = false;
+  var isHardAche:Bool = false;
 
   // Stage sprites
   var bg:StageProp;
@@ -48,7 +52,8 @@ class LustTwoStage extends Stage
   override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-    if (hasCreatedStage) return;
+    var songId = PlayState.instance?.currentChart?.songName ?? '';
+    isHardAche = songId.toLowerCase() == 'hard ache';
 
     // Background
     bg = makeSprite('bg', 'Background', bgX, bgY);
@@ -103,13 +108,53 @@ class LustTwoStage extends Stage
     fgCurtains.zIndex = 305;
     fgCurtains.antialiasing = false;
 
-    hasCreatedStage = true;
-    PlayState.instance.refresh();
+    PlayState.instance.currentStage.refresh();
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
+
+    if (isHardAche) {
+      fgCages.visible = false;
+      fgCurtains.visible = false;
+    }
+
+    if (!hasCreatedStage) {
+      // Borders for wide screens
+      if (FlxG.width > 1280) {
+        var camZoom = PlayState.instance.stageZoom;
+        var w = 700;
+        var h = Math.ceil((FlxG.height + 50) / camZoom);
+        var color = 0xFF13000e; // #13000e
+
+        var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+        border1.x = bg.x - 170;
+        border1.screenCenter(0x10);
+        border1.scrollFactor.set(1, 0);
+        border1.zIndex = 500;
+        add(border1);
+        var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+        fillBorderLeft.zIndex = border1.zIndex - 1;
+        fillBorderLeft.x -= fillBorderLeft.width;
+        fillBorderLeft.scrollFactor.set(1, 0);
+        add(fillBorderLeft);
+
+        var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+        border2.x = bg.x + bg.width - 450;
+        border2.screenCenter(0x10);
+        border2.scrollFactor.set(1, 0);
+        border2.zIndex = 501;
+        add(border2);
+        var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+        fillBorderRight.zIndex = border2.zIndex - 1;
+        fillBorderRight.scrollFactor.set(1, 0);
+        add(fillBorderRight);
+      }
+
+      hasCreatedStage = true;
+      PlayState.instance.currentStage.refresh();
+    }
   }
 
   function makeSprite(name:String, imageName:String, x:Float, y:Float):StageProp
@@ -117,7 +162,7 @@ class LustTwoStage extends Stage
     var sprite = FunkinSprite.create(x, y);
     sprite.loadTexture('lust/' + imageName);
     sprite.active = false;
-    PlayState.instance.add(sprite, name);
+    add(sprite, name);
     return sprite;
   }
 
@@ -127,7 +172,7 @@ class LustTwoStage extends Stage
     sprite.loadSparrow('lust/saku-master');
     sprite.animation.addByPrefix(animName, animName, 0);
     sprite.animation.play(animName);
-    PlayState.instance.add(sprite, name);
+    add(sprite, name);
     return sprite;
   }
 
@@ -146,6 +191,20 @@ class LustTwoStage extends Stage
     // Update dance floor frame based on beat
     if (dfloor != null && dfloor.animation != null && dfloor.animation.curAnim != null) {
       dfloor.animation.curAnim.curFrame = event.beat % 2;
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    // Show curtains again
+    if (isHardAche && event.step >= 128 && !p) {
+      p = true;
+      fgCages.visible = true;
+      fgCurtains.visible = true;
     }
   }
 
@@ -192,5 +251,13 @@ class LustTwoStage extends Stage
   {
     super.onDestroy(event);
     hasCreatedStage = false;
+    p = false;
+  }
+
+  override function onSongRetry(event:SongRetryEvent):Void
+  {
+    super.onSongRetry(event);
+
+    p = false;
   }
 }

@@ -13,6 +13,8 @@ class AtroceanNote extends NoteKind {
 		event.note.x += -45;
 		event.note.yOffset += -47;
 
+		event.note.lowPriority = true;
+
 		event.note.frames = Paths.getSparrowAtlas('notes/Atrocean_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');

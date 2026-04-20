@@ -417,11 +417,12 @@ class RetroDialogue extends Module
     skipHintText.setFormat(Paths.font(DEFAULT_FONT), FlxG.height / 15, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
       skipHintText.text = RetroLanguage.tf('dialogue.text.skip', [PlayState.instance.controls.getDialogueNameFromToken("BACK", true)]);
+      skipHintText.x = FlxG.width - skipHintText.fieldWidth - 40;
     } else {
+      skipHintText.x = /*(FullScreenScaleMode.gameCutoutSize.x / 2) +*/ 40;
       skipHintText.text = RetroLanguage.tf('dialogue.text.skip', ['ESC']);
     }
     skipHintText.scrollFactor.set(0, 0);
-    skipHintText.x = /*(FullScreenScaleMode.gameCutoutSize.x / 2) +*/ 40;
     skipHintText.y = 30;
     skipHintText.borderSize = 2.5;
     skipHintText.cameras = [cam];
@@ -1027,7 +1028,7 @@ class RetroDialogue extends Module
     PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0.7, true, function() {
       skipHintText.visible = true;
     }, true);
-    screenOverlay.color = FlxColor.fromString('#4bffcc');
+    //screenOverlay.color = FlxColor.fromString('#4bffcc');
     screenOverlay.alpha = 0.2;
     screenOverlay.blend = 7;
     boxSprite.visible = false;

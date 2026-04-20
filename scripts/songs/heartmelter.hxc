@@ -22,7 +22,7 @@ class HeartmelterSong extends Song
   override function onCountdownStart(event:ScriptEvent):Void
   {
     super.onCountdownStart(event);
-    if (!hasPlayedDialogue && !PlayStatePlaylist.isStoryMode)
+    if (!hasPlayedDialogue && PlayStatePlaylist.isStoryMode)
     {
       hasPlayedDialogue = true;
       event.cancel();

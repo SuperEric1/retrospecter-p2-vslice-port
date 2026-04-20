@@ -16,32 +16,31 @@
   "atlasSettings": {
     "applyStageMatrix": true
   },
-  "offsets": [480, 110],
-  "cameraOffsets": [300, 80],
+  "cameraOffsets": [-100, -500],
   "animations": [
     {
       "name": "singLEFT",
       "prefix": "anims/saku 2 left",
       "animType": "symbol",
-      "offsets": [126, 0]
+      "offsets": [0, 0]
     },
     {
       "name": "singDOWN",
       "prefix": "anims/saku 2 down",
       "animType": "symbol",
-      "offsets": [27, 0]
+      "offsets": [0, 0]
     },
     {
       "name": "singUP",
       "prefix": "anims/saku 2 up",
       "animType": "symbol",
-      "offsets": [40, 0]
+      "offsets": [0, 0]
     },
     {
       "name": "singRIGHT",
       "prefix": "anims/saku 2 right",
       "animType": "symbol",
-      "offsets": [-43, 0]
+      "offsets": [0, 0]
     },
     {
       "looped": true,
@@ -63,7 +62,7 @@
       "offsets": [0, 0]
     },
     {
-      "name": "laugh-end",
+      "name": "idle-laugh-end",
       "prefix": "anims/saku temptation 2",
       "animType": "symbol",
       "offsets": [0, 0]

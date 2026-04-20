@@ -1,127 +1,326 @@
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.math.FlxBasePoint;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import funkin.play.song.Song;
+import funkin.play.Countdown;
+import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
-import funkin.Conductor;
 import funkin.play.PlayState;
-import funkin.play.cutscene.CutsceneType;
-import funkin.play.cutscene.VideoCutscene;
-import funkin.play.GameOverSubState;
-import funkin.util.ReflectUtil;
 import funkin.play.PlayStatePlaylist;
-import funkin.ui.FullScreenScaleMode;
+import funkin.modding.module.ModuleHandler;
+import funkin.FunkinMemory;
+import funkin.Paths;
 
 class HardAcheSong extends Song
 {
   var playState:PlayState;
   var tweens = [];
   var pausedTweens = [];
+  var hasPlayedDialogue:Bool = false;
+  var suggestive:Bool = true;
+  var testing:Bool = false;
+
+  var blackBG:FunkinSprite;
+  var blackFG:FunkinSprite;
+
+  var isSaku:Bool = false;
+  var quote:Int = 0;
+  var p:Bool = false;
+  var q:Bool = false;
+  var showLogo:Bool = false;
+  var pauseNow:Bool = false;
 
   public function new()
   {
     super('hard-ache');
   }
 
-  public override function onSongLoaded(event:ScriptEvent):Void
-  {
-    super.onSongLoaded(event);
-
-  }
-
-  function onCreate(event:ScriptEvent):Void
+  override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
     playState = PlayState.instance;
-    // load alt inst if suggestive content is disbled
-    if (!Save.instance.modOptions.get('retroSuggestive')) {
+
+    suggestive = Save.instance.modOptions.get('retroSuggestive');
+    if (!testing) playState.mayPauseGame = false;
+    if (playState.camControls != null) playState.camControls.visible = false;
+
+    if (!suggestive) {
       playState.currentInstrumental = 'nolines';
       if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
-      //throw 'opa';
     }
+
+    blackBG = FunkinSprite.create(-2000, -900).makeSolidColor(5000, 3300, 0xFF000000);
+    blackBG.scrollFactor.set(0, 0);
+    blackBG.zIndex = 1;
+    playState.currentStage.add(blackBG);
+
+    blackFG = FunkinSprite.create(0, 0).makeSolidColor(FlxG.width * 1.1 /*4000*/, FlxG.height * 1.1 /*3000*/, 0xFF000000);
+    blackFG.scrollFactor.set(0, 0);
+    blackFG.screenCenter();
+    blackFG.zIndex = 0;
+    blackFG.cameras = [playState.camCutscene];
+    playState.add(blackFG);
+
+    if (testing || playState.startTimestamp > 10000) {
+      blackBG.visible = false;
+      blackFG.visible = false;
+    }
+
+    playState.currentStage.refresh();
+    playState.refresh();
+
+    FunkinMemory.cacheTexture(Paths.image('characters/atlases/saku-phase2-silhouette/spritemap1', "shared"));
+    FunkinMemory.cacheTexture(Paths.image('characters/atlases/saku-phase2/spritemap1', "shared"));
   }
 
-  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+  }
+
+  override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
 
+    var bf = playState.currentStage?.getBoyfriend();
+    isSaku = bf.characterId == 'playable-saku-worried';
+    var isStory = PlayStatePlaylist.isStoryMode;
+
+    if (!hasPlayedDialogue && isStory) {
+      hasPlayedDialogue = true;
+      event.cancel();
+
+      playState.camGame.visible = false;
+      playState.camHUD.visible = false;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['hard-ache story', 'pre', function() {
+        PlayState.instance.startCountdown();
+      }]);
+    } else if (!testing) {
+      bf.visible = false;
+      playState.currentStage?.getDad().visible = false;
+
+      playState.currentCameraZoom = playState.stageZoom - 0.2;
+      playState.tweenCameraZoom(playState.stageZoom, 8, true, FlxEase.quadOut);
+
+      playState.camGame.visible = true;
+      playState.camHUD.visible = false;
+      if (playState.camControls != null) playState.camControls.visible = false;
+
+      if (isStory) { // Skip the countdown!
+        event.cancel();
+        playState.startSong();
+        pauseNow = false;
+      }
+    }
   }
 
-  public override function onBeatHit(event:SongTimeScriptEvent):Void
+  override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGamePaused) return;
-    if (PlayState.instance.isGameOverState) return;
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
 
-    var curBeat = event.beat;
-    if (curBeat == 0) {
-      //playStage.getBoyfriend().danceEvery = 0;
-      //playStage.getBoyfriend().playAnimation('brow', true);
+    if (event.beat < 0) {
+      PlayState.instance.camHUD.visible = false;
     }
   }
 
-  public function onStepHit(event) {
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
     super.onStepHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGameOverState) return;
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
 
-    if (event.step == 1) {
+    var step:Int = event.step;
 
+    if (step >= 128 && !pauseNow) {
+      pauseNow = true;
+      playState.isInCountdown = true; // This is necessary or else the player smh won't be able to pause if the dialogue shows up
+      playState.mayPauseGame = true;
+      if (playState.camControls != null) playState.camControls.visible = true;
+      //throw (!playState.isInCountdown + ' ' + playState.isInCutscene + ' ' + !playState.mayPauseGame + ' ' + playState.justUnpaused + playState.isGamePaused + playState.isPlayerDying + playState.isSongEnd);
+    }
+
+    if (step >= 2 && !q) {
+      q = true;
+      playState.currentStage?.getDad().visible = true;
+    }
+
+    if (step >= 32 && step < 96) {
+      blackFG.alpha = 1 - (step - 32) / 64;
+    }
+
+    if (!isSaku) {
+      if (step >= 72 && quote < 1) {
+        quote = 1;
+        // I won't break your heart...
+        if (suggestive) playState.currentStage?.getDad().playAnimation('intro', true);
+      }
+
+      if (step >= 109 && quote < 2) {
+        quote = 2;
+        // ...I'll fix it.
+      }
+    }
+
+    if (step >= 128 && !p) {
+      p = true;
+      blackBG.visible = false;
+      FlxG.camera.flash(0xFFFFFFFF, 1.25);
+
+      playState.currentStage?.getDad().visible = true;
+      playState.currentStage?.getBoyfriend().visible = true;
+
+      // no dialogue
+      quote = 3;
+      playState.camHUD.visible = true;
+    }
+
+    // TODO: Start enemy title animation (story mode)
+    if (step >= 144 && !showLogo && PlayStatePlaylist.isStoryMode) {
+      showLogo = true;
+      // Here we should show the enemy's title but we don't have the module for it yet.
+    }
+
+    if (!isSaku) {
+      if (step >= 846 && quote < 4 && suggestive) {
+        quote = 4;
+        // Your body says-
+        playState.currentStage?.getDad().playAnimation('mommy', true);
+      }
+
+      if (step >= 868 && quote < 5 && suggestive) {
+        quote = 5;
+        // "Step on me, Mommy~!"
+      }
+
+      if (step >= 896 && quote < 6 && suggestive) {
+        quote = 6;
+        // no dialogue
+      }
+
+      if (step >= 2721 && quote < 7) {
+        quote = 7;
+        // Give in to temptation...
+        var dad = playState.currentStage?.getDad();
+        if (suggestive) {
+          dad.playAnimation('temptation', true);
+          dad.shouldBop = false;
+          dad.danceEvery = 0;
+        }
+      }
+
+      if (step >= 2772 && quote < 8) {
+        quote = 8;
+        // no dialogue
+        var dad = playState.currentStage?.getDad();
+        if (suggestive) {
+          dad.shouldBop = false;
+          dad.danceEvery = 0;
+          dad.playAnimation('idle-laugh-end', true);
+        }
+      }
+    }
+
+    if (step >= 2832 && step <= 2880) {
+      blackFG.visible = true;
+      blackFG.alpha = (step - 2832) / 48.0;
     }
   }
 
-  override function onDestroy(event)
-	{
-		super.onDestroy(event);
-		resetTweens();
-	}
-
-	private function resetTweens()
-	{
-		for (tween in tweens)
-		{
-			if (tween != null)
-				tween.cancel();
-		}
-		tweens = [];
-		pausedTweens = [];
-	}
-
-	override function onResume(event)
-	{
-		super.onResume(event);
-		for (tween in pausedTweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = true;
-			}
-		}
-		pausedTweens = [];
-	}
-
-	override function onPause(event)
-	{
-		super.onPause(event);
-		pausedTweens = [];
-		for (tween in tweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-	}
-
-  function onSongRetry(event:ScriptEvent)
+  override function onSongRetry(event:SongRetryEvent):Void
   {
     super.onSongRetry(event);
+    resetState();
+  }
 
+  public function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    playState.currentStage?.getBoyfriend().visible = true;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    resetTweens();
+    resetState();
+    playState = null;
+    hasPlayedDialogue = false;
+  }
+
+  override function onResume(event:ScriptEvent):Void
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+    {
+      if (tween != null && !tween.finished)
+        tween.active = true;
+    }
+    pausedTweens = [];
+  }
+
+  override function onPause(event:PauseScriptEvent):Void
+  {
+    super.onPause(event);
+    pausedTweens = [];
+    for (tween in tweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+  }
+
+  private function resetState():Void
+  {
+    p = false;
+    q = false;
+    showLogo = false;
+    pauseNow = false;
+    quote = 0;
+
+    if (blackBG != null && !testing) blackBG.visible = true;
+
+    if (blackFG != null && !testing) {
+      blackFG.alpha = 1;
+      blackFG.visible = true;
+    }
+
+    if (playState != null) {
+      if (!testing) {
+        playState.mayPauseGame = false;
+        if (playState.camControls != null) playState.camControls.visible = false;
+        playState.camHUD.visible = false;
+
+        playState.currentStage?.getBoyfriend().visible = false;
+        playState.currentStage?.getDad().visible = false;
+        playState.currentStage?.getDad().shouldBop = true;
+        playState.currentStage?.getDad().danceEvery = 1;
+
+        playState.currentCameraZoom = playState.stageZoom - 0.2;
+        playState.tweenCameraZoom(playState.stageZoom, 8, true, FlxEase.quadOut);
+      }
+    }
+  }
+
+  private function resetTweens():Void
+  {
+    for (tween in tweens)
+    {
+      if (tween != null) tween.cancel();
+    }
+    tweens = [];
+    pausedTweens = [];
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

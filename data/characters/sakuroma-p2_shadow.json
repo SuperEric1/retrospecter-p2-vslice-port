@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "name": "SakuromaP2 (Shadow)",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/saku-phase2-silhouette",
+  "singTime": 6.1,
+  "isPixel": false,
+  "scale": 1.44,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "mommy",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "offsets": [0, -200],
+  "animations": [
+    {
+      "looped": true,
+      "name": "idle",
+      "scale": 1.5,
+      "prefix": "anims/saku 2 idle",
+      "animType": "symbol",
+      "offsets": [0, 0]
+    },
+    {
+      "looped": true,
+      "name": "intro",
+      "scale": 1.5,
+      "prefix": "anims/saku fix your heart",
+      "animType": "symbol",
+      "offsets": [0, 0]
+    }
+  ],
+  "flipX": false
+}

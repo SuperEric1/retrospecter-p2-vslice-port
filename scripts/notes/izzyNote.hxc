@@ -13,6 +13,8 @@ class IzzyNote extends NoteKind {
 		event.note.x += -59;
 		event.note.yOffset += -65;
 
+		event.note.lowPriority = true;
+
 		event.note.frames = Paths.getSparrowAtlas('notes/Pride_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');

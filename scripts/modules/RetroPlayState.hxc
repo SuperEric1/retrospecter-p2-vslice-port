@@ -252,7 +252,7 @@ class RetroPlayState extends Module {
     // Notas removíveis
     if (k == 'none') {
       // a remoção do score acontece ali em cima
-			event.cancelEvent();
+			event.cancel();
       event.stopPropagation();
 			event.note.kill();
     }

@@ -36,6 +36,8 @@ class PoisonNote extends NoteKind {
 		event.note.x += -3;
 		event.note.yOffset += -70;
 
+		event.note.lowPriority = true;
+
 		if (downscroll) {
 			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
 			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Downscroll Left0');

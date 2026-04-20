@@ -33,6 +33,8 @@ class DozircNote extends NoteKind {
 		event.note.x += -57;
 		event.note.yOffset += -40;
 
+		event.note.lowPriority = true;
+
 		event.note.frames = Paths.getSparrowAtlas('notes/Dozirc_Note_Assets');
 		if (downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');

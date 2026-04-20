@@ -13,6 +13,8 @@ class HivelessNote extends NoteKind {
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
 		event.note.x += -50;
 		event.note.yOffset += -26;
+		
+		event.note.lowPriority = true;
 
 		event.note.frames = Paths.getSparrowAtlas('notes/Hiveless_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');

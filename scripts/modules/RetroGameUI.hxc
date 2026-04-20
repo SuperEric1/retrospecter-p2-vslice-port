@@ -245,7 +245,7 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/saku/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/saku/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/saku/bar');
-        case 'sakuromap2-atlas':
+        case 'sakuroma-p2-atlas':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/sakuP2/overlay');
@@ -1138,7 +1138,7 @@ class RetroGameUI extends Module {
         return getRGB(227, 146, 18);
       case 'sakuroma':
         return getRGB(248, 54, 107);
-      case 'sakuromap2-atlas':
+      case 'sakuroma-p2-atlas':
         return getRGB(169, 50, 140);
       case 'nightflaid_atlas':
         return 0xFFFFFFFF;

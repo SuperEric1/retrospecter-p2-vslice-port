@@ -17,40 +17,31 @@ class BFLustCharacter extends MultiSparrowCharacter
     super('bf-lust');
   }
 
-  /*function onNoteHit(event:HitNoteScriptEvent):Void {
+  var save:Save;
+  var suggestive:Bool;
 
+  function onCreate(event:ScriptEvent)
+  {
+    super.onCreate(event);
+    save = Save.instance.modOptions;
+
+    suggestive = save.get('retroSuggestive');
+  }
+
+  function onNoteHit(event:HitNoteScriptEvent):Void {
     if (PlayState.instance == null) return;
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
-      if (!Save.instance.modOptions.get('retroSuggestive')) return;
-
-      switch (event.note.noteData.kind)
-      {
-        case "hollowNotes":
-          return;
-        case "poison":
-          return;
-        case "izzyNote":
-          return;
-        case "No Animation":
-          return;
-        case "chain":
-          return;
-        case "autochain":
-          return;
-        case "Hydra":
-          return;
-        case "sakuNote":
-          return;
-        case "Fake Note":
-          return;
+      if (!suggestive) {
+        this.holdTimer = 0;
+        return;
       }
     }
     super.onNoteHit(event);
-	}*/
+	}
 
   function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
   {
-    if (!Save.instance.modOptions.get('retroSuggestive')) event.playAnim = false;
+    if (!suggestive) event.playAnim = false;
 
     super.onNoteGhostMiss(event);
   }
@@ -59,7 +50,7 @@ class BFLustCharacter extends MultiSparrowCharacter
     if (PlayState.instance == null) return;
 
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
-      if (!Save.instance.modOptions.get('retroSuggestive')) {
+      if (!suggestive) {
         this.holdTimer = 0;
       }
     }
