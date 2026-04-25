@@ -1,0 +1,264 @@
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Paths;
+import funkin.graphics.FunkinSprite;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.SongTimeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.modding.module.ModuleHandler;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.play.character.CharacterType;
+
+import supereric.retrospecter.modules.RetroUtil;
+
+class HeavensGateStage extends Stage
+{
+  var sky:FunkinSprite;
+  var backClouds:Array<FunkinSprite> = [];
+  var frontClouds:Array<FunkinSprite> = [];
+  var stageClouds:Array<FunkinSprite> = [];
+  var clock:FunkinSprite;
+  var right:FunkinSprite;
+  var lunacent:FunkinSprite;
+  var heavenGate:FunkinSprite;
+  var fore:FunkinSprite;
+
+  var defaultCamZoom:Float;
+  var defaultBfFocusY:Float = 0;
+  var sideValue:Float = -330;
+
+  public function new()
+  {
+    super('heavens_gate');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+    defaultBfFocusY = null;
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['patience']]);
+
+    sky = FunkinSprite.create(0, 0, 'virtue/sky');
+    sky.setGraphicSize(5144, 0);
+    sky.updateHitbox();
+    sky.active = false;
+    sky.zIndex = 10;
+    add(sky);
+
+    var cloudScale:Float = 8877 / 6624;
+    for (i in 0...3) {
+      var bc = FunkinSprite.create(8000, 0, 'virtue/back_clouds');
+      bc.scale.set(cloudScale, cloudScale);
+      bc.updateHitbox();
+      bc.scrollFactor.set(0.5, 1);
+      bc.active = false;
+      bc.zIndex = 20;
+      backClouds.push(bc);
+      add(bc);
+    }
+    backClouds[1].x = backClouds[0].x + backClouds[0].width;
+    backClouds[2].x = backClouds[1].x + backClouds[1].width;
+
+    clock = FunkinSprite.create(800, 150, 'virtue/clock');
+    clock.loadTextureAtlas('virtue/clock', 'shared', { applyStageMatrix: true });
+    clock.animation.addBySymbol('anim', 'clocktower', 24, true);
+    clock.animation.play('anim', true);
+    clock.scrollFactor.set(0.8, 0.95);
+    clock.zIndex = 30;
+    add(clock);
+
+    right = FunkinSprite.create(3030, 320, 'virtue/right');
+    right.scrollFactor.set(0.8, 0.95);
+    right.active = false;
+    right.zIndex = 40;
+    add(right);
+
+    for (i in 0...3) {
+      var fc = FunkinSprite.create(8000, 700, 'virtue/front_clouds');
+      fc.updateHitbox();
+      fc.scrollFactor.set(0.8, 1);
+      fc.active = false;
+      fc.zIndex = 50;
+      frontClouds.push(fc);
+      add(fc);
+
+      var sc = FunkinSprite.create(9200, 1200, 'virtue/front_clouds');
+      sc.updateHitbox();
+      sc.flipX = true;
+      sc.scrollFactor.set(0.9, 1);
+      sc.active = false;
+      sc.zIndex = 60;
+      stageClouds.push(sc);
+      add(sc);
+    }
+    frontClouds[1].x = frontClouds[0].x + frontClouds[0].width;
+    frontClouds[2].x = frontClouds[1].x + frontClouds[1].width;
+
+    stageClouds[1].x = stageClouds[0].x + stageClouds[0].width;
+    stageClouds[2].x = stageClouds[1].x + stageClouds[1].width;
+
+    lunacent = FunkinSprite.create(3635, 1544);
+    lunacent.frames = Paths.getSparrowAtlas('virtue/lunacent');
+    lunacent.animation.addByPrefix('anim', 'bgcameo_lunacent', 24, false);
+    lunacent.scale.set(0.9, 0.9);
+    lunacent.updateHitbox();
+    lunacent.zIndex = 70;
+    add(lunacent);
+
+    heavenGate = FunkinSprite.create(0, 0, 'virtue/Heaven Gate');
+    heavenGate.active = false;
+    heavenGate.zIndex = 80;
+    add(heavenGate);
+
+    fore = FunkinSprite.create(0, 1529, 'virtue/fore');
+    fore.setGraphicSize(5144, 0);
+    fore.updateHitbox();
+    fore.active = false;
+    fore.zIndex = 450;
+    add(fore);
+
+    defaultCamZoom = PlayState.instance.stageZoom;
+
+    // Borders for wide screens
+    if (FlxG.width > 1280) {
+      var camZoom = defaultCamZoom;
+      var w = 250;
+      var h = Math.ceil((FlxG.height + 50) / camZoom);
+      var color = FlxColor.fromString('#181713'); // #e4d7b4
+      var color2 = FlxColor.fromRGBFloat(24, 23, 19, 0.5);
+
+      var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT], 1, 0);
+      border1.x = sky.x - 7;
+      border1.screenCenter(0x10);
+      border1.scrollFactor.set(1, 0);
+      border1.zIndex = 500;
+      add(border1);
+      var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+      fillBorderLeft.zIndex = border1.zIndex - 1;
+      fillBorderLeft.x -= fillBorderLeft.width;
+      fillBorderLeft.scrollFactor.set(1, 0);
+      add(fillBorderLeft);
+
+      var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, color], 1, 0);
+      border2.x = sky.x + sky.width - 250;
+      border2.screenCenter(0x10);
+      border2.scrollFactor.set(1, 0);
+      border2.zIndex = 501;
+      add(border2);
+      var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+      fillBorderRight.zIndex = border2.zIndex - 1;
+      fillBorderRight.scrollFactor.set(1, 0);
+      add(fillBorderRight);
+    }
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (event.beat % 2 == 0) {
+      lunacent?.animation?.play('anim', true);
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    var elapsed:Float = event.elapsed;
+
+    for (i in 0...3) {
+      moveBackdrop(backClouds[i], 100, 4400, elapsed);
+      moveBackdrop(frontClouds[i], 150, 5200, elapsed);
+      moveBackdrop(stageClouds[i], 200, 5200, elapsed);
+    }
+  }
+
+  function moveBackdrop(spr:FunkinSprite, speed:Float, limit:Float, elapsed:Float):Void
+  {
+    spr.x += speed * elapsed;
+    while (spr.x > limit) {
+      spr.x -= spr.width * 3;
+    }
+  }
+
+  function changeDefault(value:String):Void
+  {
+    if (defaultBfFocusY == null) defaultBfFocusY = PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y;
+
+    var parts:Array<String> = value.split(',');
+    defaultCamZoom = Std.parseFloat(parts[0]) + 0.017;
+
+    var beatLen:Float = PlayState.instance.conductorInUse.beatLengthMs / 1000;
+    var duration:Float = beatLen * Std.parseFloat(parts[1]);
+    PlayState.instance.tweenCameraZoom(defaultCamZoom, duration, true, FlxEase.quadOut);
+
+    if (parts.length > 2 && parts[2] != null) {
+      var offsetY:Float = Std.parseFloat(parts[2]) - 80;
+      PlayState.instance.currentStage.getBoyfriend().cameraFocusPoint.y = 2150 + offsetY;
+    }
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
+    if (defaultBfFocusY != null) PlayState.instance.currentStage?.getBoyfriend()?.cameraFocusPoint?.y = defaultBfFocusY;
+
+    for (i in 0...3) {
+      backClouds[i].x = (i == 0) ? 8000 : backClouds[i - 1].x + backClouds[i - 1].width;
+      frontClouds[i].x = (i == 0) ? 8000 : frontClouds[i - 1].x + frontClouds[i - 1].width;
+      stageClouds[i].x = (i == 0) ? 9200 : stageClouds[i - 1].x + stageClouds[i - 1].width;
+    }
+  }
+
+  override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    if (defaultBfFocusY != null) PlayState.instance.currentStage?.getBoyfriend()?.cameraFocusPoint?.y = defaultBfFocusY;
+  }
+
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    if (event.eventData.eventKind == "PatienceEvents") {
+      value = event.eventData.value;
+
+      switch (Std.int(value.eventType)) {
+        case 0:
+          changeDefault(value.value1);
+      }
+
+    }
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    switch (charType)
+    {
+      case CharacterType.GF:
+        character.antialiasing = false;
+        character.danceEvery = 0;
+        character.visible = false;
+        character.kill(); // finish HER!!
+      default:
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    defaultBfFocusY = null;
+  }
+}

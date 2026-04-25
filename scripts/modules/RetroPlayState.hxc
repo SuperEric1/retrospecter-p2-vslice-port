@@ -195,7 +195,7 @@ class RetroPlayState extends Module {
     'sakuNote', 'Hydra', 'Fake Note', 'scytheNote',
     'spectre', 'insatianNote', 'cashNote', 'autoCash',
     'hivemoreNote', "hivelessNote", "atroceanNote",
-    'dozircNote',
+    'dozircNote', 'holy',
     'none'
   ];
 
@@ -314,6 +314,26 @@ class RetroPlayState extends Module {
       FlxG.sound.play(Paths.sound('noteSounds/hydra'));
 
       //PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
+      event.doesNotesplash = false;
+      if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
+      if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
+    }
+
+    if (k == 'holy') { // rola
+      if (PlayState.instance.isBotPlayMode) {
+        event.cancel();
+        event.stopPropagation();
+        return;
+      }
+      if (!loadedMechanics.contains('patience')) {
+        trace('LOADED UNLOADED MECHANIC: patience');
+        loadedMechanics.push('patience');
+        loadBeamSprites();
+      }
+
+      playBeamAnimation(noteDir, 5.4);
+      FlxG.sound.play(Paths.sound('noteSounds/beam'));
+
       event.doesNotesplash = false;
       if (FlxG.onMobile && HapticUtil.hapticsAvailable) HapticUtil.vibrateByPreset(hurtNoteVibration);
       if (funnyVar) funnyHealth(Constants.HEALTH_KILLER_BONUS);
@@ -860,6 +880,9 @@ class RetroPlayState extends Module {
         }
         if (loadedMechanics.contains('hydra')) {
           loadHydraBeamSprites();
+        }
+        if (loadedMechanics.contains('patience') && !loadedMechanics.contains('hydra')) {
+          loadBeamSprites();
         }
         if (loadedMechanics.contains('insatian')) {
           FunkinMemory.cacheSound(Paths.sound("noteSounds/Insatian", "shared"));
@@ -1438,11 +1461,53 @@ class RetroPlayState extends Module {
     //PlayState.instance.refresh();
   }
 
-  function playBeamAnimation(direction:Int):Void {
+  function loadBeamSprites():Void {
+    // Se já tivermos sprites carregados (e válidos), não fazemos nada.
+    if (hydraBeamSprites.length > 0) {
+      if (hydraBeamSprites[0] != null && hydraBeamSprites[0].exists) {
+        return;
+      } else {
+        hydraBeamSprites = [];
+        hydraBeamTimers = [];
+      }
+    }
+
+    for (i in 0...4) {
+      var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+
+      var beamSprite = new FunkinSprite(strum.x, strum.y);
+      beamSprite.frames = Paths.getSparrowAtlas('beam');
+
+      // Adicionar animações do beam
+      beamSprite.animation.addByPrefix('start', 'Hydra Column Hit_start', 24, false);
+      beamSprite.animation.addByPrefix('loop', 'Hydra Column Hit_Loop', 24, true);
+      beamSprite.animation.addByPrefix('end', 'Hydra Column Hit_End', 24, false);
+
+      beamSprite.setGraphicSize(Std.int(strum.width * 1.4), FlxG.height + (FlxG.height / 3)); // Std.int(beamSprite.width * 0.5)
+      beamSprite.updateHitbox();
+      beamSprite.flipY = isDownscroll;
+      beamSprite.scrollFactor.set(0, 0);
+      beamSprite.cameras = [PlayState.instance.camHUD];
+      beamSprite.visible = false;
+      beamSprite.zIndex = 9000;
+      //beamSprite.antialiasing = true;
+
+      PlayState.instance.add(beamSprite);
+      hydraBeamSprites.push(beamSprite);
+      hydraBeamTimers.push(null);
+      beamSprite.kill();
+    }
+
+    // refresh where the function is called.
+    //PlayState.instance.refresh();
+  }
+
+  function playBeamAnimation(direction:Int, ?duration:Float):Void {
     if (hydraBeamSprites.length == 0) return;
 
     // Capturar o valor localmente para uso nas closures
     final dir:Int = direction;
+    final loopDur = duration != null ? duration : 6.3;
 
     var beamSprite = hydraBeamSprites[dir];
     if (beamSprite == null) return;
@@ -1468,7 +1533,7 @@ class RetroPlayState extends Module {
       hydraBeamStates.set(dir, 2);
 
       // Manter o loop por alguns segundos
-      hydraBeamTimers[dir] = new FlxTimer(globalTimerManager).start(6.3, function(tmr2:FlxTimer) {
+      hydraBeamTimers[dir] = new FlxTimer(globalTimerManager).start(loopDur, function(tmr2:FlxTimer) {
         if (PlayState.instance == null) return;
         if (beamSprite == null || !beamSprite.exists) return;
 
@@ -1584,6 +1649,7 @@ class RetroPlayState extends Module {
     var hasChainlock:Bool = loadedMechanics.contains('chainlock');
     var hasWeblock:Bool = loadedMechanics.contains('weblock');
     var hasHydra:Bool = loadedMechanics.contains('hydra');
+    var hasPatience:Bool = loadedMechanics.contains('patience');
     if (mechanicsEnabled) {
       for (i in 0...4) {
         var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
@@ -1615,9 +1681,9 @@ class RetroPlayState extends Module {
         }
 
         // Atualizar sprites de hydra beam para seguir os strums
-        if (hasHydra && hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
+        if ((hasHydra || hasPatience) && hydraBeamSprites[i] != null && hydraBeamSprites[i].alive && hydraBeamSprites[i].visible) {
           var beam = hydraBeamSprites[i];
-          beamTargetX = strum.x + (strum.width / 2) - (beam.width / 2) + 10;
+          beamTargetX = strum.x + (strum.width / 2) - (beam.width / 2) + (!hasPatience ? 10 : 0);
           beamTargetY = 0 - (FlxG.height / 4);
 
           if (beam.x != beamTargetX) beam.x = beamTargetX;
@@ -1628,7 +1694,7 @@ class RetroPlayState extends Module {
     }
 
     // Mobile: usar TouchUtil para detectar toques nos sprites de lock quando o ghost tap está ativado.
-    if (mechanicsEnabled && loadedMechanics.contains('chainlock') && FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
+    if (mechanicsEnabled && hasChainlock && FlxG.onMobile && PlayState.instance.playerStrumline.mayGhostTap()) {
       for (i in 0...4) {
         if (isStrumLocked.get(i) && chainLockSprites[i] != null && chainLockSprites[i].alive && chainLockSprites[i].visible && chainLockSprites[i].alpha > 0) {
           var sprite = chainLockSprites[i];

@@ -1,0 +1,64 @@
+import flixel.FlxG;
+import funkin.play.PlayState;
+import funkin.play.character.CharacterType;
+import funkin.play.character.AnimateAtlasCharacter;
+import funkin.modding.module.ModuleHandler;
+
+import supereric.retrospecter.modules.RetroThirdStrumline;
+
+class PatienceCharacter extends AnimateAtlasCharacter
+{
+  function new()
+  {
+    super('patience');
+  }
+
+  final singAnimations:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
+
+  function onNoteHit(event:HitNoteScriptEvent)
+  {
+    super.onNoteHit(event);
+    if (PlayState.instance == null) return;
+    if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+      if (RetroThirdStrumline.isActive()) {
+        var dir = event.note.noteData.getDirection();
+
+        if (RetroThirdStrumline.isDuelingThisFrame()) {
+          playSingAnimation(dir, false, '-DUO');
+        } else if (RetroThirdStrumline.isDispatchingForThird()) {
+          playSingAnimation(dir, false, '-MEAN');
+        }
+      }
+    }
+  }
+
+  // Load custom notestyle.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+
+    var downscroll = Preferences.downscroll;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    var strumStyle:String = 'pendu_' + (downscroll ? 'down' : 'up');
+    var strumStyleThird:String = 'dulum_' + (downscroll ? 'down' : 'up');
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setThirdStyle', [strumStyleThird]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+	}
+
+  override public function playSingAnimation(dir:Int, miss:Bool = false, ?suffix:String = ''):Void
+  {
+    if (miss)
+    {
+      super.playSingAnimation(dir, miss, suffix);
+      return;
+    }
+    var anim:String = singAnimations[dir] + (suffix != null ? suffix : '');
+    this.playAnimation(anim, true, true);
+  }
+}

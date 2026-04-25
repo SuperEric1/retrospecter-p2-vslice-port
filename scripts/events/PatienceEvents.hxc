@@ -1,0 +1,37 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+
+class PatienceEvents extends SongEvent {
+  function new() {
+    super('PatienceEvents');
+  }
+
+  override function getTitle() {
+    return "Patience Events";
+  }
+
+  override function handleEvent(data) {
+    if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
+    if (PlayState.instance.isMinimalMode) return;
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "eventType",
+        title: "Tipo do Evento",
+        defaultValue: 0,
+        type: "enum",
+        keys: [
+          "changeDefault" => 0,
+        ]
+      },
+      {
+        name: "value1",
+        title: "Valor 1",
+        defaultValue: '',
+        type: "string"
+      },
+    ];
+  }
+}

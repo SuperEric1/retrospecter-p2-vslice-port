@@ -1,0 +1,36 @@
+{
+  "version": "2.2.0",
+  "songName": "Waitkeeper",
+  "artist": "RetroSpecter & Kamex",
+  "charter": "Chubby & Lily-Clipee-Chan",
+  "offsets": {},
+  "playData": {
+    "difficulties": ["easy", "normal", "hard"],
+    "characters": {
+      "player": "bf-retrospecter",
+      "girlfriend": "gf-lust",
+      "opponent": "patience",
+      "instrumental": null
+    },
+    "album": "patience",
+    "stage": "heavens_gate",
+    "noteStyle": "retrospecter",
+    "ratings": {
+      "easy": 0,
+      "normal": 0,
+      "hard": 0
+    }
+  },
+  "timeFormat": "ms",
+  "timeChanges": [
+    {
+      "t": 0,
+      "b": 0,
+      "bpm": 200,
+      "n": 4,
+      "d": 4,
+      "bt": [4, 4, 4, 4]
+    }
+  ],
+  "generatedBy": "SuperEric"
+}

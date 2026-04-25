@@ -10,10 +10,10 @@
       "offsets": [10, -15],
       "animated": true,
       "data": {
-        "left": { "prefix": "Left(Down)0" },
-        "down": { "prefix": "Down(Down)0" },
-        "up": { "prefix": "Up(Down)0" },
-        "right": { "prefix": "Right(Down)0" }
+        "left": { "prefix": "Left(Down)0", "looped": true },
+        "down": { "prefix": "Down(Down)0", "looped": true },
+        "up": { "prefix": "Up(Down)0", "looped": true },
+        "right": { "prefix": "Right(Down)0", "looped": true }
       }
     },
     "noteStrumline": {

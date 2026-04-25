@@ -1,0 +1,48 @@
+import funkin.play.notes.notekind.NoteKind;
+import flixel.FlxG;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+
+class HolyNote extends NoteKind {
+	public function new() {
+		super('holy', 'Holy Note', 'pendu_down', [], true); // id, description, styleId, params, noanim
+		scoreable = false;
+	}
+
+	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!event.note.noteData.getMustHitNote()) return;
+
+		var downscroll:Bool = Preferences.downscroll
+			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+
+		event.note.x += 5;
+		event.note.yOffset += -85;
+
+		event.note.lowPriority = true;
+
+		if (!downscroll) {
+			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
+			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
+			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
+			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
+
+			var holyAnim:String;
+			switch (event.note.noteData.data % 4) {
+				case 0: holyAnim = 'purpleScroll';
+				case 1: holyAnim = 'blueScroll';
+				case 2: holyAnim = 'greenScroll';
+				case 3: holyAnim = 'redScroll';
+			}
+
+			event.note.animation.play(holyAnim);
+		}
+
+		event.note.active = true;
+	}
+
+	public override function onNoteMiss(event:NoteScriptEvent):Void {
+		event.cancel();
+		event.stopPropagation();
+	}
+}

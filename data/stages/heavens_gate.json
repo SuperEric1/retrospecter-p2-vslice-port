@@ -1,0 +1,23 @@
+{
+  "props": [],
+  "cameraZoom": 0.35,
+  "version": "1.0.0",
+  "characters": {
+    "bf": {
+      "zIndex": 300,
+      "position": [3430, 2390],
+      "cameraOffsets": [-550, -500]
+    },
+    "dad": {
+      "zIndex": 200,
+      "position": [1290, 2340],
+      "cameraOffsets": [800, -320]
+    },
+    "gf": {
+      "zIndex": 100,
+      "cameraOffsets": [0, 50],
+      "position": [1990, 450]
+    }
+  },
+  "name": "Heaven's Gate"
+}

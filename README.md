@@ -3,11 +3,9 @@ A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with 
 
 TODO:
 - [ ] Catastrofiend subtitles and modchart
-- [ ] Saku note mechanic
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
-- [ ] Atrocean's note mechanic
 - [ ] Remaining extirpatient effects
 - [ ] Update main menu
 - [ ] Remaining title screen bgs
@@ -19,12 +17,13 @@ TODO:
 - [ ] Gamepad controls support
 - [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
+- [ ] Enemy title popup module + apply to all songs that have it (todo)
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
 - [ ] Song ratings for freeplay
 - [ ] Sweet talk intro instruction
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
-- [ ] Replace the modified note assets with the original mod assets to implement notestyles later
+- [ ] Finish the opponent note skins
 - [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy

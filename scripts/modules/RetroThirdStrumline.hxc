@@ -1,0 +1,379 @@
+package supereric.retrospecter.modules;
+
+import funkin.util.GRhythmUtil;
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.notes.Strumline;
+import funkin.modding.events.HitNoteScriptEvent;
+import funkin.data.song.SongNoteData;
+import funkin.Conductor;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
+import funkin.modding.module.ModuleHandler;
+import flixel.FlxG;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import haxe.ds.StringMap;
+
+class RetroThirdStrumline extends Module
+{
+  public function new()
+  {
+    super('RetroThirdStrumline');
+  }
+
+  private static var _thirdStrumline:Strumline = null;
+  private static var hasThirdStrum:Bool = false;
+
+  // Originalmente "amplification" do código fonte do Funkin'.
+  private static final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+
+  // Para controlar se o terceiro strumline vai fazer o fade.
+  private static var didNotesFade:Bool = false;
+
+  private static var curSongId:String;
+
+  private static var isPlayerDead:Bool = false;
+
+  private static var _originalOppY:Float = null;
+
+  // Músicas que possuem variação "third" e precisam do terceiro strumline.
+  // Chave: songId, Valor: variação do chart
+  private static final THIRD_STRUMLINE_SONGS:StringMap<String, String> = [
+    'waitkeeper' => 'third',
+  ];
+
+  // Flags de sincronização de frame para o sistema de sufixo da Pendulumbra.
+  private static var _isDueling:Bool = false;
+  private static var _dispatchingForThird:Bool = false;
+
+  // True se o terceiro strumline acertou alguma nota junto do opponentStrums neste frame.
+  public static function isDuelingThisFrame():Bool { return _isDueling; }
+
+  // True DURANTE o dispatchEvent de uma nota do terceiro strumline (síncrono).
+  public static function isDispatchingForThird():Bool { return _dispatchingForThird; }
+
+  private static var _preCleanupCallback:Dynamic = null;
+
+  public static function setPreCleanupCallback(cb:Dynamic):Void
+  {
+    _preCleanupCallback = cb;
+  }
+
+  /**
+   * Retorna o terceiro strumline ativo, ou null se não existir.
+   */
+  public static function getStrumline():Strumline
+  {
+    return _thirdStrumline;
+  }
+
+  /**
+   * Retorna true se o terceiro strumline está ativo.
+   */
+  public static function isActive():Bool
+  {
+    return _thirdStrumline != null;
+  }
+
+  public override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+		FlxG.signals.postUpdate.remove(postUpdate);
+    FlxG.signals.postUpdate.add(postUpdate);
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    if (PlayState.instance == null) return;
+    didNotesFade = hasThirdStrum;
+
+    _cleanup();
+
+    var playState = PlayState.instance;
+
+    curSongId = playState.currentSong?.id ?? '';
+    if (!THIRD_STRUMLINE_SONGS.exists(curSongId)) return;
+
+    var variation:String = THIRD_STRUMLINE_SONGS.get(curSongId);
+    var isMobile:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+
+    // Não adicionar ao postUpdate se não vai causar uns null object references bizarros.
+    // Por isso utilizamos um timer
+    //new FlxTimer().start(0, function(tmr:FlxTimer) {
+    FlxG.signals.postUpdate.addOnce(function() {
+      _buildThirdStrumline(playState, variation, isMobile);
+    });
+    //});
+  }
+
+  private static function _buildThirdStrumline(playState:PlayState, variation:String, isMobile:Bool):Void
+  {
+    if (_thirdStrumline != null) return;
+    var oppStrumline = playState.opponentStrumline;
+
+    //oppStrumline.enterMiniMode(0.4 * screenRatio);
+    if (_originalOppY == null) _originalOppY = oppStrumline.y;
+
+    _thirdStrumline = new Strumline(oppStrumline.noteStyle, false, oppStrumline.scrollSpeed);
+    if (_thirdStrumline == null) return;
+    _thirdStrumline.y = _originalOppY;
+    _thirdStrumline.x = oppStrumline.x;
+    _thirdStrumline.cameras = [playState.camHUD];
+    _thirdStrumline.zIndex = oppStrumline.zIndex - 1;
+    _thirdStrumline.background.visible = false;
+
+    PlayState?.instance?.add(_thirdStrumline);
+    PlayState?.instance?.refresh();
+
+    var thirdChart = playState.currentSong?.getDifficulty(playState.currentDifficulty, variation);
+    if (thirdChart == null) throw 'Chart variation "' + variation + '" is missing!';
+
+    // NÃO normalizar.
+    _thirdStrumline.applyNoteData(thirdChart.notes);
+
+    // Hook para aplicar offsets de notas incoming do terceiro strumline.
+    _thirdStrumline.onNoteIncoming.add(_onThirdNoteIncoming);
+
+    if (isMobile) _thirdStrumline.enterMiniMode(0.4 * screenRatio);
+
+    var hasCustomStyle = ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteStyle', []);
+
+    // Offsets
+    final offsetAdjustY:Float = oppStrumline.isDownscroll ? -20 : 0;
+    if (!didNotesFade)
+    {
+      // Cancelar o fade inicial das notas pra não atrapalhar no offset
+      for (note in oppStrumline.strumlineNotes)
+      {
+        FlxTween.cancelTweensOf(note, ['alpha', 'y']);
+        note.y += 10;
+      }
+      trace("cancelado fade para oppstrum");
+
+      if (!hasCustomStyle)
+      {
+        for (note in _thirdStrumline.strumlineNotes)
+        {
+          FlxTween.cancelTweensOf(note, ['alpha', 'y']);
+          note.y += 10;
+        }
+      }
+    }
+    var markiplier:Float = isMobile ? (0.4 * screenRatio) : 1;
+    _thirdStrumline.y = (_originalOppY - 40 + offsetAdjustY) * markiplier;
+    oppStrumline.y = (_originalOppY + 80 + offsetAdjustY) * markiplier;
+
+    if (!didNotesFade)
+    {
+      _thirdStrumline.fadeInArrows();
+      oppStrumline.fadeInArrows();
+      didNotesFade = true;
+    }
+
+    if (playState.startTimestamp > 0) _thirdStrumline.handleSkippedNotes();
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('sendOppBackgroundToThird', [_thirdStrumline]);
+
+    hasThirdStrum = true;
+  }
+
+  private static function _onThirdNoteIncoming(note:Dynamic):Void
+  {
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteIncomingOffset', [note]);
+  }
+
+  /*override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    if (PlayState.instance == null || PlayState.instance.isInCutscene) return;
+  }*/
+
+  private static function postUpdate():Void {
+    if (PlayState.instance == null || !isActive()) return;
+
+    if (!PlayState.instance.isInCutscene) {
+      _processNotes(PlayState.instance);
+    }
+  }
+
+  /**
+   * Processa as notas do terceiro strumline, espelhando a lógica do opponentStrumline no PlayState.
+   */
+  private static function _processNotes(playState:PlayState):Void
+  {
+    if (_thirdStrumline?.notes?.members == null || !isActive()) return;
+    var currentStage = playState.currentStage;
+
+    _isDueling = false;
+    _didOppHitNote = false;
+
+    final SYNC_WINDOW:Float = 20.0;
+
+    for (note in _thirdStrumline.notes.members)
+    {
+      if (note == null || !note.alive) continue;
+      var r = GRhythmUtil.processWindow(note, false);
+      if (!r.botplayHit) continue;
+
+      // Checar se o opponentStrumline acertou uma nota no mesmo tempo
+      var noteTime = note.noteData.time;
+      for (oppNote in playState.opponentStrumline.notes.members) {
+        if (oppNote == null || !oppNote.hasBeenHit) continue;
+        if (Math.abs(oppNote.noteData.time - noteTime) <= SYNC_WINDOW) {
+          _didOppHitNote = true;
+          break;
+        }
+      }
+      _isDueling = _didOppHitNote;
+      _dispatchingForThird = true;
+
+      var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
+      playState.dispatchEvent(event);
+      _dispatchingForThird = false;
+      //trace(_isDueling + ' ' + note.noteData.time);
+
+      if (event.eventCanceled) continue;
+
+      _thirdStrumline.hitNote(note);
+
+      if (note.holdNoteSprite != null)
+        _thirdStrumline.playNoteHoldCover(note.holdNoteSprite);
+    }
+
+    for (holdNote in _thirdStrumline.holdNotes.members)
+    {
+      if (holdNote == null || !holdNote.alive || holdNote.noteData == null) continue;
+
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0)
+      {
+        if (currentStage?.getDad()?.isSinging() ?? false)
+          currentStage.getDad().holdTimer = 0;
+      }
+
+      if (holdNote.missedNote && !holdNote.handledMiss)
+      {
+        holdNote.handledMiss = true;
+
+        if (holdNote.scoreable && currentStage != null)
+          currentStage.getDad().playSingAnimation(holdNote.noteData.getDirection(), true);
+      }
+    }
+  }
+
+  override function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+    if (PlayState.instance == null || !isActive() || event.eventData.eventKind != "ScrollSpeed") return;
+
+    var data = event.eventData;
+
+    var scroll:Float = data.getFloat('scroll') ?? 1;
+    var duration:Float = data.getFloat('duration') ?? 4.0;
+    var ease:String = FlxEase.linear;
+
+    var strumline:String = data.getString('strumline') ?? 'both';
+
+    var absolute:Bool = data.getBool('absolute') ?? false;
+
+    var strumlineNames:Array<String> = [];
+
+    if (!absolute)
+    {
+      // If absolute is set to false, do the awesome multiplicative thing
+      scroll = scroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+    }
+
+    if (strumline == 'player') return;
+    var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
+    _tweenThirdScrollSpeed(scroll, durSeconds, ease);
+  }
+
+  public function _tweenThirdScrollSpeed(?speed:Float, duration:Float = 0, ?ease:FlxEase):Void
+  {
+    var value:Float = speed ?? 0;
+    var strum:Strumline = _thirdStrumline;
+
+    if (duration == 0)
+    {
+      strum.scrollSpeed = value;
+    }
+    else
+    {
+      var adjustedDuration:Float = duration / PlayState.instance.playbackRate;
+
+      PlayState.instance.scrollSpeedTweens.push(FlxTween.tween(strum, {
+        'scrollSpeed': value
+      }, adjustedDuration, {ease: ease}));
+    }
+  }
+
+  /**
+   * Destrói e remove o terceiro strumline manualmente, se precisar antes do onDestroy.
+   */
+  public static function destroyThird():Void
+  {
+    _cleanup();
+  }
+
+  private static function _cleanup():Void
+  {
+    if (_thirdStrumline != null)
+    {
+      didNotesFade = true;
+      if (_preCleanupCallback != null)
+      {
+        _preCleanupCallback();
+        _preCleanupCallback = null;
+      }
+
+      PlayState.instance?.remove(_thirdStrumline, true);
+      _thirdStrumline?.clean();
+      _thirdStrumline?.destroy();
+    } else {
+      didNotesFade = false;
+    }
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('resetThirdStyle', []);
+
+    if (_originalOppY != null)
+    {
+      PlayState.instance?.opponentStrumline?.y = _originalOppY;
+      _originalOppY = null;
+    }
+
+    _thirdStrumline = null;
+
+    _isDueling = false;
+    _dispatchingForThird = false;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    /*if (_thirdStrumline != null)
+    {
+      if (!isPlayerDead) _thirdStrumline.vwooshNotes();
+      _thirdStrumline.clean();
+    }*/
+
+    isPlayerDead = false;
+  }
+
+  override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    isPlayerDead = true;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    _cleanup();
+    isPlayerDead = false;
+    didNotesFade = false;
+    hasThirdStrum = false;
+  }
+}

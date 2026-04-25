@@ -1,0 +1,142 @@
+{
+  "version": "1.0.0",
+  "name": "Patience",
+  "renderType": "animateatlas",
+  "assetPath": "shared:characters/atlases/pendulumbra",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 1,
+  "healthIcon": {
+    "id": "pendulumbra",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75,
+    "offsets": [15, 0]
+  },
+  "atlasSettings": {
+    "applyStageMatrix": true
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "Pendu Anims/Pendulumbra Idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singDOWN-DUO",
+      "prefix": "Pendu Anims/Pendulumbra Duo Down",
+      "offsets": [-70, 40],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singLEFT-DUO",
+      "prefix": "Pendu Anims/Pendulumbra Duo Left",
+      "offsets": [-70, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singRIGHT-DUO",
+      "prefix": "Pendu Anims/Pendulumbra Duo Right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singUP-DUO",
+      "prefix": "Pendu Anims/Pendulumbra Duo Up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singDOWN-MEAN",
+      "prefix": "Pendu Anims/Pendulumbra Mean Down",
+      "offsets": [-67, 30],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singUP-MEAN",
+      "prefix": "Pendu Anims/Pendulumbra Mean Up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singRIGHT-MEAN",
+      "prefix": "Pendu Anims/Pendulumbra Mean Right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singLEFT-MEAN",
+      "prefix": "Pendu Anims/Pendulumbra Mean Left",
+      "offsets": [10, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singUP-NICE",
+      "prefix": "Pendu Anims/Pendulumbra Nice Up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singDOWN-NICE",
+      "prefix": "Pendu Anims/Pendulumbra Nice Down",
+      "offsets": [-71, 30],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singLEFT-NICE",
+      "prefix": "Pendu Anims/Pendulumbra Nice Left",
+      "offsets": [10, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singRIGHT-NICE",
+      "prefix": "Pendu Anims/Pendulumbra Nice Right",
+      "offsets": [-18, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+
+    {
+      "name": "singUP",
+      "prefix": "Pendu Anims/Pendulumbra Nice Up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "Pendu Anims/Pendulumbra Nice Down",
+      "offsets": [-71, 30],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "Pendu Anims/Pendulumbra Nice Left",
+      "offsets": [10, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "Pendu Anims/Pendulumbra Nice Right",
+      "offsets": [-18, 0],
+      "frameRate": 24,
+      "animType": "symbol"
+    }
+  ],
+  "flipX": false
+}

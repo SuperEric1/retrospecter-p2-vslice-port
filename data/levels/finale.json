@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "name": "FINALE",
-  "songs": ["extirpatient"],
+  "songs": ["waitkeeper", "extirpatient"],
   "capsule": {
     "name": "FINALE"
   },
@@ -9,13 +9,13 @@
   "background": "#000000",
   "props": [
     {
-      "assetPath": "storymenu/props/retro",
+      "assetPath": "storymenu/props/saku",
       "scale": 0.0001,
       "offsets": [-999, -999],
       "animations": [
         {
           "name": "idle",
-          "prefix": "Retro IDLE",
+          "prefix": "saku idle",
           "frameRate": 24
         }
       ]

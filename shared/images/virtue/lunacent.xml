@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="lunacent.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="bgcameo_lunacent0000" x="572" y="0" width="284" height="310" frameX="-12" frameY="-6" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0001" x="572" y="0" width="284" height="310" frameX="-12" frameY="-6" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0002" x="861" y="0" width="286" height="303" frameX="-4" frameY="-13" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0003" x="861" y="0" width="286" height="303" frameX="-4" frameY="-13" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0004" x="1152" y="0" width="282" height="305" frameX="0" frameY="-11" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0005" x="1152" y="0" width="282" height="305" frameX="0" frameY="-11" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0006" x="0" y="0" width="282" height="314" frameX="-5" frameY="-2" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0007" x="0" y="0" width="282" height="314" frameX="-5" frameY="-2" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0008" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0009" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0010" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0011" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0012" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+	<SubTexture name="bgcameo_lunacent0013" x="287" y="0" width="280" height="316" frameX="-9" frameY="0" frameWidth="296" frameHeight="316"/>
+</TextureAtlas>

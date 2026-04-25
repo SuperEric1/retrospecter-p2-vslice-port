@@ -1,0 +1,99 @@
+{
+  "version": "1.1.0",
+  "name": "Pen'du",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/Patience",
+      "scale": 0.7,
+      "offsets": [8, -160],
+      "animated": true,
+      "data": {
+        "left": { "prefix": "Left(Down)0", "looped": true },
+        "down": { "prefix": "Down(Down)0", "looped": true },
+        "up": { "prefix": "Up(Down)0", "looped": true },
+        "right": { "prefix": "Right(Up)0", "looped": true }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/Patience",
+      "scale": 0.7,
+      "offsets": [0, -140],
+      "data": {
+        "leftStatic": { "prefix": "static Left0" },
+        "leftPress": { "prefix": "static Left0" },
+        "leftConfirm": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
+
+        "downStatic": { "prefix": "static Down0", "offsets": [6, -1] },
+        "downPress": { "prefix": "static Down0", "offsets": [6, -1] },
+        "downConfirm": { "prefix": "confirm Down0", "offsets": [6, -1] },
+        "downConfirmHold": { "prefix": "confirm Down0005", "offsets": [6, -1] },
+
+        "upStatic": { "prefix": "static Up0", "offsets": [5.5, -1] },
+        "upPress": { "prefix": "static Up0", "offsets": [5.5, -1]},
+        "upConfirm": { "prefix": "confirm Up0", "offsets": [5.5, -1] },
+        "upConfirmHold": { "prefix": "confirm Up0005", "offsets": [5.5, -1] },
+
+        "rightStatic": { "prefix": "static Right0" },
+        "rightPress": { "prefix": "static Right0" },
+        "rightConfirm": { "prefix": "confirm Right0" },
+        "rightConfirmHold": { "prefix": "confirm Right0005" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "shared:notes/hold/Patience",
+      "scale": 0.7,
+      "offsets": [-5.5, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": "shared:noteSplashes/retroNoteSplashes",
+      "alpha": 0.8,
+      "offsets": [40, 0],
+      "data": {
+        "enabled": false,
+        "leftSplashes": [
+          { "prefix": "note splash purple 1" }
+        ],
+        "rightSplashes": [
+          { "prefix": "note splash red 1" }
+        ],
+        "upSplashes": [
+          { "prefix": "note splash green 1" }
+        ],
+        "downSplashes": [
+          { "prefix": "note splash blue 1" }
+        ]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Patience_cover",
+      "offsets": [8, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

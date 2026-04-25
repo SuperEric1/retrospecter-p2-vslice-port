@@ -22,9 +22,11 @@ import funkin.util.ReflectUtil;
 import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 
+import supereric.retrospecter.modules.RetroThirdStrumline;
+
 class RetroNoteStyles extends Module {
 	public function new() {
-		super("RetroNoteStyles");
+		super("RetroNoteStyles", 130);
 	}
 
 	var mobileArrowsActive:Bool = false;
@@ -48,6 +50,10 @@ class RetroNoteStyles extends Module {
 	var currentPlayerStyle:String = null;
 	var isOppUsingCustomNote:Bool = false;
 	var isPlayerUsingCustomNote:Bool = false;
+	var isThirdUsingCustomNote:Bool = false;
+
+	var _thirdStyle:String = null;
+	var currentThirdStyle:String = null;
 	var didNotesFade:Bool = false;
 
 	// GAMBIARRA: Offset fixes for broken NoteStyle offset support, while they aren't fixed.
@@ -58,6 +64,7 @@ class RetroNoteStyles extends Module {
 	 */
 	var oppNoteOffset:Array<Float> = [0.0, 0.0];
 	var playerNoteOffset:Array<Float> = [0.0, 0.0];
+	var thirdNoteOffset:Array<Float> = [0.0, 0.0];
 
 	/**
 	 * Per-animation strumline offsets per side.
@@ -72,6 +79,7 @@ class RetroNoteStyles extends Module {
 	 */
 	var oppStrumAnimOffsets:IntMap<StringMap<Array<Float>>> = new IntMap();
 	var playerStrumAnimOffsets:IntMap<StringMap<Array<Float>>> = new IntMap();
+	var thirdStrumAnimOffsets:IntMap<StringMap<Array<Float>>> = new IntMap();
 
 	/**
 	 * Tracks the offset we last applied to each strum, per side.
@@ -88,10 +96,12 @@ class RetroNoteStyles extends Module {
 	 */
 	var oppExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
 	var playerExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
+	var thirdExpectedOffsets:Array<Array<Float>> = [[0,0],[0,0],[0,0],[0,0]];
 
 	// Whether the gambiarra™ should run for each side.
 	var hasOppStrumAnimOffsets:Bool = false;
 	var hasPlayerStrumAnimOffsets:Bool = false;
+	var hasThirdStrumAnimOffsets:Bool = false;
 
 	public function setStyle(type:CharacterType, name:String):Void {
 		if (type == CharacterType.BF) {
@@ -99,6 +109,10 @@ class RetroNoteStyles extends Module {
 		} else if (type == CharacterType.DAD) {
 			_opponentStyle = name;
 		}
+	}
+
+	public function setThirdStyle(name:String):Void {
+		_thirdStyle = name;
 	}
 
 	public override function onCreate(event:ScriptEvent):Void
@@ -190,7 +204,7 @@ class RetroNoteStyles extends Module {
 		oppStrum.background.alpha = 0;
 		playerStrum.background.alpha = 0;
 
-		var gradientColors:Array<Int> = playerStrum.isDownscroll ? [FlxColor.TRANSPARENT, FlxColor.fromRGBFloat(0, 0, 0, 0.5), 0xFF000000, 0xFF000000] : [0xFF000000, 0xFF000000, 0x00000000];
+		var gradientColors:Array<Int> = playerStrum.isDownscroll ? [FlxColor.TRANSPARENT, FlxColor.fromRGBFloat(0, 0, 0, 0.5), 0xFF000000, 0xFF000000] : [0xFF000000, 0xFF000000, FlxColor.fromRGBFloat(0, 0, 0, 0.5), FlxColor.TRANSPARENT];
 		var baseBgWidth:Int = Std.int(Strumline.KEY_COUNT * Strumline.NOTE_SPACING + BACKGROUND_PAD * 2);
 
 		opponentStrumBackground = buildGradientSprite(baseBgWidth, gradientColors);
@@ -204,6 +218,84 @@ class RetroNoteStyles extends Module {
 		playerStrumBackground.x = mobileArrowsActive ? (-BACKGROUND_PAD - 100) : -BACKGROUND_PAD;
 		playerStrum.add(playerStrumBackground);
 		playerStrum.refresh();
+	}
+
+	/**
+	 * Applies a notestyle for the third strumline
+	 * Called by RetroThirdStrumline
+	 */
+	public function applyThirdNoteStyle():Void {
+		//if (!isRetro) return false;
+		var thirdStrum = RetroThirdStrumline.getStrumline();
+		if (thirdStrum == null || _thirdStyle == null || _thirdStyle == currentThirdStyle) return;
+
+		var style = NoteStyleRegistry.instance.fetchEntry(_thirdStyle);
+		if (style == null) return false;
+
+		thirdNoteOffset = [0.0, 0.0];
+		thirdStrumAnimOffsets = new IntMap();
+		thirdExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+		hasThirdStrumAnimOffsets = false;
+
+		currentThirdStyle = _thirdStyle;
+		didNotesFade = true; // We already do that when the thirdStrum builds
+		FunkinMemory.cacheNoteStyle(style);
+		refreshStrumlineStyle(thirdStrum, _thirdStyle, false);
+		isThirdUsingCustomNote = true;
+
+		thirdNoteOffset = extractNoteOffset(style);
+		thirdStrumAnimOffsets = extractStrumAnimOffsets(style);
+		hasThirdStrumAnimOffsets = thirdStrumAnimOffsets.keys().hasNext();
+		return true;
+	}
+
+	/**
+	 * Applies note offsets for notes coming for the third strumline
+	 * Called by RetroThirdStrumline
+	 */
+	public function applyThirdNoteIncomingOffset(note:Dynamic):Void {
+		if (!isRetro || note == null) return;
+		note.x += thirdNoteOffset[0] ?? 0;
+		note.yOffset = 0;
+		note.yOffset += thirdNoteOffset[1] ?? 0;
+	}
+
+	/**
+	 * Called by RetroThirdStrumline
+	 */
+	public function resetThirdStyle():Void {
+		currentThirdStyle = null;
+		thirdNoteOffset = [0.0, 0.0];
+		thirdStrumAnimOffsets = new IntMap();
+		thirdExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+		hasThirdStrumAnimOffsets = false;
+		isThirdUsingCustomNote = false;
+	}
+
+	/**
+	 * Sends the custom strum background to the third strumline when theres one.
+	 * Called in RetroThirdStrumline.
+	 **/
+	public function sendOppBackgroundToThird():Void {
+		if (opponentStrumBackground == null || oppStrum == null) return;
+
+		var thirdStrum:Strumline = RetroThirdStrumline.getStrumline();
+		if (thirdStrum == null) return;
+
+		oppStrum.remove(opponentStrumBackground, true);
+		oppStrum.refresh();
+
+		thirdStrum?.add(opponentStrumBackground);
+		thirdStrum?.refresh();
+
+		// Without this, _cleanup() will destroy both thirdStrum and the custom background, so we need to save them before destroying the strum.
+		RetroThirdStrumline.setPreCleanupCallback(() -> {
+			if (opponentStrumBackground == null || oppStrum == null) return;
+			thirdStrum.remove(opponentStrumBackground, false); // false doesn't destroy the bg
+			thirdStrum.refresh();
+			oppStrum.add(opponentStrumBackground);
+			oppStrum.refresh();
+		});
 	}
 
 	private function buildGradientSprite(width:Int, colors:Array<Int>):FlxSprite {
@@ -358,6 +450,9 @@ class RetroNoteStyles extends Module {
 			if (hasPlayerStrumAnimOffsets) {
 				applyStrumAnimOffsets(PlayState.instance.playerStrumline, playerStrumAnimOffsets, playerExpectedOffsets);
 			}
+			if (hasThirdStrumAnimOffsets && RetroThirdStrumline.isActive()) {
+				applyStrumAnimOffsets(RetroThirdStrumline.getStrumline(), thirdStrumAnimOffsets, thirdExpectedOffsets);
+			}
 
 			// Sync gradient backgrounds every frame.
 			if (opponentStrumBackground != null && oppStrum != null) {
@@ -387,7 +482,9 @@ class RetroNoteStyles extends Module {
 
 		// Play splash anims for the opponent if they're using a custom notestyle.
 		var noteData = event.note.noteData;
-		if (!noteData.getMustHitNote() && isOppUsingCustomNote) {
+		if (RetroThirdStrumline.isDispatchingForThird()) {
+			if (isThirdUsingCustomNote) RetroThirdStrumline.getStrumline()?.playNoteSplash(noteData.getDirection());
+		} else if (!noteData.getMustHitNote() && isOppUsingCustomNote) {
 			PlayState.instance.opponentStrumline.playNoteSplash(noteData.getDirection());
 		}
 	}
@@ -406,7 +503,7 @@ class RetroNoteStyles extends Module {
 		rebuildStrumlineNotes(targetStrumline, customStyle);
 		updateExistingNotes(targetStrumline, customStyle);
 
-		if (!isPlayerSide && mobileArrowsActive) {
+		if (!isPlayerSide && mobileArrowsActive && targetStrumline == PlayState.instance?.opponentStrumline) {
 			adjustOppStrums();
 		}
 	}
@@ -491,19 +588,26 @@ class RetroNoteStyles extends Module {
 		isRetro = null;
 		_opponentStyle = null;
 		_playerStyle = null;
+		_thirdStyle = null;
 		currentOppStyle = null;
 		currentPlayerStyle = null;
+		currentThirdStyle = null;
 		isOppUsingCustomNote = false;
 		isPlayerUsingCustomNote = false;
+		isThirdUsingCustomNote = false;
 		didNotesFade = false;
 		oppNoteOffset = [0.0, 0.0];
 		playerNoteOffset = [0.0, 0.0];
+		thirdNoteOffset = [0.0, 0.0];
 		oppStrumAnimOffsets = new IntMap();
 		playerStrumAnimOffsets = new IntMap();
+		thirdStrumAnimOffsets = new IntMap();
 		hasOppStrumAnimOffsets = false;
 		hasPlayerStrumAnimOffsets = false;
+		hasThirdStrumAnimOffsets = false;
 		oppExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
 		playerExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
+		thirdExpectedOffsets = [[0,0],[0,0],[0,0],[0,0]];
 		strumBackgroundOpacity = 0;
 	}
 }
