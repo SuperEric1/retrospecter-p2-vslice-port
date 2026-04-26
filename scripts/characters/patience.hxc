@@ -3,6 +3,7 @@ import funkin.play.PlayState;
 import funkin.play.character.CharacterType;
 import funkin.play.character.AnimateAtlasCharacter;
 import funkin.modding.module.ModuleHandler;
+import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroThirdStrumline;
 
