@@ -137,9 +137,10 @@ class RetroThirdStrumline extends Module
     // Hook para aplicar offsets de notas incoming do terceiro strumline.
     _thirdStrumline.onNoteIncoming.add(_onThirdNoteIncoming);
 
-    if (isMobile) _thirdStrumline.enterMiniMode(0.4 * screenRatio);
-
     var hasCustomStyle = ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteStyle', []);
+
+    // Aplicar o minimode depois de carregar (ou não) o notestyle
+    if (isMobile) _thirdStrumline.enterMiniMode(0.4 * screenRatio);
 
     // Offsets
     final offsetAdjustY:Float = oppStrumline.isDownscroll ? -20 : 0;
