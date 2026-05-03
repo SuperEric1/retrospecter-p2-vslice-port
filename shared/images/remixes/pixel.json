@@ -1,0 +1,35 @@
+{ "frames": {
+   "anim0000": {
+    "frame": { "x": 0, "y": 0, "w": 672, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 672, "h": 384 },
+    "sourceSize": { "w": 672, "h": 384 },
+    "duration": 100
+   },
+   "anim0001": {
+    "frame": { "x": 672, "y": 0, "w": 672, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 672, "h": 384 },
+    "sourceSize": { "w": 672, "h": 384 },
+    "duration": 100
+   },
+   "anim0002": {
+    "frame": { "x": 1344, "y": 0, "w": 672, "h": 384 },
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": { "x": 0, "y": 0, "w": 672, "h": 384 },
+    "sourceSize": { "w": 672, "h": 384 },
+    "duration": 100
+   }
+ },
+ "meta": {
+  "app": "https://www.aseprite.org/",
+  "version": "1.3-rc1-x64",
+  "image": "pixel.png",
+  "format": "RGBA8888",
+  "size": { "w": 2016, "h": 384 },
+  "scale": "1"
+ }
+}

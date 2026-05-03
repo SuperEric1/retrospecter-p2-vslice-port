@@ -5,7 +5,7 @@ class WrathLevel extends Level
 {
   function new()
   {
-    super('01-wrath');
+    super('10-wrath');
   }
 
   override function isUnlocked():Bool
@@ -15,7 +15,7 @@ class WrathLevel extends Level
 
   override function getSongDisplayNames(difficultyId:String):Array<String>
   {
-    if (Save.instance.hasBeatenLevel('01-wrath'))
+    if (Save.instance.hasBeatenLevel('10-wrath'))
     {
       return ["Satisfracture", "Spectral", "Apocalyptro", "Catastrofiend"];
     }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ChainNotesOpp.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="Chain Strum Confirm Down0000" x="218" y="0" width="218" height="245" frameX="-1" frameY="0" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Down0001" x="0" y="0" width="218" height="245" frameX="-1" frameY="0" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Down0002" x="898" y="239" width="213" height="239" frameX="-4" frameY="-3" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Down0003" x="898" y="239" width="213" height="239" frameX="-4" frameY="-3" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Left0000" x="218" y="245" width="244" height="218" frameX="-1" frameY="-1" frameWidth="249" frameHeight="224"/>
+	<SubTexture name="Chain Strum Confirm Left0001" x="654" y="0" width="244" height="218" frameX="-1" frameY="-1" frameWidth="249" frameHeight="224"/>
+	<SubTexture name="Chain Strum Confirm Left0002" x="483" y="490" width="239" height="213" frameX="-4" frameY="-4" frameWidth="249" frameHeight="224"/>
+	<SubTexture name="Chain Strum Confirm Left0003" x="483" y="490" width="239" height="213" frameX="-4" frameY="-4" frameWidth="249" frameHeight="224"/>
+	<SubTexture name="Chain Strum Confirm Right0000" x="0" y="490" width="244" height="218" frameX="0" frameY="-1" frameWidth="249" frameHeight="225"/>
+	<SubTexture name="Chain Strum Confirm Right0001" x="654" y="218" width="244" height="218" frameX="0" frameY="-1" frameWidth="249" frameHeight="225"/>
+	<SubTexture name="Chain Strum Confirm Right0002" x="244" y="490" width="239" height="214" frameX="-3" frameY="-3" frameWidth="249" frameHeight="225"/>
+	<SubTexture name="Chain Strum Confirm Right0003" x="244" y="490" width="239" height="214" frameX="-3" frameY="-3" frameWidth="249" frameHeight="225"/>
+	<SubTexture name="Chain Strum Confirm Up0000" x="436" y="0" width="218" height="245" frameX="-1" frameY="-1" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Up0001" x="0" y="245" width="218" height="245" frameX="-1" frameY="-1" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Up0002" x="898" y="0" width="214" height="239" frameX="-3" frameY="-4" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Confirm Up0003" x="898" y="0" width="214" height="239" frameX="-3" frameY="-4" frameWidth="223" frameHeight="249"/>
+	<SubTexture name="Chain Strum Down0000" x="722" y="490" width="165" height="188" frameX="2" frameY="2" frameWidth="161" frameHeight="184"/>
+	<SubTexture name="Chain Strum Left0000" x="0" y="708" width="188" height="165" frameX="2" frameY="2" frameWidth="184" frameHeight="161"/>
+	<SubTexture name="Chain Strum Right0000" x="898" y="478" width="188" height="165" frameX="2" frameY="2" frameWidth="184" frameHeight="161"/>
+	<SubTexture name="Chain Strum Up0000" x="462" y="245" width="165" height="188" frameX="2" frameY="2" frameWidth="161" frameHeight="184"/>
+	<SubTexture name="chain hold piece0000" x="942" y="643" width="44" height="48" frameX="2" frameY="2" frameWidth="40" frameHeight="44"/>
+	<SubTexture name="chain hold piece end0000" x="898" y="643" width="44" height="64" frameX="2" frameY="2" frameWidth="40" frameHeight="65"/>
+</TextureAtlas>

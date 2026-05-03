@@ -6,7 +6,7 @@ import funkin.mobile.input.ControlsHandler;
 
 class AutoChainNote extends NoteKind {
 	public function new() {
-		super('autoChain', 'Auto Chain Note', null, [], true); // id, description, styleId, params, noanim
+		super('autoChain', 'Auto Chain Note', 'chain_down', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -14,34 +14,28 @@ class AutoChainNote extends NoteKind {
 		var downscroll:Bool = Preferences.downscroll
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.x += -18;
-		event.note.yOffset += -150;
+		event.note.x += 1;
+		event.note.yOffset += -35 * -2;
 
 		event.note.lowPriority = true;
 
 		event.note.frames = Paths.getSparrowAtlas('notes/ChainNotes');
-		if (downscroll) {
-			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
-			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
-			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
-			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
-		} else {
+		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
 			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
 			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
 			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
-		}
 
-		var chainAnim:String;
-		switch (event.note.noteData.data % 4) {
-			case 0: chainAnim = 'purpleScroll';
-			case 1: chainAnim = 'blueScroll';
-			case 2: chainAnim = 'greenScroll';
-			case 3: chainAnim = 'redScroll';
-		}
+			var chainAnim:String;
+			switch (event.note.noteData.data % 4) {
+				case 0: chainAnim = 'purpleScroll';
+				case 1: chainAnim = 'blueScroll';
+				case 2: chainAnim = 'greenScroll';
+				case 3: chainAnim = 'redScroll';
+			}
 
-		event.note.active = true;
-		event.note.animation.play(chainAnim);
+			event.note.animation.play(chainAnim);
+		}
 	}
 
 	// onNoteMiss is handled by RetroPlayState (auto-locks the strum on miss).

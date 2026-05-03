@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ace.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="1937" y="0" width="482" height="992" frameX="0" frameY="-13" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0001" x="1937" y="0" width="482" height="992" frameX="0" frameY="-13" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0002" x="0" y="0" width="486" height="1000" frameX="-1" frameY="-6" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0003" x="0" y="0" width="486" height="1000" frameX="-1" frameY="-6" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0004" x="1455" y="0" width="477" height="1003" frameX="-2" frameY="-2" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0005" x="1455" y="0" width="477" height="1003" frameX="-2" frameY="-2" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0006" x="973" y="0" width="477" height="1004" frameX="-2" frameY="-1" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0007" x="973" y="0" width="477" height="1004" frameX="-2" frameY="-1" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0008" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0009" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0010" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0011" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0012" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+	<SubTexture name="idle0013" x="491" y="0" width="477" height="1005" frameX="-2" frameY="0" frameWidth="487" frameHeight="1006"/>
+</TextureAtlas>

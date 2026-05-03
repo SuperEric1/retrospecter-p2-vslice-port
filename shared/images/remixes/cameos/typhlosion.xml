@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="typhlosion.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="0" y="0" width="482" height="653" frameX="0" frameY="-4" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0001" x="0" y="0" width="482" height="653" frameX="0" frameY="-4" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0002" x="487" y="0" width="479" height="657" frameX="0" frameY="-1" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0003" x="487" y="0" width="479" height="657" frameX="0" frameY="-1" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0004" x="971" y="0" width="476" height="658" frameX="-2" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0005" x="971" y="0" width="476" height="658" frameX="-2" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0006" x="1452" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0007" x="1452" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0008" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0009" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0010" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0011" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0012" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+	<SubTexture name="idle0013" x="1932" y="0" width="475" height="658" frameX="-3" frameY="0" frameWidth="482" frameHeight="658"/>
+</TextureAtlas>

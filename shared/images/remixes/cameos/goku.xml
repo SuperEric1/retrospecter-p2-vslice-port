@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="goku.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="0" y="0" width="406" height="722" frameX="0" frameY="0" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0001" x="0" y="0" width="406" height="722" frameX="0" frameY="0" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0002" x="411" y="0" width="405" height="721" frameX="-1" frameY="-3" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0003" x="411" y="0" width="405" height="721" frameX="-1" frameY="-3" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0004" x="411" y="726" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0005" x="411" y="726" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0006" x="0" y="727" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0007" x="0" y="727" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0008" x="821" y="0" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0009" x="821" y="0" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0010" x="821" y="725" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0011" x="821" y="725" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0012" x="821" y="0" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+	<SubTexture name="idle0013" x="821" y="0" width="405" height="720" frameX="-1" frameY="-4" frameWidth="406" frameHeight="724"/>
+</TextureAtlas>

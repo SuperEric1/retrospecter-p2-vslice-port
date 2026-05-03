@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "name": "Remixes",
+  "artists": ["RetroSpecter & Kamex"],
+  "albumArtAsset": "freeplay/albumRoll/mixter",
+  "albumOSTName": "REMIXES",
+  "albumTitleAsset": "freeplay/logos/Mixter",
+  "albumTitleOffsets": [-40, 10]
+}

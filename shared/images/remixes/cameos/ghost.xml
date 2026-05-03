@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="ghost.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="1488" y="0" width="487" height="821" frameX="-3" frameY="-18" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0001" x="995" y="0" width="488" height="822" frameX="-2" frameY="-17" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0002" x="1488" y="826" width="475" height="839" frameX="-1" frameY="0" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0003" x="995" y="827" width="475" height="838" frameX="-1" frameY="-1" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0004" x="501" y="0" width="489" height="825" frameX="-1" frameY="-14" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0005" x="501" y="830" width="489" height="825" frameX="-1" frameY="-14" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0006" x="0" y="0" width="496" height="824" frameX="-1" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0007" x="0" y="0" width="496" height="824" frameX="-1" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0008" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0009" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0010" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0011" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0012" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+	<SubTexture name="idle0013" x="0" y="829" width="496" height="824" frameX="0" frameY="-15" frameWidth="497" frameHeight="839"/>
+</TextureAtlas>

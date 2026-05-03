@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="noise.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="noise0000" x="0" y="0" width="1395" height="101"/>
+	<SubTexture name="noise0001" x="1400" y="0" width="1395" height="101"/>
+	<SubTexture name="noise0002" x="0" y="106" width="1395" height="101"/>
+	<SubTexture name="noise0003" x="1400" y="106" width="1395" height="101"/>
+	<SubTexture name="noise0004" x="0" y="212" width="1395" height="101"/>
+	<SubTexture name="noise0005" x="1400" y="212" width="1395" height="101"/>
+	<SubTexture name="noise0006" x="0" y="318" width="1395" height="101"/>
+	<SubTexture name="noise0007" x="1400" y="318" width="1395" height="101"/>
+	<SubTexture name="noise0008" x="0" y="424" width="1395" height="101"/>
+	<SubTexture name="noise0009" x="1400" y="424" width="1395" height="101"/>
+	<SubTexture name="noise0010" x="0" y="530" width="1395" height="101"/>
+	<SubTexture name="noise0011" x="1400" y="530" width="1395" height="101"/>
+	<SubTexture name="noise0012" x="0" y="636" width="1395" height="101"/>
+	<SubTexture name="noise0013" x="1400" y="636" width="1395" height="101"/>
+	<SubTexture name="noise0014" x="0" y="742" width="1395" height="101"/>
+	<SubTexture name="noise0015" x="1400" y="742" width="1395" height="101"/>
+	<SubTexture name="noise0016" x="0" y="848" width="1395" height="101"/>
+	<SubTexture name="noise0017" x="1400" y="848" width="1395" height="101"/>
+	<SubTexture name="noise0018" x="0" y="954" width="1395" height="101"/>
+	<SubTexture name="noise0019" x="1400" y="954" width="1395" height="101"/>
+	<SubTexture name="noise0020" x="0" y="1060" width="1395" height="101"/>
+	<SubTexture name="noise0021" x="0" y="1166" width="1395" height="101"/>
+	<SubTexture name="noise0022" x="1400" y="1060" width="1395" height="101"/>
+	<SubTexture name="noise0023" x="1400" y="1166" width="1395" height="101"/>
+</TextureAtlas>

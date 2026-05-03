@@ -5,17 +5,17 @@ class PrideLevel extends Level
 {
   function new()
   {
-    super('03-pride');
+    super('20-pride');
   }
 
   override function isUnlocked():Bool
   {
-    return Save.instance.hasBeatenLevel('1-wrath');
+    return Save.instance.hasBeatenLevel('10-wrath');
   }
 
   override function getSongDisplayNames(difficultyId:String):Array<String>
   {
-    if (Save.instance.hasBeatenLevel('03-pride'))
+    if (Save.instance.hasBeatenLevel('20-pride'))
     {
       return ["Egobrainiac", "Superbio"];
     }

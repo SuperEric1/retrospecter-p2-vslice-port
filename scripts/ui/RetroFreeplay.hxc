@@ -40,53 +40,53 @@ class RetroFreeplay extends Module {
 
     var bgPath = 'freeplay/backgrounds/';
 
-    songConfig.set('01-wrath', {
+    songConfig.set('10-wrath', {
       bgImage: bgPath + 'wrath_blur',
       funnyScroll: 'TEST TEXT',
     });
-    songConfig.set('02-wrath_extras', {
+    songConfig.set('11-wrath_extras', {
       bgImage: bgPath + 'wrath_blur',
     });
 
-    songConfig.set('03-pride', {
+    songConfig.set('20-pride', {
       bgImage: bgPath + 'pride_blur',
     });
-    songConfig.set('04-pride_extras', {
+    songConfig.set('21-pride_extras', {
       bgImage: bgPath + 'pride_blur',
     });
 
-    songConfig.set('05-gluttony', {
+    songConfig.set('30-gluttony', {
       bgImage: bgPath + 'gluttony_blur',
     });
-    songConfig.set('06-gluttony_extras', {
+    songConfig.set('31-gluttony_extras', {
       bgImage: bgPath + 'gluttony_blur',
     });
 
-    songConfig.set('07-greed', {
+    songConfig.set('40-greed', {
       bgImage: bgPath + 'greed_blur',
     });
-    songConfig.set('08-greed_extras', {
+    songConfig.set('41-greed_extras', {
       bgImage: bgPath + 'greed_blur',
     });
 
-    songConfig.set('09-envy', {
+    songConfig.set('50-envy', {
       bgImage: bgPath + 'envy_blur',
     });
-    songConfig.set('10-envy_extras', {
+    songConfig.set('51-envy_extras', {
       bgImage: bgPath + 'envy_blur',
     });
 
-    songConfig.set('11-sloth', {
+    songConfig.set('60-sloth', {
       bgImage: bgPath + 'sloth_blur',
     });
-    songConfig.set('12-sloth_extras', {
+    songConfig.set('61-sloth_extras', {
       bgImage: bgPath + 'sloth_blur',
     });
 
-    songConfig.set('13-lust', {
+    songConfig.set('70-lust', {
       bgImage: bgPath + 'lust_blur',
     });
-    songConfig.set('14-lust_extras', {
+    songConfig.set('71-lust_extras', {
       bgImage: bgPath + 'lust_blur',
     });
 
@@ -105,6 +105,9 @@ class RetroFreeplay extends Module {
     });
     songConfig.set('extiraging', {
       bgImage: bgPath + 'death',
+    });
+    songConfig.set('dadbattle-r', {
+      bgImage: bgPath + 'mixter',
     });
   }
 

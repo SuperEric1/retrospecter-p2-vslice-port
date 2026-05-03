@@ -1,0 +1,53 @@
+{
+  "version": "1.0.0",
+  "name": "Mixter",
+  "assetPath": "remixes/mixter",
+  "singTime": 4,
+  "isPixel": false,
+  "scale": 0.85,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "mixter",
+    "isPixel": false,
+    "flipX": false,
+    "scale": 0.75
+  },
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "idle",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singDOWN",
+      "prefix": "down",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singUP",
+      "prefix": "up",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singRIGHT",
+      "prefix": "right",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "name": "singLEFT",
+      "prefix": "left",
+      "offsets": [0, 0],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

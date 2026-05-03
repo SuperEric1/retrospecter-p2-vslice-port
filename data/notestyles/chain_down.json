@@ -1,0 +1,91 @@
+{
+  "version": "1.1.0",
+  "name": "Dozirc",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/ChainNotes",
+      "scale": 0.7,
+      "offsets": [5, -60],
+      "animated": true,
+      "data": {
+        "left": { "prefix": "Left(Down)0", "looped": true },
+        "down": { "prefix": "Down(Down)0", "looped": true },
+        "up": { "prefix": "Up(Down)0", "looped": true },
+        "right": { "prefix": "Right(Down)0", "looped": true }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/ChainNotesOpp",
+      "scale": 0.7,
+      "offsets": [5, -5],
+      "data": {
+        "leftStatic": { "prefix": "Chain Strum Left0" },
+        "leftPress": { "prefix": "Chain Strum Left0" },
+        "leftConfirm": { "prefix": "Chain Strum Confirm Left0" },
+        "leftConfirmHold": { "prefix": "Chain Strum Confirm Left0003" },
+
+        "downStatic": { "prefix": "Chain Strum Down0" },
+        "downPress": { "prefix": "Chain Strum Down0" },
+        "downConfirm": { "prefix": "Chain Strum Confirm Down0" },
+        "downConfirmHold": { "prefix": "Chain Strum Confirm Down0003" },
+
+        "upStatic": { "prefix": "Chain Strum Up0" },
+        "upPress": { "prefix": "Chain Strum Up0" },
+        "upConfirm": { "prefix": "Chain Strum Confirm Up0" },
+        "upConfirmHold": { "prefix": "Chain Strum Confirm Up0003" },
+
+        "rightStatic": { "prefix": "Chain Strum Right0" },
+        "rightPress": { "prefix": "Chain Strum Right0" },
+        "rightConfirm": { "prefix": "Chain Strum Confirm Right0" },
+        "rightConfirmHold": { "prefix": "Chain Strum Confirm Right0003" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "shared:notes/hold/Chain",
+      "scale": 0.7,
+      "offsets": [-0.5, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": "shared:noteSplashes/retroNoteSplashes",
+      "alpha": 0.8,
+      "offsets": [28, -20],
+      "data": {
+        "enabled": false,
+        "leftSplashes": [{ "prefix": "note splash purple 1" }],
+        "rightSplashes": [{ "prefix": "note splash red 1" }],
+        "upSplashes": [{ "prefix": "note splash green 1" }],
+        "downSplashes": [{ "prefix": "note splash blue 1" }]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Chain_cover",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

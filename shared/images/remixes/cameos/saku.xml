@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="saku.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="0" y="0" width="997" height="920" frameX="0" frameY="-6" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0001" x="0" y="0" width="997" height="920" frameX="0" frameY="-6" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0002" x="0" y="925" width="983" height="925" frameX="-7" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0003" x="0" y="925" width="983" height="925" frameX="-7" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0004" x="0" y="2786" width="979" height="925" frameX="-9" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0005" x="0" y="2786" width="979" height="925" frameX="-9" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0006" x="0" y="3716" width="979" height="925" frameX="-9" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0007" x="0" y="3716" width="979" height="925" frameX="-9" frameY="-1" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0008" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0009" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0010" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0011" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0012" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+	<SubTexture name="idle0013" x="0" y="1855" width="979" height="926" frameX="-9" frameY="0" frameWidth="997" frameHeight="926"/>
+</TextureAtlas>

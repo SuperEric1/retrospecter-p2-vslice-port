@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "name": "Sakuroma (EXTRAS)",
+  "songs": [],
+  "visible": false,
+  "capsule": {
+    "name": "LUST"
+  },
+  "titleAsset": "storymenu/titles/lust",
+  "background": "#ba23b9",
+  "props": []
+}

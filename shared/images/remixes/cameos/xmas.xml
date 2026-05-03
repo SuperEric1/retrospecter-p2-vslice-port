@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="xmas.png" width="1360" height="465">
+	<SubTexture name="idle0001" x="0" y="0" width="276" height="448" frameX="-0" frameY="-11" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0002" x="0" y="0" width="276" height="448" frameX="-0" frameY="-11" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0003" x="281" y="0" width="276" height="454" frameX="-1" frameY="-7" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0004" x="281" y="0" width="276" height="454" frameX="-1" frameY="-7" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0005" x="562" y="0" width="267" height="460" frameX="-10" frameY="-4" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0006" x="562" y="0" width="267" height="460" frameX="-10" frameY="-4" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0007" x="834" y="0" width="260" height="464" frameX="-22" frameY="-1" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0008" x="834" y="0" width="260" height="464" frameX="-22" frameY="-1" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0009" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0010" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0011" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0012" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0013" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+	<SubTexture name="idle0014" x="1099" y="0" width="261" height="465" frameX="-21" frameY="-0" frameWidth="282" frameHeight="465"/>
+</TextureAtlas>

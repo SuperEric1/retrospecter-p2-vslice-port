@@ -24,22 +24,22 @@
         "leftStatic": { "prefix": "static Left0" },
         "leftPress": { "prefix": "static Left0" },
         "leftConfirm": { "prefix": "confirm Left0" },
-        "leftConfirmHold": { "prefix": "confirm Left0005" },
+        "leftConfirmHold": { "prefix": "confirm Left0037" },
 
         "downStatic": { "prefix": "static Down0", "offsets": [6, -1] },
         "downPress": { "prefix": "static Down0", "offsets": [6, -1] },
         "downConfirm": { "prefix": "confirm Down0", "offsets": [6, -1] },
-        "downConfirmHold": { "prefix": "confirm Down0005", "offsets": [6, -1] },
+        "downConfirmHold": { "prefix": "confirm Down0054", "offsets": [6, -1] },
 
         "upStatic": { "prefix": "static Up0", "offsets": [5.5, -1] },
-        "upPress": { "prefix": "static Up0", "offsets": [5.5, -1]},
+        "upPress": { "prefix": "static Up0", "offsets": [5.5, -1] },
         "upConfirm": { "prefix": "confirm Up0", "offsets": [5.5, -1] },
-        "upConfirmHold": { "prefix": "confirm Up0005", "offsets": [5.5, -1] },
+        "upConfirmHold": { "prefix": "confirm Up0003", "offsets": [5.5, -1] },
 
         "rightStatic": { "prefix": "static Right0" },
         "rightPress": { "prefix": "static Right0" },
         "rightConfirm": { "prefix": "confirm Right0" },
-        "rightConfirmHold": { "prefix": "confirm Right0005" }
+        "rightConfirmHold": { "prefix": "confirm Right0020" }
       }
     },
     "holdNote": {

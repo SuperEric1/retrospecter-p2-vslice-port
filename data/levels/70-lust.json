@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "name": "Sakuroma",
+  "songs": ["fuzzy-feeling", "heartmelter", "hard-ache"],
+  "capsule": {
+    "name": "LUST"
+  },
+  "titleAsset": "storymenu/titles/lust",
+  "background": "#ba23b9",
+  "props": [
+    {
+      "assetPath": "storymenu/props/saku",
+      "scale": 0.4,
+      "offsets": [-430, -240],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "saku idle",
+          "frameRate": 24
+        },
+        {
+          "name": "confirm",
+          "prefix": "saku giggle",
+          "frameRate": 24
+        }
+      ]
+    },
+    {
+      "assetPath": "storymenu/props/bf_retro",
+      "scale": 0.7,
+      "offsets": [20, 80],
+      "animations": [
+        {
+          "name": "idle",
+          "prefix": "BF idle dance",
+          "frameRate": 24
+        },
+        {
+          "name": "confirm",
+          "prefix": "BF HEY",
+          "frameRate": 24
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
 package supereric.retrospecter.modules;
 
+import flixel.addons.effects.FlxSkewedSprite;
 import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.modding.module.Module;
@@ -263,6 +264,15 @@ class RetroGameUI extends Module {
           retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/patience/overlay');
           retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/patience/bar');
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/patience/bar');
+        case 'mixter':
+          defaultScale = [0.44, 0.44];
+          healthBgYOffset = -105;
+          retroHealthBarOverlay = FunkinSprite.create(0, playState.healthBar.y, 'ui/healthBars/mixter/overlay');
+          retroHealthBarFillBG = FunkinSprite.create(0, playState.healthBar.y - 50);
+          retroHealthBarFillBG.frames = Paths.getSparrowAtlas("ui/healthBars/mixter/noise");
+          retroHealthBarFillBG.animation.addByPrefix("noise", "noise0", 24, true);
+          retroHealthBarFillBG.animation.play("noise");
+          retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/mixter/bar');
 
         default:
           playState.healthBar.visible = true;
@@ -1023,7 +1033,7 @@ class RetroGameUI extends Module {
     if (retroHealthBarOverlay.alpha != targetBarAlpha) retroHealthBarOverlay.alpha = targetBarAlpha;
     if (retroHealthBarFill.y != targetBarY) retroHealthBarFill.y = targetBarY;
     if (retroHealthBarFill.alpha != targetBarAlpha) retroHealthBarFill.alpha = targetBarAlpha;
-    if (retroHealthBarFillBG.y != targetBarY) retroHealthBarFillBG.y = targetBarY;
+    if (retroHealthBarFillBG.y != targetBarY && !StringTools.startsWith(ogDadId, 'mixter')) retroHealthBarFillBG.y = targetBarY;
     if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
     // ---- Texts ----
@@ -1148,6 +1158,10 @@ class RetroGameUI extends Module {
         return getRGB(169, 50, 140);
       case 'patience':
         return getRGB(95, 86, 153);
+      case 'mixter':
+        return getRGB(255, 255, 255);
+      case 'mixter-pixel':
+        return getRGB(255, 255, 255);
       case 'nightflaid_atlas':
         return 0xFFFFFFFF;
       case 'nightflaid_unbeatable':

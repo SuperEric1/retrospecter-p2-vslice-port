@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="retro.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle0000" x="0" y="0" width="618" height="821" frameX="0" frameY="-16" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0001" x="0" y="0" width="618" height="821" frameX="0" frameY="-16" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0002" x="0" y="3349" width="594" height="821" frameX="-11" frameY="-16" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0003" x="0" y="3349" width="594" height="821" frameX="-11" frameY="-16" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0004" x="0" y="2510" width="601" height="834" frameX="-12" frameY="-3" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0005" x="0" y="2510" width="601" height="834" frameX="-12" frameY="-3" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0006" x="0" y="826" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0007" x="0" y="826" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0008" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0009" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0010" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0011" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0012" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+	<SubTexture name="idle0013" x="0" y="1668" width="599" height="837" frameX="-13" frameY="0" frameWidth="618" frameHeight="837"/>
+</TextureAtlas>

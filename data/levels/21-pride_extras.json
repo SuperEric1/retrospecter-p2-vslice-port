@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "visible": false,
+  "name": "Izzurius (EXTRAS)",
+  "songs": [],
+  "capsule": {
+    "name": "PRIDE"
+  },
+  "titleAsset": "storymenu/titles/pride",
+  "background": "#21363f",
+  "props": []
+}

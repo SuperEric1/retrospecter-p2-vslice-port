@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="pixelNoise.png">
+	<!-- Created with Adobe Animate version 23.0.0.407 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="noise0000" x="0" y="0" width="128" height="72"/>
+	<SubTexture name="noise0001" x="128" y="0" width="128" height="72"/>
+	<SubTexture name="noise0002" x="256" y="0" width="128" height="72"/>
+	<SubTexture name="noise0003" x="0" y="72" width="128" height="72"/>
+	<SubTexture name="noise0004" x="128" y="72" width="128" height="72"/>
+	<SubTexture name="noise0005" x="256" y="72" width="128" height="72"/>
+</TextureAtlas>

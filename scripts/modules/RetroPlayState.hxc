@@ -44,6 +44,7 @@ import funkin.graphics.shaders.WiggleEffectRuntime;
 import funkin.graphics.shaders.WiggleEffectType;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroSave;
 
 class RetroPlayState extends Module {
   public function new() {
@@ -1562,6 +1563,8 @@ class RetroPlayState extends Module {
     if (PlayState.instance.isGameOverState) return;
 
     if (globalTimerManager != null) globalTimerManager.update(event.elapsed);
+
+    if (!FlxG.onMobile && RetroSave.isDebug() && FlxG.keys.pressed.F8) PlayState.instance.endSong();
 
     if (forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre')) {
       if (!spectreHit) {
