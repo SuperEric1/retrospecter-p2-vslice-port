@@ -80,8 +80,8 @@ class RetroThirdStrumline extends Module
   public override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-		FlxG.signals.postUpdate.remove(postUpdate);
-    FlxG.signals.postUpdate.add(postUpdate);
+		//FlxG.signals.postUpdate.remove(postUpdate);
+    //FlxG.signals.postUpdate.add(postUpdate);
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -185,11 +185,12 @@ class RetroThirdStrumline extends Module
     ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteIncomingOffset', [note]);
   }
 
-  /*override function onUpdate(event:UpdateScriptEvent):Void
+  override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
-    if (PlayState.instance == null || PlayState.instance.isInCutscene) return;
-  }*/
+    //if (PlayState.instance == null || PlayState.instance.isInCutscene) return;
+    FlxG.signals.postUpdate.addOnce(postUpdate);
+  }
 
   private static function postUpdate():Void {
     if (PlayState.instance == null || !isActive()) return;

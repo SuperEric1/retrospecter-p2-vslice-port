@@ -120,8 +120,8 @@ class RetroNoteStyles extends Module {
     super.onCreate(event);
 
 		// Oh my god. These signals are so good.
-		FlxG.signals.postUpdate.remove(updatePost); // Removing it first so it doesn't stack after reloading.
-    FlxG.signals.postUpdate.add(updatePost);
+		//FlxG.signals.postUpdate.remove(updatePost);
+    //FlxG.signals.postUpdate.add(updatePost);
   }
 
 	public override function onSongLoaded(event) {
@@ -436,7 +436,8 @@ class RetroNoteStyles extends Module {
 		if (PlayState.instance == null) return;
 		if (!isRetro) return;
 
-		// Moved to postUpdate in onCreate (function below)
+		// Moved to postUpdate (function below)
+		FlxG.signals.postUpdate.addOnce(updatePost);
 	}
 
 	private function updatePost():Void {
