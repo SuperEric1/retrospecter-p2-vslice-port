@@ -504,8 +504,8 @@ class RetroNoteStyles extends Module {
 		rebuildStrumlineNotes(targetStrumline, customStyle);
 		updateExistingNotes(targetStrumline, customStyle);
 
-		if (!isPlayerSide && mobileArrowsActive && targetStrumline == PlayState.instance?.opponentStrumline) {
-			adjustOppStrums();
+		if (!isPlayerSide && mobileArrowsActive) {
+			targetStrumline.enterMiniMode(0.4 * screenRatio);
 		}
 	}
 
@@ -556,10 +556,6 @@ class RetroNoteStyles extends Module {
 		note.holdNoteSprite.x += strumline.getXPos(Strumline.DIRECTIONS[note.noteData.getDirection() % Strumline.KEY_COUNT]);
 		note.holdNoteSprite.x += Strumline.STRUMLINE_SIZE / 2;
 		note.holdNoteSprite.x -= note.holdNoteSprite.graphicWidth / 2;
-	}
-
-	function adjustOppStrums():Void {
-		PlayState.instance.opponentStrumline.enterMiniMode(0.4 * screenRatio);
 	}
 
 	public function getUnderlay(isPlayer:Bool):FunkinSprite {

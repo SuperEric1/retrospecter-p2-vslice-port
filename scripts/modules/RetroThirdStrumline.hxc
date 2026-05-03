@@ -139,8 +139,8 @@ class RetroThirdStrumline extends Module
 
     var hasCustomStyle = ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteStyle', []);
 
-    // Aplicar o minimode depois de carregar (ou não) o notestyle
-    if (isMobile) _thirdStrumline.enterMiniMode(0.4 * screenRatio);
+    // Aplicar o minimode se não houver style custom (quando tem já aplica)
+    if (isMobile && !hasCustomStyle) _thirdStrumline.enterMiniMode(0.4 * screenRatio);
 
     // Offsets
     final offsetAdjustY:Float = oppStrumline.isDownscroll ? -20 : 0;
