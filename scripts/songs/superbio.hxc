@@ -28,6 +28,7 @@ class SuperbioSong extends Song
 {
   var tweens = [];
   var pausedTweens = [];
+  var hasPlayedDialogue:Bool = false;
 
   var bgSprite:FunkinSprite;
 
@@ -39,7 +40,19 @@ class SuperbioSong extends Song
   public override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
+    izzyPercent = 14;
+    didLastThing = false;
 
+    if (!hasPlayedDialogue && PlayStatePlaylist.isStoryMode)
+    {
+      hasPlayedDialogue = true;
+      event.cancel();
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['superbio story', 'pre', function() {
+        PlayState.instance.startCountdown();
+      }]);
+    }
   }
 
   public function onStepHit(event) {
@@ -56,6 +69,7 @@ class SuperbioSong extends Song
 	{
 		super.onDestroy(event);
 		resetTweens();
+    hasPlayedDialogue = false;
 	}
 
 	private function resetTweens()
