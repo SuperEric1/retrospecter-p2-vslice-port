@@ -95,7 +95,7 @@
 	<SubTexture name="Up0080" x="1601" y="853" width="172" height="183" frameX="-55" frameY="-59" frameWidth="285" frameHeight="292"/>
 	<SubTexture name="Up0081" x="1226" y="1058" width="172" height="183" frameX="-55" frameY="-59" frameWidth="285" frameHeight="292"/>
 	<SubTexture name="Up0082" x="1226" y="1058" width="172" height="183" frameX="-55" frameY="-59" frameWidth="285" frameHeight="292"/>
-	
+
 	<SubTexture name="static Up0000" x="1408" y="1046" width="172" height="183" frameX="-55" frameY="-59" frameWidth="285" frameHeight="292"/>
 
 	<SubTexture name="hold_end0000" x="1731" y="0" width="40" height="58"/>

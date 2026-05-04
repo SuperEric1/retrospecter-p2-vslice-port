@@ -2,6 +2,8 @@ import flixel.FlxG;
 import flixel.tweens.FlxEase;
 import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.mobile.input.ControlsHandler;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
@@ -36,6 +38,23 @@ class PhaseTwoCharacter extends MultiSparrowCharacter {
 			}
 		}
 		super.onNoteHit(event);
+	}
+
+	// Load custom notestyle.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+
+    var downscroll = Preferences.downscroll;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    var strumStyle:String = 'poison_' + (downscroll ? 'down' : 'up');
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
 	}
 
 	override public function onUpdate(event):Void {

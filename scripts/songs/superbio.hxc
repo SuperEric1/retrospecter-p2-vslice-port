@@ -19,6 +19,9 @@ import funkin.play.stage.StageProp;
 import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
+import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.mobile.input.ControlsHandler;
 import funkin.ui.FullScreenScaleMode;
 
 class SuperbioSong extends Song
@@ -104,11 +107,22 @@ class SuperbioSong extends Song
 
   }
 
-  public override function onSongLoaded(event:ScriptEvent):Void
-  {
-    super.onSongLoaded(event);
-    if (PlayState.instance == null) return;
-  }
+  // Load custom notestyle.
+	// TODO: Move this somewhere else.
+  public override function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    var strum = PlayState.instance.opponentStrumline;
+
+    /*var downscroll = Preferences.downscroll;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;*/
+    var strumStyle:String = 'pride' /*+ (downscroll ? 'down' : 'up')*/;
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+	}
 
   function onCreate(event:ScriptEvent):Void
   {

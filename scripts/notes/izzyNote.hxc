@@ -3,19 +3,19 @@ import funkin.Paths;
 
 class IzzyNote extends NoteKind {
 	public function new() {
-		super('izzyNote', 'Izzy Note', null, [], true); // id, description, styleId, params, noanim
+		super('izzyNote', 'Izzy Note', 'pride', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
 		if (!event.note.noteData.getMustHitNote()) return;
 
-		event.note.x += -59;
-		event.note.yOffset += -65;
+		event.note.x += 4;
+		event.note.yOffset += -25;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Pride_Note_Assets');
+		/*event.note.frames = Paths.getSparrowAtlas('notes/Pride_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
@@ -30,7 +30,7 @@ class IzzyNote extends NoteKind {
 		}
 
 		event.note.active = true;
-		event.note.animation.play(izzyAnim);
+		event.note.animation.play(izzyAnim);*/
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {
