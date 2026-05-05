@@ -79,7 +79,7 @@ class RetroGirlfriendHandler extends Module {
     if (!isRetro) return;
 
     girlfriend = PlayState.instance.currentStage?.getGirlfriend() ?? null;
-    if (!createdSpeaker) {
+    if (!createdSpeaker && PlayState.instance.currentStage?.id != 'remixes-bar' && girlfriend != null) {
       reloadSpeaker();
       createdSpeaker = true;
     }

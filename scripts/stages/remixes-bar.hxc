@@ -1,0 +1,1162 @@
+import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import funkin.graphics.FunkinSprite;
+import funkin.Paths;
+import funkin.Conductor;
+import funkin.play.PlayState;
+import funkin.play.stage.Stage;
+import funkin.graphics.shaders.AdjustColorShader;
+import funkin.play.character.CharacterType;
+import flixel.addons.effects.FlxSkewedSprite;
+import flixel.addons.display.FlxBackdrop;
+
+class RemixesBarStage extends Stage
+{
+  var bgX:Float = -600;
+  var bgY:Float = -600;
+  var initY:Float = 0;
+  var startedSong:Bool = false;
+  var songFinished:Bool = false;
+  var stageLoaded:Bool = false;
+
+  var cameo0:Bool = false;
+  var cameo1:Bool = false;
+  var cameo2:Bool = false;
+  var cameo3:Bool = false;
+  var cameo4:Bool = false;
+  var cameo5:Bool = false;
+  var cameo6:Bool = false;
+  var cameo7:Bool = false;
+  var cameo8:Bool = false;
+  var cameo9:Bool = false;
+  var cameo10:Bool = false;
+  var cameo11:Bool = false;
+
+  var toAdd:Int = 0;
+  var isPixel:Bool = false;
+  var songId:String = '';
+
+  var stageSprite:FunkinSprite;
+  var counter:FunkinSprite;
+  var tableFG:FunkinSprite;
+  var tree:FunkinSprite;
+  var tree2:FunkinSprite;
+  var rain:FunkinSprite;
+  var pixelBg:FunkinSprite;
+
+  var hexLeft:FunkinSprite;
+  var hexRight:FunkinSprite;
+  var hexLeft2:FunkinSprite;
+  var hexRight2:FunkinSprite;
+  var hexLeft3:FunkinSprite;
+  var hexRight3:FunkinSprite;
+
+  var cameo0Spr:FunkinSprite;
+  var cameo1Spr:FunkinSprite;
+  var cameo2Spr:FunkinSprite;
+  var cameo3Spr:FunkinSprite;
+  var cameo4Spr:FunkinSprite;
+  var cameo5Spr:FunkinSprite;
+  var cameo6Spr:FunkinSprite;
+  var cameo7Spr:FunkinSprite;
+  var cameo8Spr:FunkinSprite;
+  var cameo9Spr:FunkinSprite;
+  var cameo10Spr:FunkinSprite;
+  var cameo11Spr:FunkinSprite;
+
+  var skySpr:FunkinSprite;
+  var boySpr:FunkinSprite;
+  var girlSpr:FunkinSprite;
+  var ruverSpr:FunkinSprite;
+  var sarverSpr:FunkinSprite;
+
+  var noiserMiddle:FlxSkewedSprite;
+  var noiserLeft:FlxSkewedSprite;
+  var noiserRight:FlxSkewedSprite;
+
+  var light:FunkinSprite;
+
+  var snowfgweak:FlxBackdrop;
+  var snowfgweak2:FlxBackdrop;
+  var snowfgmid:FlxBackdrop;
+  var snowfgmid2:FlxBackdrop;
+
+  var specialThing:Bool = false;
+  var specialThing2:Bool = false;
+  var disabled:Bool = false;
+  var h1:Bool = false;
+  var h2:Bool = false;
+  var h3:Bool = false;
+  var h4:Bool = false;
+  var h5:Bool = false;
+  var h6:Bool = false;
+  var h7:Bool = false;
+  var h8:Bool = false;
+  var h9:Bool = false;
+  var zoomOut:Bool = false;
+  var mixterOffset:Float = 0;
+  var animNum:Int = 0;
+  var animationName:String = 'anim';
+  var disableAnim:Bool = false;
+  var gospelSnow:Bool = false;
+
+  public function new()
+  {
+    super('remixes-bar');
+  }
+
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    songId = PlayState.instance?.currentChart?.song?.id ?? '';
+    isPixel = songId == 'roses-r' || songId == 'thorns-r' || songId == 'thorns-k' || songId == 'chkdsk-r' || songId == 'pico-r';
+
+    // Noisers
+    if (!isPixel)
+    {
+      noiserMiddle = new FlxSkewedSprite(1000, -200);
+      noiserMiddle.scale.set(1.2, 1.2);
+      noiserMiddle.updateHitbox();
+      noiserMiddle.frames = Paths.getSparrowAtlas('remixes/noise');
+      noiserMiddle.animation.addByPrefix('anim', 'noise', 12, true);
+      noiserMiddle.animation.play('anim', true);
+      add(noiserMiddle);
+
+      noiserLeft = new FlxSkewedSprite(200, -200);
+      noiserLeft.scale.set(1.2, 1.2);
+      noiserLeft.updateHitbox();
+      noiserLeft.frames = Paths.getSparrowAtlas('remixes/noise');
+      noiserLeft.animation.addByPrefix('anim', 'noise', 12, true);
+      noiserLeft.animation.play('anim', true);
+      noiserLeft.animation.curAnim.curFrame = 5;
+      noiserLeft.skew.x = 15;
+      add(noiserLeft);
+
+      noiserRight = new FlxSkewedSprite(1800, -200);
+      noiserRight.scale.set(1.2, 1.2);
+      noiserRight.updateHitbox();
+      noiserRight.frames = Paths.getSparrowAtlas('remixes/noise');
+      noiserRight.animation.addByPrefix('anim', 'noise', 12, true);
+      noiserRight.animation.play('anim', true);
+      noiserRight.animation.curAnim.curFrame = 1;
+      noiserRight.skew.x = -15;
+      add(noiserRight);
+    }
+    else
+    {
+      var pY:Float = 200;
+      var pX:Float = 120;
+      var scalar:Float = 7;
+
+      noiserMiddle = new FlxSkewedSprite(1000 + pX, -200 + pY);
+      noiserMiddle.scale.set(scalar, scalar);
+      noiserMiddle.updateHitbox();
+      noiserMiddle.frames = Paths.getSparrowAtlas('remixes/pixelNoise');
+      noiserMiddle.animation.addByPrefix('anim', 'noise', 24, true);
+      noiserMiddle.animation.play('anim', true);
+      add(noiserMiddle);
+
+      noiserLeft = new FlxSkewedSprite(200 + pX, -200 + pY);
+      noiserLeft.scale.set(scalar, scalar);
+      noiserLeft.updateHitbox();
+      noiserLeft.frames = Paths.getSparrowAtlas('remixes/pixelNoise');
+      noiserLeft.animation.addByPrefix('anim', 'noise', 24, true);
+      noiserLeft.animation.play('anim', true);
+      noiserLeft.animation.curAnim.curFrame = 2;
+      noiserLeft.skew.x = 15;
+      add(noiserLeft);
+
+      noiserRight = new FlxSkewedSprite(1800 + pX, -200 + pY);
+      noiserRight.scale.set(scalar, scalar);
+      noiserRight.updateHitbox();
+      noiserRight.frames = Paths.getSparrowAtlas('remixes/pixelNoise');
+      noiserRight.animation.addByPrefix('anim', 'noise', 24, true);
+      noiserRight.animation.play('anim', true);
+      noiserRight.animation.curAnim.curFrame = 3;
+      noiserRight.skew.x = -15;
+      add(noiserRight);
+    }
+
+    noiserRight.antialiasing = false;
+    noiserMiddle.antialiasing = false;
+    noiserLeft.antialiasing = false;
+
+    //PlayState.instance.refresh();
+
+    if (isPixel)
+    {
+      pixelBg = FunkinSprite.create(-602, -593);
+      pixelBg.frames = Paths.getSparrowAtlas('remixes/pixel');
+      pixelBg.animation.addByPrefix('anim', 'anim', 12, true);
+      pixelBg.animation.play('anim', true);
+      pixelBg.antialiasing = false;
+      pixelBg.scale.set(5.75744047619, 5.75744047619);
+      pixelBg.updateHitbox();
+      add(pixelBg);
+    }
+
+    // Background stage
+    if (songId == 'cocoa-r')
+      stageSprite = buildStageSprite('Bar StageXMAS', bgX, bgY);
+    else if (songId == 'chiller-r')
+      stageSprite = buildStageSprite('Bar StageCORRUPT', bgX, bgY);
+    else if (songId == 'hellclown-r')
+      stageSprite = buildStageSprite('Bar StageCLOWN', bgX, bgY);
+    else if (songId == 'tripletrouble-r' || songId == 'deathtoll-r' || songId == 'frostbite-r')
+      stageSprite = buildStageSprite('HorrorBar', bgX, bgY);
+    else if (!isPixel)
+      stageSprite = buildStageSprite('Bar Stage', bgX, bgY);
+    if (stageSprite != null) add(stageSprite);
+
+    if (songId == 'glitcher-r')
+    {
+      hexLeft = buildStageSprite('HexBarLeft', bgX, bgY);
+      hexLeft.alpha = 1;
+      hexLeft.visible = false;
+      add(hexLeft);
+
+      hexRight = buildStageSprite('HexBarRight', 1208, bgY);
+      hexRight.alpha = 1;
+      hexRight.visible = false;
+      add(hexRight);
+    }
+
+    // Rain
+    if (songId == 'tripletrouble-r' || songId == 'deathtoll-r'
+      || songId == 'frostbite-r' || songId == 'cocoa-r')
+    {
+      rain = FunkinSprite.create(2400, 25);
+      rain.frames = Paths.getSparrowAtlas('remixes/rain');
+      rain.animation.addByPrefix('anim', 'rain', 24, true);
+      rain.animation.play('anim', true);
+      rain.alpha = 0.4;
+      rain.visible = songId == 'cocoa-r';
+      add(rain);
+
+      if (songId == 'cocoa-r')
+      {
+        tree2 = buildStageSprite('tree2', 2557, -398);
+        add(tree2);
+      }
+    }
+    else if (!isPixel)
+    {
+      rain = FunkinSprite.create(2400, 25);
+      rain.frames = Paths.getSparrowAtlas('remixes/rain');
+      rain.animation.addByPrefix('anim', 'rain', 24, true);
+      rain.animation.play('anim', true);
+      rain.alpha = 0.4;
+      add(rain);
+    }
+
+    // Counter
+    if (songId == 'cocoa-r') {
+      counter = buildStageSprite('Bar CounterXMAS', bgX + 523, bgY + 1168);
+    }
+    else if (songId == 'chiller-r') {
+      counter = buildStageSprite('Bar CounterCORRUPT', bgX + 523, bgY + 1168);
+    }
+    else if (songId == 'hellclown-r') {
+      counter = buildStageSprite('Bar CounterCLOWN', bgX + 523, bgY + 1168);
+    }
+    else if (songId == 'tripletrouble-r' || songId == 'deathtoll-r' || songId == 'frostbite-r') {
+      if (songId == 'tripletrouble-r') {
+        cameo6Spr = buildCameo('remixes/cameos/ace', 0, 0); add(cameo6Spr);
+        cameo7Spr = buildCameo('remixes/cameos/izzy', 2150, 100); add(cameo7Spr);
+      }
+      counter = buildStageSprite('HorrorBarTable', (bgX + 523) - 106, bgY + 1168);
+    }
+    else if (!isPixel) {
+      counter = buildStageSprite('Bar Counter', bgX + 523, bgY + 1168);
+    }
+    if (counter != null) add(counter);
+
+    if (songId == 'glitcher-r')
+    {
+      hexLeft2 = buildStageSprite('HexTableBarLeft', bgX + 523, 602);
+      hexLeft2.visible = false;
+      add(hexLeft2);
+
+      hexRight2 = buildStageSprite('HexTableBarRight', 1205, bgY + 1168);
+      hexRight2.visible = false;
+      add(hexRight2);
+    }
+
+    buildCameos();
+
+    if (songId == 'roses-r' || songId == 'thorns-r' || songId == 'thorns-k' || songId == 'chkdsk-r')
+    {
+      tableFG = buildStageSprite('jack', bgX + 867, 1072);
+      tableFG.antialiasing = false;
+      tableFG.scale.set(5.75744047619, 5.75744047619);
+      tableFG.updateHitbox();
+      add(tableFG);
+    }
+
+    if (songId == 'cocoa-r')
+    {
+      tree = buildStageSprite('tree', -533, -648);
+      add(tree);
+    }
+
+    // Table foreground
+    if (tableFG == null)
+    {
+      if (songId == 'cocoa-r')
+        tableFG = buildStageSprite('Bar Table foreground', bgX + 867, bgY + 1752);
+      else if (songId == 'chiller-r')
+        tableFG = buildStageSprite('Bar Table foregroundCORRUPT', bgX + 867, bgY + 1752);
+      else if (songId == 'hellclown-r')
+        tableFG = buildStageSprite('Bar Table foregroundCLOWN', bgX + 867, bgY + 1752);
+      else if (songId == 'tripletrouble' || songId == 'deathtoll' || songId == 'frostbite-r')
+        tableFG = buildStageSprite('HorrorBarForeground', bgX + 867, bgY + 1752);
+      else if (!isPixel)
+        tableFG = buildStageSprite('Bar Table foreground', bgX + 867, bgY + 1752);
+      if (tableFG != null) add(tableFG);
+    }
+
+    if (songId == 'glitcher-r')
+    {
+      hexLeft3 = buildStageSprite('hexForeLeft', bgX + 875, bgY + 1752);
+      hexLeft3.visible = false;
+      add(hexLeft3);
+
+      hexRight3 = buildStageSprite('hexForeRight', bgX + 874, bgY + 1752);
+      hexRight3.visible = false;
+      add(hexRight3);
+    }
+  }
+
+  function buildStageSprite(image:String, x:Float, y:Float):FunkinSprite
+  {
+    var spr = FunkinSprite.create(x, y, 'remixes/' + image);
+    spr.scrollFactor.set(1, 1);
+    spr.active = false;
+    return spr;
+  }
+
+  function buildCameo(imagePath:String, x:Float, y:Float):FunkinSprite
+  {
+    var spr = FunkinSprite.create(x, y);
+    spr.frames = Paths.getSparrowAtlas(imagePath);
+    spr.animation.addByPrefix('anim', 'idle', 24, false);
+    spr.animation.play('anim', true);
+    spr.scrollFactor.set(1, 1);
+    return spr;
+  }
+
+  function buildSign(imagePath:String, x:Float, y:Float):FunkinSprite
+  {
+    var spr = FunkinSprite.create(x, y, 'remixes/cameos/' + imagePath);
+    spr.scrollFactor.set(1, 1);
+    spr.active = false;
+    return spr;
+  }
+
+  function buildCameos():Void
+  {
+    switch (songId)
+    {
+      case 'hellclown-r':
+        cameo0 = true;
+        cameo0Spr = buildCameo('remixes/cameos/hellclown', -340, -1000);
+        cameo0Spr.scale.set(2, 2);
+        cameo0Spr.flipX = true;
+        add(cameo0Spr);
+
+        cameo1 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', 1890, 420);
+        cameo1Spr.flipX = true;
+        add(cameo1Spr);
+
+      case 'foolhardy-r' | 'foolhardy-k':
+        cameo1 = true;
+        cameo1Spr = buildCameo('remixes/cameos/zardy', 1568, 360);
+        add(cameo1Spr);
+
+      case 'genocide-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/tabiFucked', 1486, 350);
+        cameo1Spr.scale.set(1.2, 1.2);
+        add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/whitty', 155, 190);
+        cameo2Spr.scale.set(0.85, 0.85);
+        cameo2Spr.x += 10; cameo2Spr.y += 80;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/tikyUnmasked', 740, 310);
+        cameo3Spr.flipX = true;
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/zardy', 2178, 360);
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'genocide-k':
+        cameo1 = true;
+        cameo1Spr = buildCameo('remixes/cameos/tabiFucked', 1486, 320);
+        cameo1Spr.scale.set(1.2, 1.2);
+        add(cameo1Spr);
+
+      case 'last-chance-r' | 'my-battle-r':
+        cameo1 = true;
+        cameo1Spr = buildCameo('remixes/cameos/tabi', 1486, 320);
+        cameo1Spr.scale.set(1.2, 1.2);
+        add(cameo1Spr);
+
+      case 'milf-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/mommy', 670, 234);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/henchman', 1525, 328);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/man', 70, 328);
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/man', 2150, 328);
+        cameo4Spr.flipX = true; add(cameo4Spr);
+        toAdd = 3;
+
+      case 'nerves-r':
+        cameo1 = true; cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/garcello', 2060, 303);
+        add(cameo2Spr);
+        cameo1Spr = buildCameo('remixes/cameos/annie', 1570, 430);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        toAdd = 1;
+
+      case 'release-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/annie', 710, 430);
+        add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/ghost', 90, 283);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/ralsei', 2240, 440);
+        cameo3Spr.flipX = true;
+        cameo3Spr.scale.set(5, 5);
+        cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/kris', 1590, 430);
+        cameo4Spr.scale.set(5, 5);
+        cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'fading-r':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/ghost', 2070, 283);
+        add(cameo2Spr);
+
+      case 'release-k':
+        cameo1 = true; cameo2 = true; cameo3 = true;
+        cameo1Spr = buildCameo('remixes/cameos/annie', 690, 420);
+        add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/ghost', 2050, 283);
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/napstablook', 1620, 250);
+        cameo3Spr.scale.set(5, 5); cameo3Spr.updateHitbox();
+        cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+        toAdd = 2;
+
+      case 'improbable-outset-r':
+        cameo1 = true; cameo2 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', 1290, 420);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/tikyMasked', 768, 310);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        toAdd = 1;
+
+      case 'smokebomb-r':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/nikku', 1500, 340);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+
+      case 'south-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/kidsGlasses', 690, 425);
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/monokuma', 1570, 490);
+        add(cameo3Spr);
+        toAdd = 1;
+
+      case 'manifest-r':
+        cameo1 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/sans', 1590, 410);
+        cameo1Spr.scale.set(5, 5); cameo1Spr.updateHitbox();
+        cameo1Spr.antialiasing = false;
+        add(cameo1Spr);
+        skySpr = buildSign('sky', 210, 520); add(skySpr);
+        cameo3Spr = buildCameo('remixes/cameos/sunday', 830, 430);
+        cameo3Spr.flipX = true; add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/megaman', 2220, 370);
+        add(cameo4Spr);
+        toAdd = 2;
+
+      case 'madness-r':
+        cameo1 = true; cameo2 = true; cameo3 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', 1290, 420);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/tikyUnmasked', 768, 310);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/chicken', 2290, 595);
+        add(cameo3Spr);
+        toAdd = 2;
+
+      case 'madness-k':
+        cameo1 = true; cameo2 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', 1290, 420);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/tikyUnmasked', 768, 310);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        toAdd = 1;
+
+      case 'agoti-r' | 'agoti-k':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/nikusa', 0, 85); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/aldryx', 700, 270); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/agoti', 1460, 340); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/solazar', 2070, 115); add(cameo4Spr);
+        toAdd = 3;
+
+      case 'athazagoraphobia-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/legion', 500, 30); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/troll', 1310, 35); add(cameo3Spr);
+        toAdd = 1;
+
+      case 'ballistic-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/whitty', 765, 190);
+        cameo2Spr.scale.set(0.85, 0.85);
+        cameo2Spr.x += 10; cameo2Spr.y += 80;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/colress', 1600, 315);
+        cameo3Spr.scale.set(5, 5);
+        cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+        toAdd = 1;
+
+      case 'ballistic-k':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/whitty', 765, 190);
+        cameo2Spr.scale.set(0.85, 0.85);
+        cameo2Spr.x += 10; cameo2Spr.y += 80;
+        add(cameo2Spr);
+
+      case 'blammed-r':
+        cameo2 = true; cameo3 = true;
+        cameo3Spr = buildCameo('remixes/cameos/pico', 1470, 445); add(cameo3Spr);
+
+      case 'blammed-k':
+        cameo3 = true;
+        cameo3Spr = buildCameo('remixes/cameos/pico', 1470, 445); add(cameo3Spr);
+
+      case 'chiller-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/kidsCorrupt', 680, 410); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/gfCorrupt', 1570, 400); add(cameo3Spr);
+        toAdd = 1;
+
+      case 'chkdsk-r':
+        cameo2 = true; cameo4 = true;
+        cameo2Spr = buildCameo('remixes/cameos/spirit', 760, 100);
+        cameo2Spr.scale.set(5, 5);
+        cameo2Spr.antialiasing = false;
+        add(cameo2Spr);
+        cameo4Spr = buildCameo('remixes/cameos/corrupt', 1570, 485);
+        cameo4Spr.animation.addByPrefix('anim', 'idle', 12, false);
+        cameo4Spr.scale.set(5, 5);
+        cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+
+      case 'roses-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/senpai', 730, 275);
+        cameo2Spr.scale.set(5, 5);
+        cameo2Spr.antialiasing = false;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/neon', 1565, 485);
+        cameo3Spr.animation.addByPrefix('anim', 'idle', 16, false);
+        cameo3Spr.scale.set(5, 5);
+        cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+
+      case 'thorns-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/spirit', 140, 100);
+        cameo1Spr.scale.set(5, 5);
+        cameo1Spr.antialiasing = false;
+        add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/giygas', 620, 45);
+        cameo2Spr.scale.set(5, 5);
+        cameo2Spr.antialiasing = false;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/ness', 1610, 495);
+        cameo3Spr.scale.set(5, 5);
+        cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/saturn', 2275, 575);
+        cameo4Spr.scale.set(5, 5);
+        cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'thorns-k':
+        cameo1 = true;
+        cameo1Spr = buildCameo('remixes/cameos/spirit', 140, 100);
+        cameo1Spr.scale.set(5, 5); cameo1Spr.updateHitbox(); cameo1Spr.antialiasing = false;
+        add(cameo1Spr);
+
+      case 'darnell-r':
+        cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo2Spr = buildCameo('remixes/cameos/darnell', 700, 410);
+        cameo2Spr.flipX = true;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/pico', 2100, 445);
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/nene', 1570, 416);
+        cameo4Spr.flipX = true;
+        add(cameo4Spr);
+        toAdd = 2;
+
+      case 'philly-r':
+        cameo3 = true;
+        cameo3Spr = buildCameo('remixes/cameos/pico', 1460, 445);
+        add(cameo3Spr);
+
+      case 'lo-fight-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/commander', -30, 220); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/whittyCandy', 770, 205);
+        cameo2Spr.scale.set(0.85, 0.85);
+        cameo2Spr.x += 10;
+        cameo2Spr.y += 80;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/agentThree', 1480, 481);
+        cameo3Spr.scale.set(0.8, 0.8);
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/inkling', 2230, 501);
+        cameo4Spr.scale.set(0.85, 0.85);
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'lo-fight-k':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/whittymore', 770, 205);
+        cameo2Spr.scale.set(0.85, 0.85);
+        cameo2Spr.x += 10;
+        cameo2Spr.y += 80;
+        add(cameo2Spr);
+
+      case 'pico-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/robotnik (2)', 700, 415);
+        cameo1Spr.flipX = true;
+        cameo1Spr.scale.set(5, 5);
+        cameo1Spr.antialiasing = false;
+        add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/metal', 170, 490);
+        cameo2Spr.scale.set(5, 5);
+        cameo2Spr.antialiasing = false;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/pico', 1470, 495);
+        cameo3Spr.flipX = true; add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/amy', 2195, 461);
+        cameo4Spr.flipX = true;
+        cameo4Spr.scale.set(5, 5);
+        cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'dadbattle-r':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/dad', 670, 280);
+        add(cameo2Spr);
+
+      case 'dadbattle-k':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/dad', 670, 280);
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/miku', 1600, 379);
+        cameo3Spr.flipX = true;
+        add(cameo3Spr);
+        toAdd = 1;
+
+      case 'cocoa-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        initializeSnow();
+        cameo1Spr = buildCameo('remixes/cameos/claus', 30, 280); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/dadChristmas', 480, 280); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/mommyChristmas', 1380, 234); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/xmas', 2230, 501);
+        cameo4Spr.scale.set(0.85, 0.85);
+        add(cameo4Spr);
+        toAdd = 3;
+        FlxTween.tween(snowfgweak, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgweak2, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid2, { alpha: 1 }, 5);
+
+      case 'deathtoll-r':
+        cameo0 = true; cameo1 = true; cameo2 = true;
+        cameo3 = true; cameo4 = true; cameo5 = true;
+        cameo0Spr = buildCameo('remixes/cameos/dozirc', 390, -480);
+        cameo0Spr.scale.set(2, 2); cameo0Spr.updateHitbox(); add(cameo0Spr);
+        cameo1Spr = buildCameo('remixes/cameos/bronzong', -660, 0); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/beelzebub', 710, 325); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/dawn', 1620, 355); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/colress', 2220, 315);
+        cameo4Spr.scale.set(5, 5); cameo4Spr.updateHitbox(); cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+        cameo5Spr = buildCameo('remixes/cameos/izzy', -380, 315); add(cameo5Spr);
+        toAdd = 5;
+
+      case 'tripletrouble-r':
+        cameo0 = true; cameo1 = true; cameo2 = true; cameo3 = true;
+        cameo4 = true; cameo5 = true; cameo6 = true; cameo7 = true;
+        cameo8 = true; cameo9 = true; cameo10 = true; cameo11 = true;
+        cameo0Spr = buildCameo('remixes/cameos/zerktro', 260, -347);
+        cameo0Spr.scale.set(2, 2); cameo0Spr.updateHitbox(); add(cameo0Spr);
+        cameo5Spr = buildCameo('remixes/cameos/food', 1020, 456); add(cameo5Spr);
+        cameo1Spr = buildCameo('remixes/cameos/tails', 170, 450); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/edgy', 685, 430); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/knuckles', 1490, 485); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/robotnik', 2150, 350); add(cameo4Spr);
+        // cameo6Spr = buildCameo('remixes/cameos/ace', 0, 0); add(cameo6Spr);
+        // cameo7Spr = buildCameo('remixes/cameos/izzy', 2150, 100); add(cameo7Spr);
+        cameo8Spr = buildCameo('remixes/cameos/maku', -480, 146);
+        cameo8Spr.scale.set(1.3, 1.3); cameo8Spr.updateHitbox(); add(cameo8Spr);
+        cameo9Spr = buildCameo('remixes/cameos/metro', -610, 626); add(cameo9Spr);
+        cameo11Spr = buildCameo('remixes/cameos/saku', 2190, 166);
+        cameo11Spr.scale.set(1.1, 1.1); cameo11Spr.updateHitbox(); add(cameo11Spr);
+        cameo10Spr = buildCameo('remixes/cameos/retro', 2660, 426); add(cameo10Spr);
+        toAdd = 11;
+        refresh();
+
+      case 'expurgation-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', -30, 280); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/clown', 650, 150); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/littleSister', 1630, 459);
+        cameo3Spr.scale.set(0.8, 0.8); cameo3Spr.updateHitbox(); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/bigdaddy', 1910, 14);
+        cameo4Spr.scale.set(0.9, 0.9); cameo4Spr.updateHitbox(); add(cameo4Spr);
+        toAdd = 3;
+
+      case 'expurgation-k':
+        cameo1 = true; cameo2 = true;
+        cameo1Spr = buildCameo('remixes/cameos/hank', 1280, 280);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/clown', 650, 150); add(cameo2Spr);
+        toAdd = 1;
+
+      case 'frostbite-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo1Spr = buildCameo('remixes/cameos/blastoise', 70, 267); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/red', 735, 250); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/gold', 1572, 419); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/typhlosion', 2140, 284); add(cameo4Spr);
+        toAdd = 2;
+        initializeSnow();
+        FlxTween.tween(snowfgweak, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgweak2, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid2, { alpha: 1 }, 5);
+
+      case 'glitcher-r':
+        cameo2 = true; cameo3 = true;
+        cameo3Spr = buildCameo('remixes/cameos/windoz', 960, 369);
+        cameo3Spr.animation.addByPrefix('glitch', 'glitch', 24, false);
+        cameo3Spr.animation.addByPrefix('transition', 'transition', 24, false);
+        cameo3Spr.scale.set(0.9, 0.9); cameo3Spr.updateHitbox();
+        add(cameo3Spr);
+        cameo2Spr = buildCameo('remixes/cameos/hexVirus', 1500, 300); add(cameo2Spr);
+        toAdd = 1;
+
+      case 'boogieman-r':
+        cameo2 = true; cameo3 = true;
+        boySpr = buildSign('boy', 1690, 532); add(boySpr);
+        girlSpr = buildSign('girl', 2310, 532); add(girlSpr);
+        cameo3Spr = buildCameo('remixes/cameos/lemon', 590, 359);
+        cameo3Spr.flipX = true;
+        cameo3Spr.animation.addByPrefix('hypnosis', 'hypnosis', 24, false);
+        add(cameo3Spr);
+        toAdd = 1;
+
+      case 'ram-r':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/hex', 1500, 300); add(cameo2Spr);
+
+      case 'god-eater-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/god', 780, 243);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/goku', 2030, 284);
+        cameo3Spr.scale.set(1.1, 1.1); cameo3Spr.updateHitbox();
+        cameo3Spr.flipX = true; add(cameo3Spr);
+        toAdd = 1;
+
+      case 'thunderstorm-r' | 'thunderstorm-k':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/shaggy', 1580, 330);
+        cameo2Spr.scale.set(0.9, 0.9); cameo2Spr.updateHitbox(); add(cameo2Spr);
+
+      case 'ugh-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/tankman', 720, 491); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/steve', 1480, 478); add(cameo3Spr);
+        toAdd = 1;
+
+      case 'stress-r':
+        cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo2Spr = buildCameo('remixes/cameos/tankman', 720, 491); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/steve', 1480, 478); add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/pico', 1470, 445);
+        cameo4Spr.alpha = 0; add(cameo4Spr);
+        toAdd = 2;
+
+      case 'scary-night-r':
+        cameo1 = true; cameo2 = true; cameo3 = true;
+        cameo1Spr = buildCameo('remixes/cameos/freddy', 2100, 181); add(cameo1Spr);
+        cameo2Spr = buildCameo('remixes/cameos/mark', 800, 360); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/markKid', 1650, 470); add(cameo3Spr);
+        toAdd = 2;
+
+      case 'think-r':
+        cameo2 = true; cameo3 = true; cameo4 = true;
+        cameo2Spr = buildCameo('remixes/cameos/ceasar', 1560, 311);
+        cameo2Spr.flipX = true; add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/intruder', 770, 310);
+        cameo3Spr.flipX = true; add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/peaShooter', 2249, 490);
+        cameo4Spr.flipX = true; add(cameo4Spr);
+        toAdd = 2;
+
+      case 'zavodila-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        ruverSpr = buildSign('ruver', 220, 532); add(ruverSpr);
+        cameo2Spr = buildCameo('remixes/cameos/tetris', 845, 536); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/heavy', 1445, 222);
+        cameo3Spr.scale.set(1.2, 1.2); cameo3Spr.updateHitbox();
+        cameo3Spr.flipX = true; add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/monokuma', 2200, 490); add(cameo4Spr);
+        toAdd = 3;
+
+      case 'zavodila-k':
+        cameo1 = true; cameo2 = true;
+        cameo1Spr = buildCameo('remixes/cameos/tetris', 845, 536); add(cameo1Spr);
+        ruverSpr = buildSign('ruver', 200, 522); add(ruverSpr);
+        toAdd = 1;
+
+      case 'gospel-r':
+        cameo1 = true; cameo2 = true; cameo3 = true; cameo4 = true;
+        initializeSnow();
+        snowfgweak.alpha = 0; snowfgweak2.alpha = 0;
+        snowfgmid.alpha = 0; snowfgmid2.alpha = 0;
+        sarverSpr = buildSign('sarver', 210, 530); add(sarverSpr);
+        cameo2Spr = buildCameo('remixes/cameos/knuckles (2)', 780, 473);
+        cameo2Spr.scale.set(5, 5); cameo2Spr.updateHitbox(); cameo2Spr.antialiasing = false;
+        add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/sonic', 1610, 470);
+        cameo3Spr.scale.set(5, 5); cameo3Spr.updateHitbox(); cameo3Spr.antialiasing = false;
+        add(cameo3Spr);
+        cameo4Spr = buildCameo('remixes/cameos/tails (2)', 2230, 458);
+        cameo4Spr.scale.set(5, 5); cameo4Spr.updateHitbox(); cameo4Spr.antialiasing = false;
+        add(cameo4Spr);
+        toAdd = 3;
+
+      case 'heartbass-r':
+        cameo1 = true; cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/whittyDate', 765, 190);
+        cameo2Spr.scale.set(0.85, 0.85); cameo2Spr.updateHitbox();
+        cameo2Spr.x += 10; cameo2Spr.y += 80;
+        add(cameo2Spr);
+        cameo1Spr = buildCameo('remixes/cameos/carolDate', 150, 430);
+        cameo1Spr.flipX = true; add(cameo1Spr);
+        toAdd = 1;
+
+      case 'headspace-r':
+        cameo2 = true; cameo3 = true;
+        cameo2Spr = buildCameo('remixes/cameos/omori', 1525, 410); add(cameo2Spr);
+        cameo3Spr = buildCameo('remixes/cameos/omocat', 809, 600); add(cameo3Spr);
+        toAdd = 1;
+
+      case 'bopeebo-r':
+        cameo2 = true;
+        cameo2Spr = buildCameo('remixes/cameos/dad', 670, 280); add(cameo2Spr);
+    }
+  }
+
+  function initializeSnow():Void
+  {
+    snowfgweak = makeSnow('iceolation/weak', 100, 110);
+    snowfgweak2 = makeSnow('iceolation/weak2', -100, 110);
+    snowfgmid = makeSnow('iceolation/mid', 400, 210);
+    snowfgmid2 = makeSnow('iceolation/mid2', -400, 210);
+    PlayState.instance.add(snowfgweak);
+    PlayState.instance.add(snowfgweak2);
+    PlayState.instance.add(snowfgmid);
+    PlayState.instance.add(snowfgmid2);
+    PlayState.instance.refresh();
+  }
+
+  function makeSnow(image:String, velx:Float, vely:Float):FlxBackdrop
+  {
+    var bd = new FlxBackdrop(Paths.image(image));
+    bd.scrollFactor.set(0.2, 0);
+    bd.velocity.set(velx, vely);
+    bd.screenCenter();
+    bd.alpha = 0;
+    return bd;
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    if (stageLoaded) return;
+
+    light = FunkinSprite.create(-599, -601);
+    light.loadTextureAtlas('remixes/lights', 'shared', {
+      applyStageMatrix: true,
+    });
+    light.scale.set(0.9999, 0.9999);
+    light.animation.addBySymbolIndices('anim1', 'lightening', [0], 24, false);
+    light.animation.addBySymbolIndices('anim2', 'lightening', [1], 24, false);
+    light.animation.play('anim1', false);
+    light.alpha = 0.5;
+    light.zIndex = 90;
+    add(light);
+
+    stageLoaded = true;
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    startedSong = true;
+  }
+
+  override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    songFinished = true;
+  }
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    var curBeat = event.beat;
+
+    if (curBeat % 4 == 0)
+    {
+      animNum = (animNum + 1) % 2;
+      if (light != null)
+        light.animation.play('anim' + (animNum + 1), false);
+    }
+
+    if (curBeat % 2 == 0 && !disableAnim)
+    {
+      if (cameo0 && cameo0Spr != null) cameo0Spr.animation.play('anim', true);
+      if (cameo1 && cameo1Spr != null) cameo1Spr.animation.play('anim', true);
+      if (cameo2 && cameo2Spr != null) cameo2Spr.animation.play('anim', true);
+      if (cameo3 && cameo3Spr != null) cameo3Spr.animation.play(animationName, true);
+      if (cameo4 && cameo4Spr != null) cameo4Spr.animation.play('anim', true);
+      if (cameo5 && cameo5Spr != null) cameo5Spr.animation.play('anim', true);
+      if (cameo6 && cameo6Spr != null) cameo6Spr.animation.play('anim', true);
+      if (cameo7 && cameo7Spr != null) cameo7Spr.animation.play('anim', true);
+      if (cameo8 && cameo8Spr != null) cameo8Spr.animation.play('anim', true);
+      if (cameo9 && cameo9Spr != null) cameo9Spr.animation.play('anim', true);
+      if (cameo10 && cameo10Spr != null) cameo10Spr.animation.play('anim', true);
+      if (cameo11 && cameo11Spr != null) cameo11Spr.animation.play('anim', true);
+    }
+  }
+
+  override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+    var elapsed = event.elapsed;
+    var curStep = Conductor.instance.curStep;
+
+    var targetCamY = getBoyfriend()?.cameraFocusPoint.y ?? 0;
+    if (PlayState.instance.cameraFollowPoint.y != targetCamY) PlayState.instance.cameraFollowPoint.y = targetCamY;
+
+    if (!songFinished)
+    {
+      var songPos = Conductor.instance.songPosition / 1000;
+      mixterOffset = Math.cos(songPos) * 50;
+
+      var dadChar = PlayState.instance?.currentStage?.getDad();
+      if (dadChar != null && (dadChar.characterId == 'mixter' || dadChar.characterId == 'mixter-pixel'))
+        dadChar.y = initY + mixterOffset;
+    }
+
+    if (curStep > 4 && !disabled)
+    {
+      disabled = true;
+      if (noiserRight != null) noiserRight.active = false;
+      if (noiserLeft != null) noiserLeft.active = false;
+      if (noiserMiddle != null) noiserMiddle.active = false;
+    }
+
+    if (songId == 'stress-r' && !specialThing && curStep >= 2362)
+    {
+      specialThing = true;
+      // This would only happen in story mode but we can only play in freeplay, so...
+      if (cameo4Spr != null) cameo4Spr.alpha = 1;
+      if (cameo3Spr != null) cameo3Spr.alpha = 0;
+    }
+
+    if (songId == 'gospel-r' && !gospelSnow)
+    {
+      var curBeat = Conductor.instance.currentBeat;
+      if (curBeat >= 430)
+      {
+        gospelSnow = true;
+        FlxTween.tween(snowfgweak, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgweak2, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid, { alpha: 1 }, 5);
+        FlxTween.tween(snowfgmid2, { alpha: 1 }, 5);
+      }
+    }
+
+    if (songId == 'glitcher-r')
+    {
+      if (curStep >= 592 && !h1) { enableGlitch(); h1 = true; }
+      if (curStep >= 832 && !h2) { disableGlitch(); h2 = true; }
+      if (curStep >= 1104 && !h3) { enableGlitch(); h3 = true; }
+      if (curStep >= 1344 && !h4) { disableGlitch(); h4 = true; }
+      if (curStep >= 2320 && !h5) { enableGlitch(); h5 = true; }
+      if (curStep >= 2560 && !h6) { disableGlitch(); h6 = true; }
+      if (curStep >= 2832 && !h7) { enableGlitch(); h7 = true; }
+      if (curStep >= 3072 && !h8) { disableGlitch(); h8 = true; }
+
+      if (curStep >= 2000 && !h9)
+      {
+        h9 = true;
+        PlayState.instance.tweenCameraZoom(1, 4, true, FlxEase.sineOut);
+      }
+      if (curStep >= 2060 && !specialThing)
+      {
+        specialThing = true;
+        animationName = 'glitch';
+        if (cameo3Spr != null) cameo3Spr.animation.play('glitch', true);
+      }
+      if (curStep >= 2064 && !zoomOut)
+      {
+        zoomOut = true;
+        PlayState.instance.tweenCameraZoom(1, 2, false, FlxEase.sineOut);
+      }
+      if (curStep >= 3755 && !specialThing2)
+      {
+        specialThing2 = true;
+        animationName = 'transition';
+        disableAnim = true;
+        if (cameo3Spr != null) cameo3Spr.animation.play('transition', true);
+      }
+    }
+
+    if (songId == 'release-r' && curStep >= 2384)
+    {
+      if (cameo2Spr != null) cameo2Spr.alpha -= elapsed / 4;
+    }
+    if (songId == 'fading-r' && curStep >= 704)
+    {
+      if (cameo2Spr != null) cameo2Spr.alpha -= elapsed / 2;
+    }
+
+    if (songId == 'boogieman-r' && !specialThing && curStep >= 1344)
+    {
+      specialThing = true;
+      animationName = 'hypnosis';
+      if (cameo3Spr != null) cameo3Spr.animation.play('hypnosis', true);
+    }
+  }
+
+  function enableGlitch():Void
+  {
+    tableFG.alpha = 0;
+    rain.alpha = 0;
+    hexLeft.visible = true;
+    hexLeft2.visible = true;
+    hexLeft3.visible = true;
+    hexRight.visible = true;
+    hexRight2.visible = true;
+    hexRight3.visible = true;
+  }
+
+  function disableGlitch():Void
+  {
+    tableFG.alpha = 1;
+    rain.alpha = 1;
+    hexLeft.visible = false;
+    hexLeft2.visible = false;
+    hexLeft3.visible = false;
+    hexRight.visible = false;
+    hexRight2.visible = false;
+    hexRight3.visible = false;
+  }
+
+  override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+    resetFlags();
+
+    if (noiserLeft != null) noiserLeft.active = true;
+    if (noiserRight != null) noiserRight.active = true;
+    if (noiserMiddle != null) noiserMiddle.active = true;
+
+    if (songId == 'glitcher-r') disableGlitch();
+  }
+
+  function resetFlags():Void {
+    startedSong = false;
+    songFinished = false;
+    specialThing = false;
+    specialThing2 = false;
+    disabled = false;
+    h1 = false; h2 = false; h3 = false; h4 = false;
+    h5 = false; h6 = false; h7 = false; h8 = false; h9 = false;
+    zoomOut = false;
+    gospelSnow = false;
+    animationName = 'anim';
+    disableAnim = false;
+    animNum = 0;
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    resetFlags();
+    stageLoaded = false;
+    stageSprite = null; counter = null; tableFG = null;
+    tree = null; tree2 = null; rain = null; pixelBg = null;
+    hexLeft = null; hexRight = null;
+    hexLeft2 = null; hexRight2 = null;
+    hexLeft3 = null; hexRight3 = null;
+    cameo0Spr = null; cameo1Spr = null; cameo2Spr = null; cameo3Spr = null;
+    cameo4Spr = null; cameo5Spr = null; cameo6Spr = null; cameo7Spr = null;
+    cameo8Spr = null; cameo9Spr = null; cameo10Spr = null; cameo11Spr = null;
+    skySpr = null; boySpr = null; girlSpr = null; ruverSpr = null; sarverSpr = null;
+    noiserMiddle = null; noiserLeft = null; noiserRight = null;
+    light = null;
+    snowfgweak = null; snowfgweak2 = null; snowfgmid = null; snowfgmid2 = null;
+  }
+
+  override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
+  {
+    super.addCharacter(character, charType);
+
+    if (charType == CharacterType.BF && character.characterId == 'bf-retrospecter') {
+      character.idleSuffix = '-alt';
+    } else if (charType == CharacterType.GF) {
+      // #623dd282
+      // hsla(255, 62%, 53%, 0.51)
+      var shader = new AdjustColorShader();
+      shader.hue = -40;
+      shader.saturation = 0;
+      shader.brightness = -55;
+      shader.contrast = 0;
+      character.shader = shader;
+    }
+  }
+}

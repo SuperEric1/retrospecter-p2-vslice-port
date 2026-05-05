@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "name": "FINALE (EXTRAS)",
+  "songs": [],
+  "visible": false,
+  "capsule": {
+    "name": "FINALE"
+  },
+  "titleAsset": "storymenu/titles/finale",
+  "background": "#000000",
+  "props": []
+}

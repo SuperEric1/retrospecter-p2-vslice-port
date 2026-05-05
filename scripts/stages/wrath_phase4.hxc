@@ -26,7 +26,6 @@ import Std;
 class WrathPhase4Stage extends Stage
 {
   var prefix:String = 'Phase4/';
-  var defaultCamZoom:Float = 1.0;
   var debugText:FlxText;
   var hasCreatedStage:Bool = false;
   var currentCameraTarget:String = 'dad';
@@ -274,7 +273,6 @@ class WrathPhase4Stage extends Stage
     geyserM = makeGeyser('geyserM', 0, 0, 0.7, 0.9, 0.95, 0.95);
     geyserR = makeGeyser('geyserR', 0, 0, 0.7, 0.7, 1, 1);
 
-    defaultCamZoom = PlayState.instance.currentCameraZoom;
     updateWindowsAlpha();
 
     // Create black overlay

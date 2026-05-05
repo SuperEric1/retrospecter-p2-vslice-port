@@ -89,6 +89,9 @@ class RetroFreeplay extends Module {
     songConfig.set('71-lust_extras', {
       bgImage: bgPath + 'lust_blur',
     });
+    songConfig.set('90-remixes', {
+      bgImage: bgPath + 'mixter',
+    });
 
 
     songConfig.set('waitkeeper', {
