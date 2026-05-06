@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="wolf.png" width="2159" height="138">
+	<SubTexture name="anim0001" x="963" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0002" x="1082" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0003" x="1201" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0004" x="1320" y="1" width="118" height="136" frameX="-0" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0005" x="362" y="1" width="118" height="135" frameX="-0" frameY="-3" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0006" x="241" y="1" width="118" height="134" frameX="-0" frameY="-4" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0007" x="1" y="1" width="117" height="133" frameX="-1" frameY="-4" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0008" x="121" y="1" width="117" height="133" frameX="-1" frameY="-4" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0009" x="483" y="1" width="117" height="135" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0010" x="1441" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0011" x="1560" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0012" x="1679" y="1" width="116" height="136" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0013" x="1798" y="1" width="118" height="136" frameX="-0" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0014" x="1919" y="1" width="118" height="136" frameX="-0" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0015" x="2040" y="1" width="118" height="136" frameX="-0" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0016" x="603" y="1" width="117" height="135" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0017" x="723" y="1" width="117" height="135" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+	<SubTexture name="anim0018" x="843" y="1" width="117" height="135" frameX="-1" frameY="-2" frameWidth="118" frameHeight="139"/>
+</TextureAtlas>

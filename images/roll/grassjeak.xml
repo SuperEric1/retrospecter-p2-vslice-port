@@ -1,0 +1,11 @@
+cara vai pro inferno
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="grassjeak.png">
+
+	<SubTexture name="anim0000" x="1" y="1" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+	<SubTexture name="anim0001" x="147" y="1" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+	<SubTexture name="anim0002" x="293" y="1" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+	<SubTexture name="anim0003" x="1" y="139" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+	<SubTexture name="anim0004" x="147" y="139" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+	<SubTexture name="anim0005" x="293" y="139" width="145" height="137" frameX="-1" frameY="-1" frameWidth="147" frameHeight="139" />
+</TextureAtlas>

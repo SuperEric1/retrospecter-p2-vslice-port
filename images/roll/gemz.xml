@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="gemz.png" width="1616" height="87">
+	<SubTexture name="anim0000" x="797" y="0" width="135" height="87" rotated="true" frameX="-26" frameY="-1" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0001" x="937" y="0" width="134" height="87" rotated="true" frameX="-28" frameY="-8" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0002" x="0" y="0" width="129" height="84" rotated="true" frameX="-32" frameY="-14" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0003" x="134" y="0" width="127" height="85" rotated="true" frameX="-32" frameY="-17" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0004" x="1076" y="0" width="128" height="87" rotated="true" frameX="-34" frameY="-10" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0005" x="1209" y="0" width="128" height="87" rotated="true" frameX="-36" frameY="-5" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0006" x="665" y="0" width="127" height="86" rotated="true" frameX="-36" frameY="-7" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0007" x="266" y="0" width="128" height="85" rotated="true" frameX="-35" frameY="-11" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0008" x="399" y="0" width="127" height="85" rotated="true" frameX="-32" frameY="-17" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0009" x="531" y="0" width="129" height="85" rotated="true" frameX="-30" frameY="-13" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0010" x="1342" y="0" width="134" height="87" rotated="true" frameX="-28" frameY="-7" frameWidth="150" frameHeight="150"/>
+	<SubTexture name="anim0011" x="1481" y="0" width="135" height="87" rotated="true" frameX="-26" frameY="-3" frameWidth="150" frameHeight="150"/>
+</TextureAtlas>

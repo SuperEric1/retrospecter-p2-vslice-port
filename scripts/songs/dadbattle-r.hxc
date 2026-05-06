@@ -1,29 +1,224 @@
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
+import funkin.Paths;
+import funkin.Preferences;
+import funkin.Conductor;
+import funkin.graphics.FunkinSprite;
+import funkin.mobile.input.ControlsHandler;
+import funkin.ui.FullScreenScaleMode;
+import openfl.Assets;
+import haxe.ds.StringMap;
+import StringTools;
 
 class DadBattleRSong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
   var hasPlayedEndCutscene:Bool;
+  var hasCreatedSprites:Bool = false;
+  var isMobile:Bool = false;
+  var gradientOffset:Float = 0;
+  var globalMargin:Float = 20;
+
+  var gradient:FunkinSprite;
+
+  // Credits
+  var creditScale:Float = 1;
+  var creditAreaWidth:Float = 0;
+  var creditObjects:Array<Dynamic> = [];
+  var creditsTotalHeight:Float = 0;
+  var creditsScrolling:Bool = false;
+  var songDuration:Float = 0;
+  var creditsEndBuffer:Float = 3000;
 
   public function new()
   {
     super('dadbattle-r');
-
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
   }
 
-  function onCreate(event:ScriptEvent):Void
+  public override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
+    hasCreatedSprites = false;
+  }
+
+  public override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    //isMobile = true;
+
+    if (!hasCreatedSprites) {
+      hasCreatedSprites = true;
+      var gradientWidth = FlxG.width - ((isMobile && FullScreenScaleMode.gameCutoutSize.x <= 0) ? 300 : (FullScreenScaleMode.gameCutoutSize.x / 2));
+
+      gradient = FunkinSprite.create(0, 0);
+      gradient.loadGraphic(Paths.image('gradient'));
+      gradient.cameras = [PlayState.instance.camCutscene];
+      gradient.scrollFactor.set(0, 0);
+      gradient.setGraphicSize(FlxG.height, gradientWidth);
+      gradient.updateHitbox();
+      gradient.alpha = 0.8;
+      gradient.angle = -90;
+      gradient.screenCenter(0x10);
+      gradient.color = FlxColor.BLACK;
+      PlayState.instance.add(gradient);
+
+      gradientOffset = isMobile && FullScreenScaleMode.gameCutoutSize.x <= 0 ? -100 : 0;
+
+      buildCredits();
+      PlayState.instance.refresh();
+    }
+
+    FlxTween.cancelTweensOf(gradient);
+    gradient.x -= 600;
+    PlayState.instance.opponentStrumline.visible = false;
+  }
+
+  function buildCredits():Void
+  {
+    creditObjects = [];
+    creditScale = isMobile ? 0.9 : 1.5;
+    creditAreaWidth = !isMobile ? FlxG.width / 2 : 450;
+
+    var raw:String = Assets.getText(Paths.file('data/rollConfig.txt'));
+    if (raw == null || raw.length == 0) return;
+
+    var lines:Array<String> = raw.split('\n');
+    var roles:Array<String> = [];
+    var roleMap:StringMap<String, Array<Dynamic>> = new StringMap();
+
+    for (line in lines) {
+      var trimmed:String = StringTools.trim(line);
+      if (trimmed.length == 0) continue;
+
+      var parts:Array<String> = trimmed.split('|');
+      if (parts.length < 4) continue;
+
+      var display:String = parts[0];
+      var path:String = parts[1];
+      var fps:Int = Std.parseInt(parts[2]);
+      var role:String = parts[3];
+
+      if (!roleMap.exists(role)) {
+        roles.push(role);
+        roleMap.set(role, []);
+      }
+      roleMap.get(role).push({ display: display, path: path, fps: fps });
+    }
+
+    var roleTitleSize:Int = Std.int(26 * creditScale);
+    var nameFontSize:Int = Std.int(24 * creditScale);
+    var rowPadding:Float = 12 * creditScale;
+    var titlePaddingTop:Float = 22 * creditScale;
+    var titlePaddingBottom:Float = 14 * creditScale;
+    var dividerPaddingV:Float = 16 * creditScale;
+    var dividerH:Float = 4; // * creditScale;
+    var currentY:Float = FlxG.height + globalMargin;
+
+    for (i in 0...roles.length) {
+      var role:String = roles[i];
+      var persons:Array<Dynamic> = roleMap.get(role);
+      var divWidth:Int = Std.int((creditAreaWidth - globalMargin * 2) - (creditAreaWidth / 6));
+
+      if (i > 0) {
+        currentY += dividerPaddingV;
+
+        var divBg:FunkinSprite = FunkinSprite.create(globalMargin, currentY);
+        divBg.makeGraphic(divWidth, Std.int(dividerH + 4), FlxColor.BLACK);
+        divBg.cameras = [PlayState.instance.camCutscene];
+        divBg.scrollFactor.set(0, 0);
+        PlayState.instance.add(divBg);
+        creditObjects.push({ obj: divBg, baseY: currentY });
+
+        var divFg:FunkinSprite = FunkinSprite.create(globalMargin + 2, currentY + 2);
+        divFg.makeGraphic(Std.int((creditAreaWidth - globalMargin * 2 - 4) - (creditAreaWidth / 6)), Std.int(dividerH), FlxColor.WHITE);
+        divFg.cameras = [PlayState.instance.camCutscene];
+        divFg.scrollFactor.set(0, 0);
+        PlayState.instance.add(divFg);
+        creditObjects.push({ obj: divFg, baseY: currentY + 2 });
+
+        currentY += dividerH + 4 + dividerPaddingV;
+      }
+
+      currentY += titlePaddingTop;
+
+      var roleText:FlxText = new FlxText(globalMargin, currentY, i > 0 ? divWidth + globalMargin : 0, role.toUpperCase());
+      roleText.setFormat(Paths.font('credits.ttf'), roleTitleSize, FlxColor.WHITE, 'center');
+      roleText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+      roleText.cameras = [PlayState.instance.camCutscene];
+      roleText.scrollFactor.set(0, 0);
+      roleText.antialiasing = false;
+      PlayState.instance.add(roleText);
+      creditObjects.push({ obj: roleText, baseY: currentY });
+      currentY += roleText.height + titlePaddingBottom;
+
+      for (person in persons) {
+        var spr:FunkinSprite = FunkinSprite.createSparrow(globalMargin, currentY, 'roll/' + person.path);
+        spr.animation.addByPrefix('idle', 'anim0', person.fps, true);
+        spr.animation.play('idle');
+        spr.scale.set(creditScale * 1.4, creditScale * 1.4);
+        spr.updateHitbox();
+        spr.antialiasing = false;
+        spr.cameras = [PlayState.instance.camCutscene];
+        spr.scrollFactor.set(0, 0);
+        PlayState.instance.add(spr);
+        creditObjects.push({ obj: spr, baseY: currentY });
+
+        var nameX:Float = globalMargin + spr.width + 12 * creditScale;
+        var nameY:Float = currentY + (spr.height - nameFontSize * 1.2) / 2;
+        var nameText:FlxText = new FlxText(nameX, nameY, 0, person.display);
+        nameText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), nameFontSize, FlxColor.WHITE);
+        nameText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+        nameText.cameras = [PlayState.instance.camCutscene];
+        nameText.scrollFactor.set(0, 0);
+        nameText.antialiasing = false;
+        PlayState.instance.add(nameText);
+        creditObjects.push({ obj: nameText, baseY: nameY });
+
+        currentY += spr.height + rowPadding;
+      }
+    }
+
+    creditsTotalHeight = currentY + globalMargin - FlxG.height;
+  }
+
+  public override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+
+    FlxTween.tween(gradient, { x: 0 + gradientOffset }, 0.5, { ease: FlxEase.linear });
+
+    songDuration = FlxG.sound.music != null ? FlxG.sound.music.length : 0;
+    creditsScrolling = songDuration > 0;
+  }
+
+  public override function onUpdate(event:UpdateScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (!creditsScrolling || songDuration <= 0) return;
+
+    var targetDuration:Float = songDuration - creditsEndBuffer;
+    var t:Float = Math.max(0, Math.min(1, Conductor.instance.songPosition / targetDuration));
+    var scrollY:Float = t * (FlxG.height + creditsTotalHeight);
+
+    for (entry in creditObjects)
+      entry.obj.y = entry.baseY - scrollY;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -35,7 +230,7 @@ class DadBattleRSong extends Song
     if (!hasPlayedInGameCutscene) {
       hasPlayedEndCutscene = false;
       hasPlayedInGameCutscene = true;
-      event.cancel(); // CANCEL THE COUNTDOWN!
+      event.cancel();
 
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['dadbattle story', 'pre', function() {
@@ -53,9 +248,7 @@ class DadBattleRSong extends Song
       hasPlayedEndCutscene = true;
 
       var rd = ModuleHandler.getModule('RetroDialogue');
-      rd.scriptCall('startDialogue', ['dadbattle story', 'post', null/*function() {
-        PlayState.instance.endSong();
-      }*/]);
+      rd.scriptCall('startDialogue', ['dadbattle story', 'post', null]);
     }
   }
 

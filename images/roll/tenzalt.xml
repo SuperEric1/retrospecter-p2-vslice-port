@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="tenzalt.png">
+
+	<SubTexture name="anim0000" x="1" y="1" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+	<SubTexture name="anim0001" x="107" y="1" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+	<SubTexture name="anim0002" x="213" y="1" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+	<SubTexture name="anim0003" x="1" y="140" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+	<SubTexture name="anim0004" x="107" y="140" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+	<SubTexture name="anim0005" x="213" y="140" width="105" height="138" frameX="-2" frameY="-2" frameWidth="109" frameHeight="143" />
+</TextureAtlas>
