@@ -164,6 +164,9 @@ class RetroUtil extends Module
    *   fps
    *   alpha
    *   antialiasing
+   *   redOffset
+   *   blueOffset
+   *   greenOffset
    */
   public static function spawnSplash(note:Dynamic, cfg:Dynamic):Void {
     var prefixes:Array<String> = cfg.prefixes;
@@ -185,6 +188,9 @@ class RetroUtil extends Module
     splash.x = (relative ? note.x : strum.strumlineNotes.members[noteDir].x) + cfg.xOffset;
     splash.y = (relative ? note.y : strum.strumlineNotes.members[noteDir].y) + cfg.yOffset;
     splash.antialiasing = antialiasing;
+    if (cfg.redOffset != null) splash.colorTransform.redOffset = cfg.redOffset;
+    if (cfg.blueOffset != null) splash.colorTransform.blueOffset = cfg.blueOffset;
+    if (cfg.greenOffset != null) splash.colorTransform.greenOffset = cfg.greenOffset;
     splash.zIndex = strum.zIndex + 1;
 
     splash.animation.finishCallback = function(_) { splash.kill(); };

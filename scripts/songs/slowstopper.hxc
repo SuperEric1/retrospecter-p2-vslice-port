@@ -356,14 +356,14 @@ class SlowstopperSong extends Song
         strum.y = defaultOpponentStrumY[savedData[i]] - camY;
         // strum.x = defaultOpponentStrumX[savedData[i]] - camX + globalOffset;
         // strum.y = defaultOpponentStrumY[savedData[i]] - camY;
-
-        // Sync notes pos
-        for (note in PlayState.instance.opponentStrumline.notes.members) {
-          if (note == null || !note.alive || !note.visible) continue;
-          var targetX = PlayState.instance.opponentStrumline.strumlineNotes.members[note.noteData.getDirection()].x;
-          if (note.x != targetX) {
-            note.x = targetX;
-          }
+      }
+      
+      // Sync notes pos
+      for (note in PlayState.instance.opponentStrumline.notes.members) {
+        if (note == null || !note.alive || !note.visible) continue;
+        var targetX = PlayState.instance.opponentStrumline.strumlineNotes.members[note.noteData.getDirection()].x;
+        if (note.x != targetX) {
+          note.x = targetX;
         }
       }
     }

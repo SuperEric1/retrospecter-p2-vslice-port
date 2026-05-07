@@ -40,6 +40,6 @@
 	<SubTexture name="fading0033" x="2064" y="1504" width="1936" height="234" frameX="-87" frameY="-127" frameWidth="2135" frameHeight="485"/>
 	<SubTexture name="fading0034" x="2064" y="1504" width="1936" height="234" frameX="-87" frameY="-127" frameWidth="2135" frameHeight="485"/>
 	<SubTexture name="fading0035" x="0" y="0" width="1" height="1" frameX="20" frameY="6" frameWidth="2135" frameHeight="485"/>
-	
+
 	<SubTexture name="nothing0000" x="0" y="0" width="1" height="1" frameX="20" frameY="6" frameWidth="2135" frameHeight="485"/>
 </TextureAtlas>

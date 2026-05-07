@@ -147,6 +147,10 @@ class RetroPlayState extends Module {
   var atroDarkness:FunkinSprite;
   var atroHitCounter:Int = 0; // Caso ultrapasse de 3, matar o jogador.
 
+  // Dozirc Notes - Health drain
+  var dozircMechanicTimer:FlxTimer = null;
+  var dozircHitCounter:Int = 0;
+
   // Misc
   var loadedMechanics:Array<String> = []; // here we will store the names of the loaded mechanics for the current song (set by the song's scripts)
   var currentHealthCap:Float = 0; // also used for the insatian notes.
@@ -704,12 +708,23 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
-
-      if (!loadedMechanics.contains('weblock')) {
-        trace('LOADED UNLOADED MECHANIC: weblock');
-        loadedMechanics.push('weblock');
-        loadWebLockSprites();
+      if (dozircMechanicTimer != null) {
+        dozircMechanicTimer.cancel();
+        dozircMechanicTimer = null;
       }
+
+      var time:Float = 4;
+      if (dozircHitCounter < 4) dozircHitCounter += 1;
+
+      retroGameUI.scriptCall('playDozircBarAnim', [event.note.noteData.getDirection(), time]);
+      dozircMechanicTimer = new FlxTimer(globalTimerManager).start(time, function(tmr:FlxTimer) {
+        if (PlayState.instance == null) {
+          dozircMechanicTimer = null;
+          return;
+        }
+        retroGameUI.scriptCall('resetDozircAnim', []);
+        dozircHitCounter = 0;
+      });
 
       FlxG.sound.play(Paths.sound('noteSounds/Dozirc'));
       event.doesNotesplash = false;
@@ -1590,11 +1605,21 @@ class RetroPlayState extends Module {
       applySpectreAlpha();
     }
 
+    // Health drain things
     if (poisonAmount > 0 && PlayState.instance.health > 0.01) {
-      if (poisonAmount * 0.0125 * event.elapsed > PlayState.instance.health) {
+      var targetHealth = poisonAmount * 0.0125 * event.elapsed;
+      if (targetHealth > PlayState.instance.health) {
         PlayState.instance.health = 0.01;
       } else {
-        PlayState.instance.health -= poisonAmount * 0.0125 * event.elapsed;
+        PlayState.instance.health -= targetHealth;
+      }
+    }
+    if (dozircHitCounter > 0 && PlayState.instance.health > 0.01) {
+      var targetHealth = (dozircHitCounter * 0.5) * 0.22 * event.elapsed;
+      if (targetHealth > PlayState.instance.health) {
+        PlayState.instance.health = 0.01;
+      } else {
+        PlayState.instance.health -= targetHealth;
       }
     }
 
@@ -2241,6 +2266,12 @@ class RetroPlayState extends Module {
     hmpInstructionPlayed = false;
     destroyHiveminePapers();
 
+    if (dozircMechanicTimer != null) {
+      dozircMechanicTimer.cancel();
+      dozircMechanicTimer = null;
+    }
+    dozircHitCounter = 0;
+
     poisonAmount = 0;
     if (forceNotesAlpha != null) forceNotesAlpha = 0.5;
     if (forceOppNotesAlpha != null) forceOppNotesAlpha = 0.5;
@@ -2496,6 +2527,12 @@ class RetroPlayState extends Module {
     isDoingVocalThing = false;
 
     removeInsatianHoles(true);
+
+    if (dozircMechanicTimer != null) {
+      dozircMechanicTimer.cancel();
+      dozircMechanicTimer = null;
+    }
+    dozircHitCounter = 0;
 
     var destroySprites = [solidCameraSprite, poisonSprite];
     for (i in 0...2) {

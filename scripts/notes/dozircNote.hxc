@@ -23,7 +23,10 @@ class DozircNote extends NoteKind {
 			sizeMulti: 1.4,
 			xOffset: -80,
 			yOffset: -80,
-			antialiasing: false
+			antialiasing: false,
+			redOffset: 255,
+			blueOffset: 255,
+			greenOffset: 255
 		});
 	}
 

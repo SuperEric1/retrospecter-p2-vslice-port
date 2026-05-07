@@ -73,10 +73,13 @@ class RetroGameUI extends Module {
   var retroHealthBarFillBG:FunkinSprite; // Fundo da barra (cor do oponente)
   var dozircVertice1:FunkinSprite; // para dozirc
   var dozircVertice2:FunkinSprite; // para dozirc
+  var dozircEletric:FunkinSprite; // para dozirc
   var _fillClipRect:FlxRect = new FlxRect();
   var _fillBGClipRect:FlxRect = new FlxRect();
   var _overlayClipRect:FlxRect = new FlxRect();
   var healthBarResetTween:FlxTween = null;
+  var dozircMechanicTimer:FlxTimer = null;
+  var dozircColorDir:Int = 0;
 
   var maxHealthCutOffset:Float = 0; // Offset ajustável para o corte visual (caso precise algum dia)
   var currentHealthCut:Float = 0; // Porcentagem atual do corte (0 a 1)
@@ -240,6 +243,12 @@ class RetroGameUI extends Module {
           retroHealthBarFill = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/bar');
           dozircVertice1 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
           dozircVertice2 = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset, 'ui/healthBars/dozirc/vertices');
+          dozircEletric = FunkinSprite.create(0, playState.healthBar.y + healthBgYOffset);
+          dozircEletric.frames = Paths.getSparrowAtlas("ui/healthBars/dozirc/eletric");
+          dozircEletric.animation.addByPrefix("start", "start0", 24, false);
+          dozircEletric.animation.addByPrefix("loop", "loop0", 24, true);
+          dozircEletric.animation.addByPrefix("fade", "fading0", 24, false);
+          dozircEletric.animation.play("loop");
         case 'sakuroma':
           defaultScale = [0.45, 0.45];
           healthBgYOffset = -75;
@@ -335,8 +344,20 @@ class RetroGameUI extends Module {
           dozircVertice2.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), false);
           dozircVertice2.antialiasing = false;
 
+          dozircEletric.scale.set(defaultScale[0], defaultScale[1]);
+          dozircEletric.updateHitbox();
+          dozircEletric.cameras = [playState.camHUD];
+          dozircEletric.zIndex = retroHealthBarFillBG.zIndex - 1;
+          dozircEletric.screenCenter(0x01);
+          dozircEletric.y += 7.3;
+          dozircEletric.x += 6;
+          dozircEletric.antialiasing = false;
+          dozircEletric.alpha = 0;
+          dozircEletric.kill();
+
           playState.add(dozircVertice1);
           playState.add(dozircVertice2);
+          playState.add(dozircEletric);
         }
         /*if (insatianMunch != null) {
           insatianMunch.zIndex = retroHealthBarOverlay.zIndex;
@@ -806,6 +827,78 @@ class RetroGameUI extends Module {
     FlxTween.tween(txt, {alpha: 0}, 0.07, {startDelay: 0.4 - 0.07});
   }
 
+  public function playDozircBarAnim(dir:Int, time:Float):Void {
+    if (!isDozirc) return;
+    var color:Int;
+
+    switch (dir) {
+      case 0:
+        color = 0xFFc64f9c;
+      case 1:
+        color = 0xFF3fe9e8;
+      case 2:
+        color = 0xFF52fd4b;
+      case 3:
+        color = 0xFFf9565d;
+    }
+
+    if (!dozircEletric.alive) dozircEletric.revive();
+    FlxTween.cancelTweensOf(dozircEletric);
+    dozircEletric.color = color;
+    dozircEletric.alpha = 1;
+
+    if (dozircColorDir != dir || dozircColorDir == 0) {
+      dozircEletric.animation.play('start', true);
+      dozircEletric.animation.onFinish.addOnce(function(_) {
+        dozircEletric.animation.play('loop', true);
+      });
+    }
+
+    dozircColorDir = dir;
+  }
+
+  public function resetDozircAnim(instant:Bool = false):Dynamic {
+    if (instant) {
+      if (dozircEletric != null && dozircEletric.alive) {
+        dozircEletric.animation.play('start', true);
+        dozircEletric.kill();
+      }
+      dozircColorDir = 0;
+      return;
+    } else {
+      dozircEletric.animation.play('fade', true);
+      dozircEletric.animation.onFinish.addOnce(function(_) {
+        resetDozircAnim(true);
+      });
+      /*FlxTween.tween(dozircEletric, {alpha: 0}, 0.5, {ease: FlxEase.sineOut, onComplete: function(_) {
+        resetDozircAnim(true);
+      }});*/
+    }
+  }
+
+  function updateDozircIcon():Void
+  {
+    var iconP2 = PlayState.instance.iconP2;
+
+    var animName:String;
+    switch (dozircColorDir) {
+      case 0:
+        animName = 'left';
+      case 1:
+        animName = 'down';
+      case 2:
+        animName = 'up';
+      case 3:
+        animName = 'right';
+      default:
+        animName = 'losing';
+    }
+
+    if (iconP2?.animation != null && iconP2.animation.curAnim != animName) {
+      iconP2.animation.play(animName, true);
+    }
+  }
+
   override public function onBeatHit(event:SongTimeScriptEvent) {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
@@ -955,6 +1048,7 @@ class RetroGameUI extends Module {
     cancelTweens(false);
     currentAccuracy = 0.0;
     isHivemine = false;
+    resetDozircAnim(true);
     isDozirc = false;
   }
 
@@ -1036,6 +1130,12 @@ class RetroGameUI extends Module {
     if (retroHealthBarFillBG.y != targetBarY && !StringTools.startsWith(ogDadId, 'mixter')) retroHealthBarFillBG.y = targetBarY;
     if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
+    // workaround for the animated icons to bop.
+    if (isPlayerIconAnimated && !PlayState.instance.iconP1.isLegacyStyle) PlayState.instance.iconP1.isLegacyStyle = true;
+    if (isOppIconAnimated && !PlayState.instance.iconP2.isLegacyStyle) PlayState.instance.iconP2.isLegacyStyle = true;
+
+    if (isDozirc && dozircColorDir != 0) updateDozircIcon();
+
     // ---- Texts ----
     if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
       if (!PlayState.instance.startingSong) {
@@ -1078,6 +1178,11 @@ class RetroGameUI extends Module {
     }
     if (isHivemine) setHivemineMoney(0);
 
+    if (isDozirc) resetDozircAnim(true);
+
+    // ahhhhh cansei de mexer nos icones
+    getIconColor(ogBfId, true); // Atualizar anims novamente
+    getIconColor(ogDadId, true); // Atualizar anims novamente
     configureIcon(); // Setar zindex e tudo mais nos dois icons (por algum motivo estava ficando errado ao recomeçar)
 
     // i tried
@@ -1098,10 +1203,10 @@ class RetroGameUI extends Module {
       case 'bf-wrath':
         if (!isPlayerIconAnimated && updateIconAnim) {
           isPlayerIconAnimated = true;
-          playerIcon.animation.addByPrefix("idle", "neutral", 24, false);
-          playerIcon.animation.addByPrefix("winning", "win", 24, false);
-          playerIcon.animation.addByPrefix("losing", "lose", 24, false);
-          syncIconAnim(playerIcon, false);
+          // playerIcon.animation.addByPrefix("idle", "neutral", 24, false);
+          // playerIcon.animation.addByPrefix("winning", "win", 24, false);
+          // playerIcon.animation.addByPrefix("losing", "lose", 24, false);
+          //syncIconAnim(playerIcon, false);
         }
         return getRGB(40, 45, 78);
       case 'bf-gluttony':
@@ -1120,11 +1225,11 @@ class RetroGameUI extends Module {
       case 'phase2':
         if (!isOppIconAnimated && updateIconAnim) {
           isOppIconAnimated = true;
-          oppIcon.animation.addByPrefix("idle", "neutral", 0, false);
-          oppIcon.animation.addByPrefix("winning", "win", 0, false);
+          // oppIcon.animation.addByPrefix("idle", "neutral", 0, false);
+          // oppIcon.animation.addByPrefix("winning", "win", 0, false);
           oppIcon.animation.addByPrefix("winningPlus", "pluswin", 0, false);
-          oppIcon.animation.addByPrefix("losing", "lose", 0, false);
-          syncIconAnim(oppIcon, true);
+          // oppIcon.animation.addByPrefix("losing", "lose", 0, false);
+          //syncIconAnim(oppIcon, true);
         }
         return getRGB(76, 255, 148);
       case 'phase3':
@@ -1151,6 +1256,16 @@ class RetroGameUI extends Module {
       case 'atrocean':
         return getRGB(18, 228, 118);
       case 'dozirc':
+        if (!isOppIconAnimated && updateIconAnim) {
+          isOppIconAnimated = true;
+
+          oppIcon.animation.addByPrefix("up", "up", 1, false);
+          oppIcon.animation.addByPrefix("down", "down", 1, false);
+          oppIcon.animation.addByPrefix("left", "left", 1, false);
+          oppIcon.animation.addByPrefix("right", "right", 1, false);
+
+          syncIconAnim(oppIcon, true);
+        }
         return getRGB(227, 146, 18);
       case 'sakuroma':
         return getRGB(248, 54, 107);
@@ -1248,24 +1363,20 @@ class RetroGameUI extends Module {
     health = PlayState.instance.health;
     if (!opp) { // player
       if (health > win) {
-        icon.playAnimation('winning', true, false);
+        icon.animation.play('winning', true, false);
       } else if (health < lose) {
-        icon.playAnimation('losing', true, false);
+        icon.animation.play('losing', true, false);
       } else {
-        icon.playAnimation('idle', true, false);
+        icon.animation.play('idle', true, false);
       }
-      // workaround for the animated icon to bop.
-      if (isPlayerIconAnimated) PlayState.instance.iconP1.isLegacyStyle = true;
     } else { // opp
       if (health > win) {
-        icon.playAnimation('losing', true, false);
+        icon.animation.play('losing', true, false);
       } else if (health < lose) {
-        icon.playAnimation('winning', true, false);
+        icon.animation.play('winning', true, false);
       } else {
-        icon.playAnimation('idle', true, false);
+        icon.animation.play('idle', true, false);
       }
-      // workaround for the animated icon to bop.
-      if (isOppIconAnimated) PlayState.instance.iconP2.isLegacyStyle = true;
     }
   }
 

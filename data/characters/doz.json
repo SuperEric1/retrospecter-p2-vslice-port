@@ -8,7 +8,7 @@
   "scale": 1,
   "healthIcon": {
     "offsets": [15, 0],
-    "id": "dozircDefault",
+    "id": "dozirc",
     "isPixel": false,
     "flipX": false,
     "scale": 0.75
