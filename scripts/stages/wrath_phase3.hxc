@@ -31,8 +31,11 @@ class WrathPhase3Stage extends Stage
     var lavaflowL:FunkinSprite;
     var lavaflowR:FunkinSprite;
     var frontbg:FunkinSprite;
+    var frontbg2:FunkinSprite;
+    var frontbg3:FunkinSprite;
     var frontbgLava:FunkinSprite;
     var frontbgLava2:FunkinSprite;
+    var frontbgLava3:FunkinSprite;
 
     var geyserL:FunkinSprite;
     var geyserM:FunkinSprite;
@@ -224,8 +227,7 @@ class WrathPhase3Stage extends Stage
         debris3.antialiasing = false;
         add(debris3);
 
-        frontbg = FunkinSprite.create(0, -1350);
-        frontbg.loadTexture('Phase3/frontbgWalls');
+        frontbg = FunkinSprite.create(0, -1350, 'Phase3/frontbgWalls');
         frontbg.scale.set(0.8, 0.8);
         frontbg.updateHitbox();
         frontbg.x = (FlxG.width - frontbg.width) / 2 + 60;
@@ -233,6 +235,22 @@ class WrathPhase3Stage extends Stage
         frontbg.zIndex = 65;
         frontbg.antialiasing = false;
         add(frontbg);
+
+        frontbg2 = FunkinSprite.create(frontbg.x - frontbg.width, frontbg.y, 'Phase3/frontbgWalls');
+        frontbg2.scale.set(0.8, 0.8);
+        frontbg2.updateHitbox();
+        frontbg2.scrollFactor.set(0.3, 0.9);
+        frontbg2.zIndex = frontbg.zIndex + 1;
+        frontbg2.antialiasing = false;
+        add(frontbg2);
+
+        frontbg3 = FunkinSprite.create(frontbg.x + frontbg.width, frontbg.y, 'Phase3/frontbgWalls');
+        frontbg3.scale.set(0.8, 0.8);
+        frontbg3.updateHitbox();
+        frontbg3.scrollFactor.set(0.3, 0.9);
+        frontbg3.zIndex = frontbg.zIndex + 1;
+        frontbg3.antialiasing = false;
+        add(frontbg3);
 
         // Lava do fundo (posicionada logo abaixo de frontbg)
         var frontbgLavaY:Float = -1350 + 2634 * frontbg.scale.y;
@@ -246,10 +264,21 @@ class WrathPhase3Stage extends Stage
         add(frontbgLava);
 
         frontbgLava2 = frontbgLava.clone();
-        frontbgLava2.y += 50;
-        frontbgLava2.x += frontbg.width / 2;
+        //frontbgLava2.y += 25;
+        frontbgLava2.flipX = true;
+        frontbgLava2.x = frontbgLava.x + frontbgLava.width;
         frontbgLava2.zIndex = frontbgLava.zIndex - 1;
+        frontbgLava2.scrollFactor.set(0.3, 0.9);
+        frontbgLava2.antialiasing = false;
         add(frontbgLava2);
+
+        frontbgLava3 = frontbgLava.clone();
+        frontbgLava3.flipX = true;
+        frontbgLava3.x = frontbg.x - frontbgLava3.width;
+        frontbgLava3.zIndex = frontbgLava.zIndex - 1;
+        frontbgLava3.scrollFactor.set(0.3, 0.9);
+        frontbgLava3.antialiasing = false;
+        add(frontbgLava3);
 
         createRocks();
 
@@ -325,7 +354,7 @@ class WrathPhase3Stage extends Stage
 
         PlayState.instance.refresh();
 
-        sinkableSprites = [bg, lavaflowL, lavaflowR, geyserM, geyserL, geyserR, frontbg, fgFireL, fgFireR, fgGlow];
+        sinkableSprites = [bg, lavaflowL, lavaflowR, geyserM, geyserL, geyserR, frontbg, frontbg2, frontbg3, fgFireL, fgFireR, fgGlow];
         for (spr in sinkableSprites) sinkableOriginalY.push(spr.y);
 
         eruptionBaseY.set('lavarockL', lavarockL.y);
@@ -333,6 +362,8 @@ class WrathPhase3Stage extends Stage
         eruptionBaseY.set('lavarockR', lavarockR.y);
         eruptionBaseY.set('lavabubbles', lavabubbles.y);
         eruptionBaseY.set('frontbgLava', frontbgLava.y);
+        eruptionBaseY.set('frontbgLava2', frontbgLava2.y);
+        eruptionBaseY.set('frontbgLava3', frontbgLava3.y);
 
         ground_LBaseX = ground_L.x;
         ground_LBaseY = ground_L.y;
@@ -362,11 +393,13 @@ class WrathPhase3Stage extends Stage
             hasCreatedStage = true;
 
             // Borders for wide screens
-            if (true || FlxG.width > 1280) {
+            // Actually let's make it always true because this stage is kinda small
+            if (true) {
                 var camZoom = PlayState.instance.stageZoom;
                 var w = 500;
                 var h = Math.ceil((FlxG.height + 50) / camZoom);
                 var color = 0xFF031100; // #031100
+                var color2 = 0xFF0b110a;
 
                 var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
                 border1.x = bg.x + 10;
@@ -374,7 +407,7 @@ class WrathPhase3Stage extends Stage
                 border1.scrollFactor.set(bg.scrollFactor.x, 0);
                 border1.zIndex = bg.zIndex + 1;
                 add(border1);
-                var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+                var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 3, h, color);
                 fillBorderLeft.zIndex = border1.zIndex - 1;
                 fillBorderLeft.x -= fillBorderLeft.width;
                 fillBorderLeft.scrollFactor.set(bg.scrollFactor.x, 0);
@@ -386,10 +419,22 @@ class WrathPhase3Stage extends Stage
                 border2.scrollFactor.set(bg.scrollFactor.x, 0);
                 border2.zIndex = bg.zIndex + 1;
                 add(border2);
-                var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+                var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 3, h, color);
                 fillBorderRight.zIndex = border2.zIndex - 1;
                 fillBorderRight.scrollFactor.set(bg.scrollFactor.x, 0);
                 add(fillBorderRight);
+
+                /*var border3 = FlxGradient.createGradientFlxSprite(150, (frontbg.height / 1.7) + 15, [color2, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+                border3.x = frontbg.x;
+                border3.y = frontbg.y;
+                border3.scrollFactor.set(frontbg.scrollFactor.x, frontbg.scrollFactor.y);
+                border3.zIndex = frontbg.zIndex + 1;
+                add(border3);
+                var fillBorderFix = FunkinSprite.create(border3.x, border3.y).makeSolidColor(300, border3.height, color2);
+                fillBorderFix.x -= fillBorderFix.width;
+                fillBorderFix.zIndex = border3.zIndex - 1;
+                fillBorderFix.scrollFactor.set(frontbg.scrollFactor.x, frontbg.scrollFactor.y);
+                add(fillBorderFix);*/
             }
         }
     }
@@ -595,6 +640,8 @@ class WrathPhase3Stage extends Stage
         lavarockR.y = eruptionBaseY.get('lavarockR') + lavaFGOff;
         lavabubbles.y = eruptionBaseY.get('lavabubbles') + lavaFGOff;
         frontbgLava.y = eruptionBaseY.get('frontbgLava') + lavaFGOff;
+        frontbgLava2.y = eruptionBaseY.get('frontbgLava2') + lavaFGOff;
+        frontbgLava3.y = eruptionBaseY.get('frontbgLava3') + lavaFGOff;
     }
 
     override function onStepHit(event:SongTimeScriptEvent):Void

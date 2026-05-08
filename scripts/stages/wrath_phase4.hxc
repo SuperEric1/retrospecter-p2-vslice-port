@@ -319,8 +319,7 @@ class WrathPhase4Stage extends Stage
     PlayState.instance.add(white, 'white');
 
     // Create symbol
-    symbol = FunkinSprite.create();
-    symbol.loadSparrow('Phase4/nftf');
+    symbol = FunkinSprite.createSparrow(0, 0, 'nftf');
     symbol.cameras = [PlayState.instance.camHUD];
     symbol.animation.addByPrefix('nothing', 'nothing', 24, false);
     symbol.animation.addByPrefix('show', 'EXPORTTHISanim', 69, false);
