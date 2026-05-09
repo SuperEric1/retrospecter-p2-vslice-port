@@ -19,16 +19,17 @@ TODO:
 - [ ] Cloth scythes
 - [ ] Enemy title popup module + apply to all songs that have it (todo)
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
-- [ ] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
 - [ ] Song ratings for freeplay
 - [ ] Sweet talk intro instruction
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
+- [ ] Update charters in song metadatas
 - [ ] Finish the opponent note skins
-- [ ] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Fix reseting strum scales to default when restarting song
+- [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
+- [X] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
 - [X] Dialogues...?
 - [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)
 - [X] Intro for options menu
