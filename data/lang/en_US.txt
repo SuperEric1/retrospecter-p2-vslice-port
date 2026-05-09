@@ -8,6 +8,10 @@ stats.accuracy = "ACC: {0}%"
 stats.misses = "MISSES: {0}"
 stats.rating = "RANK:"
 stats.timeLeft = "Time Left"
+stats.card.artist = "By {0}"
+stats.card.remix = "Remix by {0}"
+stats.card.original = "Original by {0}"
+stats.card.charter = "Charted by {0}"
 
 judgement.sick = "SICK!!"
 judgement.good = "GOOD!"
@@ -44,7 +48,7 @@ options.language.desc = "Choose the mod's language. This option also changes sub
 options.modcharts = "Modcharts"
 options.modcharts.desc = "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)"
 
-options.mechanics = "Note Mechanics"
+options.mechanics = "Mechanics"
 options.mechanics.desc = "Toggles hazard note mechanics for all songs that use them."
 
 options.transform_notes = "Transform Hazard Notes"

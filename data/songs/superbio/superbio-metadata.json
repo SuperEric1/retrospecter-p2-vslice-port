@@ -1,7 +1,7 @@
 {
   "version": "2.2.0",
   "songName": "Superbio",
-  "artist": "RetroSpecter & Kamex",
+  "artist": "Retrospecter & Kamex",
   "charter": "Chubby & Lily-Clipee-Chan",
   "looped": false,
   "offsets": {
@@ -38,12 +38,7 @@
       "bpm": 170,
       "n": 4,
       "d": 4,
-      "bt": [
-        4,
-        4,
-        4,
-        4
-      ]
+      "bt": [4, 4, 4, 4]
     }
   ],
   "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"

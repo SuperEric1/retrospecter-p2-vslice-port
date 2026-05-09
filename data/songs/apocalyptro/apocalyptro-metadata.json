@@ -1,7 +1,7 @@
 {
   "version": "2.2.0",
   "songName": "Apocalyptro",
-  "artist": "RetroSpecter & Kamex",
+  "artist": "Kamex",
   "charter": "Chubby and Lily-Clipee-Chan",
   "looped": false,
   "offsets": {
@@ -38,12 +38,7 @@
       "bpm": 212,
       "n": 4,
       "d": 4,
-      "bt": [
-        4,
-        4,
-        4,
-        4
-      ]
+      "bt": [4, 4, 4, 4]
     },
     {
       "t": 1132.0754716981132,
@@ -51,12 +46,7 @@
       "bpm": 106,
       "n": 4.0,
       "d": 4.0,
-      "bt": [
-        4.0,
-        4.0,
-        4.0,
-        4.0
-      ]
+      "bt": [4.0, 4.0, 4.0, 4.0]
     },
     {
       "t": 10188.67924528302,
@@ -64,12 +54,7 @@
       "bpm": 212,
       "n": 4.0,
       "d": 4.0,
-      "bt": [
-        4.0,
-        4.0,
-        4.0,
-        4.0
-      ]
+      "bt": [4.0, 4.0, 4.0, 4.0]
     }
   ],
   "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"

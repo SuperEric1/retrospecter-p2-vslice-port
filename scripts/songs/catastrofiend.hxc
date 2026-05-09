@@ -161,7 +161,8 @@ class CatastrofiendSong extends Song
     }
     if (PlayState.instance.startTimestamp <= 10000) {
       FlxG.signals.postUpdate.addOnce(function() {
-          if (modcharts && !didIntroAnim)
+          didIntroAnim = false;
+          if (modcharts)
           {
             for (strum in playerStrums.strumlineNotes)
             {

@@ -9,6 +9,10 @@ stats.accuracy = "PRECISÃO: {0}%"
 stats.misses = "ERROS: {0}"
 stats.rating = "RANK:"
 stats.timeLeft = "Tempo Rest."
+stats.card.artist = "Por {0}"
+stats.card.remix = "Remix por {0}"
+stats.card.original = "Original por {0}"
+stats.card.charter = "Chart por {0}"
 
 judgement.sick = "MASSA!!"
 judgement.good = "BOA!"
@@ -45,7 +49,7 @@ options.language.desc = "Escolha o idioma do mod. Essa opção também muda os s
 options.modcharts = "Modcharts"
 options.modcharts.desc = "Ativa os modcharts.\n(Setas do strumline tremendo, girando, movendo, etc.)"
 
-options.mechanics = "Mecanicas de Notas"
+options.mechanics = "Mecanicas"
 options.mechanics.desc = "Ativa as mecânicas das notas perigosas para todas as músicas que as usam."
 
 options.transform_notes = "Transformar Notas"

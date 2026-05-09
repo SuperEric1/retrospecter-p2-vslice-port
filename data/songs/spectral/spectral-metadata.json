@@ -1,7 +1,7 @@
 {
   "version": "2.2.0",
   "songName": "Spectral",
-  "artist": "RetroSpecter & Kamex",
+  "artist": "RetroSpecter",
   "charter": "Chubby & Lily-Clipee-Chan",
   "looped": false,
   "offsets": {
@@ -38,12 +38,7 @@
       "bpm": 210,
       "n": 4,
       "d": 4,
-      "bt": [
-        4,
-        4,
-        4,
-        4
-      ]
+      "bt": [4, 4, 4, 4]
     }
   ],
   "generatedBy": "FNF Porter (by Gusborg, tposejank, BombasticTom & VocalFan)"

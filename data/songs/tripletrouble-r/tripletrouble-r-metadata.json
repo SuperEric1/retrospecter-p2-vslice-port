@@ -1,7 +1,7 @@
 {
   "timeFormat": "ms",
   "songName": "Triple Trouble",
-  "artist": "RetroSpecter, MarStarBro, Uptaunt, Punkett",
+  "artist": "RetroSpecter | MarStarBro, Uptaunt, Punkett",
   "charter": "Lily-Clipee-Chan",
   "playData": {
     "stage": "remixes-bar",
@@ -20,10 +20,22 @@
     }
   },
   "timeChanges": [
-    { "t": 0, "bpm": 146 },
-    { "t": 0, "bpm": 292 },
-    { "t": 821.917808219178, "bpm": 146 },
-    { "t": 291780.821917809, "bpm": 166 }
+    {
+      "t": 0,
+      "bpm": 146
+    },
+    {
+      "t": 0,
+      "bpm": 292
+    },
+    {
+      "t": 821.917808219178,
+      "bpm": 146
+    },
+    {
+      "t": 291780.821917809,
+      "bpm": 166
+    }
   ],
   "generatedBy": "Psych Engine v1.0.4 - Chart Editor V-Slice Exporter",
   "version": "2.2.3"

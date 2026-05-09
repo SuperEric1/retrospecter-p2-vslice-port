@@ -29,6 +29,7 @@ import funkin.save.Save;
 import funkin.play.scoring.Scoring;
 import funkin.graphics.FunkinSprite;
 import funkin.util.ReflectUtil;
+import flixel.util.FlxTimerManager;
 import flixel.text.FlxText;
 //import flixel.text.FlxBitmapFont;
 import flixel.graphics.frames.FlxBitmapFont;
@@ -37,6 +38,7 @@ import flixel.text.FlxTextBorderStyle;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import funkin.Preferences;
+import funkin.group.FunkinGroup;
 import funkin.mobile.input.ControlsHandler;
 import funkin.ui.FullScreenScaleMode;
 import funkin.effects.IntervalShake;
@@ -55,6 +57,10 @@ class RetroGameUI extends Module {
 
   var _fontAtari:FlxBitmapFont;
   var _font5by7:FlxBitmapFont;
+
+  var tweens:Array<FlxTween> = [];
+  var pausedTweens:Array<FlxTween> = [];
+  var globalTimerManager:FlxTimerManager;
 
   var isRetro:Bool = false;
   var downscroll:Bool = false;
@@ -78,7 +84,6 @@ class RetroGameUI extends Module {
   var _fillBGClipRect:FlxRect = new FlxRect();
   var _overlayClipRect:FlxRect = new FlxRect();
   var healthBarResetTween:FlxTween = null;
-  var dozircMechanicTimer:FlxTimer = null;
   var dozircColorDir:Int = 0;
 
   var maxHealthCutOffset:Float = 0; // Offset ajustável para o corte visual (caso precise algum dia)
@@ -95,6 +100,11 @@ class RetroGameUI extends Module {
   final BAR_COLOR_PHASE4_DEAD:FlxColor = FlxColor.fromRGB(118, 118, 118);
 
   // Score/HUD elements
+  var titleCard:FunkinGroup;
+  var subCard:FunkinGroup;
+  var subCard2:FunkinGroup;
+  var subCard3:FunkinGroup; // this one is for the original author when it's a mixter song
+  var cardsTimer:FlxTimer;
   var judgement:FlxBitmapText;
   var comboText:FlxBitmapText;
   var score:FlxBitmapText;
@@ -142,6 +152,7 @@ class RetroGameUI extends Module {
       var songId = playState.currentSong.id.toLowerCase();
       ogBfId = playStage.getBoyfriend().characterId.toLowerCase();
       ogDadId = playStage.getDad().characterId.toLowerCase();
+      globalTimerManager = new FlxTimerManager();
 
       // Check if Story Mode
       isStoryMode = PlayStatePlaylist.isStoryMode;
@@ -149,6 +160,39 @@ class RetroGameUI extends Module {
 
       songLengthEnabled = Save.instance.modOptions.get('retroSongLength') ?? true;
       loadTextElements();
+
+      var artist = PlayState.instance.currentSong.songArtist;
+      var originalArtists = artist.split('|');
+      if (originalArtists.length > 1) {
+        artist = originalArtists[0];
+      }
+
+      // Song name
+      titleCard = createCard(PlayState.instance.currentSong.songName, true);
+      // Artist
+      subCard = createCard(RetroLanguage.tf(originalArtists.length > 1 ? 'stats.card.remix' : 'stats.card.artist', [artist]));
+      if (originalArtists.length > 1) {
+        // Original by...
+        subCard2 = createCard(RetroLanguage.tf('stats.card.original', [originalArtists.slice(1).join('|')]));
+        subCard3 = createCard(RetroLanguage.tf('stats.card.charter', [PlayState.instance.currentSong.charter]));
+      } else {
+        // Charter only
+        subCard2 = createCard(RetroLanguage.tf('stats.card.charter', [PlayState.instance.currentSong.charter]));
+        subCard3 = null; // making sure
+      }
+
+      var CARD_SPACING:Float = 5;
+      var lastCard = subCard;
+      titleCard.y -= 140;
+      subCard.y = titleCard.y + titleCard.height + 15;
+      subCard2.y = lastCard.y + lastCard.height + CARD_SPACING;
+      lastCard = subCard2;
+      if (subCard3 != null) {
+        subCard3.y = lastCard.y + lastCard.height + CARD_SPACING;
+        lastCard = subCard3;
+      }
+
+      hideCards();
 
       // HEALTH BARS
       var defaultScale:Array<Float, Float> = [0.5, 0.5];
@@ -383,6 +427,82 @@ class RetroGameUI extends Module {
     super.onCountdownStart(event);
     if (!isRetro) return;
     updateStatsDisplay(true);
+  }
+
+  function createCard(text:String, isTitle:Bool = false) {
+    var group = new FunkinGroup();
+
+    var cardMargin:Float = isTitle ? 20 : 25;
+    var card = FunkinSprite.create(0, 0, isTitle ? 'titlecard' : 'subcard');
+    card.antialiasing = false;
+    group.add(card);
+
+    var maxWidth:Float = card.width - cardMargin * 2;
+    var fontSize:Int = isTitle ? 60 : 44;
+
+    // fieldWidth = 0 para medir a largura natural sem quebra de linha
+    var cardText:FlxText = new FlxText(0, 0, 0, text.toUpperCase(), fontSize);
+    group.add(cardText);
+    cardText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), fontSize, 0xFFFFFFFF, 'center');
+    cardText.letterSpacing = -1;
+    cardText.wordWrap = false;
+    cardText.fieldWidth = maxWidth;
+
+    while (cardText.textField.numLines > 1 && fontSize > 1) {
+      fontSize--;
+      cardText.size = fontSize;
+    }
+
+    cardText.localX = card.x + cardMargin;
+    cardText.localY = card.y + (card.height / 2) - (cardText.height / 2);
+
+    group.cameras = [PlayState.instance.camCutscene];
+    group.scrollFactor.set(0, 0);
+    group.refresh();
+    group.screenCenter(0x10);
+    PlayState.instance.add(group);
+
+    return group;
+  }
+
+  function hideCards(instant:Bool = true):Void {
+    if (cardsTimer != null) {
+      cardsTimer.cancel();
+      cardsTimer = null;
+    }
+    if (PlayState.instance == null) return;
+
+    var cards:Array<FunkinGroup> = [titleCard, subCard, subCard2, subCard3];
+
+    for (card in cards) {
+      if (card == null) return;
+      FlxTween.cancelTweensOf(card);
+      if (instant) {
+        card.x -= card.width;
+        card.alpha = 1;
+        card.kill();
+      } else {
+        tweens.push(FlxTween.tween(card, {x: -card.width, alpha: 0}, 0.6, {ease: FlxEase.sineOut, onComplete: function() {
+          card.kill();
+        }}));
+      }
+    }
+  }
+
+  function showCards():Void {
+    var cards:Array<FunkinGroup> = [titleCard, subCard, subCard2, subCard3];
+    var delay:Float = 0.5;
+    for (card in cards) {
+      if (card == null) continue;
+      if (!card.alive) card.revive();
+      card.alpha = 1;
+      tweens.push(FlxTween.tween(card, {x: 0}, 0.6, {ease: FlxEase.sineOut, startDelay: delay}));
+      delay += 0.7;
+    }
+
+    cardsTimer = new FlxTimer(globalTimerManager).start(5, function(tmr) {
+      hideCards(false);
+    });
   }
 
   function loadTextElements() {
@@ -1050,15 +1170,41 @@ class RetroGameUI extends Module {
     isHivemine = false;
     resetDozircAnim(true);
     isDozirc = false;
+
+    if (cardsTimer != null) {
+      cardsTimer.cancel();
+      cardsTimer = null;
+    }
+
+    for (tween in tweens) {
+			if (tween != null) tween.cancel();
+		}
   }
 
   override public function onCreate(event) {
     super.onCreate(event);
   }
 
+  public override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    if (!isRetro) return;
+
+    showCards();
+  }
+
   public override function onPause(event:PauseScriptEvent)
   {
     if (!isRetro) return;
+    for (tween in tweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+
     if (true) return; // not implemented yet
 
     // Ignore base game's pause menu
@@ -1081,9 +1227,9 @@ class RetroGameUI extends Module {
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 
-    var playState = PlayState.instance;
+    if (globalTimerManager != null) globalTimerManager.update(event.elapsed);
 
-    // removed the text updating from here to test if it was causing lag.
+    var playState = PlayState.instance;
 
     for (holdNote in playState.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
@@ -1149,10 +1295,16 @@ class RetroGameUI extends Module {
     }
   }
 
-  public function onSongRetry(event) {
+  public override function onSongRetry(event) {
     super.onSongRetry(event);
     if (!hasBeenCreated) return;
     if (!isRetro) return;
+
+    for (tween in tweens) {
+			if (tween != null) tween.cancel();
+		}
+
+    hideCards();
 
     healthBgYOffset = ogBarOffsetY; // Resetar offset se mudou
     if (ogBarTexture != null) updateBarTexture(ogBarTexture); // Resetar a barra se ela mudou
@@ -1188,6 +1340,17 @@ class RetroGameUI extends Module {
     // i tried
     if (isPlayerIconAnimated) syncIconAnim(PlayState.instance.iconP1, false);
     if (isOppIconAnimated) syncIconAnim(PlayState.instance.iconP2, true);
+  }
+
+  public override function onResume(event)
+	{
+		super.onResume(event);
+    if (!isRetro) return;
+
+    for (tween in pausedTweens) {
+			if (tween != null) tween.active = true;
+		}
+		pausedTweens = [];
   }
 
   public function getIconColor(characterId:String, ?updateIconAnim:Bool = false) {

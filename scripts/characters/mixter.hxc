@@ -1,0 +1,66 @@
+import funkin.play.character.SparrowCharacter;
+import funkin.play.character.CharacterType;
+import funkin.play.components.HealthIcon;
+import funkin.play.PlayState;
+import funkin.util.Constants;
+import flixel.util.FlxTimer;
+import funkin.modding.module.ModuleHandler;
+import funkin.save.Save;
+
+class MixterCharacter extends SparrowCharacter {
+	function new() {
+		super('mixter');
+	}
+
+	var canTakeDamage:Bool = true;
+	var loss = Constants.HEALTH_SICK_BONUS * 1.4;
+	var min = HealthIcon.LOSING_THRESHOLD * 0.9;
+
+	function onNoteHit(event:HitNoteScriptEvent) {
+		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
+			switch (event.note.noteData.kind)
+			{
+				case "No Animation":
+					return;
+			}
+
+			if (canTakeDamage && PlayState.instance.health > min) {
+				if (min > PlayState.instance.health) {
+					PlayState.instance.health = min;
+					return;
+				}
+				PlayState.instance.health -= loss;
+			}
+		}
+		super.onNoteHit(event);
+	}
+
+	function onCreate(event:ScriptEvent):Void {
+		super.onCreate(event);
+		canTakeDamage = Save.instance.modOptions.get('retroMechanics');
+	}
+
+	public override function onUpdate(event:ScriptEvent):Void {
+		super.onUpdate(event);
+		if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+		if (canTakeDamage && PlayState.instance.health > min) {
+			for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+				if (holdNote == null || !holdNote.alive) continue;
+				if (holdNote.hitNote /*&& holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS*/) {
+					if (min > PlayState.instance.health) {
+						PlayState.instance.health = min;
+						return;
+					}
+					PlayState.instance.health -= loss * event.elapsed;
+				}
+			}
+		}
+	}
+
+	public function onDestroy(event):Void {
+		super.onDestroy(event);
+	}
+}
