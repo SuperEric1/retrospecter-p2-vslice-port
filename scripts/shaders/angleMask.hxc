@@ -33,11 +33,6 @@ class RetroAngleMaskShader extends ScriptedFlxRuntimeShader
     this.setFloatArray("extraTint", [r, g, b]);
   }
 
-  // --- Funções adicionadas para o uFrameBounds ---
-
-  /**
-   * Atualiza as coordenadas UV baseadas no frame atual
-   */
   public function updateFrameInfo(frame:FlxFrame):Void
   {
     if (frame != null && frame.uv != null)
@@ -46,9 +41,6 @@ class RetroAngleMaskShader extends ScriptedFlxRuntimeShader
     }
   }
 
-  /**
-   * Setter para o attachedSprite. Já atualiza o frame na hora de ser definido.
-   */
   function set_attachedSprite(spr:FlxSprite):FlxSprite
   {
     attachedSprite = spr;
@@ -57,16 +49,5 @@ class RetroAngleMaskShader extends ScriptedFlxRuntimeShader
       updateFrameInfo(attachedSprite.frame);
     }
     return spr;
-  }
-
-  /**
-   * Chame essa função toda vez que o frame de animação mudar.
-   */
-  public function onAttachedFrame(name:String, frameNum:Int, frameIndex:Int):Void
-  {
-    if (attachedSprite != null)
-    {
-      updateFrameInfo(attachedSprite.frame);
-    }
   }
 }
