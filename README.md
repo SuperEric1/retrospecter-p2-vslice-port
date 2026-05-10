@@ -6,8 +6,7 @@ TODO:
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Phase 2 end cutscene
 - [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
-- [ ] Remaining extirpatient effects
-- [ ] Update main menu
+- [ ] Remaining extirpatient effects and modchart
 - [ ] Remaining title screen bgs
 - [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Pause menu with custom music based on the opp/stage
@@ -28,6 +27,7 @@ TODO:
 - [ ] Review mechanics for better accuracy
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Fix reseting strum scales to default when restarting song
+- [X] Update main menu
 - [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [X] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
 - [X] Dialogues...?

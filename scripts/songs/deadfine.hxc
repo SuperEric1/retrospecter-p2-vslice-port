@@ -465,12 +465,14 @@ class DeadfineSong extends Song
       var curBeat = Conductor.instance.currentBeat;
       if (curBeat < 39) {
         event.cancel();
+        event.eventData.activated = true;
         return;
       }
     }
 
     if (eventKind == "ScrollSpeed" && PlayState.instance.currentDifficulty.toLowerCase() == 'easy') {
       event.cancel();
+      event.eventData.activated = true;
     }
   }
 

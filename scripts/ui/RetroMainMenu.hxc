@@ -37,6 +37,7 @@ import StringTools;
 
 import supereric.retrospecter.modules.RetroLanguage;
 import supereric.retrospecter.modules.RetroSave;
+import supereric.retrospecter.shaders.RetroAngleMaskShader;
 
 class RetroMainMenu extends MusicBeatState
 {
@@ -54,13 +55,16 @@ class RetroMainMenu extends MusicBeatState
   var menuCallbacks:Array<Dynamic>;
   var menuHitboxes:Array<FlxObject>;
   var menuNames:Array<String>;
+  var menuUsesShaders:Array<Bool> = [];
+  var menuShaders:Array<Dynamic> = [];
+  var menuBorders:Array<FunkinSprite> = [];
+  var angleMaskValue:Array<Float> = [80, 160];
   var minCamX:Float = 0;
   var maxCamX:Float = 0;
   var menuClips:Array<FlxRect>;
   var menuSpacingWidths:Array<Float>; // largura normalizada para cálculo de spread
   var isSpreading:Bool = false;
   var isWideScreen:Bool = false;
-  var angleMaskShader:AngleMask = new AngleMask();
 
   // Estado
   var selectedIndex:Int = 0;
@@ -84,7 +88,7 @@ class RetroMainMenu extends MusicBeatState
 
   // Config
   var overrideMusic:Bool = false;
-  var horizontalSpacing:Float = 35;
+  var horizontalSpacing:Float = 30;
   var baseY:Float = 360;
   var camMinOffset = -10;
   var camMaxOffset = 150;
@@ -105,6 +109,9 @@ class RetroMainMenu extends MusicBeatState
     menuHitboxes = [];
     menuNames = [];
     menuClips = [];
+    menuShaders = [];
+    menuUsesShaders = [];
+    menuBorders = [];
     menuSpacingWidths = [];
 
     camFollow = new FlxObject(0, 0, 1, 1);
@@ -158,7 +165,6 @@ class RetroMainMenu extends MusicBeatState
 
     menuStartIndex = members.length;
 
-    //angleMaskShader.endPosition.value = [190, 200];
     var path = 'ui/mainmenu/';
     createMenuItem('story', path + 'story', goToStory, 0.87);
     createMenuItem('side', path + 'side', goToFreeplay, 0.87);
@@ -169,7 +175,7 @@ class RetroMainMenu extends MusicBeatState
     }
     positionMenuItems();
 
-    var labelSize = Std.int(FlxG.height * 0.8);
+    var labelSize = Std.int(FlxG.height * 0.75);
     label1 = FunkinSprite.create(0, 0);
     label1.frames = Paths.getSparrowAtlas(path + 'logosFirst');
     label1.animation.addByPrefix('nothing', 'nothing', 1, true);
@@ -179,7 +185,7 @@ class RetroMainMenu extends MusicBeatState
     label1.animation.play('story');
     label1.setGraphicSize(labelSize);
     label1.updateHitbox();
-    label1.y = baseY - (label1.height / 2);
+    //label1.y = baseY - (label1.height / 2);
     label1.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
     label1.alpha = 0;
     add(label1);
@@ -193,7 +199,7 @@ class RetroMainMenu extends MusicBeatState
     label2.animation.play('side');
     label2.setGraphicSize(labelSize);
     label2.updateHitbox();
-    label2.y = label1.y;
+    //label2.y = label1.y;
     label2.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
     label2.alpha = label1.alpha;
     add(label2);
@@ -258,23 +264,27 @@ class RetroMainMenu extends MusicBeatState
     item.animation.addByPrefix('bright', upperName + 'BRIGHT', 24, false);
     item.animation.addByPrefix('dark', upperName + 'DARK', 24, false);
     item.animation.play('bright');
-    //item.shader = angleMaskShader;
-    item.setGraphicSize(Std.int(FlxG.height * sizeMult));
+    item.setGraphicSize(Std.int(sizeMult * FlxG.height));
     item.updateHitbox();
 
     isWideScreen = FlxG.width > 1280;
     var cutLeft:Float = item.frameWidth / (isWideScreen ? 4.5 : 4);
     var cutRight:Float = cutLeft;
+    var shaderOffset:Float = 0;
+    var shaderEndOffset:Float = 0;
 
     switch (name) {
       case 'story':
-        cutLeft = 10;
+        cutLeft = 20;
         cutRight += 40;
       case 'options':
         cutRight = 70;
+        shaderOffset -= 20;
+        shaderEndOffset += 5;
       case 'credits':
         cutLeft -= 20;
         cutRight += 20;
+        shaderOffset -= 20;
       case 'side':
         cutLeft -= 20;
         cutRight += 20;
@@ -286,7 +296,28 @@ class RetroMainMenu extends MusicBeatState
     var clipW:Float = item.frameWidth - cutLeft - cutRight;
     var clipH:Float = item.frameHeight;
 
-    item.clipRect = new FlxRect(clipX, clipY, clipW, clipH);
+    var usesShader:Bool = (name == 'side' || name == 'credits' || name == 'options');
+    menuUsesShaders.push(usesShader);
+
+    var border = FunkinSprite.create(0, 0).makeSolidColor(item.frameWidth, item.frameHeight * 1.5, FlxColor.BLACK);
+    border.angle = -11;
+    border.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
+    menuBorders.push(border);
+
+    if (usesShader) {
+      var shader = new RetroAngleMaskShader();
+      shader.setStartOffset(angleMaskValue[0] + shaderOffset);
+      shader.setEndX(angleMaskValue[0] + angleMaskValue[1] + shaderOffset + shaderEndOffset);
+
+      item.shader = shader;
+      shader.attachedSprite = item;
+
+      menuShaders.push(shader);
+    } else {
+      menuShaders.push(null);
+    }
+
+    //item.clipRect = new FlxRect(clipX, clipY, clipW, clipH);
     menuClips.push(new FlxRect(clipX, clipY, clipW, clipH));
 
     // spacingWidth: teto em frameWidth - 2*defaultCut (tamanho de um item padrão).
@@ -308,6 +339,11 @@ class RetroMainMenu extends MusicBeatState
     menuNames.push(name);
 
     add(item);
+    add(border);
+    if (name == 'options') {
+      border.destroy();
+      menuBorders[menuBorders.length - 1] = null;
+    }
   }
 
   function positionMenuItems():Void
@@ -343,17 +379,28 @@ class RetroMainMenu extends MusicBeatState
 
     for (i in 0...totalItems)
     {
-      var item:FlxSprite = menuItems[i];
+      var item:FunkinSprite = menuItems[i];
       var hitbox:FlxObject = menuHitboxes[i];
+      var border:FunkinSprite = menuBorders[i];
       var clip:FlxRect = menuClips[i];
       var sx:Float = item.scale.x;
       var sy:Float = item.scale.y;
+      var borderOffset:Float = 0;
 
       item.x = currentX - clip.x * sx;
       item.y = baseY - (item.height / 2);
 
-      // Corrigir botão do story
-      if (i == 0) item.x += 13; // odeio isso
+      // Ajustar posições (MEU DEUSSSS)
+      switch (i) {
+        case 0:
+          item.x += 13;
+          borderOffset = 30;
+      }
+
+      if (border != null) {
+        border.x = item.x + item.frameWidth - (border.width / 3) + borderOffset;
+        border.screenCenter(0x10);
+      }
 
       hitbox.x = currentX;
       hitbox.y = item.y + clip.y * sy;
@@ -407,24 +454,33 @@ class RetroMainMenu extends MusicBeatState
     if (menuItems[index] == null || menuClips[index] == null) return;
 
     var item = menuItems[index];
+    var border = menuBorders[index];
 
     var targetScale:Float = isSelected ? 1.015 : 1.0;
     FlxTween.cancelTweensOf(item.scale);
     if (doTween) {
-      FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.35, {ease: FlxEase.sineOut});
+      FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, 0.4, {ease: FlxEase.circOut});
     } else {
       item.scale.set(targetScale, targetScale);
     }
 
     if (isSelected) {
-      item.clipRect = null;
+      if (menuUsesShaders[index]) item.shader = null;
       remove(item);
-      insert(menuStartIndex + menuItems.length - 1, item);
+      //remove(border);
+      insert(menuStartIndex + menuItems.length * 2 - 2, item);
+      //insert(menuStartIndex + menuItems.length * 2 - 1, border);
     } else {
-      var clipData = menuClips[index];
-      item.clipRect = new FlxRect(clipData.x, clipData.y, clipData.width, clipData.height);
+      if (menuUsesShaders[index]) {
+        item.shader = menuShaders[index];
+        menuShaders[index].updateFrameInfo(item.frame);
+      }
       remove(item);
-      insert(menuStartIndex + index, item);
+      insert(menuStartIndex + index * 2, item);
+      if (border != null) {
+        remove(border);
+        insert(menuStartIndex + index * 2 + 1, border);
+      }
     }
   }
 
@@ -502,24 +558,27 @@ class RetroMainMenu extends MusicBeatState
 
     var distance:Float = 500;
     var offsetExtra:Float = 0;
+    var offsetExtraY:Float = 0;
 
     var side:Float = 1.0;
 
     switch(name) {
       case 'story':
         side = 1.0;
-        offsetExtra = 100;
+        offsetExtra = 150;
+        offsetExtraY = -40;
       case 'side':
         side = 1.0;
-        offsetExtra = -50;
+        offsetExtra = 50;
       case 'credits':
         side = -1.0;
-        offsetExtra = -20;
+        offsetExtra = 50;
       case 'options':
         side = -1.0;
-        offsetExtra = 100;
+        offsetExtra = 200;
     }
 
+    activeLabel.y = baseY - (activeLabel.height / 2) + offsetExtraY;
     activeLabel.x = itemCenterX + (distance * side) + (offsetExtra * side) - (activeLabel.width / 2);
   }
 

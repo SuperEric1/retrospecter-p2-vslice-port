@@ -490,6 +490,7 @@ class SweetTalkSong extends Song
       var curBeat = Conductor.instance.currentBeat;
       if (curBeat < 32) {
         event.cancel();
+        event.eventData.activated = true;
         return;
       }
     }

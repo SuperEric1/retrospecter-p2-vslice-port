@@ -1,0 +1,72 @@
+package supereric.retrospecter.shaders;
+
+import funkin.modding.base.ScriptedFlxRuntimeShader;
+import funkin.Paths;
+import flixel.FlxSprite;
+import flixel.graphics.frames.FlxFrame;
+
+class RetroAngleMaskShader extends ScriptedFlxRuntimeShader
+{
+  public var attachedSprite(default, set):FlxSprite;
+
+  public function new()
+  {
+    super(Assets.getText(Paths.frag('angleMask')));
+    this.setFloatArray("extraTint", [1.0, 1.0, 1.0]);
+    this.setFloatArray("endPosition", [190.0, 0.0]);
+    this.setFloat("startOffset", 0.0);
+    this.setFloatArray("uFrameBounds", [0.0, 0.0, 0.0, 0.0]);
+  }
+
+  public function setEndX(x:Float):Void
+  {
+    this.setFloatArray("endPosition", [x, 0.0]);
+  }
+
+  public function setStartOffset(x:Float):Void
+  {
+    this.setFloat("startOffset", x);
+  }
+
+  public function setTint(r:Float, g:Float, b:Float):Void
+  {
+    this.setFloatArray("extraTint", [r, g, b]);
+  }
+
+  // --- Funções adicionadas para o uFrameBounds ---
+
+  /**
+   * Atualiza as coordenadas UV baseadas no frame atual
+   */
+  public function updateFrameInfo(frame:FlxFrame):Void
+  {
+    if (frame != null && frame.uv != null)
+    {
+      this.setFloatArray("uFrameBounds", [frame.uv.left, frame.uv.top, frame.uv.right, frame.uv.bottom]);
+    }
+  }
+
+  /**
+   * Setter para o attachedSprite. Já atualiza o frame na hora de ser definido.
+   */
+  function set_attachedSprite(spr:FlxSprite):FlxSprite
+  {
+    attachedSprite = spr;
+    if (attachedSprite != null && attachedSprite.frame != null)
+    {
+      updateFrameInfo(attachedSprite.frame);
+    }
+    return spr;
+  }
+
+  /**
+   * Chame essa função toda vez que o frame de animação mudar.
+   */
+  public function onAttachedFrame(name:String, frameNum:Int, frameIndex:Int):Void
+  {
+    if (attachedSprite != null)
+    {
+      updateFrameInfo(attachedSprite.frame);
+    }
+  }
+}
