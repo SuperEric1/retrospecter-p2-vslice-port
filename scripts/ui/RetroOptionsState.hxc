@@ -665,7 +665,8 @@ class RetroOptionsState extends Module
         {
           if (justPressed)
           {
-            FunkinSound.playOnce(Paths.sound(i == 0 ? "chartingSounds/noteLay" : "chartingSounds/ClickDown"));
+            if (i == 0) FunkinSound.playOnce(Paths.sound("chartingSounds/noteLay"));
+            //FunkinSound.playOnce(Paths.sound(i == 0 ? "chartingSounds/noteLay" : "chartingSounds/ClickDown"));
             if (isBrowserOpen)
             {
               closeBrowser(); // close browser if we click on the app again
@@ -701,7 +702,7 @@ class RetroOptionsState extends Module
               });
             }
           } else if (justReleased) {
-            if (i != 0) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
+            //if (i != 0) FunkinSound.playOnce(Paths.sound("chartingSounds/ClickUp"));
           }
 
           if (isBrowserOpen)
@@ -782,6 +783,8 @@ class RetroOptionsState extends Module
           }
         }
       }
+
+      if (justPressed) FunkinSound.playOnce(Paths.sound("menus/click"));
 
       // Animate the alpha of the front BG, making it seem like it's fading in and out
       // This is now done with a tween in onCreate
