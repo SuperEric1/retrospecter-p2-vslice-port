@@ -1,33 +1,33 @@
-RetroSpecter|retro|12|Director/Writer/Co-Musician
-KamexVGM|ace|12|Main Musician/SFX
-BonesTheSkelebunny01|bones|12|Artists
-CordialCrow|crow|12|Artists
-Dax|dax|12|Artists
-Elemenopii|eli|12|Artists
-Grassjeak|grassjeak|12|Artists
-Juno Songs|juno|12|Artists
-Kevin Baez|kevin|12|Artists
-Razur|razur|12|Artists
-SugarRatio|sugarratio|12|Artists
-Tenzalt|tenzalt|12|Artists
-AurumArt|jade|12|Animators
-KingAndrew|andrew|12|Animators
-KittenSneeze|kitten|12|Animators
-LolyChichi|shiba|12|Animators
-Moro Productions|moro|24|Animators
-PyxlBird|pyx|12|Animators
-Terrawr BYTES|bytes|12|Animators
-TiredPinkPanda|panda|12|Animators
-WolfWrathKnight|wolf|12|Animators
-AnAwkwardArcanine|arcy|12|Programmers
-Ars Machina|ars|12|Programmers
-Corrun|corrun|12|Programmers
-FerzyLatte|ferzy|12|Programmers
-ILuvGemz|gemz|12|Programmers
-MaliciousBunny|bunny|12|Programmers
-ShadowMario|shadow|12|Programmers
-Tantalun|tantalun|12|Programmers
-Chubby|chubby|12|Charters
-Lily-Clipee-Chan|lily|12|Charters
-Nathaniel Gordon|nathan|12|Voice Actors
-Ninfia Camozzi|ninfia|12|Voice Actors
+RetroSpecter|retro|12|game.credits.role.retro
+KamexVGM|ace|12|game.credits.role.ace
+BonesTheSkelebunny01|bones|12|game.credits.role.artists
+CordialCrow|crow|12|game.credits.role.artists
+Dax|dax|12|game.credits.role.artists
+Elemenopii|eli|12|game.credits.role.artists
+Grassjeak|grassjeak|12|game.credits.role.artists
+Juno Songs|juno|12|game.credits.role.artists
+Kevin Baez|kevin|12|game.credits.role.artists
+Razur|razur|12|game.credits.role.artists
+SugarRatio|sugarratio|12|game.credits.role.artists
+Tenzalt|tenzalt|12|game.credits.role.artists
+AurumArt|jade|12|game.credits.role.animators
+KingAndrew|andrew|12|game.credits.role.animators
+KittenSneeze|kitten|12|game.credits.role.animators
+LolyChichi|shiba|12|game.credits.role.animators
+Moro Productions|moro|24|game.credits.role.animators
+PyxlBird|pyx|12|game.credits.role.animators
+Terrawr BYTES|bytes|12|game.credits.role.animators
+TiredPinkPanda|panda|12|game.credits.role.animators
+WolfWrathKnight|wolf|12|game.credits.role.animators
+AnAwkwardArcanine|arcy|12|game.credits.role.programmers
+Ars Machina|ars|12|game.credits.role.programmers
+Corrun|corrun|12|game.credits.role.programmers
+FerzyLatte|ferzy|12|game.credits.role.programmers
+ILuvGemz|gemz|12|game.credits.role.programmers
+MaliciousBunny|bunny|12|game.credits.role.programmers
+ShadowMario|shadow|12|game.credits.role.programmers
+Tantalun|tantalun|12|game.credits.role.programmers
+Chubby|chubby|12|game.credits.role.charters
+Lily-Clipee-Chan|lily|12|game.credits.role.charters
+Nathaniel Gordon|nathan|12|game.credits.role.voiceactors
+Ninfia Camozzi|ninfia|12|game.credits.role.voiceactors

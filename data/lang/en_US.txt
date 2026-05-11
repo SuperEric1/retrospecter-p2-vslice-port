@@ -39,6 +39,14 @@ cutscene.text.skip = "Skip [{0}]"
 action.button.pause = "Pause Button"
 action.button.tap = "Tap"
 
+game.credits.role.retro = "Director/Writer/Co-Musician"
+game.credits.role.ace = "Main Musician/SFX"
+game.credits.role.artists = "Artists"
+game.credits.role.animators = "Animators"
+game.credits.role.programmers = "Programmers"
+game.credits.role.charters = "Charters"
+game.credits.role.voiceactors = "Voice Actors"
+
 # - OPTIONS -
 options.mod_desc = "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)"
 

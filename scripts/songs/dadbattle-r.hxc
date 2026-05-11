@@ -21,6 +21,8 @@ import openfl.Assets;
 import haxe.ds.StringMap;
 import StringTools;
 
+import supereric.retrospecter.modules.RetroLanguage;
+
 class DadBattleRSong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
@@ -51,9 +53,6 @@ class DadBattleRSong extends Song
   public override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-    hasPlayedInGameCutscene = false;
-    hasPlayedEndCutscene = false;
-    hasCreatedSprites = false;
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -62,6 +61,11 @@ class DadBattleRSong extends Song
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
     //isMobile = true;
 
+    if (!PlayStatePlaylist.isStoryMode) {
+      hasCreatedSprites = true;
+      return;
+    }
+    
     if (!hasCreatedSprites) {
       hasCreatedSprites = true;
       var gradientWidth = FlxG.width - ((isMobile && FullScreenScaleMode.gameCutoutSize.x <= 0) ? 300 : (FullScreenScaleMode.gameCutoutSize.x / 2));
@@ -157,7 +161,7 @@ class DadBattleRSong extends Song
 
       currentY += titlePaddingTop;
 
-      var roleText:FlxText = new FlxText(globalMargin, currentY, i > 0 ? divWidth + globalMargin : 0, role.toUpperCase());
+      var roleText:FlxText = new FlxText(globalMargin, currentY, i > 0 ? divWidth + globalMargin : 0, RetroLanguage.t(role).toUpperCase());
       roleText.setFormat(Paths.font('credits.ttf'), roleTitleSize, FlxColor.WHITE, 'center');
       roleText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
       roleText.cameras = [PlayState.instance.camCutscene];
@@ -250,6 +254,14 @@ class DadBattleRSong extends Song
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['dadbattle story', 'post', null]);
     }
+  }
+
+  public override function onDestroy(event)
+	{
+		super.onDestroy(event);
+    hasPlayedInGameCutscene = false;
+    hasPlayedEndCutscene = false;
+    hasCreatedSprites = false;
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
