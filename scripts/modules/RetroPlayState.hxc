@@ -70,6 +70,7 @@ class RetroPlayState extends Module {
   var healthBarOgPos:Array<Float, Float> = [];
   var healthBarBgOgPos:Array<Float, Float> = [];
   var lastIconP1Width:Float = -1;
+  var hasStoredStrums:Bool = false;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
@@ -941,19 +942,13 @@ class RetroPlayState extends Module {
     healthBarOgPos = [PlayState.instance.healthBar.x, PlayState.instance.healthBar.y];
     healthBarBgOgPos = [PlayState.instance.healthBarBG.x, PlayState.instance.healthBarBG.y];
 
-    saveStrumPos();
+    if (!hasStoredStrums) saveStrumPos();
     checkSkillIssue();
   }
 
   function saveStrumPos():Void {
-    // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
-    // actually, what the hell I was doing? need to check this later
-    ogStrumsX = [];
-    ogStrumsY = [];
-    ogPlayerStrumScales = [];
-    ogOppStrumsX = [];
-    ogOppStrumsY = [];
-    ogOppStrumScales = [];
+    hasStoredStrums = true;
+    clearStrumPos();
 
     // saves new positions
     for (i in 0...4) {
@@ -972,6 +967,15 @@ class RetroPlayState extends Module {
         ogOppStrumScales.push(strum.scale.y);
       }
     }
+  }
+
+  function clearStrumPos():Void {
+    ogStrumsX = [];
+    ogStrumsY = [];
+    ogPlayerStrumScales = [];
+    ogOppStrumsX = [];
+    ogOppStrumsY = [];
+    ogOppStrumScales = [];
   }
 
   override public function onBeatHit(event:SongTimeScriptEvent):Void
@@ -2302,36 +2306,38 @@ class RetroPlayState extends Module {
     }
 
     PlayState.instance.playerStrumline.alpha = 1;
-    for (i in 0...4) {
-      var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
-      if (ogStrumsX[i] != null && ogStrumsY[i] != null) {
-        FlxTween.cancelTweensOf(note);
-        note.x = ogStrumsX[i];
-        note.y = ogStrumsY[i];
-        note.scale.set(ogOppStrumScales[i * 2], ogOppStrumScales[i * 2 + 1]);
-        note.angle = 0;
-        note.alpha = 1;
-        note.colorTransform.redMultiplier = 1;
-        note.colorTransform.greenMultiplier = 1;
-        note.colorTransform.blueMultiplier = 1;
-        note.colorTransform.redOffset = 0;
-        note.colorTransform.greenOffset = 0;
-        note.colorTransform.blueOffset = 0;
-      }
-      note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
-      if (ogOppStrumsX[i] != null && ogOppStrumsY[i] != null) {
-        FlxTween.cancelTweensOf(note);
-        note.x = ogOppStrumsX[i];
-        note.y = ogOppStrumsY[i];
-        note.scale.set(ogPlayerStrumScales[i * 2], ogPlayerStrumScales[i * 2 + 1]);
-        note.angle = 0;
-        note.alpha = 1;
-        note.colorTransform.redMultiplier = 1;
-        note.colorTransform.greenMultiplier = 1;
-        note.colorTransform.blueMultiplier = 1;
-        note.colorTransform.redOffset = 0;
-        note.colorTransform.greenOffset = 0;
-        note.colorTransform.blueOffset = 0;
+    if (hasStoredStrums) {
+      for (i in 0...4) {
+        var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];
+        if (ogStrumsX[i] != null && ogStrumsY[i] != null) {
+          FlxTween.cancelTweensOf(note);
+          note.x = ogStrumsX[i];
+          note.y = ogStrumsY[i];
+          note.scale.set(ogOppStrumScales[i * 2], ogOppStrumScales[i * 2 + 1]);
+          note.angle = 0;
+          note.alpha = 1;
+          note.colorTransform.redMultiplier = 1;
+          note.colorTransform.greenMultiplier = 1;
+          note.colorTransform.blueMultiplier = 1;
+          note.colorTransform.redOffset = 0;
+          note.colorTransform.greenOffset = 0;
+          note.colorTransform.blueOffset = 0;
+        }
+        note = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+        if (ogOppStrumsX[i] != null && ogOppStrumsY[i] != null) {
+          FlxTween.cancelTweensOf(note);
+          note.x = ogOppStrumsX[i];
+          note.y = ogOppStrumsY[i];
+          note.scale.set(ogPlayerStrumScales[i * 2], ogPlayerStrumScales[i * 2 + 1]);
+          note.angle = 0;
+          note.alpha = 1;
+          note.colorTransform.redMultiplier = 1;
+          note.colorTransform.greenMultiplier = 1;
+          note.colorTransform.blueMultiplier = 1;
+          note.colorTransform.redOffset = 0;
+          note.colorTransform.greenOffset = 0;
+          note.colorTransform.blueOffset = 0;
+        }
       }
     }
 
@@ -2499,6 +2505,7 @@ class RetroPlayState extends Module {
 		super.onDestroy(event);
     if (PlayState.instance == null) return;
     if (globalTimerManager != null) globalTimerManager.clear();
+    hasStoredStrums = false;
     loadedMechanics = [];
     hasLoadedUIElements = false;
     poisonSprite = null;
@@ -2564,13 +2571,7 @@ class RetroPlayState extends Module {
     hydraBeamSprites = [];
     hydraBeamTimers = [];
 
-    // removes old positions saved (so if the player changes to upscroll/downscroll it doesn't break)
-    ogStrumsX = [];
-    ogStrumsY = [];
-    ogPlayerStrumScales = [];
-    ogOppStrumsX = [];
-    ogOppStrumsY = [];
-    ogOppStrumScales = [];
+    clearStrumPos();
 
 		resetTweens();
 	}
