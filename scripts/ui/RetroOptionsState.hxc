@@ -956,7 +956,7 @@ class RetroOptionsState extends Module
     else if (nameUpper == 'SUBTITLES' && Preferences.subtitles) {
       animName = 'anims/signAlone';
       signText.visible = true;
-      signText.text = "HI";
+      signText.text = RetroLanguage.t("options.language.signText", "HI");
     }
     else if (nameUpper == 'FPS') {
       doesTextChangeBop = false;
@@ -972,12 +972,7 @@ class RetroOptionsState extends Module
     else if (currentID == 'retroLanguage') {
       animName = 'anims/signAlone';
       signText.visible = true;
-      switch (Save.instance.modOptions.get("retroLanguage") ?? "en_US") {
-        case "pt_BR":
-          signText.text = 'OI';
-        default:
-          signText.text = "HI";
-      }
+      signText.text = RetroLanguage.t("options.language.signText", "HI");
     }
     else if (currentID == 'retroMechanics') animName = save.get("retroMechanics") ? 'anims/online' : 'anims/offline';
     else if (currentID == 'retroShaders') animName = save.get("retroShaders") ? 'anims/glow' : 'anims/low';

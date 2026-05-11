@@ -52,6 +52,7 @@ options.mod_desc = "Below, you can customize you gameplay experience in the port
 
 options.language = "Language"
 options.language.desc = "Choose the mod's language. This option also changes subtitles! (Exit the options menu to apply)"
+options.language.signText = "HI"
 
 options.modcharts = "Modcharts"
 options.modcharts.desc = "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)"

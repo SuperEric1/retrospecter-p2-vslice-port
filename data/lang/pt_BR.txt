@@ -53,6 +53,7 @@ options.mod_desc = "Abaixo, você pode customizar sua experiência de jogo no po
 
 options.language = "Idioma"
 options.language.desc = "Escolha o idioma do mod. Essa opção também muda os subtítulos! (Saia das opções para aplicar)"
+options.language.signText = "OI"
 
 options.modcharts = "Modcharts"
 options.modcharts.desc = "Ativa os modcharts.\n(Setas do strumline tremendo, girando, movendo, etc.)"
