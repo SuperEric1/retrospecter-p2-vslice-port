@@ -219,6 +219,7 @@ class CatastrofiendSong extends Song
       ModuleHandler.getModule('RetroPlayState').scriptCall('funnyFunction', []);
       if (!PlayStatePlaylist.isStoryMode) {
         PlayState.instance.camCutscene.fade(FlxColor.WHITE, 0.4, false, null, true);
+        if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = false;
         hasPlayedEndCutscene = true;
       }
 
@@ -514,6 +515,7 @@ class CatastrofiendSong extends Song
     }
 
     PlayState.instance.camCutscene.fade(FlxColor.TRANSPARENT, 0, false, null, true);
+    if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = true;
   }
 
   /**

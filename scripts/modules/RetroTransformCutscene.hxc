@@ -1,0 +1,236 @@
+package supereric.retrospecter.modules;
+
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.audio.FunkinSound;
+import funkin.graphics.FunkinSprite;
+import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.Paths;
+
+class RetroTransformCutscene extends Module
+{
+  public static var instance:RetroTransformCutscene;
+
+  // Tempo que o personagem fica na cor antes de começar a piscar.
+  public static var PRE_BLINK_HOLD:Float = 0.5;
+
+  // Número de piscadas da fase 1 (lenta).
+  public static var PHASE1_COUNT:Int = 2;
+  // Duração total de um ciclo (on/off) na fase 1.
+  public static var PHASE1_CYCLE:Float = 0.25;
+
+  // Número de piscadas da fase 2 (intensa).
+  public static var PHASE2_COUNT:Int = 3;
+  // Duração total de um ciclo (on/off) na fase 2.
+  public static var PHASE2_CYCLE:Float = 0.1;
+
+  public static var CAM_FADE_IN:Float = 0.3;
+  public static var CAM_FADE_HOLD:Float = 0.7;
+  public static var CAM_FADE_OUT:Float = 0.4;
+  public static var SCYTHE_ANIM_TIME:Float = 2.5;
+
+  public function new()
+  {
+    super('RetroTransformCutscene');
+  }
+
+  public static function play(characters:Array<Dynamic>, color:FlxColor, ?usesShader:Bool = false, ?isScythe:Bool = false, ?onComplete:Void->Void):Void
+  {
+    chars = characters;
+    cor = color;
+    callback = onComplete;
+    shader = usesShader;
+    scythe = isScythe;
+
+    PlayState.instance.mayPauseGame = false;
+
+    var fadeTime:Float = 1;
+    FlxTween.tween(PlayState.instance.camHUD, { alpha: 0 }, fadeTime, { ease: FlxEase.quadIn, onComplete: function(_) {
+      if (!scythe) _start(chars, cor, shader, callback);
+      else _startScythes(chars, cor);
+    }});
+
+    if (PlayState.instance.camControls != null) {
+      FlxTween.tween(PlayState.instance.camControls, { alpha: 0 }, fadeTime, { ease: FlxEase.quadIn });
+    }
+  }
+
+  private static function _start(characters:Array<Dynamic>, color:FlxColor, usesShader:Bool, ?onComplete:Void->Void):Void
+  {
+    var callback:Void->Void = (onComplete != null) ? onComplete : _defaultCallback;
+    var overlays:Array<FunkinSprite> = _createOverlays(characters, color);
+
+    //if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = false;
+
+    for (char in characters)
+    {
+      _setColorTransform(char, color, usesShader);
+    }
+
+    new FlxTimer().start(PRE_BLINK_HOLD, function(_)
+    {
+      _runBlinkPhase(characters, color, usesShader, PHASE1_COUNT, PHASE1_CYCLE, function()
+      {
+        _runBlinkPhase(characters, color, usesShader, PHASE2_COUNT, PHASE2_CYCLE, function()
+        {
+          _runFadeSequence(overlays, color, characters, callback);
+        });
+      });
+    });
+
+    FunkinSound.load(Paths.sound('clothsSFX'), 1, false, true, true);
+  }
+
+  private static function _startScythes(characters:Array<Dynamic>, color:FlxColor):Void {
+    var callback:Void->Void = (onComplete != null) ? onComplete : _defaultCallback;
+    var overlays:Array<FunkinSprite> = _createOverlays(characters, color, true);
+
+    new FlxTimer().start(SCYTHE_ANIM_TIME, function(_)
+    {
+      callback();
+    });
+
+    FunkinSound.load(Paths.sound('scythe'), 1, false, true, true);
+  }
+
+  private static function _createOverlays(characters:Array<Dynamic>, color:FlxColor, ?isScythe:Bool = false):Array<FunkinSprite>
+  {
+    var overlays:Array<FunkinSprite> = [];
+
+    for (char in characters)
+    {
+      if (char == null) continue;
+
+      var overlay = FunkinSprite.create(char.x, char.y);
+      overlay.frames = Paths.getSparrowAtlas(!isScythe ? 'nftf' : (color == null ? 'portal' : 'portal_minus'));
+      overlay.animation.addByPrefix('idle', !isScythe ? 'EXPORTTHISanim0' : 'idle', !isScythe ? 60 : 24, false);
+      overlay.animation.play('idle');
+      if (color != null) overlay.color = color;
+      overlay.zIndex = char.zIndex + 1;
+
+      if (isScythe) {
+        overlay.animation.onFrameChange.add(function(name:String, frameNumber:Int, frameIndex:Int) {
+          if (frameNumber >= 21) char.visible = false;
+        });
+      }
+
+      _fitToChar(overlay, char, isScythe);
+
+      PlayState.instance.currentStage.add(overlay);
+      PlayState.instance.currentStage.refresh();
+      overlays.push(overlay);
+    }
+
+    PlayState.instance.refresh();
+
+    return overlays;
+  }
+
+  private static function _fitToChar(sprite:FunkinSprite, char:Dynamic, ?isScythe:Bool = false):Void
+  {
+    var scaleMult:Float = !isScythe ? 0.95 : 1.2;
+    sprite.antialiasing = char.antialiasing;
+    sprite.scrollFactor.set(char.scrollFactor.x, char.scrollFactor.y);
+    sprite.scale.set(char.scale.x * scaleMult, char.scale.y * scaleMult);
+    sprite.updateHitbox();
+
+    var centerX:Float = char.x + char.width / 2;
+    var centerY:Float = char.y + char.height / 2;
+
+    sprite.x = centerX - sprite.width / 2;
+    sprite.y = centerY - sprite.height / 2;
+  }
+
+  private static function _runBlinkPhase(characters:Array<Dynamic>, color:FlxColor, usesShader:Bool, count:Int, cycle:Float, onDone:Void->Void):Void
+  {
+    var togglesLeft:Int = count * 2; // on + off por blink
+    var isColored:Bool = true;
+
+    new FlxTimer().start(cycle / 2, function(t:FlxTimer)
+    {
+      isColored = !isColored;
+      togglesLeft--;
+
+      for (char in characters)
+      {
+        if (char == null) continue;
+        if (isColored) _setColorTransform(char, color, usesShader);
+        else _clearColorTransform(char);
+      }
+
+      if (togglesLeft <= 0)
+      {
+        // terminar com a cor ativa
+        for (char in characters)
+        {
+          _setColorTransform(char, color, usesShader);
+        }
+        onDone();
+      }
+    }, count * 2);
+  }
+
+  private static function _runFadeSequence(overlays:Array<FunkinSprite>, color:FlxColor, characters:Array<Dynamic>, onComplete:Void->Void):Void
+  {
+    var cam = PlayState.instance.camGame;
+    var camOut = PlayState.instance.camCutscene;
+
+    cam.fade(color, CAM_FADE_IN, false, function()
+    {
+      new FlxTimer().start(CAM_FADE_HOLD, function(_)
+      {
+        camOut.fade(FlxColor.BLACK, CAM_FADE_OUT, false, function()
+        {
+          _cleanup(overlays, characters);
+          onComplete();
+        });
+      });
+    });
+  }
+
+  private static function _cleanup(overlays:Array<FunkinSprite>, characters:Array<Dynamic>):Void
+  {
+    for (overlay in overlays)
+    {
+      if (overlay == null) continue;
+      overlay.destroy();
+    }
+
+    for (char in characters)
+    {
+      _clearColorTransform(char);
+    }
+  }
+
+  private static function _setColorTransform(char:Dynamic, color:FlxColor, usesShader:Bool):Void
+  {
+    if (usesShader && char.shader != null) {
+      char.shader = null;
+    }
+    char.colorTransform.color = color;
+
+    // char.colorTransform.redMultiplier = color.red;
+    // char.colorTransform.blueMultiplier = color.blue;
+    // char.colorTransform.greenMultiplier = color.green;
+  }
+
+  private static function _clearColorTransform(char:Dynamic):Void
+  {
+    //char.color = 0xFFFFFFFF;
+    char.colorTransform.redMultiplier = 1;
+    char.colorTransform.blueMultiplier = 1;
+    char.colorTransform.greenMultiplier = 1;
+    char.colorTransform.redOffset = 0;
+    char.colorTransform.blueOffset = 0;
+    char.colorTransform.greenOffset = 0;
+  }
+
+  private static function _defaultCallback():Void
+  {
+    PlayState.instance.mayPauseGame = true;
+    PlayState.instance.endSong();
+  }
+}

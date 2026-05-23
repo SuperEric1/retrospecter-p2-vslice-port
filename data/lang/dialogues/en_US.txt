@@ -477,6 +477,13 @@ dialogue.superbio_story.pre.9 = "Careful now! Inhaling these can cause some pret
 dialogue.superbio_story.pre.10 = "But you're *the* Boyfriend! Surely you won't be shaken up by a few fumes, no?"
 dialogue.superbio_story.pre.11 = "Now, I want you to *actually* impress me. Do not disappoint, or this may be the end for you!"
 dialogue.superbio_story.pre.12 = "Hehehe!"
+dialogue.superbio_story.finish.0 = "Well... that explains how they got in."
+dialogue.superbio_story.finish.1 = "At least they're out of my feathers. I'm far too busy to deal with two troublemakers anyhow."
+dialogue.superbio_story.finish.2 = "Had they stayed any longer, I may have resorted to Superboast Forme..."
+dialogue.superbio_story.finish.3 = "Oh well! Back to work."
+dialogue.superbio_story.finish.4 = "Stichy, please grab some Demoncaf from the work kitchen. It's going to be a long night ahead for the both of us!"
+dialogue.superbio_story.finish.5 = "..."
+dialogue.superbio_story.finish.6 = "That damn moth succubus ate the entire show floor curtain we made for her last week. Typical lepidopteran."
 
 # [macovet story]
 dialogue.macovet_story.pre.0 = ""

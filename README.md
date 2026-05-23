@@ -26,6 +26,7 @@ TODO:
 - [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
+- [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [X] Fix reseting strum scales to default when restarting song
 - [X] Update main menu
 - [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex

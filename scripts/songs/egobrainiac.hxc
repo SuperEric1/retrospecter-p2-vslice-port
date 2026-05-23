@@ -23,12 +23,15 @@ import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.notes.Strumline;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class EgobrainiacSong extends Song
 {
   var tweens = [];
   var pausedTweens = [];
 
   var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
   var isMobile:Bool;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
@@ -254,6 +257,7 @@ class EgobrainiacSong extends Song
 		resetTweens();
 		didLastThing = false;
     hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
 	}
 
 	private function resetTweens()
@@ -327,6 +331,14 @@ class EgobrainiacSong extends Song
   {
     super.onSongEnd(event);
     didLastThing = false;
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF6ef9e2, true);
+      hasPlayedCutscene = true;
+      event.cancel();
+    }
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void

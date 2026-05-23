@@ -24,11 +24,14 @@ import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.ui.FullScreenScaleMode;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class SuperbioSong extends Song
 {
   var tweens = [];
   var pausedTweens = [];
   var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
 
   var bgSprite:FunkinSprite;
 
@@ -70,6 +73,7 @@ class SuperbioSong extends Song
 		super.onDestroy(event);
 		resetTweens();
     hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
 	}
 
 	private function resetTweens()
@@ -119,6 +123,20 @@ class SuperbioSong extends Song
   {
     super.onSongEnd(event);
 
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF6ef9e2, true, true, function() {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['superbio story', 'finish', function() {
+          PlayState.instance.mayPauseGame = true;
+          PlayState.instance.endSong();
+        }]);
+      });
+
+      hasPlayedCutscene = true;
+      event.cancel();
+    }
   }
 
   // Load custom notestyle.
