@@ -88,6 +88,10 @@ class RetroTransformCutscene extends Module
     var callback:Void->Void = (onComplete != null) ? onComplete : _defaultCallback;
     var overlays:Array<FunkinSprite> = _createOverlays(characters, color, true);
 
+    var bf = PlayState.instance.currentStage.getBoyfriend();
+    PlayState.instance.cameraFollowPoint.setPosition(bf.cameraFocusPoint.x, bf.cameraFocusPoint.y);
+    PlayState.instance.tweenCameraZoom(1.25, 0.15, false);
+
     new FlxTimer().start(SCYTHE_ANIM_TIME, function(_)
     {
       callback();

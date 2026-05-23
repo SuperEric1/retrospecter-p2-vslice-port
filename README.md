@@ -15,7 +15,6 @@ TODO:
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
-- [ ] Cloth scythes
 - [ ] Enemy title popup module + apply to all songs that have it (todo)
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
@@ -25,9 +24,10 @@ TODO:
 - [ ] Finish the opponent note skins
 - [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy
+- [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
-- [X] Fix reseting strum scales to default when restarting song
+- [X] Cloth scythes
 - [X] Update main menu
 - [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
 - [X] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
