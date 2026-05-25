@@ -1144,6 +1144,7 @@ class RetroOptionsState extends Module
         enumValues: [
           "en_US" => "en_US",
           "pt_BR" => "pt_BR",
+          "it_IT" => "it_IT",
         ],
         defaultValue: Save.instance.modOptions.get("retroLanguage") ?? "en_US",
         defaultEnumKey: Save.instance.modOptions.get("retroLanguage") ?? "en_US"

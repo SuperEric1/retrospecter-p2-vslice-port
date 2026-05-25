@@ -1,0 +1,102 @@
+# Translation File - Italiano (en_US)
+# Author: your credits here (add more comments if u want)
+# Format: key = "value"
+# Lines starting with # are comments and will be ignored
+# Use \n for line breaks and \" for quotes inside text
+
+# - GAMEPLAY -
+stats.accuracy = "ACC: {0}%"
+stats.misses = "MISSES: {0}"
+stats.rating = "RANK:"
+stats.timeLeft = "Time Left"
+stats.card.artist = "By {0}"
+stats.card.remix = "Remix by {0}"
+stats.card.original = "Original by {0}"
+stats.card.charter = "Charted by {0}"
+
+judgement.sick = "SICK!!"
+judgement.good = "GOOD!"
+judgement.bad = "BAD"
+judgement.shit = "SHIT"
+judgement.miss = "MISS"
+
+instruction.chainNote = "MASH TO BREAK FREE"
+instruction.coinNote = "COLLECT COINS TO EARN MORE MONEY!"
+
+nightflaid.static.text.1 = "RESULTS PENDING"
+nightflaid.static.text.2 = "TESTS INCONCLUSIVE"
+nightflaid.static.text.3 = "REQUIRES MORE\n DATA"
+nightflaid.static.text.4 = "SHE'S SAFE"
+nightflaid.static.text.5 = "STAY A LITTLE LONGER,\n WON'T YOU?"
+nightflaid.static.text.6 = "CHEATING DEATH OR\n CHEATING LIFE?"
+nightflaid.static.text.7 = "CONTACTING MIGHTFLAID"
+nightflaid.static.text.8 = "INTRIGUING SPECIMEN"
+nightflaid.static.rareText.1 = "WAR'S ALWAYS THE SAME"
+
+dialogue.text.press = "Press {0}"
+dialogue.text.continue = "({0} to continue )"
+dialogue.text.skip = "{0} to Skip"
+cutscene.text.skip = "Skip [{0}]"
+action.button.pause = "Pause Button"
+action.button.tap = "Tap"
+
+game.credits.role.retro = "Director/Writer/Co-Musician"
+game.credits.role.ace = "Main Musician/SFX"
+game.credits.role.artists = "Artists"
+game.credits.role.animators = "Animators"
+game.credits.role.programmers = "Programmers"
+game.credits.role.charters = "Charters"
+game.credits.role.voiceactors = "Voice Actors"
+
+# - OPTIONS -
+options.mod_desc = "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)"
+
+options.language = "Language"
+options.language.desc = "Choose the mod's language. This option also changes subtitles! (Exit the options menu to apply)"
+options.language.signText = "HI"
+
+options.modcharts = "Modcharts"
+options.modcharts.desc = "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)"
+
+options.mechanics = "Mechanics"
+options.mechanics.desc = "Toggles hazard note mechanics for all songs that use them."
+
+options.transform_notes = "Transform Hazard Notes"
+options.transform_notes.desc = "Transforms hazard notes into normal notes. Note Mechanics needs to be toggled on for this option to work."
+
+options.checkpoints = "Checkpoints"
+options.checkpoints.desc = "Allows to automatically go back to a certain point of the song when retrying."
+
+options.shaders = "Shaders"
+options.shaders.desc = "Toggles shaders for certain sprites and events.\n(Disabling recommended for lower-end phones.)"
+
+options.shake = "Screen Shake"
+options.shake.desc = "Shakes Screen during certain events. (ie. Zerktro's singing.)"
+
+options.song_timer = "Song Length Timer"
+options.song_timer.desc = "When enabled, display the song length in the corner of the screen during gameplay. (Not recommended for Story Mode.)"
+
+options.suggestive = "Suggestive Content"
+options.suggestive.desc = "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song."
+
+options.custom_menus = "Custom Menus"
+options.custom_menus.desc = "Enables the mod's custom menus. Disable this if you want the original FNF menus back."
+
+# - MISC -
+warnings.language_select.title = "LANGUAGE SELECTION"
+warnings.language_select.desc = "Select your preferred language below.\nThe entire mod experience, including <y>all text<y>, <y>menus<y>, and <y>dialogs<y>, will be translated accordingly.\nYour choice will be remembered, and you can always change it in the options menu."
+
+warnings.generic.title = "DISCLAIMER"
+warnings.generic.desc = "This is a <y>fan-made<y> mobile port of Vs. RetroSpecter - Part Two: Infernadise.\nTeam Respec owns the Infernadise universe and the original mod.\n\n Infernadise is also not tied to any actual religions or beliefs. Demons are just cool.\n\n Also, this mod contains <y>flashing lights/images<y>\n(which can be <y>disabled<y> in the options)."
+
+warnings.suggestive.title = "SUGGESTIVE CONTENT WARNING"
+warnings.suggestive.desc = "Sakuroma's final song has <m>very suggestive<m> poses, voice lines, and elements in the background.\n\nWould you like to <m>keep<m> these <m>enabled<m> or <m>disable<m> them? (This can be changed in the options menu at any point.)"
+warnings.button_text_keep = "KEEP ENABLED"
+warnings.button_text_disable = "DISABLE"
+
+warnings.continue_text = "I UNDERSTAND AND WISH TO CONTINUE"
+warnings.proceed_text = "PROCEED"
+warnings.dont_show_again = "DON'T SHOW THIS DISCLAIMER AGAIN"
+
+titlescreen.not_associated.1 = "NOT ASSOCIATED"
+titlescreen.not_associated.2 = "WITH"
