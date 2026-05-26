@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="lust.png" width="935" height="793">
+	<SubTexture name="black0001" x="194" y="111" width="96" height="109" frameX="-45" frameY="-155" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0028" x="417" y="111" width="100" height="183" frameX="-41" frameY="-84" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0029" x="521" y="111" width="126" height="209" frameX="-31" frameY="-73" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0030" x="651" y="111" width="148" height="219" frameX="-18" frameY="-61" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0031" x="2" y="220" width="176" height="226" frameX="-0" frameY="-49" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0032" x="796" y="336" width="137" height="235" frameX="-21" frameY="-37" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0033" x="129" y="524" width="121" height="246" frameX="-30" frameY="-26" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0034" x="254" y="532" width="120" height="259" frameX="-32" frameY="-14" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0035" x="182" y="291" width="117" height="229" frameX="-34" frameY="-43" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0036" x="2" y="450" width="123" height="235" frameX="-29" frameY="-39" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0037" x="671" y="334" width="121" height="232" frameX="-30" frameY="-43" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0038" x="425" y="324" width="119" height="231" frameX="-31" frameY="-43" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0039" x="303" y="298" width="118" height="230" frameX="-33" frameY="-44" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0040" x="803" y="111" width="121" height="221" frameX="-30" frameY="-53" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0041" x="548" y="334" width="119" height="231" frameX="-32" frameY="-42" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="flaming0042" x="294" y="111" width="119" height="176" frameX="-33" frameY="-96" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0003" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0004" x="98" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0005" x="98" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0006" x="194" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0007" x="194" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0008" x="290" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0009" x="386" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0010" x="482" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0011" x="578" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0012" x="578" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0013" x="674" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0014" x="674" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0015" x="770" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0016" x="2" y="111" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0017" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0018" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0019" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0020" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0021" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0022" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0023" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0024" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0025" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0026" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="shiny0027" x="2" y="2" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+	<SubTexture name="solid0002" x="98" y="111" width="92" height="105" frameX="-47" frameY="-157" frameWidth="176" frameHeight="282"/>
+</TextureAtlas>
