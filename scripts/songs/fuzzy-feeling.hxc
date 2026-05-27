@@ -326,10 +326,14 @@ class FuzzyFeelingSong extends Song
       var s7 = getStrum(7);
       if (s0.alpha == 0) tweens.push(FlxTween.tween(s0, { alpha: opponentAlpha }, 1, { ease: FlxEase.circIn }));
       if (s7.alpha == 0) tweens.push(FlxTween.tween(s7, { alpha: 1 }, 1, { ease: FlxEase.circIn }));
-      FlxTween.cancelTweensOf(underlayP.colorTransform);
-      FlxTween.cancelTweensOf(underlayO.colorTransform);
-      if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 2 }, 1, { ease: FlxEase.circIn }));
-      if (underlayO != null) tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 2 }, 1, { ease: FlxEase.circIn }));
+      if (underlayP != null) {
+        FlxTween.cancelTweensOf(underlayP.colorTransform);
+        tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 2 }, 1, { ease: FlxEase.circIn }));
+      }
+      if (underlayO != null) {
+        FlxTween.cancelTweensOf(underlayO.colorTransform);
+        tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 2 }, 1, { ease: FlxEase.circIn }));
+      }
       s1fadein = true;
     }
     if (!s2fadein && beat >= 20) {
@@ -337,10 +341,14 @@ class FuzzyFeelingSong extends Song
       var s6 = getStrum(6);
       if (s1.alpha == 0) tweens.push(FlxTween.tween(s1, { alpha: opponentAlpha }, 1, { ease: FlxEase.circIn }));
       if (s6.alpha == 0) tweens.push(FlxTween.tween(s6, { alpha: 1 }, 1, { ease: FlxEase.circIn }));
-      FlxTween.cancelTweensOf(underlayP.colorTransform);
-      FlxTween.cancelTweensOf(underlayO.colorTransform);
-      if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 3 }, 1, { ease: FlxEase.circIn }));
-      if (underlayO != null) tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 3 }, 1, { ease: FlxEase.circIn }));
+      if (underlayP != null) {
+        FlxTween.cancelTweensOf(underlayP.colorTransform);
+        tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 3 }, 1, { ease: FlxEase.circIn }));
+      }
+      if (underlayO != null) {
+        FlxTween.cancelTweensOf(underlayO.colorTransform);
+        tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 3 }, 1, { ease: FlxEase.circIn }));
+      }
       s2fadein = true;
     }
     if (!s3fadein && beat >= 24) {
@@ -348,10 +356,14 @@ class FuzzyFeelingSong extends Song
       var s5 = getStrum(5);
       if (s2.alpha == 0) tweens.push(FlxTween.tween(s2, { alpha: opponentAlpha }, 1, { ease: FlxEase.circIn }));
       if (s5.alpha == 0) tweens.push(FlxTween.tween(s5, { alpha: 1 }, 1, { ease: FlxEase.circIn }));
-      FlxTween.cancelTweensOf(underlayP.colorTransform);
-      FlxTween.cancelTweensOf(underlayO.colorTransform);
-      if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 4 }, 1, { ease: FlxEase.circIn }));
-      if (underlayO != null) tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 4 }, 1, { ease: FlxEase.circIn }));
+      if (underlayP != null) {
+        FlxTween.cancelTweensOf(underlayP.colorTransform);
+        tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: -255 / 4 }, 1, { ease: FlxEase.circIn }));
+      }
+      if (underlayO != null) {
+        FlxTween.cancelTweensOf(underlayO.colorTransform);
+        tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: -255 / 4 }, 1, { ease: FlxEase.circIn }));
+      }
       s3fadein = true;
     }
     if (!s4fadein && beat >= 28) {
@@ -359,10 +371,14 @@ class FuzzyFeelingSong extends Song
       var s4 = getStrum(4);
       if (s3.alpha == 0) tweens.push(FlxTween.tween(s3, { alpha: opponentAlpha }, 1, { ease: FlxEase.circIn }));
       if (s4.alpha == 0) tweens.push(FlxTween.tween(s4, { alpha: 1 }, 1, { ease: FlxEase.circIn }));
-      FlxTween.cancelTweensOf(underlayP.colorTransform);
-      FlxTween.cancelTweensOf(underlayO.colorTransform);
-      if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: 0 }, 1, { ease: FlxEase.circIn }));
-      if (underlayO != null) tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: 0 }, 1, { ease: FlxEase.circIn }));
+      if (underlayP != null) {
+        FlxTween.cancelTweensOf(underlayP.colorTransform);
+        tweens.push(FlxTween.tween(underlayP.colorTransform, { alphaOffset: 0 }, 1, { ease: FlxEase.circIn }));
+      }
+      if (underlayO != null) {
+        FlxTween.cancelTweensOf(underlayO.colorTransform);
+        tweens.push(FlxTween.tween(underlayO.colorTransform, { alphaOffset: 0 }, 1, { ease: FlxEase.circIn }));
+      }
       s4fadein = true;
     }
 

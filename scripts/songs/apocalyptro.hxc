@@ -64,6 +64,8 @@ class ApocalyptroSong extends Song
     super.onCreate(event);
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     resetFlags();
+    hasPlayedCutscene = false;
+    hasPlayedDialogue = false;
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -362,8 +364,6 @@ class ApocalyptroSong extends Song
 
   function resetFlags():Void
   {
-    hasPlayedCutscene = false;
-    hasPlayedDialogue = false;
     flag592 = false;
     flag794 = false;
     flag796 = false;

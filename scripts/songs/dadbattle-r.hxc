@@ -65,7 +65,7 @@ class DadBattleRSong extends Song
       hasCreatedSprites = true;
       return;
     }
-    
+
     if (!hasCreatedSprites) {
       hasCreatedSprites = true;
       var gradientWidth = FlxG.width - ((isMobile && FullScreenScaleMode.gameCutoutSize.x <= 0) ? 300 : (FullScreenScaleMode.gameCutoutSize.x / 2));
@@ -88,9 +88,11 @@ class DadBattleRSong extends Song
       PlayState.instance.refresh();
     }
 
-    FlxTween.cancelTweensOf(gradient);
-    gradient.x -= 600;
-    PlayState.instance.opponentStrumline.visible = false;
+    if (gradient != null) {
+      FlxTween.cancelTweensOf(gradient);
+      gradient.x -= 600;
+      PlayState.instance.opponentStrumline.visible = false;
+    }
   }
 
   function buildCredits():Void
@@ -205,7 +207,7 @@ class DadBattleRSong extends Song
   {
     super.onSongStart(event);
 
-    FlxTween.tween(gradient, { x: 0 + gradientOffset }, 0.5, { ease: FlxEase.linear });
+    if (gradient != null) FlxTween.tween(gradient, { x: 0 + gradientOffset }, 0.5, { ease: FlxEase.linear });
 
     songDuration = FlxG.sound.music != null ? FlxG.sound.music.length : 0;
     creditsScrolling = songDuration > 0;

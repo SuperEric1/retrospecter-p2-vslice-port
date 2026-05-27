@@ -15,6 +15,7 @@ TODO:
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
+- [ ] Scrollspeed changes for the third strumline
 - [ ] Enemy title popup module + apply to all songs that have it (todo)
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
