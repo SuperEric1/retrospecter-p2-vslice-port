@@ -194,7 +194,10 @@ class RetroTrophyState extends MusicBeatState
     });
     FlxG.sound.music.fadeIn(4, 0, 1);
 
-    if (FlxG.mouse.cursor != null) FlxG.mouse.visible = true;
+    if ((!FlxG.onMobile) || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice) && FlxG.mouse.cursor != null) {
+      FlxG.mouse.visible = true;
+      FlxG.mouse.load(Paths.image('ui/cursor'), FlxG.onMobile ? 1.7 : 1);
+    }
 
     playEnterTransition();
   }
@@ -704,13 +707,12 @@ class RetroTrophyState extends MusicBeatState
     add(achDesc);
 
     if (FlxG.onMobile) {
-      var endX = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2);
-      backBtn = new FunkinBackButton(endX, FlxG.height - 200, FlxColor.WHITE, goBack, 1, true);
+      backBtn = new FunkinBackButton(FlxG.width, FlxG.height - 200, FlxColor.WHITE, goBack, 1, true);
       add(backBtn);
       backBtn.colorTransform.alphaOffset = -255 * 0.5;
       backBtn.scale.set(0.65, 0.65);
       backBtn.updateHitbox();
-      FlxTween.tween(backBtn, {x: endX - 230}, 1, {ease: FlxEase.expoOut});
+      FlxTween.tween(backBtn, {x: FlxG.width - 230}, 1, {ease: FlxEase.expoOut});
     }
   }
 
