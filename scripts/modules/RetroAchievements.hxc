@@ -1,0 +1,789 @@
+package supereric.retrospecter.modules;
+
+import funkin.modding.module.Module;
+import funkin.save.Save;
+import funkin.graphics.FunkinSprite;
+import funkin.audio.FunkinSound;
+import funkin.Paths;
+import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.sound.FlxSound;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
+import flixel.util.FlxTimer;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.text.TextField;
+import openfl.text.TextFormat;
+import openfl.display.Sprite;
+
+import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroSave;
+
+class RetroAchievements extends Module
+{
+  static var can_play_sound:Bool = true;
+  static var PATH:String = 'ui/menu/trophies/';
+  static var SAVE_KEY:String = 'retroAchievements';
+
+  static var TOAST_PADDING:Float = 15;
+  static var TOAST_CORNER_RADIUS:Float = 12;
+  static var TOAST_PEEK_OFFSET:Float = 50;
+  static var TOAST_SCALE_STEP:Float = 0.04;
+  static var TOAST_SCALE_STEP_SMALL:Float = 0.1;
+  static var TOAST_MIN_SCALE:Float = 0.75;
+  static var TOAST_STAIR_OFFSET:Float = 2;
+  static var TOAST_GROUP_GAP:Float = 20;
+  static var TOAST_W:Float = 480;
+  static var TOAST_H:Float = 134;
+  static var ICON_SIZE:Float = 110;
+  static var TITLE_FONT_SIZE:Int = 24;
+  static var TITLE_MIN_FONT_SIZE:Int = 12;
+  static var DESC_FONT_SIZE:Int = 20;
+  static var DESC_MIN_FONT_SIZE:Int = 11;
+  static var ENTER_TIME:Float = 1.2;
+  static var DISPLAY_TIME:Float = 3.0;
+  static var LEAVE_TIME:Float = 0.15;
+  static var REPOSITION_TIME:Float = 0.25;
+  static var soundTimer:FlxTimer;
+
+  static var activeToasts:Array<Dynamic> = null;
+  static var toastQueue:Array<String> = null;
+  static var nextGroupId:Int = 0;
+
+  public static var ACHIEVEMENTS:Array<Dynamic> = [
+    // ALL
+    { id: 'all-all' },
+    //{ id: 'all-dummy', iconOverride: 'dummy', unlockable: false, hidden: true },
+
+    // WRATH
+    { id: 'wrath-p2' },
+    { id: 'wrath-chained' },
+    { id: 'wrath-blindhydra' },
+    { id: 'wrath-funsizebf' },
+
+    { id: 'wrath-hydradodge' },
+    { id: 'wrath-phone' },
+    { id: 'wrath-hard' },
+    { id: 'wrath-all' },
+
+    { id: 'wrath-catastro' },
+    { id: 'wrath-retrogf' },
+    { id: 'wrath-tenpoisons' },
+    { id: 'wrath-apocalypseecto' },
+
+    { id: 'wrath-fourchains' },
+    { id: 'wrath-sidestory' },
+    { id: 'wrath-hell' },
+    { id: 'wrath-normal' },
+
+    { id: 'wrath-ecto' },
+    { id: 'wrath-brawnstorm' },
+
+    // LUST
+    { id: 'lust-phone' },
+    { id: 'lust-all' },
+    { id: 'lust-sakugf' },
+    { id: 'lust-hell' },
+
+    { id: 'lust-normal' },
+    { id: 'lust-braku', iconOverride: 'lust/braku' },
+    { id: 'lust-censored' },
+    { id: 'lust-hard' },
+
+    { id: 'lust-mompoms' },
+    { id: 'lust-200' },
+    { id: 'lust-bouncer' },
+    { id: 'lust-funsizesaku' },
+
+    { id: 'lust-specialnotes' },
+    { id: 'lust-sidestory' },
+
+    // PRIDE
+    { id: 'pride-10second' },
+    { id: 'pride-hard' },
+    { id: 'pride-nohit' },
+    { id: 'pride-izzygf' },
+
+    { id: 'pride-sidestory' },
+    { id: 'pride-all' },
+    { id: 'pride-funsizeizzy' },
+    { id: 'pride-lose5' },
+
+    { id: 'pride-200' },
+    { id: 'pride-hell' },
+    { id: 'pride-normal' },
+
+    // GLUTTONY
+    { id: 'gluttony-wrapped' },
+    { id: 'gluttony-hell' },
+    { id: 'gluttony-nohit' },
+    { id: 'gluttony-all' },
+
+    { id: 'gluttony-collapse' },
+    { id: 'gluttony-sidestory' },
+    { id: 'gluttony-insatiangf' },
+    { id: 'gluttony-funsizeinsatian' },
+
+    { id: 'gluttony-twohundred' },
+    { id: 'gluttony-hard' },
+    { id: 'gluttony-normal' },
+
+    // GREED
+    { id: 'greed-hiveless', iconOverride: 'greed/hiveless' },
+    { id: 'greed-allterrycoins' },
+    { id: 'greed-hard' },
+    { id: 'greed-srank' },
+
+    { id: 'greed-hell' },
+    { id: 'greed-hiveminegf' },
+    { id: 'greed-funsizehivemine' },
+    { id: 'greed-terry' },
+
+    { id: 'greed-sidestory' },
+    { id: 'greed-normal' },
+    { id: 'greed-all' },
+    { id: 'greed-dodge' },
+
+    { id: 'greed-tenwebnotes' },
+
+    // ENVY
+    { id: 'envy-sidestory' },
+    { id: 'envy-all' },
+    { id: 'envy-atroceangf' },
+    { id: 'envy-funsizeatrocean' },
+
+    { id: 'envy-nonotes' },
+    { id: 'envy-hard' },
+    { id: 'envy-fullcombo' },
+    { id: 'envy-hell' },
+
+    { id: 'envy-saku' },
+    { id: 'envy-normal' },
+    { id: 'envy-chatty' },
+
+    // SLOTH
+    { id: 'sloth-dozircgf' },
+    { id: 'sloth-perfectcombo' },
+    { id: 'sloth-100misses' },
+    { id: 'sloth-normal' },
+
+    { id: 'sloth-all' },
+    { id: 'sloth-hell' },
+    { id: 'sloth-funsizedozirc' },
+    { id: 'sloth-hard' },
+
+    { id: 'sloth-shocked' },
+    { id: 'sloth-drank' },
+    { id: 'sloth-sidestory' },
+
+    // DEATH
+    { id: 'death-deathgf' },
+    { id: 'death-point' },
+    { id: 'death-noscythenotes' },
+    { id: 'death-sidestory' },
+
+    { id: 'death-nocheckpoints' },
+    { id: 'death-all' },
+    { id: 'death-meeting' },
+    { id: 'death-tenscythes' },
+
+    // PATIENCE
+    { id: 'patience-sidestory' },
+    { id: 'patience-pride-ach-1', iconOverride: 'patience/pride-ach-1' },
+    { id: 'patience-all' },
+    { id: 'patience-wait3minutes' },
+
+    { id: 'patience-retro' },
+    { id: 'patience-4holynotes' },
+
+    // MIXTER
+    //{ id: 'mixter-all' },
+    { id: 'mixter-dadbattle-story', iconOverride: 'mixter/dadbattle-story' },
+    { id: 'mixter-thorns', iconOverride: 'mixter/thorns' },
+    { id: 'mixter-philly', iconOverride: 'mixter/philly' },
+    { id: 'mixter-agoti', iconOverride: 'mixter/agoti' },
+    { id: 'mixter-agoti-k', iconOverride: 'mixter/agoti-k' },
+    { id: 'mixter-athazagoraphobia', iconOverride: 'mixter/athazagoraphobia' },
+    { id: 'mixter-ballistic', iconOverride: 'mixter/ballistic' },
+    { id: 'mixter-ballistic-k', iconOverride: 'mixter/ballistic-k' },
+    { id: 'mixter-blammed', iconOverride: 'mixter/blammed' },
+    { id: 'mixter-blammed-k', iconOverride: 'mixter/blammed-k' },
+    { id: 'mixter-boogieman', iconOverride: 'mixter/boogieman' },
+    { id: 'mixter-bopeebo', iconOverride: 'mixter/bopeebo' },
+    { id: 'mixter-chiller', iconOverride: 'mixter/chiller' },
+    { id: 'mixter-chkdsk', iconOverride: 'mixter/chkdsk' },
+    { id: 'mixter-cocoa', iconOverride: 'mixter/cocoa' },
+    { id: 'mixter-dadbattle', iconOverride: 'mixter/dadbattle' },
+    { id: 'mixter-dadbattle-k', iconOverride: 'mixter/dadbattle-k' },
+    { id: 'mixter-darnell', iconOverride: 'mixter/darnell' },
+    { id: 'mixter-deathtoll', iconOverride: 'mixter/deathtoll' },
+    { id: 'mixter-expurgation', iconOverride: 'mixter/expurgation' },
+    { id: 'mixter-expurgation-k', iconOverride: 'mixter/expurgation-k' },
+    { id: 'mixter-fading', iconOverride: 'mixter/fading' },
+    { id: 'mixter-finishedallremixes', iconOverride: 'mixter/finishedallremixes' },
+    { id: 'mixter-foolhardy', iconOverride: 'mixter/foolhardy' },
+    { id: 'mixter-foolhardy-k', iconOverride: 'mixter/foolhardy-k' },
+    { id: 'mixter-frostbite', iconOverride: 'mixter/frostbite' },
+    { id: 'mixter-genocide', iconOverride: 'mixter/genocide' },
+    { id: 'mixter-genocide-k', iconOverride: 'mixter/genocide-k' },
+    { id: 'mixter-glitcher', iconOverride: 'mixter/glitcher' },
+    { id: 'mixter-god-eater', iconOverride: 'mixter/god-eater' },
+    { id: 'mixter-gospel', iconOverride: 'mixter/gospel' },
+    { id: 'mixter-headspace', iconOverride: 'mixter/headspace' },
+    { id: 'mixter-heartbass', iconOverride: 'mixter/heartbass' },
+    { id: 'mixter-hellclown', iconOverride: 'mixter/hellclown' },
+    { id: 'mixter-improbable-outset', iconOverride: 'mixter/improbable-outset' },
+    { id: 'mixter-last-chance', iconOverride: 'mixter/last-chance' },
+    { id: 'mixter-lo-fight', iconOverride: 'mixter/lo-fight' },
+    { id: 'mixter-lo-fight-k', iconOverride: 'mixter/lo-fight-k' },
+    { id: 'mixter-madness', iconOverride: 'mixter/madness' },
+    { id: 'mixter-madness-k', iconOverride: 'mixter/madness-k' },
+    { id: 'mixter-manifest', iconOverride: 'mixter/manifest' },
+    { id: 'mixter-milf', iconOverride: 'mixter/milf' },
+    { id: 'mixter-my-battle', iconOverride: 'mixter/my-battle' },
+    { id: 'mixter-nerves', iconOverride: 'mixter/nerves' },
+    { id: 'mixter-pico', iconOverride: 'mixter/pico' },
+    { id: 'mixter-ram', iconOverride: 'mixter/ram' },
+    { id: 'mixter-release', iconOverride: 'mixter/release' },
+    { id: 'mixter-release-k', iconOverride: 'mixter/release-k' },
+    { id: 'mixter-roses', iconOverride: 'mixter/roses' },
+    { id: 'mixter-scary-night', iconOverride: 'mixter/scary-night' },
+    { id: 'mixter-smokebomb', iconOverride: 'mixter/smokebomb' },
+    { id: 'mixter-south', iconOverride: 'mixter/south' },
+    { id: 'mixter-stress', iconOverride: 'mixter/stress' },
+    { id: 'mixter-think', iconOverride: 'mixter/think' },
+    { id: 'mixter-thorns-k', iconOverride: 'mixter/thorns-k' },
+    { id: 'mixter-thunderstorm', iconOverride: 'mixter/thunderstorm' },
+    { id: 'mixter-thunderstorm-k', iconOverride: 'mixter/thunderstorm-k' },
+    { id: 'mixter-tripletrouble', iconOverride: 'mixter/tripletrouble' },
+    { id: 'mixter-ugh', iconOverride: 'mixter/ugh' },
+    { id: 'mixter-zavodila', iconOverride: 'mixter/zavodila' },
+    { id: 'mixter-zavodila-k', iconOverride: 'mixter/zavodila-k' },
+
+    // ACE
+    { id: 'ace-spell' },
+    { id: 'ace-funsizeace' },
+    { id: 'ace-5freeze' },
+    { id: 'ace-all' },
+
+    { id: 'ace-noice' },
+    { id: 'ace-nohomo' },
+    { id: 'ace-acegf' },
+
+    { id: 'ace-ectosatis' },
+    { id: 'ace-coldheartedcatwalk' },
+    { id: 'ace-frostbite2' },
+    { id: 'ace-icebreaker' },
+
+    // MISC
+    { id: 'misc-rockone' },
+    { id: 'misc-nolock', iconOverride: 'misc/nolock' },
+    { id: 'misc-all' },
+    { id: 'misc-hell' },
+
+    { id: 'misc-fallipe' },
+    { id: 'misc-diebaby' },
+    { id: 'misc-sans' },
+    { id: 'misc-crash' },
+
+    { id: 'misc-everynote' },
+    { id: 'misc-idiot' },
+    { id: 'misc-incognito' },
+
+    // CORRUPTRO
+    { id: 'corruptro-fivepoisons' },
+    { id: 'corruptro-hell' },
+    { id: 'corruptro-nopoisons' },
+    { id: 'corruptro-sidestory' },
+    { id: 'corruptro-corruptro', iconOverride: 'corruptro/corruptro' },
+    { id: 'corruptro-all' },
+
+    // MINUS
+    /*{ id: 'minus-envy' },
+    { id: 'minus-finals' },
+    { id: 'minus-gluttony' },
+    { id: 'minus-greed' },
+    { id: 'minus-lust' },
+    { id: 'minus-merktro' },
+    { id: 'minus-moonlight' },
+    { id: 'minus-mraku' },
+    { id: 'minus-overtime' },
+    { id: 'minus-postgame' },
+    { id: 'minus-preseason-remix' },
+    { id: 'minus-pride' },
+    { id: 'minus-sloth' },
+    { id: 'minus-sweater' },
+    { id: 'minus-wrath' },
+    { id: 'minus-all' },*/
+  ];
+
+  public function new()
+  {
+    super('RetroAchievements');
+    initSave();
+  }
+
+  public static function resetAllAchievements():Void
+  {
+    Save.instance.modOptions.set(SAVE_KEY, []);
+    Save.instance.flush();
+  }
+
+  public static function isUnlocked(id:String):Bool
+  {
+    return getSave().contains(id);
+  }
+
+  public static function grantAchievement(id:String, ?showToast:Bool = true, ?instaShow = false, ?force:Bool = false):Void
+  {
+    if (isUnlocked(id) && !force) return;
+
+    var ach:Dynamic = getAchievement(id);
+    if (ach != null && ach.unlockable != null && ach.unlockable == true) return;
+
+    var save:Array<Dynamic> = getSave();
+    save.push(id);
+    Save.instance.modOptions.set(SAVE_KEY, save);
+    Save.instance.flush();
+
+    if (showToast) {
+      queueToast(id);
+      if (instaShow) showQueuedToasts();
+    }
+  }
+
+  public static function grantAc(id:String, ?showToast:Bool = true, ?instaShow:Bool = false, ?force:Bool = false):Void
+  {
+    grantAchievement(id, showToast, instaShow, force);
+  }
+
+  // Resolves the full Paths.image()-compatible path for a given achievement ID.
+  // Non-standard icons (mixter songs, etc.) declare iconOverride in their data.
+  // Category "all" uses the root icons/all-{iconId} path.
+  // All others follow icons/{category}/{category}-{iconId}.
+  public static function getIconPath(id:String):String
+  {
+    var ach:Dynamic = getAchievement(id);
+    if (ach != null && ach.iconOverride != null)
+      return PATH + 'icons/' + ach.iconOverride;
+
+    var parts:Array<String> = id.split('-');
+    if (parts.length < 1) return PATH + 'icons/dummy';
+
+    var category:String = parts[0];
+    var iconId:String = parts.slice(1).join('-');
+
+    if (category == 'all')
+      return PATH + 'icons/all-' + iconId;
+
+    return PATH + 'icons/' + category + '/' + category + '-' + iconId;
+  }
+
+  static function initSave():Void
+  {
+    if (Save.instance.modOptions[SAVE_KEY] == null)
+    {
+      Save.instance.modOptions.set(SAVE_KEY, []);
+      Save.instance.flush();
+    }
+  }
+
+  static function getSave():Array<Dynamic>
+  {
+    var val:Dynamic = Save.instance.modOptions[SAVE_KEY];
+    if (val == null) return [];
+    return val;
+  }
+
+  static function getAchievement(id:String):Dynamic
+  {
+    for (ach in ACHIEVEMENTS)
+      if (ach.id == id) return ach;
+    return null;
+  }
+
+  static function toasts():Array<Dynamic>
+  {
+    if (activeToasts == null) activeToasts = [];
+    return activeToasts;
+  }
+
+  static function pendingQueue():Array<String>
+  {
+    if (toastQueue == null) toastQueue = [];
+    return toastQueue;
+  }
+
+  public static function queueToast(id:String):Void
+  {
+    if (getAchievement(id) == null) return;
+    pendingQueue().push(id);
+  }
+
+  public static function showQueuedToasts(?delay:Float = 0):Void
+  {
+    if (pendingQueue().length == 0) return;
+
+    var queue:Array<String> = pendingQueue().copy();
+    toastQueue = [];
+
+    if (delay > 0) {
+      new FlxTimer().start(delay, function(_) { _showQueue(queue); });
+      return;
+    }
+
+    _showQueue(queue);
+  }
+
+  static function scaleForPos(pos:Int):Float
+  {
+    if (pos <= 1)
+      return Math.max(TOAST_MIN_SCALE, 1.0 - pos * TOAST_SCALE_STEP);
+    var baseScale:Float = Math.max(TOAST_MIN_SCALE, 1.0 - 1 * TOAST_SCALE_STEP);
+    return Math.max(TOAST_MIN_SCALE, baseScale - (pos - 1) * TOAST_SCALE_STEP_SMALL);
+  }
+
+  static function _showQueue(queue:Array<String>):Void
+  {
+    if (queue.length == 0) return;
+
+    var ts = toasts();
+    var groupBaseY:Float = TOAST_PADDING;
+    if (ts.length > 0) {
+      var last:Dynamic = ts[ts.length - 1];
+      groupBaseY = last.targetY + TOAST_H * last.targetScale + TOAST_GROUP_GAP;
+    }
+
+    var gId:Int = nextGroupId++;
+    var n:Int = queue.length;
+    var insertStart:Int = ts.length;
+
+    // Insert in reverse so queue[0] ends up on top of the display list
+    var i:Int = n - 1;
+    while (i >= 0) {
+      var tY:Float = groupBaseY + i * TOAST_PEEK_OFFSET;
+      var tScale:Float = scaleForPos(i);
+      createToast(queue[i], tY, tScale, i, gId);
+      i--;
+    }
+
+    // activeToasts now has [queue[n-1]...queue[0]] for this group; reverse so index 0 = top
+    var half:Int = Std.int(n / 2);
+    for (k in 0...half) {
+      var tmp:Dynamic = ts[insertStart + k];
+      ts[insertStart + k] = ts[insertStart + n - 1 - k];
+      ts[insertStart + n - 1 - k] = tmp;
+    }
+  }
+
+  static function achievementKey(id:String, field:String):String
+  {
+    var parts:Array<String> = id.split('-');
+    var category:String = parts[0];
+    var idPart:String = parts.slice(1).join('-');
+    return 'achievement.' + category + '.' + idPart + '.' + field;
+  }
+
+  public static function createToast(id:String, ?targetY:Float = -1, ?targetScale:Float = 1.0, ?posInGroup:Int = 0, ?groupId:Int = -1):Void
+  {
+    var ach:Dynamic = getAchievement(id);
+    if (ach == null) return;
+
+    var icon:FunkinSprite = FunkinSprite.create(0, 0, getIconPath(id));
+    var cancelGraphic:FunkinSprite = FunkinSprite.create(0, 0, 'ui/menu/cancel_x');
+
+    if (can_play_sound) {
+      var unlockSound:FlxSound = new FlxSound().loadEmbedded(Paths.sound('unlock_popup'));
+      unlockSound.persist = true;
+      unlockSound.volume = 1;
+      unlockSound.play();
+      can_play_sound = false;
+
+      soundTimer = new FlxTimer().start(3, function(_) {
+        can_play_sound = true;
+      });
+    }
+
+    if (groupId < 0) groupId = nextGroupId++;
+    if (targetY < 0) {
+      var ts = toasts();
+      if (ts.length == 0) {
+        targetY = TOAST_PADDING;
+      } else {
+        var last:Dynamic = ts[ts.length - 1];
+        targetY = last.targetY + TOAST_H * last.targetScale + TOAST_GROUP_GAP;
+      }
+    }
+    var padLeft:Float = 12;
+    var titlePadTop:Float = 14;
+
+    // Container. the entire toast moves as one unit
+    var container = new Sprite();
+    container.graphics.beginFill(0x000000, 1);
+    container.graphics.drawRoundRect(0, 0, TOAST_W, TOAST_H, TOAST_CORNER_RADIUS, TOAST_CORNER_RADIUS);
+    container.graphics.endFill();
+
+    // Icon
+    var iconBm = new Bitmap(icon.graphic.bitmap);
+    iconBm.x = 12 + padLeft;
+    iconBm.y = 12;
+    iconBm.width = ICON_SIZE;
+    iconBm.height = ICON_SIZE;
+    container.addChild(iconBm);
+
+    // Title
+    var titleField = new TextField();
+    titleField.text = RetroLanguage.t(achievementKey(id, 'name'), 'Unknown');
+    titleField.setTextFormat(new TextFormat('Kenyan Coffee', TITLE_FONT_SIZE, 0xFFFFFF, true));
+    titleField.wordWrap = true;
+    titleField.selectable = false;
+    titleField.width = TOAST_W - ICON_SIZE - 50;
+    titleField.x = ICON_SIZE + 35 + padLeft;
+    titleField.y = 12 + titlePadTop;
+
+    var currentTitleSize:Int = TITLE_FONT_SIZE;
+    while (titleField.numLines > 1 && currentTitleSize > TITLE_MIN_FONT_SIZE) {
+      currentTitleSize--;
+      titleField.setTextFormat(new TextFormat('Kenyan Coffee', currentTitleSize, 0xFFFFFF, true));
+    }
+
+    container.addChild(titleField);
+
+    // Description
+    var descField = new TextField();
+    descField.text = RetroLanguage.t(achievementKey(id, 'description'), 'Could not fetch description for the current language');
+    descField.setTextFormat(new TextFormat('Atari ST 8x16 System Font', DESC_FONT_SIZE, 0xFFFFFF));
+    descField.wordWrap = true;
+    descField.selectable = false;
+    descField.width = TOAST_W - ICON_SIZE - 50;
+    descField.x = ICON_SIZE + 35 + padLeft;
+    descField.y = 50 + titlePadTop;
+
+    var descBottomLimit:Float = TOAST_H - 3;
+    if ((descField.y + descField.textHeight) > descBottomLimit) {
+      var availableHeight:Float = descBottomLimit - descField.y;
+      var fittedSize:Int = Std.int(DESC_FONT_SIZE * availableHeight / descField.textHeight);
+      if (fittedSize < DESC_MIN_FONT_SIZE) fittedSize = DESC_MIN_FONT_SIZE;
+      descField.setTextFormat(new TextFormat('Atari ST 8x16 System Font', fittedSize, 0xFFFFFF));
+      while ((descField.y + descField.textHeight) > descBottomLimit && fittedSize > DESC_MIN_FONT_SIZE) {
+        fittedSize--;
+        descField.setTextFormat(new TextFormat('Atari ST 8x16 System Font', fittedSize, 0xFFFFFF));
+      }
+    }
+
+    container.addChild(descField);
+
+    // Cancel button added last so it sits on top
+    var cancelSprite = new Sprite();
+    // Invisible hit area slightly larger than the icon for easier clicking
+    cancelSprite.graphics.beginFill(0, 0);
+    cancelSprite.graphics.drawRect(0, 0, 24, 24);
+    cancelSprite.graphics.endFill();
+
+    var cancelBm = new Bitmap(cancelGraphic.graphic.bitmap);
+    cancelBm.x = 3;
+    cancelBm.y = 3;
+    cancelBm.width = 14;
+    cancelBm.height = 14;
+    cancelSprite.addChild(cancelBm);
+
+    cancelSprite.x = 2;
+    cancelSprite.y = 2;
+    cancelSprite.buttonMode = true;
+    cancelSprite.mouseEnabled = true;
+    container.addChild(cancelSprite);
+
+    container.scaleX = targetScale;
+    container.scaleY = targetScale;
+    container.x = TOAST_PADDING + posInGroup * TOAST_STAIR_OFFSET;
+    container.y = -TOAST_H;
+    //FlxG.stage.addChild(container);
+    FlxG.addChildBelowMouse(container, 0);
+
+    var toastEntry:Dynamic = { container: container, targetY: targetY, targetScale: targetScale, timer: null, groupId: groupId, posInGroup: posInGroup };
+    toasts().push(toastEntry);
+
+    var capturedEntry:Dynamic = toastEntry;
+    cancelSprite.addEventListener('click', function(e:Dynamic) {
+      e.stopPropagation();
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.8);
+      dismissToast(capturedEntry);
+      FlxG.mouse.reset();
+    });
+
+    var displayDuration:Float = DISPLAY_TIME * (posInGroup + 1);
+    if (posInGroup > 0) displayDuration = (DISPLAY_TIME * 2) + ((posInGroup + 1) * 0.8);
+    FlxTween.tween(container, { y: targetY }, ENTER_TIME, {
+      ease: FlxEase.elasticOut,
+      onComplete: function(_) {
+        var t = new FlxTimer();
+        capturedEntry.timer = t;
+        t.start(displayDuration, function(_) {
+          FlxG.mouse.reset();
+          dismissToast(capturedEntry);
+        });
+      }
+    });
+
+    icon.destroy();
+    cancelGraphic.destroy();
+  }
+
+  static function dismissToast(toastEntry:Dynamic, ?instant:Bool = false):Void
+  {
+    var toasts:Array<Dynamic> = toasts();
+    if (!toasts.contains(toastEntry)) return;
+
+    if (toastEntry.timer != null)
+    {
+      toastEntry.timer.cancel();
+      toastEntry.timer = null;
+    }
+
+    toasts.remove(toastEntry);
+    repositionToasts();
+
+    var c:Dynamic = toastEntry.container;
+    if (!instant) {
+      FlxTween.cancelTweensOf(c);
+      FlxTween.tween(c, { y: -(TOAST_H * 1.2) }, LEAVE_TIME, {
+        ease: FlxEase.quadIn,
+        onComplete: function(_) {
+          if (FlxG.game.contains(c)) FlxG.game.removeChild(c);
+          toastEntry.container = null;
+        }
+      });
+    } else {
+      if (FlxG.game.contains(c)) FlxG.game.removeChild(c);
+      toastEntry.container = null;
+    }
+  }
+
+  static function repositionToasts():Void
+  {
+    var ts = toasts();
+    if (ts.length == 0) return;
+
+    var i:Int = 0;
+    var groupBaseY:Float = TOAST_PADDING;
+
+    while (i < ts.length) {
+      var gId:Int = ts[i].groupId;
+      var groupStart:Int = i;
+
+      while (i < ts.length && ts[i].groupId == gId) i++;
+      var groupSize:Int = i - groupStart;
+
+      for (j in groupStart...groupStart + groupSize) {
+        var t:Dynamic = ts[j];
+        var pos:Int = j - groupStart;
+        t.posInGroup = pos;
+
+        var tScale:Float = scaleForPos(pos);
+        var tY:Float = groupBaseY + pos * TOAST_PEEK_OFFSET;
+        var tX:Float = TOAST_PADDING + pos * TOAST_STAIR_OFFSET;
+
+        t.targetY = tY;
+        t.targetScale = tScale;
+
+        FlxTween.cancelTweensOf(t.container);
+        FlxTween.tween(t.container, { x: tX, y: tY, scaleX: tScale, scaleY: tScale }, REPOSITION_TIME, { ease: FlxEase.quadOut });
+      }
+
+      var lastPos:Int = groupSize - 1;
+      var lastScale:Float = scaleForPos(lastPos);
+      groupBaseY = groupBaseY + lastPos * TOAST_PEEK_OFFSET + TOAST_H * lastScale + TOAST_GROUP_GAP;
+    }
+  }
+
+  public static function deleteToasts():Void {
+    for (toast in toasts().copy()) {
+      dismissToast(toast, true);
+    }
+    toastQueue = null;
+    nextGroupId = 0;
+    activeToasts = [];
+  }
+
+  static function detachToastLayers():Void
+  {
+    for (t in toasts()) {
+      if (t.timer != null) {
+        t.timerRemaining = t.timer.time * (1.0 - t.timer.progress);
+        t.timer.cancel();
+        t.timer = null;
+      }
+      var c:Dynamic = t.container;
+      if (c == null) continue;
+      if (c.parent != null) c.parent.removeChild(c);
+    }
+  }
+
+  static function refreshToastLayers():Void
+  {
+    var ts = toasts();
+    var i = ts.length - 1;
+    while (i >= 0) {
+      var t = ts[i];
+      var c:Dynamic = t.container;
+      if (c != null) {
+        if (c.parent != null) c.parent.removeChild(c);
+        FlxG.addChildBelowMouse(c, 0);
+      }
+      if (t.timer == null && t.timerRemaining > 0) {
+        var remaining:Float = t.timerRemaining;
+        t.timerRemaining = 0;
+        var capturedEntry:Dynamic = t;
+        t.timer = new FlxTimer().start(remaining, function(_) {
+          FlxG.mouse.reset();
+          dismissToast(capturedEntry);
+        });
+      }
+      i--;
+    }
+  }
+
+  override public function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    deleteToasts();
+  }
+
+  override public function onStateChangeBegin(event:StateChangeScriptEvent)
+  {
+    super.onStateChangeBegin(event);
+    detachToastLayers();
+  }
+  override public function onStateChangeEnd(event:StateChangeScriptEvent)
+  {
+    super.onStateChangeEnd(event);
+    refreshToastLayers();
+  }
+
+  override public function onSubStateOpenBegin(event:StateChangeScriptEvent)
+  {
+    super.onSubStateOpenBegin(event);
+    detachToastLayers();
+  }
+  override public function onSubStateOpenEnd(event:StateChangeScriptEvent)
+  {
+    super.onSubStateOpenEnd(event);
+    refreshToastLayers();
+  }
+
+  override public function onUpdate(event:ScriptEvent):Void
+  {
+    super.onUpdate(event);
+
+    if (FlxG.keys.justPressed.N && RetroSave.isDebug()) {
+      queueToast('death-deathgf');
+      //grantAchievement('all-dummy');
+      // queueToast('all-all');
+      // queueToast('all-all');
+      // queueToast('all-all');
+      // queueToast('all-all');
+      showQueuedToasts();
+    }
+  }
+}

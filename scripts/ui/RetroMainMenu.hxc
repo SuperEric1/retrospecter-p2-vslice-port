@@ -12,6 +12,7 @@ import flixel.tweens.FlxTween;
 import funkin.modding.PolymodHandler;
 import flixel.util.FlxTimer;
 import flixel.text.FlxText;
+import funkin.save.Save;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.FunkinMemory;
 import funkin.util.Constants;
@@ -38,6 +39,8 @@ import StringTools;
 import supereric.retrospecter.modules.RetroLanguage;
 import supereric.retrospecter.modules.RetroSave;
 import supereric.retrospecter.shaders.RetroAngleMaskShader;
+import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.ui.RetroTrophyState;
 
 class RetroMainMenu extends MusicBeatState
 {
@@ -431,7 +434,7 @@ class RetroMainMenu extends MusicBeatState
     //if (FlxG.onMobile) throw isSpreading;
   }
 
-  function setIdleState(doTween:Bool = true):Void
+  function setIdleState(?doTween:Bool = true):Void
   {
     lastMousePos.set(FlxG.mouse.x, FlxG.mouse.y);
     blockMouse = false;
@@ -605,18 +608,20 @@ class RetroMainMenu extends MusicBeatState
     var selected:FlxSprite = menuItems[selectedIndex];
     var callback:Dynamic = menuCallbacks[selectedIndex];
 
-    FunkinSound.playOnce(Paths.sound('confirmMenu'));
+    //FunkinSound.playOnce(Paths.sound('confirmMenu'));
     HapticUtil.vibrate(0, 0.045, 0.005, 0);
 
-    var timerType = Preferences.flashingLights ? FlxFlicker : FlxTimer;
+    var alwaysDoTimer:Bool = true;
+
+    var timerType = (Preferences.flashingLights && !alwaysDoTimer) ? FlxFlicker : FlxTimer;
     var timerCallback:Dynamic = function(_:timerType) {
       isBusy = false;
       rememberedSelectedIndex = selectedIndex;
       if (callback != null) callback();
     };
 
-    var flickerTime:Float = 0.7;
-    if (Preferences.flashingLights) FlxFlicker.flicker(selected, flickerTime, 0.1, true, false, timerCallback);
+    var flickerTime:Float = 0.1;
+    if (Preferences.flashingLights && !alwaysDoTimer) FlxFlicker.flicker(selected, flickerTime, 0.1, true, false, timerCallback);
     else new FlxTimer().start(flickerTime, timerCallback);
   }
 
@@ -654,7 +659,7 @@ class RetroMainMenu extends MusicBeatState
     FunkinMemory.cacheSound(Paths.sound('menus/boot'));
     FlxTransitionableState.skipNextTransIn = true;
 
-    startExitState(stateFunc, false);
+    startExitState(stateFunc, false, !Save.instance.modOptions.get('retroOptionsIntroPlayed') ? 1 : 0.15);
   }
 
   function goToCredits():Void
@@ -665,7 +670,7 @@ class RetroMainMenu extends MusicBeatState
     startExitState(stateFunc, false);
   }
 
-  function startExitState(state:Dynamic, customFunction:Bool):Void
+  function startExitState(state:Dynamic, customFunction:Bool, ?transitionTime:Float = 0.15):Void
   {
     if (isExiting) return;
 
@@ -694,8 +699,8 @@ class RetroMainMenu extends MusicBeatState
     bgFront.updateHitbox();
     insert(1000, bgFront);
 
-    var transitionTime:Float = 0.15;
     //if (!isCustomFunction) {
+      FlxG.sound.music.fadeOut(transitionTime, 0);
       FlxTween.tween(bgFront, {alpha: 1}, transitionTime, {
         ease: FlxEase.cubicIn,
         onComplete: tweenCallback
@@ -848,6 +853,8 @@ class RetroMainMenu extends MusicBeatState
 
     if (doIDLE && !camMoving) setIdleState();
 
+    if ((FlxG.keys.justPressed.TAB || SwipeUtil.justSwipedLeft) && RetroSave.isDebug()) openTrophyState();
+
     if (goBACK) goBack();
 
     if (!FlxG.onMobile && goMENU) {
@@ -860,6 +867,20 @@ class RetroMainMenu extends MusicBeatState
       resetIdleTimer();
     }
 
+  }
+
+  function openTrophyState():Void
+  {
+    if (isBusy || isExiting) return;
+    var time:Float = 0.15;
+    FlxTransitionableState.skipNextTransIn = true;
+    FlxTransitionableState.skipNextTransOut = true;
+    canNavigate = false;
+    isBusy = true;
+    FlxG.sound.music.fadeOut(time, 0);
+    FlxG.camera.fade(0xFF262a34, time, false, function() {
+      FlxG.switchState(() -> new RetroTrophyState());
+    }, true);
   }
 
   function goBack():Void

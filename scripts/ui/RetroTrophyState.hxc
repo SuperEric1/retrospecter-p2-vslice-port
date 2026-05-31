@@ -1,0 +1,1154 @@
+package supereric.retrospecter.ui;
+
+import flixel.FlxG;
+import flixel.FlxObject;
+import flixel.FlxSprite;
+import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
+import flixel.text.FlxText;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxColor;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import flixel.util.FlxTimer;
+import funkin.graphics.FunkinSprite;
+import funkin.audio.FunkinSound;
+import funkin.ui.MusicBeatState;
+import funkin.ui.FullScreenScaleMode;
+import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
+import funkin.util.HapticUtil;
+import funkin.group.FunkinGroup;
+import funkin.PlayerSettings;
+import funkin.input.Control;
+import funkin.mobile.input.ControlsHandler;
+import funkin.mobile.ui.FunkinBackButton;
+import funkin.Paths;
+import funkin.modding.base.ScriptedMusicBeatState;
+
+import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroLanguage;
+
+class RetroTrophyState extends MusicBeatState
+{
+  var PATH:String = 'ui/menu/trophies/';
+  var START_X:Float = (FullScreenScaleMode.gameCutoutSize.x / 2);
+
+  var GRID_COLS:Int = 4;
+  var GRID_ROWS:Int = 4;
+  var GRID_SIZE:Int = 16;
+  var ICON_SIZE:Int = 120;
+  var ICON_SPACING_X:Int = 32;
+  var ICON_SPACING_Y:Int = 16;
+
+  var GRID_X:Float = START_X + 352;
+  var GRID_Y:Float = 65;
+  var LEFT_COL_X:Float = START_X + 100;
+  var LEFT_COL_CENTER_X:Float = START_X + 162;
+  var INFO_W:Float = 380 * 0.62;
+  var INFO_H:Float = 645 * 0.62;
+  var INFO_X:Float = -INFO_W - 47;
+  var INFO_Y:Float = 54;
+  var INFO_START_X:Float = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) + INFO_X;
+  var CATEGORY_LABEL_Y:Float = FlxG.height - 119;
+
+  var SYMBOL_SIZE:Int = 150;
+  var SYMBOL_SPACING:Float = 115;
+  var SYMBOL_DIM_ALPHA:Float = 0.4;
+  var SWITCH_BASE_X:Float = START_X + 190;
+  var SWITCH_BASE_Y:Float = FlxG.height - 300;
+  var MEDAL_Y:Float = -62;
+
+  // Hitbox padding ao redor de cada ícone de conquista (em cada lado)
+  var ICON_HITBOX_PADDING:Int = 12;
+  // Hitbox padding extra para os botões de seta de categoria
+  var ARROW_HITBOX_PADDING:Int = 10;
+
+  var TILE_SIZE:Int = 140;
+  var TILE_COLS:Int = 0;
+  var TILE_ROWS:Int = 0;
+  var TILE_SPEED_X:Float = -40;
+  var TILE_SPEED_Y:Float = 40;
+
+  var CATEGORIES:Array<Dynamic> = [
+    { id: 'all', label: 'ALL', color: FlxColor.WHITE, bgColor: 0xFF262a34, symbolFile: 'all' },
+    { id: 'wrath', label: 'WRATH', color: 0xFF00ecd9, bgColor: 0xFF006e72, symbolFile: 'wrath' },
+    { id: 'lust', label: 'LUST', color: 0xFFf959dd, bgColor: 0xFF8c085f, symbolFile: 'lust' },
+    { id: 'pride', label: 'PRIDE', color: 0xFF86fff2, bgColor: 0xFF24a29d, symbolFile: 'pride' },
+    { id: 'gluttony', label: 'GLUTTONY', color: 0xFFdb3153, bgColor: 0xFF790820, symbolFile: 'gluttony' },
+    { id: 'greed', label: 'GREED', color: 0xFFbe7ef9, bgColor: 0xFF481f6d, symbolFile: 'greed' },
+    { id: 'envy', label: 'ENVY', color: 0xFF69fcbf, bgColor: 0xFF08966d, symbolFile: 'envy' },
+    { id: 'sloth', label: 'SLOTH', color: 0xFFd9995c, bgColor: 0xFF8c2f00, symbolFile: 'sloth' },
+    { id: 'death', label: 'DEATH', color: 0xFFff001f, bgColor: FlxColor.BLACK, symbolFile: 'death' },
+    { id: 'patience', label: 'PATIENCE', color: 0xFFf3c378, bgColor: 0xFFb58330, symbolFile: 'patience'  },
+    { id: 'mixter', label: 'MIXTER', color: 0xFF8f57ff, bgColor: 0xFF390c94, symbolFile: 'mixter' },
+    { id: 'ace', label: 'ACE', color: 0xFFe7eefc, bgColor: 0xFF5c86dc, symbolFile: 'ace' },
+    { id: 'misc', label: 'MISC', color: FlxColor.WHITE, bgColor: FlxColor.WHITE, symbolFile: 'misc' },
+    //{ id: 'minus', label: 'MINUS', color: 0xFFFF4444, bgColor: 0xFF330000, symbolFile: 'minus' },
+    //{ id: 'corruptro', label: 'CORRUPTRO', color: 0xFFAA44FF, bgColor: 0xFF1A0033, symbolFile: 'corrupt' },
+  ];
+
+  var currentCategoryIndex:Int = 0;
+  var currentPage:Int = 0;
+  var selectedIndex:Int = 0;
+  var canNavigate:Bool = false;
+  var categoryAchievements:Array<Dynamic> = [];
+
+  // Mouse/touch
+  var iconHitboxes:Array<FlxObject> = [];
+  var arrowLeftHitbox:FlxObject;
+  var arrowRightHitbox:FlxObject;
+  var arrowNextHitbox:FlxObject;
+  var arrowBackHitbox:FlxObject;
+  var hoveredIndex:Int = -1;
+  var lastMousePos:FlxPoint;
+  var mouseHasMoved:Bool = false;
+  var mouseMovementThreshold:Float = 6;
+  var mouseMovementThresholdSq:Float = 36;
+
+  // Área da wheel de categorias
+  var wheelAreaX:Float = 0;
+  var wheelAreaY:Float = 0;
+  var wheelAreaW:Float = 0;
+  var wheelAreaH:Float = 0;
+  var swipeTouchOriginX:Float = -1;
+  var swipeTouchOriginY:Float = -1;
+
+  // Background
+  var bgBase:FlxSprite;
+  var bgTiles:Array<FlxSprite> = [];
+  var bgTilePositions:Array<FlxPoint> = [];
+  var bgOverlay:FunkinSprite;
+
+  // Esquerda
+  var medal:FunkinSprite;
+  var trophyText:FlxText;
+  var arrowLeft:FunkinSprite;
+  var arrowRight:FunkinSprite;
+  var symbolCur:FunkinSprite;
+  var symbolWheel:FunkinSprite;
+  var symbolWheelBG:FunkinSprite;
+
+  // Grid
+  var iconSlots:Array<FunkinSprite> = [];
+  var selector:FunkinSprite;
+  var pageArrow:FunkinSprite;
+  var pageArrowBack:FunkinSprite;
+  var categoryLabel:FlxText;
+
+  // Info
+  var infoOverlayBg:FlxSprite;
+  var infoOverlay:FunkinSprite;
+  var achTitle:FlxText;
+  var achDesc:FlxText;
+  var controlsText:FlxText;
+
+  var backBtn:FunkinBackButton;
+
+  var TRANS_ENTER_DELAY:Float = 0.5;
+  var TRANS_DURATION:Float = 0.7;
+  var TRANS_OUT_DURATION:Float = 0.45;
+
+  var TRANS_EASE_IN = FlxEase.quartOut;
+  var TRANS_EASE_OUT = FlxEase.quartIn;
+
+  var TRANS_INFO_OFFSET_Y:Float = -50;
+  var TRANS_GRID_OFFSET_Y:Float = -20;
+  var TRANS_GRID_STAGGER:Float = 0.07;
+
+  var TRANS_SYMBOL_ANGLE:Float = 40;
+
+  var TRANS_WHEEL_OFFSCREEN_Y:Float = 300;
+
+  var isTransitioningOut:Bool = false;
+
+  public function new()
+  {
+    super('RetroTrophyState');
+  }
+
+  override function create():Void
+  {
+    super.create();
+
+    persistentUpdate = true;
+
+    buildBackground();
+    buildLeftColumn();
+    buildGrid();
+    buildInfoPanel();
+
+    refreshCategoryData();
+    rebuildGrid();
+    updateInfoPanel();
+    updateCategorySwitch();
+    updateTrophyCount();
+
+    lastMousePos = FlxPoint.get(FlxG.mouse.screenX, FlxG.mouse.screenY);
+
+    FunkinSound.playMusic('Menu_Gallery', {
+      startingVolume: 0,
+      overrideExisting: true,
+      restartTrack: false,
+      persist: false
+    });
+    FlxG.sound.music.fadeIn(4, 0, 1);
+
+    if (FlxG.mouse.cursor != null) FlxG.mouse.visible = true;
+
+    playEnterTransition();
+  }
+
+  function playEnterTransition():Void
+  {
+    var dur:Float = TRANS_DURATION;
+    var ease = TRANS_EASE_IN;
+
+    for (tile in bgTiles) {
+      tile.alpha = 0;
+      FlxTween.tween(tile, { alpha: 0.8 }, dur, { ease: ease });
+    }
+
+    bgOverlay.alpha = 0;
+    FlxTween.tween(bgOverlay, { alpha: 1 }, dur, { ease: ease });
+
+    medal.alpha = 0;
+    trophyText.alpha = 0;
+    FlxTween.tween(medal, { alpha: 1 }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    FlxTween.tween(trophyText, { alpha: 1 }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+
+    var wheelTargetY:Float = symbolWheel.y;
+    var wheelOgAlpha:Float = symbolWheel.alpha;
+    var wheelOffY:Float = FlxG.height + TRANS_WHEEL_OFFSCREEN_Y;
+    symbolWheel.y = wheelOffY;
+    symbolWheel.alpha = 0;
+    symbolCur.y += (wheelOffY - wheelTargetY);
+    symbolCur.alpha = 0;
+    arrowLeft.y += (wheelOffY - wheelTargetY);
+    arrowLeft.alpha = 0;
+    arrowRight.y += (wheelOffY - wheelTargetY);
+    arrowRight.alpha = 0;
+
+    var origCurAngle:Float = symbolCur.angle;
+    var origWheelAngle:Float = symbolWheel.angle;
+    symbolCur.angle = origCurAngle + TRANS_SYMBOL_ANGLE;
+
+    FlxTween.tween(symbolWheel, { y: wheelTargetY, alpha: wheelOgAlpha, angle: origWheelAngle }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    FlxTween.tween(symbolCur, { y: wheelTargetY + 17, alpha: 1, angle: origCurAngle }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    FlxTween.tween(arrowLeft, { y: arrowLeft.y - (wheelOffY - wheelTargetY), alpha: 1 }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    FlxTween.tween(arrowRight, { y: arrowRight.y - (wheelOffY - wheelTargetY), alpha: 1 }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+
+    var infoElements:Array<Dynamic> = [infoOverlayBg, infoOverlay, achTitle, achDesc];
+    for (el in infoElements) {
+      el.alpha = 0;
+      el.y += TRANS_INFO_OFFSET_Y;
+      FlxTween.tween(el, { alpha: 1, y: el.y - TRANS_INFO_OFFSET_Y }, 0.5, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    }
+
+    for (i in 0...iconSlots.length) {
+      var slot = iconSlots[i];
+      if (!slot.visible) continue;
+      var col:Int = i % GRID_COLS;
+      var row:Int = Std.int(i / GRID_COLS);
+      var delay:Float = TRANS_ENTER_DELAY + (col + row) * TRANS_GRID_STAGGER;
+      slot.alpha = 0;
+      slot.y += TRANS_GRID_OFFSET_Y;
+      FlxTween.tween(slot, { alpha: 1, y: slot.y - TRANS_GRID_OFFSET_Y }, dur, { ease: ease, startDelay: delay });
+    }
+
+    var restElements:Array<Dynamic> = [selector, categoryLabel, pageArrow, pageArrowBack];
+    if (controlsText != null) restElements.push(controlsText);
+    for (el in restElements) {
+      el.alpha = 0;
+      FlxTween.tween(el, { alpha: 1 }, dur, { ease: ease, startDelay: TRANS_ENTER_DELAY });
+    }
+
+    // Libera navegação ao fim da transição
+    var maxDelay:Float = TRANS_ENTER_DELAY + (GRID_COLS + GRID_ROWS) * TRANS_GRID_STAGGER;
+    new FlxTimer().start(dur + maxDelay, function(_) { canNavigate = true; });
+  }
+
+  function playExitTransition(onComplete:Void->Void):Void
+  {
+    isTransitioningOut = true;
+    canNavigate = false;
+    var dur:Float = TRANS_OUT_DURATION;
+    var durTotal:Float = TRANS_OUT_DURATION * 1.3;
+    var ease = TRANS_EASE_OUT;
+
+    for (tile in bgTiles) {
+      FlxTween.tween(tile, { alpha: 0 }, 0.3, { ease: ease, startDelay: dur });
+    }
+
+    FlxTween.tween(bgOverlay, { alpha: 0 }, 0.3, { ease: ease, startDelay: dur });
+
+    FlxTween.tween(medal, { alpha: 0 }, dur, { ease: ease });
+    FlxTween.tween(trophyText, { alpha: 0 }, dur, { ease: ease });
+
+    var wheelDownY:Float = FlxG.height + TRANS_WHEEL_OFFSCREEN_Y;
+    var wheelDelta:Float = wheelDownY - symbolWheel.y;
+    FlxTween.tween(symbolWheel, { y: wheelDownY, angle: symbolWheel.angle + TRANS_SYMBOL_ANGLE }, dur, { ease: ease });
+    FlxTween.tween(symbolCur, { y: symbolCur.y + wheelDelta, angle: symbolCur.angle + TRANS_SYMBOL_ANGLE }, dur, { ease: ease });
+    FlxTween.tween(arrowLeft, { y: arrowLeft.y + wheelDelta }, dur, { ease: ease });
+    FlxTween.tween(arrowRight, { y: arrowRight.y + wheelDelta }, dur, { ease: ease });
+
+    var infoElements:Array<Dynamic> = [infoOverlayBg, infoOverlay, achTitle, achDesc];
+    for (el in infoElements) {
+      FlxTween.tween(el, { alpha: 0, y: el.y + (-TRANS_INFO_OFFSET_Y) }, dur, { ease: ease });
+    }
+
+    for (i in 0...iconSlots.length) {
+      var slot = iconSlots[i];
+      if (!slot.visible) continue;
+      //var col:Int = i % GRID_COLS;
+      //var row:Int = Std.int(i / GRID_COLS);
+      //var delay:Float = (col + row) * TRANS_GRID_STAGGER;
+      FlxTween.tween(slot, { alpha: 0, y: slot.y + (-TRANS_GRID_OFFSET_Y) }, dur * 0.7, { ease: ease, /*startDelay: delay*/ });
+    }
+
+    var restElements:Array<Dynamic> = [selector, categoryLabel, pageArrow, pageArrowBack];
+    if (controlsText != null) restElements.push(controlsText);
+    for (el in restElements) {
+      FlxTween.tween(el, { alpha: 0 }, dur, { ease: ease });
+    }
+
+    new FlxTimer().start(dur, function(_) { FlxG.camera.fade(FlxColor.BLACK, 0.3); });
+
+    var maxDelay:Float = (GRID_COLS + GRID_ROWS) * TRANS_GRID_STAGGER;
+    new FlxTimer().start(durTotal + maxDelay, function(_) { onComplete(); });
+  }
+
+  function buildBackground():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+
+    bgBase = new FlxSprite(0, 0).makeGraphic(FlxG.width, FlxG.height + 1, FlxColor.WHITE);
+    bgBase.color = cat.bgColor;
+    bgBase.scrollFactor.set(0, 0);
+    add(bgBase);
+
+    var symbolPath:String = PATH + 'symbols/' + cat.symbolFile;
+    TILE_COLS = Math.ceil(FlxG.width / TILE_SIZE) + 3;
+    TILE_ROWS = Math.ceil(FlxG.height / TILE_SIZE) + 3;
+
+    for (row in 0...TILE_ROWS) {
+      for (col in 0...TILE_COLS) {
+        var isEven:Bool = ((row + col) % 2 == 0);
+        if (!isEven) continue;
+
+        var tile = FunkinSprite.create(
+          col * TILE_SIZE - TILE_SIZE,
+          row * TILE_SIZE - TILE_SIZE,
+          symbolPath
+        );
+        tile.setGraphicSize(TILE_SIZE - 8);
+        tile.updateHitbox();
+        tile.alpha = 0.8;
+        tile.scrollFactor.set(0, 0);
+        add(tile);
+        bgTiles.push(tile);
+        bgTilePositions.push(FlxPoint.get(tile.x, tile.y));
+      }
+    }
+
+    bgOverlay = FunkinSprite.create(START_X, 0, PATH + 'overlay');
+    bgOverlay.scrollFactor.set(0, 0);
+    bgOverlay.setGraphicSize(FlxG.width, FlxG.height);
+    bgOverlay.updateHitbox();
+    bgOverlay.screenCenter();
+    add(bgOverlay);
+  }
+
+  function rebuildBackgroundTiles():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    var symbolPath:String = PATH + 'symbols/' + cat.symbolFile;
+
+    for (i in 0...bgTiles.length) {
+      var tile = bgTiles[i];
+      tile.loadGraphic(Paths.image(symbolPath));
+      tile.setGraphicSize(TILE_SIZE - 8);
+      tile.updateHitbox();
+    }
+  }
+
+  function buildLeftColumn():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+
+    medal = FunkinSprite.create(0, 0);
+    //medal.frames = Paths.getSparrowAtlas(PATH + 'medals/' + cat.id);
+    updateMedal(cat.id);
+    medal.setGraphicSize(180);
+    medal.updateHitbox();
+    medal.scrollFactor.set(0, 0);
+    add(medal);
+
+    trophyText = new FlxText(0, 0, 0, '0 / 0');
+    trophyText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 54, FlxColor.WHITE, 'center');
+    trophyText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 6);
+    trophyText.scrollFactor.set(0, 0);
+    trophyText.y = medal.y + medal.height - 20;
+    add(trophyText);
+
+    symbolWheel = FunkinSprite.create(0, 0, PATH + 'wheelCol');
+    symbolWheel.setGraphicSize(SYMBOL_SIZE + 30);
+    symbolWheel.updateHitbox();
+    symbolWheel.x = SWITCH_BASE_X - symbolWheel.width / 2;
+    symbolWheel.y = SWITCH_BASE_Y;
+    symbolWheel.alpha = 0.6;
+    symbolWheel.scrollFactor.set(0, 0);
+    add(symbolWheel);
+
+    /*symbolWheelBG = FunkinSprite.create(0, 0, PATH + 'wheelFrame');
+    symbolWheelBG.setGraphicSize(SYMBOL_SIZE + 30);
+    symbolWheelBG.updateHitbox();
+    symbolWheelBG.x = symbolWheel.x;
+    symbolWheelBG.y = symbolWheel.y;
+    symbolWheelBG.scrollFactor.set(0, 0);
+    add(symbolWheelBG);*/
+
+    symbolCur = FunkinSprite.create(0, 0, PATH + 'symbols/all');
+    symbolCur.setGraphicSize(SYMBOL_SIZE);
+    symbolCur.updateHitbox();
+    symbolCur.x = symbolWheel.x + 16;
+    symbolCur.y = symbolWheel.y + 17;
+    symbolCur.scrollFactor.set(0, 0);
+    add(symbolCur);
+
+    arrowLeft = FunkinSprite.create(0, 0, PATH + 'wheelArrow');
+    arrowLeft.setGraphicSize(40);
+    arrowLeft.updateHitbox();
+    arrowLeft.angle = 90;
+    arrowLeft.x = SWITCH_BASE_X - SYMBOL_SPACING - arrowLeft.width / 2;
+    arrowLeft.y = (SWITCH_BASE_Y + symbolCur.height / 2 - arrowLeft.height / 2) + 15;
+    arrowLeft.scrollFactor.set(0, 0);
+    add(arrowLeft);
+
+    arrowRight = FunkinSprite.create(0, 0, PATH + 'wheelArrow');
+    arrowRight.setGraphicSize(40);
+    arrowRight.updateHitbox();
+    arrowRight.angle = -90;
+    arrowRight.x = SWITCH_BASE_X + SYMBOL_SPACING - arrowRight.width / 2;
+    arrowRight.y = (SWITCH_BASE_Y + symbolCur.height / 2 - arrowRight.height / 2) + 15;
+    arrowRight.scrollFactor.set(0, 0);
+    add(arrowRight);
+
+    var wheelLeft:Float = arrowLeft.x - ARROW_HITBOX_PADDING;
+    var wheelRight:Float = arrowRight.x + arrowRight.width + ARROW_HITBOX_PADDING;
+    var wheelTop:Float = symbolWheel.y - ARROW_HITBOX_PADDING;
+    var wheelBottom:Float = symbolWheel.y + symbolWheel.height + ARROW_HITBOX_PADDING;
+    wheelAreaX = wheelLeft;
+    wheelAreaY = wheelTop;
+    wheelAreaW = wheelRight - wheelLeft;
+    wheelAreaH = wheelBottom - wheelTop;
+
+
+    if ((FlxG.onMobile && ControlsHandler.usingExternalInputDevice) || !FlxG.onMobile) {
+      var controls = PlayerSettings.player1.controls;
+      controlsText = new FlxText(START_X + 30, FlxG.height - 65, 0, ' ' + RetroLanguage.tf('menu.achievements.controls', [controls.getDialogueNameFromControl(Control.FREEPLAY_LEFT, true), controls.getDialogueNameFromControl(Control.FREEPLAY_RIGHT, true)]));
+      controlsText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 25, FlxColor.WHITE, 'center');
+      controlsText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+      controlsText.scrollFactor.set(0, 0);
+      add(controlsText);
+    }
+  }
+
+  function buildGrid():Void
+  {
+    for (i in 0...GRID_SIZE) {
+      var col = i % GRID_COLS;
+      var row = Std.int(i / GRID_COLS);
+      var slot = FunkinSprite.create(
+        GRID_X + col * (ICON_SIZE + ICON_SPACING_X),
+        GRID_Y + row * (ICON_SIZE + ICON_SPACING_Y),
+        PATH + 'icons/dummy'
+      );
+      slot.setGraphicSize(ICON_SIZE);
+      slot.updateHitbox();
+      slot.scrollFactor.set(0, 0);
+      add(slot);
+      iconSlots.push(slot);
+    }
+
+    selector = FunkinSprite.create(0, 0, PATH + 'selector');
+    selector.scrollFactor.set(0, 0);
+    add(selector);
+
+    pageArrowBack = FunkinSprite.create(0, 0, PATH + 'arrow');
+    pageArrowBack.setGraphicSize(34);
+    pageArrowBack.updateHitbox();
+    pageArrowBack.flipX = true;
+    pageArrowBack.scrollFactor.set(0, 0);
+    pageArrowBack.visible = false;
+    add(pageArrowBack);
+
+    pageArrow = FunkinSprite.create(0, 0, PATH + 'arrow');
+    pageArrow.setGraphicSize(34);
+    pageArrow.updateHitbox();
+    pageArrow.scrollFactor.set(0, 0);
+    pageArrow.visible = false;
+    add(pageArrow);
+
+    // Hitboxes dos ícones
+    for (i in 0...GRID_SIZE) {
+      var hb = new FlxObject(0, 0, ICON_SIZE + ICON_HITBOX_PADDING * 2, ICON_SIZE + ICON_HITBOX_PADDING * 2);
+      hb.scrollFactor.set(0, 0);
+      iconHitboxes.push(hb);
+      add(hb);
+    }
+
+    // Hitboxes das setas de categoria
+    arrowLeftHitbox = new FlxObject(0, 0, 40 + ARROW_HITBOX_PADDING * 2, 40 + ARROW_HITBOX_PADDING * 2);
+    arrowLeftHitbox.scrollFactor.set(0, 0);
+    add(arrowLeftHitbox);
+
+    arrowRightHitbox = new FlxObject(0, 0, 40 + ARROW_HITBOX_PADDING * 2, 40 + ARROW_HITBOX_PADDING * 2);
+    arrowRightHitbox.scrollFactor.set(0, 0);
+    add(arrowRightHitbox);
+
+    // Hitboxes dos botões de página
+    arrowBackHitbox = new FlxObject(0, 0, 34 + ARROW_HITBOX_PADDING * 2, 34 + ARROW_HITBOX_PADDING * 2);
+    arrowBackHitbox.scrollFactor.set(0, 0);
+    add(arrowBackHitbox);
+
+    arrowNextHitbox = new FlxObject(0, 0, 34 + ARROW_HITBOX_PADDING * 2, 34 + ARROW_HITBOX_PADDING * 2);
+    arrowNextHitbox.scrollFactor.set(0, 0);
+    add(arrowNextHitbox);
+
+    categoryLabel = new FlxText(GRID_X, CATEGORY_LABEL_Y, GRID_COLS * (ICON_SIZE + ICON_SPACING_X), '');
+    categoryLabel.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 82, FlxColor.WHITE, 'center');
+    categoryLabel.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 6);
+    categoryLabel.screenCenter(0x01);
+    categoryLabel.scrollFactor.set(0, 0);
+    add(categoryLabel);
+  }
+
+  function syncCategoryArrowHitboxes():Void
+  {
+    arrowLeftHitbox.x = arrowLeft.x + arrowLeft.width / 2 - arrowLeftHitbox.width / 2;
+    arrowLeftHitbox.y = arrowLeft.y + arrowLeft.height / 2 - arrowLeftHitbox.height / 2;
+    arrowRightHitbox.x = arrowRight.x + arrowRight.width / 2 - arrowRightHitbox.width / 2;
+    arrowRightHitbox.y = arrowRight.y + arrowRight.height / 2 - arrowRightHitbox.height / 2;
+  }
+
+  function rebuildGrid():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    var pageStart:Int = currentPage * GRID_SIZE;
+    var catColor:FlxColor = cat.color;
+
+    for (i in 0...GRID_SIZE) {
+      var slot = iconSlots[i];
+      var achIndex:Int = pageStart + i;
+
+      if (achIndex >= categoryAchievements.length) {
+        slot.visible = false;
+        continue;
+      }
+
+      slot.visible = true;
+      var ach:Dynamic = categoryAchievements[achIndex];
+      var isUnlocked:Bool = RetroAchievements.isUnlocked(ach.id);
+      var isUnlockable:Bool = ach.unlockable != null ? ach.unlockable : true;
+
+      var iconPath:String;
+      if (isUnlocked) {
+        iconPath = RetroAchievements.getIconPath(ach.id);
+      } else if (cat.id == 'all') {
+        iconPath = PATH + 'icons/all-locked';
+      } else {
+        iconPath = PATH + 'icons/' + getCategoryId(ach.id) + '/locked';
+      }
+
+      slot.loadGraphic(Paths.image(iconPath));
+      slot.setGraphicSize(ICON_SIZE);
+      slot.updateHitbox();
+
+      if (!isUnlockable) {
+        slot.colorTransform.redOffset = -100;
+        slot.colorTransform.blueOffset = -100;
+        slot.colorTransform.greenOffset = -100;
+        slot.alpha = 0.7;
+      } else {
+        slot.colorTransform.redOffset = 0;
+        slot.colorTransform.blueOffset = 0;
+        slot.colorTransform.greenOffset = 0;
+        slot.alpha = 1;
+      }
+
+      var col = i % GRID_COLS;
+      var row = Std.int(i / GRID_COLS);
+      slot.x = GRID_X + col * (ICON_SIZE + ICON_SPACING_X);
+      slot.y = GRID_Y + row * (ICON_SIZE + ICON_SPACING_Y);
+    }
+
+    var totalPages:Int = getTotalPages();
+    var hasNext:Bool = (totalPages > 1 && currentPage < totalPages - 1);
+    var hasPrev:Bool = (currentPage > 0);
+
+    pageArrow.visible = hasNext;
+    pageArrowBack.visible = hasPrev;
+
+    var arrowY:Float = GRID_Y + (GRID_ROWS / 2) * (ICON_SIZE + ICON_SPACING_Y) - pageArrow.height / 2;
+    var arrowBaseX:Float = GRID_X + GRID_COLS * (ICON_SIZE + ICON_SPACING_X) - 6;
+
+    if (hasNext) {
+      pageArrow.x = arrowBaseX;
+      pageArrow.y = arrowY + 25;
+    }
+    if (hasPrev) {
+      pageArrowBack.x = GRID_X - pageArrowBack.width - 25;
+      pageArrowBack.y = arrowY + 25;
+    }
+
+    arrowNextHitbox.visible = hasNext;
+    arrowBackHitbox.visible = hasPrev;
+    if (hasNext) {
+      arrowNextHitbox.x = pageArrow.x - ARROW_HITBOX_PADDING;
+      arrowNextHitbox.y = pageArrow.y - ARROW_HITBOX_PADDING;
+    }
+    if (hasPrev) {
+      arrowBackHitbox.x = pageArrowBack.x - ARROW_HITBOX_PADDING;
+      arrowBackHitbox.y = pageArrowBack.y - ARROW_HITBOX_PADDING;
+    }
+
+    // Atualizar hitboxes dos ícones
+    for (i in 0...GRID_SIZE) {
+      var slot = iconSlots[i];
+      var hb = iconHitboxes[i];
+      if (!slot.visible) {
+        hb.visible = false;
+        continue;
+      }
+      hb.visible = true;
+      hb.x = slot.x - ICON_HITBOX_PADDING;
+      hb.y = slot.y - ICON_HITBOX_PADDING;
+    }
+
+    categoryLabel.text = cat.id == 'all' ? RetroLanguage.t('menu.achievements.category.all', 'ALL').toUpperCase() : cat.label;
+    categoryLabel.color = catColor;
+
+    moveSelector(selectedIndex, false);
+    syncCategoryArrowHitboxes();
+  }
+
+  function moveSelector(index:Int, doTween:Bool):Void
+  {
+    var achIndex:Int = currentPage * GRID_SIZE + index;
+    if (achIndex >= categoryAchievements.length || categoryAchievements.length == 0) {
+      selector.visible = false;
+      return;
+    }
+
+    selector.visible = true;
+    var slot = iconSlots[index];
+    var targetX:Float = slot.x - (selector.width - ICON_SIZE) / 2;
+    var targetY:Float = slot.y - (selector.height - ICON_SIZE) / 2;
+
+    /*if (doTween) {
+      FlxTween.cancelTweensOf(selector);
+      FlxTween.tween(selector, { x: targetX, y: targetY }, 0.1, { ease: FlxEase.quadOut });
+    } else {*/
+      selector.x = targetX;
+      selector.y = targetY;
+    //}
+
+    if (hoveredIndex == index) hoveredIndex = -1;
+    selector.alpha = 1.0;
+
+    updateInfoPanel();
+  }
+
+  function moveSelectorHover(index:Int):Void
+  {
+    var achIndex:Int = currentPage * GRID_SIZE + index;
+    if (achIndex >= categoryAchievements.length || categoryAchievements.length == 0) {
+      hoveredIndex = -1;
+      selector.alpha = 1.0;
+      return;
+    }
+
+    hoveredIndex = index;
+    selector.alpha = (index == selectedIndex) ? 1.0 : 0.4;
+    var slot = iconSlots[index];
+    selector.x = slot.x - (selector.width - ICON_SIZE) / 2;
+    selector.y = slot.y - (selector.height - ICON_SIZE) / 2;
+  }
+
+  function buildInfoPanel():Void
+  {
+    infoOverlayBg = new FlxSprite(INFO_START_X, INFO_Y).makeGraphic(Std.int(INFO_W), Std.int(INFO_H), 0x9A000000);
+    infoOverlayBg.scrollFactor.set(0, 0);
+    add(infoOverlayBg);
+
+    infoOverlay = FunkinSprite.create(INFO_START_X, INFO_Y, PATH + 'overlayDescription');
+    infoOverlay.setGraphicSize(Std.int(INFO_W), Std.int(INFO_H));
+    infoOverlay.updateHitbox();
+    infoOverlay.scrollFactor.set(0, 0);
+    add(infoOverlay);
+
+    var textPad:Float = 16;
+    achTitle = new FlxText(INFO_START_X + textPad / 2, INFO_Y + textPad, INFO_W - textPad, '');
+    achTitle.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 31, FlxColor.WHITE, 'center');
+    //achTitle.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+    achTitle.wordWrap = true;
+    achTitle.scrollFactor.set(0, 0);
+    add(achTitle);
+
+    achDesc = new FlxText(INFO_START_X + textPad / 2, INFO_Y + 165, INFO_W - textPad, '');
+    achDesc.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 23, FlxColor.WHITE, 'center');
+    //achDesc.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+    achDesc.wordWrap = true;
+    achDesc.scrollFactor.set(0, 0);
+    add(achDesc);
+
+    if (FlxG.onMobile) {
+      var endX = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2);
+      backBtn = new FunkinBackButton(endX, FlxG.height - 200, FlxColor.WHITE, goBack, 1, true);
+      add(backBtn);
+      backBtn.colorTransform.alphaOffset = -255 * 0.5;
+      backBtn.scale.set(0.65, 0.65);
+      backBtn.updateHitbox();
+      FlxTween.tween(backBtn, {x: endX - 230}, 1, {ease: FlxEase.expoOut});
+    }
+  }
+
+  function updateInfoPanel():Void
+  {
+    var achIndex:Int = currentPage * GRID_SIZE + selectedIndex;
+    if (achIndex >= categoryAchievements.length || categoryAchievements.length == 0) {
+      achTitle.text = '';
+      achDesc.text = '';
+      return;
+    }
+
+    var ach:Dynamic = categoryAchievements[achIndex];
+    var idParts:Array<String> = ach.id.split('-');
+    var catPart:String = idParts[0];
+    var idPart:String = idParts.slice(1).join('-');
+    var titleKey:String = 'achievement.' + catPart + '.' + idPart + '.name';
+    var descKey:String = 'achievement.' + catPart + '.' + idPart + '.description';
+
+    achTitle.text = RetroLanguage.t(titleKey, ach.id);
+    achDesc.text = RetroLanguage.t(descKey, '');
+  }
+
+  function updateCategorySwitch():Void
+  {
+    var catCur:Dynamic = CATEGORIES[currentCategoryIndex];
+    var symbolCurPath:String = PATH + 'symbols/' + catCur.symbolFile;
+
+    symbolCur.loadGraphic(Paths.image(symbolCurPath));
+    symbolCur.setGraphicSize(SYMBOL_SIZE);
+  }
+
+  function updateMedal():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    var medalPath:String = PATH + 'medals/' + cat.id;
+
+    medal.frames = Paths.getSparrowAtlas(medalPath);
+    medal.animation.addByPrefix('idle', 'black0', 1, true);
+    medal.animation.addByPrefix('above50', 'solid0', 1, true);
+    medal.animation.addByPrefix('above75', 'shiny0', 24, true);
+    medal.animation.addByPrefix('all', 'flaming0', 24, true);
+
+    var allForCategory:Array<Dynamic> = getAchievementsForCategory(cat.id);
+    var totalObtainable:Int = 0;
+    var totalUnlocked:Int = 0;
+
+    for (ach in allForCategory) {
+      var isUnlockable:Bool = ach.unlockable != null ? ach.unlockable : true;
+
+      if (isUnlockable) {
+        totalObtainable++;
+        if (RetroAchievements.isUnlocked(ach.id)) {
+          totalUnlocked++;
+        }
+      }
+    }
+
+    var percentage:Float = 0;
+    if (totalObtainable > 0) {
+      percentage = (totalUnlocked / totalObtainable) * 100;
+    }
+
+    if (percentage >= 100) {
+      medal.animation.play('all');
+    } else if (percentage > 75) {
+      medal.animation.play('above75');
+    } else if (percentage > 50) {
+      medal.animation.play('above50');
+    } else {
+      medal.animation.play('idle');
+    }
+
+    medal.updateHitbox();
+
+    medal.x = LEFT_COL_CENTER_X - (medal.width / 2);
+    medal.y = MEDAL_Y;
+
+    switch (cat.id) {
+      case 'wrath':
+        medal.x += 5;
+      case 'lust':
+        medal.y -= 45;
+      case 'death':
+        medal.x += 7;
+        medal.y += 5;
+      case 'sloth':
+        medal.x += 5;
+      case 'mixter':
+        medal.x += 3;
+      case 'ace':
+        medal.x += 3;
+        medal.y -= 3;
+      case 'misc':
+        medal.x += 2;
+      case 'corruptro':
+        medal.y -= 20;
+    }
+  }
+
+  function updateTrophyCount():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    var allForCategory:Array<Dynamic> = getAchievementsForCategory(cat.id);
+    var unlocked:Int = 0;
+    for (ach in allForCategory) {
+      if (RetroAchievements.isUnlocked(ach.id)) unlocked++;
+    }
+    var total:Int = allForCategory.length;
+    trophyText.text = ' ' + RetroLanguage.t('menu.achievements.trophies', 'TROPHIES').toUpperCase() + '\n ' + unlocked + ' / ' + total;
+    trophyText.x = LEFT_COL_CENTER_X - (trophyText.width / 2);
+  }
+
+  function changeCategory(dir:Int):Void
+  {
+    var total:Int = CATEGORIES.length;
+    currentCategoryIndex = (currentCategoryIndex + dir + total) % total;
+    currentPage = 0;
+    selectedIndex = 0;
+
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    FlxTween.cancelTweensOf(bgBase);
+    FlxTween.color(bgBase, 0.25, bgBase.color, cat.bgColor, { ease: FlxEase.quadOut });
+    trophyText.color = cat.color;
+    bgOverlay.color = cat.color;
+    categoryLabel.color = cat.color;
+    infoOverlay.color = cat.color;
+    if (controlsText != null) controlsText.color = cat.color;
+    if (backBtn != null) {
+      FlxTween.color(backBtn, 0.25, backBtn.color, cat.color, { ease: FlxEase.quadOut });
+      //FlxTween.color(backBtn.blend, 0.25, backBtn.blend, cat.color, { ease: FlxEase.quadOut });
+    }
+
+    refreshCategoryData();
+    rebuildGrid();
+    moveSelector(selectedIndex, false);
+    updateInfoPanel();
+    updateCategorySwitch();
+    updateMedal();
+    updateTrophyCount();
+    new FlxTimer().start(0.05, function(_) { rebuildBackgroundTiles(); });
+
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+  }
+
+  function changePage(dir:Int, ?targetIndex:Int = 0):Void
+  {
+    var totalPages:Int = getTotalPages();
+    var newPage:Int = currentPage + dir;
+    if (newPage < 0 || newPage >= totalPages) return;
+
+    currentPage = newPage;
+    selectedIndex = targetIndex;
+    rebuildGrid();
+    updateInfoPanel();
+    FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+  }
+
+  function refreshCategoryData():Void
+  {
+    var cat:Dynamic = CATEGORIES[currentCategoryIndex];
+    var all:Array<Dynamic> = getAchievementsForCategory(cat.id);
+
+    var normal:Array<Dynamic> = [];
+    var unlockable:Array<Dynamic> = [];
+    for (ach in all) {
+      if (ach.unlockable != null && ach.unlockable == false) {
+        unlockable.push(ach);
+      } else {
+        normal.push(ach);
+      }
+    }
+    categoryAchievements = normal.concat(unlockable);
+  }
+
+  function getAchievementsForCategory(catId:String):Array<Dynamic>
+  {
+    var result:Array<Dynamic> = [];
+    for (ach in RetroAchievements.ACHIEVEMENTS) {
+      if (ach.hidden == true) continue;
+      var prefix:String = ach.id.split('-')[0];
+      if (catId == 'all' || prefix == catId) {
+        result.push(ach);
+      }
+    }
+    return result;
+  }
+
+  function getCategoryId(achId:String):String
+  {
+    return achId.split('-')[0];
+  }
+
+  function getTotalPages():Int
+  {
+    return Math.max(1, Math.ceil(categoryAchievements.length / GRID_SIZE));
+  }
+
+  override function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+
+    updateTiles(elapsed);
+
+    if (!canNavigate) return;
+
+    var controls = PlayerSettings.player1.controls;
+
+    var goLEFT:Bool  = controls.UI_LEFT_P;
+    var goRIGHT:Bool = controls.UI_RIGHT_P;
+    var goUP:Bool    = controls.UI_UP_P;
+    var goDOWN:Bool  = controls.UI_DOWN_P;
+    var goBACK:Bool  = controls.BACK_P;
+    var swipeOriginInWheel:Bool = (
+      swipeTouchOriginX >= wheelAreaX &&
+      swipeTouchOriginX <= wheelAreaX + wheelAreaW &&
+      swipeTouchOriginY >= wheelAreaY &&
+      swipeTouchOriginY <= wheelAreaY + wheelAreaH
+    );
+
+    var goPREV:Bool = controls.FREEPLAY_LEFT || (SwipeUtil.justSwipedLeft && swipeOriginInWheel);
+    var goNEXT:Bool = controls.FREEPLAY_RIGHT || (SwipeUtil.justSwipedRight && swipeOriginInWheel);
+
+    // Scroll do mouse, categoria ou página dependendo de onde o cursor está
+    if (FlxG.mouse.wheel != 0) {
+      var mx:Float = FlxG.mouse.x;
+      var my:Float = FlxG.mouse.y;
+      var inWheel:Bool = mx >= wheelAreaX && mx <= wheelAreaX + wheelAreaW
+        && my >= wheelAreaY && my <= wheelAreaY + wheelAreaH;
+      var gridW:Float = GRID_COLS * (ICON_SIZE + ICON_SPACING_X) - ICON_SPACING_X;
+      var gridH:Float = GRID_ROWS * (ICON_SIZE + ICON_SPACING_Y) - ICON_SPACING_Y;
+      var inGrid:Bool = mx >= GRID_X && mx <= GRID_X + gridW
+        && my >= GRID_Y && my <= GRID_Y + gridH;
+      if (inWheel) {
+        changeCategory(FlxG.mouse.wheel > 0 ? 1 : -1);
+      } else if (inGrid) {
+        changePage(FlxG.mouse.wheel > 0 ? -1 : 1);
+      }
+    }
+
+    var cols:Int = GRID_COLS;
+    var pageCount:Int = Math.min(GRID_SIZE, categoryAchievements.length - currentPage * GRID_SIZE);
+
+    var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased;
+    var currentMouseX:Float = FlxG.mouse.x;
+    var currentMouseY:Float = FlxG.mouse.y;
+
+    if (FlxG.mouse.justMoved && !isTouching) {
+      var dx:Float = currentMouseX - lastMousePos.x;
+      var dy:Float = currentMouseY - lastMousePos.y;
+      if (dx * dx + dy * dy > mouseMovementThresholdSq) {
+        mouseHasMoved = true;
+        lastMousePos.set(currentMouseX, currentMouseY);
+      }
+    }
+
+    var justPressed:Bool = (TouchUtil.justPressed || FlxG.mouse.justPressed) && !SwipeUtil.justSwipedAny;
+    var justReleased:Bool = TouchUtil.justReleased || FlxG.mouse.justReleased;
+
+    // Registra onde o touch começou para validar swipe depois
+    if (TouchUtil.justPressed || FlxG.mouse.justPressed) {
+      swipeTouchOriginX = FlxG.isMobile ? TouchUtil.touch.screenX : FlxG.mouse.screenX;
+      swipeTouchOriginY = FlxG.isMobile ? TouchUtil.touch.screenY : FlxG.mouse.screenY;
+    }
+
+    var handledMouse:Bool = false;
+    var mouseJustMoved:Bool = !isTouching && mouseHasMoved && FlxG.mouse.justMoved;
+
+    var anyOver:Bool = false;
+    for (i in 0...iconHitboxes.length) {
+      var hb = iconHitboxes[i];
+      if (!hb.visible) continue;
+
+      var isOver:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(hb)) || FlxG.mouse.overlaps(hb);
+      if (!isOver) continue;
+
+      anyOver = true;
+
+      if (mouseJustMoved) {
+        moveSelectorHover(i);
+        mouseHasMoved = false;
+        handledMouse = true;
+        mouseJustMoved = false;
+      }
+
+      if (justPressed) {
+        handledMouse = true;
+        if (i != selectedIndex) {
+          selectedIndex = i;
+          moveSelector(selectedIndex, true);
+          HapticUtil.vibrate(0, 0.03, 0.005, 0);
+        }
+        return;
+      }
+      break;
+    }
+
+    if (FlxG.mouse.justMoved && !isTouching && !anyOver && hoveredIndex != -1) {
+      hoveredIndex = -1;
+    }
+
+    // Clique nas setas de categoria
+    if (justPressed) {
+      var overLeftArrow:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(arrowLeftHitbox)) || FlxG.mouse.overlaps(arrowLeftHitbox);
+      var overRightArrow:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(arrowRightHitbox)) || FlxG.mouse.overlaps(arrowRightHitbox);
+      if (overLeftArrow) {
+        changeCategory(-1);
+        return;
+      }
+      if (overRightArrow) {
+        changeCategory(1);
+        return;
+      }
+
+      // Clique nas setas de página
+      if (arrowNextHitbox.visible) {
+        var overNext:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(arrowNextHitbox)) || FlxG.mouse.overlaps(arrowNextHitbox);
+        if (overNext) {
+          changePage(1);
+          return;
+        }
+      }
+      if (arrowBackHitbox.visible) {
+        var overBack:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(arrowBackHitbox)) || FlxG.mouse.overlaps(arrowBackHitbox);
+        if (overBack) {
+          changePage(-1);
+          return;
+        }
+      }
+    }
+
+    if (goLEFT) {
+      var atRowStart:Bool = (selectedIndex % cols == 0);
+      if (atRowStart && currentPage > 0) {
+        var prevPageCount:Int = Math.min(GRID_SIZE, categoryAchievements.length - (currentPage - 1) * GRID_SIZE);
+        var curRow:Int = Std.int(selectedIndex / cols);
+        var target:Int = curRow * cols + (cols - 1);
+        if (target >= prevPageCount) target = 0;
+        changePage(-1, target);
+      } else {
+        var next:Int = atRowStart ? selectedIndex : selectedIndex - 1;
+        selectedIndex = next;
+        moveSelector(selectedIndex, true);
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+      }
+    } else if (goRIGHT) {
+      var atRowEnd:Bool = (selectedIndex % cols == cols - 1);
+      if (atRowEnd && currentPage < getTotalPages() - 1) {
+        var nextPageCount:Int = Math.min(GRID_SIZE, categoryAchievements.length - (currentPage + 1) * GRID_SIZE);
+        var curRow:Int = Std.int(selectedIndex / cols);
+        var target:Int = curRow * cols;
+        if (target >= nextPageCount) target = 0;
+        changePage(1, target);
+      } else {
+        var next:Int = atRowEnd ? selectedIndex : selectedIndex + 1;
+        selectedIndex = next;
+        moveSelector(selectedIndex, true);
+        FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+      }
+    } else if (goUP) {
+      var next:Int = selectedIndex - cols;
+      if (next < 0) {
+        var curCol:Int = selectedIndex % cols;
+        var lastRow:Int = Std.int((pageCount - 1) / cols);
+        next = lastRow * cols + curCol;
+        if (next >= pageCount) next = pageCount - 1;
+      }
+      selectedIndex = next;
+      moveSelector(selectedIndex, true);
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+    } else if (goDOWN) {
+      var next:Int = selectedIndex + cols;
+      if (next >= pageCount) next = selectedIndex % cols;
+      if (next >= pageCount) next = 0;
+      selectedIndex = next;
+      moveSelector(selectedIndex, true);
+      FunkinSound.playOnce(Paths.sound('scrollMenu'), 0.7);
+    }
+
+    if (goPREV) changeCategory(-1);
+    if (goNEXT) changeCategory(1);
+
+    if (goBACK) goBack();
+  }
+
+  function updateTiles(elapsed:Float):Void
+  {
+    var moveX:Float = TILE_SPEED_X * elapsed;
+    var moveY:Float = TILE_SPEED_Y * elapsed;
+    var wrapMaxX:Float = TILE_COLS * TILE_SIZE;
+    var wrapMaxY:Float = TILE_ROWS * TILE_SIZE;
+    var minX:Float = -(TILE_SIZE * 2);
+    var maxX:Float = FlxG.width + TILE_SIZE;
+    var maxY:Float = FlxG.height + TILE_SIZE;
+    var minY:Float = -(TILE_SIZE * 2);
+
+    for (i in 0...bgTiles.length) {
+      var pos = bgTilePositions[i];
+      pos.x += moveX;
+      pos.y += moveY;
+
+      if (pos.x < minX) pos.x += wrapMaxX;
+      else if (pos.x > maxX) pos.x -= wrapMaxX;
+      if (pos.y > maxY) pos.y -= wrapMaxY;
+      else if (pos.y < minY) pos.y += wrapMaxY;
+
+      bgTiles[i].x = pos.x;
+      bgTiles[i].y = pos.y;
+    }
+  }
+
+  function goBack():Void
+  {
+    if (isTransitioningOut) return;
+
+    if (backBtn != null) {
+      backBtn.colorTransform.alphaOffset = 0;
+      FlxTween.tween(backBtn, {x: FlxG.width}, TRANS_OUT_DURATION * 0.9, {ease: FlxEase.expoOut});
+    }
+
+    FlxG.sound.music.fadeOut(TRANS_OUT_DURATION + 0.1, 0);
+
+    playExitTransition(function() {
+      FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+    });
+  }
+
+  override function destroy():Void
+  {
+    for (p in bgTilePositions) p.put();
+    bgTilePositions = [];
+    bgTiles = [];
+    iconSlots = [];
+    iconHitboxes = [];
+    if (lastMousePos != null) {
+      lastMousePos.put();
+      lastMousePos = null;
+    }
+    super.destroy();
+  }
+}

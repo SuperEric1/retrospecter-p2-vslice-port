@@ -28,6 +28,7 @@ import Std;
 import Reflect;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class RetroOptionsState extends Module
 {
@@ -254,6 +255,7 @@ class RetroOptionsState extends Module
     overlay.visible = true;
     overlay.screenCenter();
 
+    RetroAchievements.deleteToasts();
   }
 
   function buildApps():Void {
@@ -301,6 +303,7 @@ class RetroOptionsState extends Module
 
     if (appIndex == 6) {
       dozirc.animation.play('anims/oops', false, false, true);
+      RetroAchievements.grantAc('misc-incognito', true, true);
     } else if (appIndex != 6 && dozirc.animation.curAnim.name == 'anims/oops') {
       dozirc.animation.play('anims/default', false, false, true);
     }

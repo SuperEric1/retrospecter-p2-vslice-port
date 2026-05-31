@@ -1816,7 +1816,7 @@ class RetroPlayState extends Module {
 
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
-      if (!isDoingVocalThing && holdNote.missedNote && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) {
+      if (!isDoingVocalThing && holdNote.missedNote && holdNote.scoreable && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) {
         doVocalThing(0.2);
       }
 
