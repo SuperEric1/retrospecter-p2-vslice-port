@@ -32,7 +32,8 @@ import supereric.retrospecter.modules.RetroLanguage;
 class RetroTrophyState extends MusicBeatState
 {
   var PATH:String = 'ui/menu/trophies/';
-  var START_X:Float = (FullScreenScaleMode.gameCutoutSize.x / 2);
+  var START_X:Float = FullScreenScaleMode.gameCutoutSize.x / 2;
+  var X_ADJUST:Float = FullScreenScaleMode.gameCutoutSize.x / 4;
 
   var GRID_COLS:Int = 4;
   var GRID_ROWS:Int = 4;
@@ -43,19 +44,19 @@ class RetroTrophyState extends MusicBeatState
 
   var GRID_X:Float = START_X + 352;
   var GRID_Y:Float = 65;
-  var LEFT_COL_X:Float = START_X + 100;
-  var LEFT_COL_CENTER_X:Float = START_X + 162;
+  var LEFT_COL_X:Float = START_X + 100 - X_ADJUST;
+  var LEFT_COL_CENTER_X:Float = START_X + 162 - X_ADJUST;
   var INFO_W:Float = 380 * 0.62;
   var INFO_H:Float = 645 * 0.62;
   var INFO_X:Float = -INFO_W - 47;
   var INFO_Y:Float = 54;
-  var INFO_START_X:Float = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) + INFO_X;
+  var INFO_START_X:Float = FlxG.width - X_ADJUST + INFO_X;
   var CATEGORY_LABEL_Y:Float = FlxG.height - 119;
 
   var SYMBOL_SIZE:Int = 150;
   var SYMBOL_SPACING:Float = 115;
   var SYMBOL_DIM_ALPHA:Float = 0.4;
-  var SWITCH_BASE_X:Float = START_X + 190;
+  var SWITCH_BASE_X:Float = START_X + 190 - X_ADJUST;
   var SWITCH_BASE_Y:Float = FlxG.height - 300;
   var MEDAL_Y:Float = -62;
 
@@ -449,7 +450,7 @@ class RetroTrophyState extends MusicBeatState
 
     if ((FlxG.onMobile && ControlsHandler.usingExternalInputDevice) || !FlxG.onMobile) {
       var controls = PlayerSettings.player1.controls;
-      controlsText = new FlxText(START_X + 30, FlxG.height - 65, 0, ' ' + RetroLanguage.tf('menu.achievements.controls', [controls.getDialogueNameFromControl(Control.FREEPLAY_LEFT, true), controls.getDialogueNameFromControl(Control.FREEPLAY_RIGHT, true)]));
+      controlsText = new FlxText(START_X + 30 - X_ADJUST, FlxG.height - 65, 0, ' ' + RetroLanguage.tf('menu.achievements.controls', [controls.getDialogueNameFromControl(Control.FREEPLAY_LEFT, true), controls.getDialogueNameFromControl(Control.FREEPLAY_RIGHT, true)]));
       controlsText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 25, FlxColor.WHITE, 'center');
       controlsText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
       controlsText.scrollFactor.set(0, 0);
