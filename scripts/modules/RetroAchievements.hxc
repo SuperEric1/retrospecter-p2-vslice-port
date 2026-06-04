@@ -5,6 +5,7 @@ import funkin.save.Save;
 import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.Paths;
+import funkin.ui.FullScreenScaleMode;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
@@ -596,7 +597,7 @@ class RetroAchievements extends Module
 
     container.scaleX = targetScale;
     container.scaleY = targetScale;
-    container.x = TOAST_PADDING + posInGroup * TOAST_STAIR_OFFSET;
+    container.x = Math.max(15, FullScreenScaleMode.gameNotchSize.x) + posInGroup * TOAST_STAIR_OFFSET;
     container.y = -TOAST_H;
     //FlxG.stage.addChild(container);
     FlxG.addChildBelowMouse(container, 0);
