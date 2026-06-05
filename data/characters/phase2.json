@@ -73,6 +73,15 @@
       "frameIndices": []
     },
     {
+      "name": "transformation-loop",
+      "prefix": "transformation",
+      "assetPath": "characters/wrath/retro-tf",
+      "offsets": [0, 0],
+      "looped": true,
+      "frameRate": 1,
+      "frameIndices": [2]
+    },
+    {
       "name": "roar",
       "prefix": "roar",
       "assetPath": "characters/wrath/retro-tf",

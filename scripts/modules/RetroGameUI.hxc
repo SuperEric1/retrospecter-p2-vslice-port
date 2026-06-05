@@ -346,7 +346,8 @@ class RetroGameUI extends Module {
         retroHealthBarFillBG.cameras = [playState.camHUD];
         retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFillBG.screenCenter(0x01);
-        retroHealthBarFillBG.color = getIconColor(!isDozirc ? playStage.getDad().characterId.toLowerCase() : 'dozirc', true); // Cor do oponente
+        retroHealthBarFillBG.color = p2BarColor;
+        retroHealthBarFillBG.color = getIconColor(!isDozirc ? playStage.getDad().characterId.toLowerCase() : 'dozirc', true, retroHealthBarFillBG); // Cor do oponente
         retroHealthBarFillBG.antialiasing = false;
 
         // Configurar o preenchimento da barra (cor do jogador)
@@ -354,7 +355,8 @@ class RetroGameUI extends Module {
         retroHealthBarFill.cameras = [playState.camHUD];
         retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFill.screenCenter(0x01);
-        retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true); // Cor do jogador
+        retroHealthBarFill.color = p1BarColor;
+        retroHealthBarFill.color = getIconColor(playStage.getBoyfriend().characterId.toLowerCase(), true, retroHealthBarFill); // Cor do jogador
         retroHealthBarFill.antialiasing = false;
 
         // Guardar a largura original
@@ -431,6 +433,7 @@ class RetroGameUI extends Module {
 
   function createCard(text:String, isTitle:Bool = false) {
     var group = new FunkinGroup();
+    group.x -= 300;
 
     var cardMargin:Float = isTitle ? 20 : 25;
     var card = FunkinSprite.create(0, 0, isTitle ? 'titlecard' : 'subcard');
@@ -466,6 +469,8 @@ class RetroGameUI extends Module {
 
     cardText.visible = true;
     card.visible = true;
+
+    group.x = 0;
 
     return group;
   }
@@ -1358,7 +1363,7 @@ class RetroGameUI extends Module {
 		pausedTweens = [];
   }
 
-  public function getIconColor(characterId:String, ?updateIconAnim:Bool = false) {
+  public function getIconColor(characterId:String, ?updateIconAnim:Bool = false, ?bar:FunkinSprite = null):FlxColor {
     playerIcon = PlayState.instance.iconP1;
     oppIcon = PlayState.instance.iconP2;
     switch (characterId) {
@@ -1417,8 +1422,6 @@ class RetroGameUI extends Module {
         return getRGB(193, 20, 68);
       case 'hivemine':
         return getRGB(183, 19, 238);
-      case 'hivemine-talks':
-        return getRGB(183, 19, 238);
       case 'hiveless':
         return getRGB(175, 102, 206);
       case 'atrocean':
@@ -1451,6 +1454,9 @@ class RetroGameUI extends Module {
         FlxTween.color(PlayState.instance.iconP2, 1, PlayState.instance.iconP2.color, 0xFFA7D6F4, { ease: FlxEase.circOut });
         return updateBarColor(CharacterType.DAD, 0xFFA7D6F4, true);
       default:
+        if (bar != null) {
+          return bar.color;
+        }
         return p2BarColor;
     }
   }
@@ -1767,12 +1773,12 @@ class RetroGameUI extends Module {
 
       if (target == "bf") {
         isPlayerIconAnimated = false;
-			  retroHealthBarFill.color = getIconColor(!isDozirc ? characterId : 'dozirc', true);
+			  retroHealthBarFill.color = getIconColor(!isDozirc ? characterId : 'dozirc', true, retroHealthBarFill);
         configureIcon('p1');
       }
       if (target == "dad") {
         isOppIconAnimated = false;
-        retroHealthBarFillBG.color = getIconColor(characterId, true);
+        retroHealthBarFillBG.color = getIconColor(characterId, true, retroHealthBarFillBG);
         updateBarTexture(characterId);
         configureIcon('p2');
       }

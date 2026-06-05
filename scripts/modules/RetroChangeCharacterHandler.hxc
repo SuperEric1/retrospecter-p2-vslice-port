@@ -1,11 +1,12 @@
-// Coded by NebulaStellaNova
+// Coded by NebulaStellaNova, modified by SuperEric
+package supereric.retrospecter.modules;
 
 import funkin.play.character.CharacterDataParser;
 import funkin.play.character.CharacterType;
 import funkin.modding.module.Module;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
-import Reflect;
+import funkin.play.PlayStatePlaylist;
 
 class RetroChangeCharacterModule extends Module {
 
@@ -23,6 +24,9 @@ class RetroChangeCharacterModule extends Module {
 		"dad" => CharacterType.DAD
 	];
 
+	// Characters that won't be changed if not in story mode.
+	var storymodeOnlyChars = ["phase2-end"];
+
 	// Call the constructor (Useless comment lol)
 	function new() {
 		super("RetroChangeCharacterModule");
@@ -32,49 +36,54 @@ class RetroChangeCharacterModule extends Module {
 		super.onSongEvent(event);
 		var theEvent = event.eventData;
 		if (theEvent.eventKind == "RetroChangeCharacter") {
-			if (CharacterDataParser.listCharacterIds().contains(theEvent.value.newchar.toLowerCase())) {
+			//if (!PlayStatePlaylist.isStoryMode && theEvent.value?.story ?? false) return;
+			changeChar(theEvent.value.character, theEvent.value.newchar);
+		}
+	}
 
-				// Grab the new character from the cached characters.
-				var theCharacter = characterCaches.get(theEvent.value.character).get(theEvent.value.newchar.toLowerCase());
+  function changeChar(character:String, newChar: String) {
+		if (CharacterDataParser.listCharacterIds().contains(newChar.toLowerCase())) {
 
-				if (theCharacter != null) {
+			// Grab the new character from the cached characters.
+			var theCharacter = characterCaches.get(character).get(newChar.toLowerCase());
 
-					// Get the character that we will be replacing using the type in the event parameters.
-					var targetPos = [
-						"bf" => PlayState.instance.currentStage.getBoyfriend(),
-						"gf" => PlayState.instance.currentStage.getGirlfriend(),
-						"dad" => PlayState.instance.currentStage.getDad()
-					].get(theEvent.value.character);
+			if (theCharacter != null) {
 
-					// Grab the data from the old character just to be safe.
-					var targetX = targetPos.x;
-					var targetY = targetPos.y;
-					var targetZIndex = targetPos.zIndex;
+				// Get the character that we will be replacing using the type in the event parameters.
+				var targetPos = [
+					"bf" => PlayState.instance.currentStage.getBoyfriend(),
+					"gf" => PlayState.instance.currentStage.getGirlfriend(),
+					"dad" => PlayState.instance.currentStage.getDad()
+				].get(character);
 
-					// Kill the old character so it's not longer on the stage.
-					targetPos.kill();
+				// Grab the data from the old character just to be safe.
+				var targetX = targetPos.x;
+				var targetY = targetPos.y;
+				var targetZIndex = targetPos.zIndex;
 
-					// Revive the new character incase it was killed during a previous event call.
-					theCharacter.revive();
-					theCharacter.x = targetX;
-					theCharacter.y = targetY;
-					theCharacter.zIndex = targetZIndex;
+				// Kill the old character so it's not longer on the stage.
+				targetPos.kill();
 
-					// Add the new character to the current stage, then refresh the stage so the zIndex gets applied.
-					PlayState.instance.currentStage.addCharacter(theCharacter, types.get(theEvent.value.character));
-					PlayState.instance.currentStage.refresh();
+				// Revive the new character incase it was killed during a previous event call.
+				theCharacter.revive();
+				theCharacter.x = targetX;
+				theCharacter.y = targetY;
+				theCharacter.zIndex = targetZIndex;
 
-					// Initiate the health icon if either bf or dad.
-					if (theEvent.value.character != "gf")
-						theCharacter.initHealthIcon(theEvent.value.character == "dad");
+				// Add the new character to the current stage, then refresh the stage so the zIndex gets applied.
+				PlayState.instance.currentStage.addCharacter(theCharacter, types.get(character));
+				PlayState.instance.currentStage.refresh();
 
-				}
-			} else {
-
-				// If the character doesn't exist, tell the modder.
-				trace("Unkown Character \"" + theEvent.value.newchar + "\"");
+				// Initiate the health icon if either bf or dad.
+				if (character != "gf")
+					theCharacter.initHealthIcon(character == "dad");
 
 			}
+		} else {
+
+			// If the character doesn't exist, tell the modder.
+			trace("Unkown Character \"" + newChar + "\"");
+
 		}
 	}
 

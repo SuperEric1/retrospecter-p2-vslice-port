@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "name": "Zerktro End Cutscene",
+  "assetPath": "characters/wrath/retro-end-notint-1",
+  "renderType": "multisparrow",
+  "scale": 2.2,
+  "healthIcon": {
+    "offsets": [15, 0],
+    "id": "zerktro",
+    "scale": 0.75
+  },
+  "offsets": [585, 588],
+  "animations": [
+    {
+      "name": "idle",
+      "prefix": "CutsceneFull",
+      "offsets": [703, 733],
+      "frameRate": 24,
+      "frameIndices": []
+    },
+    {
+      "assetPath": "characters/wrath/retro-end-notint-0",
+      "name": "idle-hold",
+      "prefix": "CutsceneFull",
+      "offsets": [703, 733],
+      "frameRate": 24,
+      "frameIndices": []
+    }
+  ],
+  "flipX": false
+}

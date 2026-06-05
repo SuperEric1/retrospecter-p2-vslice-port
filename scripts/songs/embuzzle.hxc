@@ -289,6 +289,7 @@ class EmbuzzleSong extends Song
 
     if (eventKind == "ScrollSpeed" && PlayState.instance.currentDifficulty.toLowerCase() == 'easy') {
       event.cancel();
+      event.eventData.activated = true;
     }
   }
 

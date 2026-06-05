@@ -19,6 +19,7 @@ import openfl.display.BitmapData;
 import flixel.graphics.FlxGraphic;
 import StringTools;
 import funkin.audio.FunkinSound;
+import openfl.geom.ColorTransform;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayStatePlaylist;
 import funkin.effects.IntervalShake;
@@ -38,6 +39,7 @@ class WrathPhase2Stage extends Stage
 
   // Cutscene variables
   var hasPlayedInGameCutscene:Bool = false;
+  var hasPlayedOutroCutscene:Bool = false;
   var growlSound:FunkinSound;
   var groundShakeSound:FunkinSound;
   var roarSound:FunkinSound;
@@ -47,6 +49,27 @@ class WrathPhase2Stage extends Stage
   var ogStrumY:Float;
   var tweens:Array<FlxTween> = [];
   var pausedTweens:Array<FlxTween> = [];
+
+  // Ending cutscene sounds
+  var angySlam:FunkinSound;
+  var debris1Sound:FunkinSound;
+  var debris2Sound:FunkinSound;
+  var fireRoarSound:FunkinSound;
+  var fireSound:FunkinSound;
+  var fireBoom:FunkinSound;
+  var angyRoar:FunkinSound;
+  var debris3Sound:FunkinSound;
+
+  // Ending cutscene state
+  var isEnding:Bool = false;
+  var endingSlammed:Bool = false;
+  var endingOnFire:Bool = false;
+  var endingExploded:Bool = false;
+  var endingShaderDestroyed:Bool = false;
+  var endingOutroFinished:Bool = false;
+  var endingStoppedAnim:Bool = false;
+  var endingDebris:Int = 0;
+  var endingShakeIntensity:Float = 0;
 
   // Crystal data
   var crystals:Array<StageProp> = [];
@@ -83,6 +106,7 @@ class WrathPhase2Stage extends Stage
   var rocks:StageProp;
   var rocksLeft:StageProp;
   var overlay:StageProp;
+  var whiteBG:FunkinSprite;
 
   // State variables
   var runesCanGlow:Bool = false;
@@ -129,6 +153,7 @@ class WrathPhase2Stage extends Stage
     if (isEctospasm) ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['spectre']]);
 
     hasPlayedInGameCutscene = false;
+    hasPlayedOutroCutscene = false;
 
     if (hasCreatedStage) return;
 
@@ -141,7 +166,7 @@ class WrathPhase2Stage extends Stage
       sky.x += wrathXAdjust;
       sky.y += wrathYAdjust + 250;
       sky.antialiasing = false;
-      PlayState.instance.add(sky);
+      add(sky);
 
       // Gates
       gates = FunkinSprite.create(0, 0);
@@ -152,7 +177,7 @@ class WrathPhase2Stage extends Stage
       gates.x += wrathXAdjust - 0; // - 555
       gates.y += wrathYAdjust - 150 - 105;
       gates.antialiasing = false;
-      PlayState.instance.add(gates);
+      add(gates);
 
       // Vortex (backgroundLevel > 1)
       vortex = FunkinSprite.create(0, 0);
@@ -166,7 +191,7 @@ class WrathPhase2Stage extends Stage
       vortex.antialiasing = false;
       // Se for story mode, começa invisível
       if (PlayStatePlaylist.isStoryMode) vortex.visible = false;
-      PlayState.instance.add(vortex);
+      add(vortex);
 
       // Back rocks
       backrocks1 = FunkinSprite.create(0, 0);
@@ -176,7 +201,7 @@ class WrathPhase2Stage extends Stage
       backrocks1.x += wrathXAdjust - 1350;
       backrocks1.y += wrathYAdjust + 80;
       backrocks1.antialiasing = false;
-      PlayState.instance.add(backrocks1);
+      add(backrocks1);
 
       backrocks2 = FunkinSprite.create(0, 0);
       backrocks2.loadTexture('wrath/wrath_backrocks_02');
@@ -185,7 +210,7 @@ class WrathPhase2Stage extends Stage
       backrocks2.x += wrathXAdjust + 925; //725
       backrocks2.y += wrathYAdjust + 65;
       backrocks2.antialiasing = false;
-      PlayState.instance.add(backrocks2);
+      add(backrocks2);
 
       // Gems
       gem1 = FunkinSprite.create(0, 0);
@@ -199,7 +224,7 @@ class WrathPhase2Stage extends Stage
       gem1.y += wrathYAdjust - 500 - 30;
       gem1.animation.play('green');
       gem1.antialiasing = false;
-      PlayState.instance.add(gem1);
+      add(gem1);
 
       gem2 = FunkinSprite.create(0, 0);
       gem2.loadSparrow('wrath/gem2');
@@ -212,7 +237,7 @@ class WrathPhase2Stage extends Stage
       gem2.y += wrathYAdjust - 150 - 150;
       gem2.animation.play('green');
       gem2.antialiasing = false;
-      PlayState.instance.add(gem2);
+      add(gem2);
 
       // Flames (backgroundLevel > 1)
       flames = FunkinSprite.create(0, 0);
@@ -225,7 +250,7 @@ class WrathPhase2Stage extends Stage
       flames.y += wrathYAdjust + 200;
       flames.animation.play('greenFlame');
       flames.antialiasing = false;
-      PlayState.instance.add(flames);
+      add(flames);
 
       // Flames change (se flashingLights estiver ativo)
       if (Preferences.flashingLights) {
@@ -240,7 +265,7 @@ class WrathPhase2Stage extends Stage
         flamesChange.alpha = HIDDEN;
         flamesChange.animation.play('blueFlame');
         flamesChange.antialiasing = false;
-        PlayState.instance.add(flamesChange);
+        add(flamesChange);
       }
 
       // Cave Left
@@ -252,7 +277,7 @@ class WrathPhase2Stage extends Stage
       caveL.y += wrathYAdjust + 81;
       caveL.flipX = true;
       caveL.antialiasing = false;
-      PlayState.instance.add(caveL);
+      add(caveL);
 
       // Runes Left (backgroundLevel > 1)
       runesCanGlow = true;
@@ -267,7 +292,7 @@ class WrathPhase2Stage extends Stage
       runesL.y += wrathYAdjust + 450 - runesOffset[1];
       runesL.scale.set(0.53, 0.53);
       runesL.antialiasing = false;
-      PlayState.instance.add(runesL);
+      add(runesL);
 
       // Glow Left
       for (i in 1...3) {
@@ -281,7 +306,7 @@ class WrathPhase2Stage extends Stage
         glowL.scale.set(0.53, 0.53);
         glowL.alpha = 0;
         glowL.antialiasing = false;
-        PlayState.instance.add(glowL);
+        add(glowL);
 
         if (i == 1) glowL1 = glowL;
         else glowL2 = glowL;
@@ -295,7 +320,7 @@ class WrathPhase2Stage extends Stage
       caveR.x += wrathXAdjust + 126 - 1.5;
       caveR.y += wrathYAdjust + 25;
       caveR.antialiasing = false;
-      PlayState.instance.add(caveR);
+      add(caveR);
 
       // Runes Right (backgroundLevel > 1)
       runesOffset = [200, 265];
@@ -307,7 +332,7 @@ class WrathPhase2Stage extends Stage
       runesR.y += wrathYAdjust + -120 + 325 - runesOffset[1];
       runesR.scale.set(0.65, 0.65);
       runesR.antialiasing = false;
-      PlayState.instance.add(runesR);
+      add(runesR);
 
       // Glow Right
       for (i in 1...3) {
@@ -320,7 +345,7 @@ class WrathPhase2Stage extends Stage
         glowR.scale.set(0.65, 0.65);
         glowR.alpha = 0;
         glowR.antialiasing = false;
-        PlayState.instance.add(glowR);
+        add(glowR);
 
         if (i == 1) glowR1 = glowR;
         else glowR2 = glowR;
@@ -339,7 +364,7 @@ class WrathPhase2Stage extends Stage
 
         if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) crystal.alpha = HIDDEN;
 
-        PlayState.instance.add(crystal);
+        add(crystal);
         crystals.push(crystal);
       }
 
@@ -353,7 +378,7 @@ class WrathPhase2Stage extends Stage
       ground.x += wrathXAdjust;
       ground.y += wrathYAdjust + 678;
       ground.animation.play('green');
-      PlayState.instance.add(ground);
+      add(ground);
 
       // Crack
       crack = FunkinSprite.create(0, 0);
@@ -363,23 +388,26 @@ class WrathPhase2Stage extends Stage
       crack.visible = false;
       crack.active = false;
       crack.antialiasing = false;
+      crack.zIndex = 150;
       // Position it in onUpdate
       if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         crack.animation.play('bop');
         crack.active = true;
+        crack.visible = true;
       }
-
-      //PlayState.instance.add(crack); don't add yet cuz zindex, we do it on onUpdate
+      add(crack);
 
       // Crack 2 (only for Spectral in story mode)
       if (isSpectral && PlayStatePlaylist.isStoryMode) {
         crack_2 = FunkinSprite.create(0, 0);
         crack_2.loadSparrow('wrath/HellCrack_2');
-        crack_2.animation.addByPrefix('bop', 'HellcrackBop', 24, false);
+        crack_2.animation.addByPrefix('bop', 'HellcrackBop0', 24, false);
         crack_2.visible = false;
+        crack_2.active = false;
         crack_2.antialiasing = false;
+        crack_2.zIndex = 150;
         // Position it in onUpdate
-        PlayState.instance.add(crack_2);
+        add(crack_2);
       }
 
       // Front Rocks
@@ -407,8 +435,8 @@ class WrathPhase2Stage extends Stage
       rocksLeft.animation.play('green');
       rocksLeft.zIndex = 300; // Boyfriend + 1
 
-      PlayState.instance.add(rocks);
-      PlayState.instance.add(rocksLeft);
+      add(rocks);
+      add(rocksLeft);
 
       // Scale adjustment if not in cutscene
       if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
@@ -422,13 +450,14 @@ class WrathPhase2Stage extends Stage
     }
 
     //hasCreatedStage = true; // moving this to onSongLoaded to fix the overlay sprite
-    PlayState.instance.refresh();
+    refresh();
   }
 
   override function addCharacter(character:BaseCharacter, charType:CharacterType):Void
   {
     // Apply the shader automatically to each character as it gets added.
     super.addCharacter(character, charType);
+    if (character == null) return;
     trace('Applied stage shader to ' + character.characterName);
 
     var rim = new DropShadowShader();
@@ -468,6 +497,7 @@ class WrathPhase2Stage extends Stage
         //rim.threshold = 0.3;
 
         character.animation.onFrameChange.add(function() {
+          if (getDad() == null) return;
           rim.updateFrameInfo(getDad().frame);
         });
 
@@ -494,9 +524,9 @@ class WrathPhase2Stage extends Stage
       overlay.blend = 'screen';
       overlay.y += -128;
       overlay.x += 40;
-      //overlay.cameras = [PlayState.instance.camGame];
-      PlayState.instance.add(overlay);
-      PlayState.instance.refresh();
+      overlay.zIndex = 9000;
+      add(overlay);
+      refresh();
     }
 
     hasCreatedStage = true;
@@ -512,13 +542,18 @@ class WrathPhase2Stage extends Stage
   {
     super.onCountdownStart(event);
 
-    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) {
+      hasPlayedInGameCutscene = true;
+      hasPlayedOutroCutscene = true;
+    }
 
     if (!hasPlayedInGameCutscene && isSpectral) {
       hasPlayedInGameCutscene = true;
       event.cancel(); // CANCEL THE COUNTDOWN!
 
       PlayState.instance.camHUD.visible = false;
+
+      getDad().playAnimation('transformation-loop');
 
       buildProps(true);
       loadSounds();
@@ -540,16 +575,12 @@ class WrathPhase2Stage extends Stage
     if (hasCreatedStage && !hasRefreshedProps) {
       hasRefreshedProps = true;
 
-      crack.zIndex = getDad().zIndex - 3;
       crack.x = getGirlfriend().x;
       crack.y = getBoyfriend().y + 120;
-      if (isSpectral && PlayStatePlaylist.isStoryMode && crack_2 != null) {
+      if (crack_2 != null) {
         crack_2.x = getGirlfriend().x - (crack_2.width / 2) + 50;
-        crack_2.y = getBoyfriend().y + 50;
-        crack_2.animation.play('bop');
+        crack_2.y = getBoyfriend().y + 60;
       }
-      PlayState.instance.add(crack);
-      PlayState.instance.refresh();
     }
 
     // Crystal floating animation
@@ -569,6 +600,125 @@ class WrathPhase2Stage extends Stage
     }
   }
 
+  override public function onSongEvent(event:SongEventScriptEvent):Void
+  {
+    super.onSongEvent(event);
+
+    var eventKind = event.eventData.eventKind;
+    var value = event.eventData.value;
+
+    if (eventKind == 'RetroChangeCharacter' && value.character == 'dad' && value.newchar == 'phase2-end') {
+      if (hasPlayedOutroCutscene) return;
+
+      var dad = getDad();
+
+      if (!hasPlayedOutroCutscene) {
+        hasPlayedOutroCutscene = true;
+        isEnding = true;
+
+        PlayState.instance.togglePauseButton(false);
+        PlayState.instance.isInCutscene = true;
+        PlayState.instance.mayPauseGame = false;
+
+        PlayState.instance.camHUD.angle = 0;
+        FlxG.camera.angle = 0;
+
+        hideEndingHUD();
+
+        PlayState.instance.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 450, dad.cameraFocusPoint.y - 50);
+        PlayState.instance.tweenCameraZoom(0.9, 0.5, false, FlxEase.quadIn);
+
+        getDad().animation.onFrameChange.add(function(name:String, frameNumber:Int, frameIndex:Int) {
+          endingCutsceneUpdate(frameNumber);
+        });
+
+        if (angyRoar != null) angyRoar.play();
+      }
+    }
+  }
+
+  function endingCutsceneUpdate(frame:Int):Void
+  {
+    var dad = getDad();
+    if (dad == null) return;
+
+    if (frame >= 29 && !endingSlammed) {
+      endingSlammed = true;
+      if (angySlam != null) angySlam.play();
+      if (Preferences.flashingLights) {
+        PlayState.instance.camCutscene.flash(0xFFFFFFFF, 0.5, null, true);
+      }
+      crack.visible = false;
+      if (crack_2 != null) {
+        crack_2.animation.play('bop');
+        crack_2.active = true;
+        crack_2.visible = true;
+      }
+      //FlxG.camera.shake(0.05, 0.5);
+    } else if (endingSlammed && endingDebris == 0) {
+      endingDebris++;
+      if (debris1Sound != null) debris1Sound.play();
+    }
+
+    if (frame >= 58 && !endingShaderDestroyed) {
+      endingShaderDestroyed = true;
+      dad.shader = null;
+    }
+
+    if (!endingOnFire && frame >= 63) {
+      endingOnFire = true;
+      if (fireSound != null) fireSound.play();
+    }
+
+    if (!endingExploded && frame >= 74) {
+      endingExploded = true;
+      if (fireBoom != null) fireBoom.play();
+    } else if (endingExploded && endingDebris == 1) {
+      endingDebris++;
+      if (debris2Sound != null) debris2Sound.play();
+      if (fireRoarSound != null) fireRoarSound.play();
+    }
+
+    if (frame >= 79 && frame <= 116) {
+      var perc = (116 - frame) / (116 - 79);
+      var invi = (1 - perc) * 255;
+      dad.colorTransform.redMultiplier = perc;
+      dad.colorTransform.greenMultiplier = perc;
+      dad.colorTransform.blueMultiplier = perc;
+      dad.colorTransform.redOffset = invi;
+      dad.colorTransform.greenOffset = invi;
+      dad.colorTransform.blueOffset = invi;
+    }
+
+    if (frame >= 81 && frame < 121) {
+      //endingShakeIntensity += event.elapsed * 0.025;
+      //FlxG.camera.shake(endingShakeIntensity, 0.1);
+    }
+
+    if (frame >= 122 && !endingOutroFinished) {
+      endingOutroFinished = true;
+      if (debris3Sound != null) debris3Sound.play();
+
+      whiteBG = FunkinSprite.create(0, 0);
+      whiteBG.makeGraphic(FlxG.width, FlxG.height + 1, FlxColor.WHITE);
+      whiteBG.scrollFactor.set(0, 0);
+      whiteBG.cameras = [PlayState.instance.camCutscene];
+      whiteBG.alpha = 0;
+      PlayState.instance.add(whiteBG);
+
+      tweens.push(FlxTween.tween(whiteBG, {alpha: 1}, 0.05, {ease: FlxEase.linear, onComplete: function(_) {
+        new FlxTimer().start(6, function(tmr) {
+          PlayState.instance.endSong();
+        });
+      }}));
+    }
+
+    if (!endingStoppedAnim && frame >= 122) {
+      endingStoppedAnim = true;
+      dad.active = false;
+    }
+  }
+
   override function onDestroy(event:ScriptEvent):Void
   {
     super.onDestroy(event);
@@ -577,10 +727,23 @@ class WrathPhase2Stage extends Stage
     hasCreatedStage = false;
     hasRefreshedProps = false;
     hasPlayedInGameCutscene = false;
+    hasPlayedOutroCutscene = false;
     didSakuFadeIn = false;
     runesCanGlow = false;
     rockColor = false;
     ogStrumY = null;
+
+    isEnding = false;
+    endingSlammed = false;
+    endingOnFire = false;
+    endingExploded = false;
+    endingShaderDestroyed = false;
+    endingOutroFinished = false;
+    endingStoppedAnim = false;
+    endingDebris = 0;
+    endingShakeIntensity = 0;
+    whiteBG = null;
+    tbcSprite = null;
 
     crystals = [];
     flashySteps = [640, 1024, 1536, 1856];
@@ -687,9 +850,19 @@ class WrathPhase2Stage extends Stage
     flashySteps = [640, 1024, 1536, 1856];
 
     hasPlayedInGameCutscene = true;
+    hasPlayedOutroCutscene = false;
     isModcharting = false;
     PlayState.instance.camHUD.angle = 0;
-    //if (ogStrumY != null || ogStrumY != 0) PlayState.instance.playerStrumline.y = ogStrumY;
+
+    isEnding = false;
+    endingSlammed = false;
+    endingOnFire = false;
+    endingExploded = false;
+    endingShaderDestroyed = false;
+    endingOutroFinished = false;
+    endingStoppedAnim = false;
+    endingDebris = 0;
+    endingShakeIntensity = 0;
 
     // Reset crystals positions
     for (i in 0...8) {
@@ -698,9 +871,6 @@ class WrathPhase2Stage extends Stage
       crystal.x = crystalPos[i][0];
       crystal.y = crystalPos[i][1];
     }
-
-    //fixRetroPos();
-    //FlxG.resetState(); // ummm no
   }
 
   function buildProps(hide:Bool = false):Void
@@ -734,6 +904,24 @@ class WrathPhase2Stage extends Stage
     roarSound.volume = 1;
     groundShakeSound.volume = 1;
     firstSlam.volume = 1;
+
+    angySlam = FunkinSound.load(Paths.sound("AngySlam"), true);
+    debris1Sound = FunkinSound.load(Paths.sound("Debris1"), true);
+    debris2Sound = FunkinSound.load(Paths.sound("Debris2"), true);
+    fireRoarSound = FunkinSound.load(Paths.sound("FireRoar"), true);
+    fireSound = FunkinSound.load(Paths.sound("fire"), true);
+    fireBoom = FunkinSound.load(Paths.sound("FireBoom"), true);
+    angyRoar = FunkinSound.load(Paths.sound("AngyRoar"), true);
+    debris3Sound = FunkinSound.load(Paths.sound("Debris3"), true);
+
+    angySlam.volume = 1;
+    debris1Sound.volume = 1;
+    debris2Sound.volume = 1;
+    fireRoarSound.volume = 1;
+    fireSound.volume = 1;
+    fireBoom.volume = 1;
+    angyRoar.volume = 1;
+    debris3Sound.volume = 1;
   }
 
   function introCutscene():Void
@@ -822,6 +1010,14 @@ class WrathPhase2Stage extends Stage
         });
       }]);
     });
+  }
+
+  private function hideEndingHUD():Void
+  {
+    tweens.push(FlxTween.tween(PlayState.instance.camHUD, {alpha: 0}, 0.5, {ease: FlxEase.cubeInOut}));
+    if (PlayState.instance.camControls != null) {
+      tweens.push(FlxTween.tween(PlayState.instance.camControls, {alpha: 0}, 0.5, {ease: FlxEase.cubeInOut}));
+    }
   }
 
   private function resetTweens():Void

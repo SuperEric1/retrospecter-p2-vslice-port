@@ -4,8 +4,6 @@ A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with 
 TODO:
 - [ ] Catastrofiend subtitles and modchart
 - [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
-- [ ] Phase 2 end cutscene
-- [ ] Use spritemap sprite instead of xml for the ground crack in wrath_phase2
 - [ ] Remaining extirpatient effects and modchart
 - [ ] Remaining title screen bgs
 - [ ] Checkpoint event (+ add to all songs that have it)
@@ -28,6 +26,8 @@ TODO:
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
+- [ ] Spanish translation
+- [X] Phase 2 end cutscene
 - [X] Cloth scythes
 - [X] Update main menu
 - [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex

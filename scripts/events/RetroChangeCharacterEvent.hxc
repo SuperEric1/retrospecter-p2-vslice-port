@@ -34,6 +34,12 @@ class RetroChangeCharacterEvent extends SongEvent {
                 title: "New Character (JSON/ID)",
                 defaultValue: "bf",
                 type: "string",
+            },
+            {
+                name: "story",
+                title: "Story Mode Only",
+                defaultValue: false,
+                type: "bool"
             }
         ];
     }
