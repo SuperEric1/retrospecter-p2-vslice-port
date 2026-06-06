@@ -6,6 +6,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.Paths;
 import funkin.ui.FullScreenScaleMode;
+import funkin.play.ResultState;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.sound.FlxSound;
@@ -339,6 +340,7 @@ class RetroAchievements extends Module
   public static function grantAchievement(id:String, ?showToast:Bool = true, ?instaShow = false, ?force:Bool = false):Void
   {
     if (isUnlocked(id) && !force) return;
+    if (PlayState.instance != null && (PlayState.instance.isChartingMode || PlayState.instance.isBotPlayMode)) return;
 
     var ach:Dynamic = getAchievement(id);
     if (ach != null && ach.unlockable != null && ach.unlockable == true) return;
@@ -348,6 +350,8 @@ class RetroAchievements extends Module
     Save.instance.modOptions.set(SAVE_KEY, save);
     Save.instance.flush();
 
+    trace("Awarded achievement: " + id);
+
     if (showToast) {
       queueToast(id);
       if (instaShow) showQueuedToasts();
@@ -355,6 +359,10 @@ class RetroAchievements extends Module
   }
 
   public static function grantAc(id:String, ?showToast:Bool = true, ?instaShow:Bool = false, ?force:Bool = false):Void
+  {
+    grantAchievement(id, showToast, instaShow, force);
+  }
+  public static function award(id:String, ?showToast:Bool = true, ?instaShow:Bool = false, ?force:Bool = false):Void
   {
     grantAchievement(id, showToast, instaShow, force);
   }
@@ -771,6 +779,12 @@ class RetroAchievements extends Module
   {
     super.onSubStateOpenEnd(event);
     refreshToastLayers();
+
+    var targetState = event.targetState;
+    //trace("Is results? " + Std.isOfType(targetState, ResultState));
+    if (Std.isOfType(targetState, ResultState)) {
+      showQueuedToasts(0.3);
+    }
   }
 
   override public function onUpdate(event:ScriptEvent):Void
