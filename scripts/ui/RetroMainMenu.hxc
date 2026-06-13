@@ -231,6 +231,8 @@ class RetroMainMenu extends MusicBeatState
     curtain1.cameras = [camMain];
     curtain2.cameras = [camMain];
 
+    if (backBtn != null) backBtn.cameras = [camMain];
+
     var path = 'ui/mainmenu/';
 
     isWideScreen = FlxG.width > 1280;
@@ -403,7 +405,6 @@ class RetroMainMenu extends MusicBeatState
     var cutRight:Float = cutLeft;
     var shaderOffset:Float = 0;
     var shaderEndOffset:Float = 0;
-    var fuckingHitboxAdjustment:Float = 0;
 
     switch (name) {
       case 'story':
@@ -423,7 +424,6 @@ class RetroMainMenu extends MusicBeatState
       case 'extras':
         cutLeft -= 50;
         cutRight += 50;
-        fuckingHitboxAdjustment = -200;
         shaderOffset += 10;
       case 'side':
         cutLeft -= 20;
@@ -472,9 +472,11 @@ class RetroMainMenu extends MusicBeatState
     item.ID = pagesMenuItems[page].length;
     item.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
 
-    // CRIAR HITBOX ESPECÍFICA
-    var finalHitboxWidth:Float = (clipW - fuckingHitboxAdjustment) * item.scale.x;
-    var hitbox:FlxObject = new FlxObject(0, 0, finalHitboxWidth, clipH * item.scale.y);
+    var hitboxBaseWidth:Float = (item.frameWidth * 0.65);
+    var finalHitboxWidth:Float = hitboxBaseWidth * item.scale.x;
+    var finalHitboxHeight:Float = clipH * item.scale.y;
+
+    var hitbox:FlxObject = new FlxObject(0, 0, finalHitboxWidth, finalHitboxHeight);
     hitbox.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
     pagesMenuHitboxes[page].push(hitbox);
     add(hitbox);
@@ -537,7 +539,8 @@ class RetroMainMenu extends MusicBeatState
       var sx:Float = item.scale.x;
       var sy:Float = item.scale.y;
       var borderOffset:Float = 0;
-      var hitboxOffset:Float = 0;
+      var hitboxOffsets:Array<Float> = [-155, -30];
+      var hitboxAdjustment:Float = 0;
 
       item.x = currentX - clip.x * sx;
       item.y = baseY - (item.height / 2);
@@ -562,15 +565,16 @@ class RetroMainMenu extends MusicBeatState
         case 2:
           if (page == 0) {
             item.x += 38;
+            hitboxAdjustment -= 140;
           } else {
             item.x += 30;
+            hitboxAdjustment -= 40;
           }
           borderOffset = 57;
         case 3:
           if (page == 1) {
             item.x += 40;
           } else {
-            hitboxOffset -= 100;
             item.x += 60;
           }
       }
@@ -580,10 +584,15 @@ class RetroMainMenu extends MusicBeatState
         border.screenCenter(0x10);
       }
 
-      hitbox.x = currentX + ((screenWidths[i] - hitbox.width) / 2) + hitboxOffset;
-      hitbox.y = item.y + clip.y * sy;
-      hitbox.width = screenWidths[i];
+
+      var scaledItemWidth:Float = item.frameWidth * sx;
+      var itemCenterX:Float = item.x + (scaledItemWidth / 2);
+
+      hitbox.width = ((item.frameWidth * 0.65) * sx) + hitboxAdjustment;
       hitbox.height = clip.height * sy;
+
+      hitbox.x = itemCenterX - (hitbox.width / 2) + hitboxOffsets[page];
+      hitbox.y = item.y + (clip.y * sy); // Mantém a mesma altura/Y original
 
       pagesMenuOriginalX[page][i] = item.x;
       pagesMenuBorderOriginalX[page][i] = border != null ? border.x : 0;
