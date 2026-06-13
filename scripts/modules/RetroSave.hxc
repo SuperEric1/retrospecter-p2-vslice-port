@@ -124,6 +124,7 @@ class RetroSave extends Module
     var save:Save = Save.instance;
     save.modOptions.set('retroTitleWarningsPlayed', false);
     save.modOptions.set('retroOptionsIntroPlayed', false);
+    save.modOptions.set('retroWasInExtrasMenu', false);
     save.flush();
   }
 

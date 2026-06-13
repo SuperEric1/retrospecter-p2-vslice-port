@@ -218,7 +218,7 @@ class CatastrofiendSong extends Song
     if (event.beat >= 832 && !hasPlayedEndCutscene) {
       ModuleHandler.getModule('RetroPlayState').scriptCall('funnyFunction', []);
       if (!PlayStatePlaylist.isStoryMode) {
-        PlayState.instance.camCutscene.fade(FlxColor.WHITE, 0.4, false, null, true);
+        PlayState.instance.camCutscene.fade(FlxColor.WHITE, 0.4, false, disableKeys, true);
         if (PlayState.instance.camControls != null) PlayState.instance.camControls.visible = false;
         hasPlayedEndCutscene = true;
       }
@@ -235,6 +235,10 @@ class CatastrofiendSong extends Song
         startFinale();
       }
     }
+  }
+
+  function disableKeys():Void {
+    PlayState.instance.disableKeys = true;
   }
 
   function strumMovePattern():Void

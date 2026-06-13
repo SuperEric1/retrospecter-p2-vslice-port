@@ -1,39 +1,55 @@
 ﻿1
 00:00:58,100 --> 00:00:59,510
-Leave Now!
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Leave Now!</font>
 
 2
-00:00:59,510 --> 00:01:01,500
-Or Face My Wrath!
+00:00:59,511 --> 00:01:01,500
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Or Face My Wrath!</font>
 
 3
 00:01:05,450 --> 00:01:07,210
-Pass These Gates
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Pass These Gates</font>
 
 4
-00:01:07,210 --> 00:01:09,080
-And You Will DIE!
+00:01:07,211 --> 00:01:09,080
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">And You Will DIE!</font>
 
 5
 00:01:12,720 --> 00:01:16,350
-I will char your BONES...
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">I will char your BONES...</font>
 
 6
 00:01:20,890 --> 00:01:22,369
-Grrr...
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Grrr...</font>
 
 7
 00:01:22,370 --> 00:01:23,619
-Alright...
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Alright...</font>
 
 8
 00:01:23,620 --> 00:01:24,529
-This...
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">This...</font>
 
 9
 00:01:24,530 --> 00:01:25,449
-Means...
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Means...</font>
 
 10
 00:01:25,450 --> 00:01:27,260
-<font color="#FF2828">WAR!</font>
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">WAR!</font>
+
+11
+00:04:23,620 --> 00:04:25,440
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Useless child...</font>
+
+12
+00:04:29,080 --> 00:04:30,880
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">You Are Such A</font>
+
+13
+00:04:30,881 --> 00:04:32,720
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Big disgrace.</font>
+
+14
+00:04:38,160 --> 00:04:39,990
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Help me fight...!</font>

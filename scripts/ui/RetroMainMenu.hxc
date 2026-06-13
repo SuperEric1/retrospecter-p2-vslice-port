@@ -1,6 +1,7 @@
 import flixel.addons.transition.FlxTransitionableState;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxState;
 import flixel.math.FlxRect;
@@ -52,22 +53,49 @@ class RetroMainMenu extends MusicBeatState
   var titleText:FlxText;
   var label1:FunkinSprite;
   var label2:FunkinSprite;
+  var bgCurtainBorders:Array<FunkinSprite>;
 
-  // Menu
+  // Menu (referências para a página ativa)
   var menuItems:Array<FunkinSprite>;
   var menuCallbacks:Array<Dynamic>;
   var menuHitboxes:Array<FlxObject>;
   var menuNames:Array<String>;
-  var menuUsesShaders:Array<Bool> = [];
-  var menuShaders:Array<Dynamic> = [];
-  var menuBorders:Array<FunkinSprite> = [];
-  var angleMaskValue:Array<Float> = [80, 160];
-  var minCamX:Float = 0;
-  var maxCamX:Float = 0;
+  var menuUsesShaders:Array<Bool>;
+  var menuShaders:Array<Dynamic>;
+  var menuBorders:Array<FunkinSprite>;
   var menuClips:Array<FlxRect>;
   var menuSpacingWidths:Array<Float>; // largura normalizada para cálculo de spread
+  var menuStartIndex:Int = -1;
+  var minCamX:Float = 0;
+  var maxCamX:Float = 0;
   var isSpreading:Bool = false;
+  var angleMaskValue:Array<Float> = [80, 160];
   var isWideScreen:Bool = false;
+
+  // Menu (dados de todas as páginas; index 0 = principal, index 1 = extras)
+  var pagesMenuItems:Array<Array<FunkinSprite>> = [[], []];
+  var pagesMenuCallbacks:Array<Array<Dynamic>> = [[], []];
+  var pagesMenuHitboxes:Array<Array<FlxObject>> = [[], []];
+  var pagesMenuNames:Array<Array<String>> = [[], []];
+  var pagesMenuUsesShaders:Array<Array<Bool>> = [[], []];
+  var pagesMenuShaders:Array<Array<Dynamic>> = [[], []];
+  var pagesMenuBorders:Array<Array<FunkinSprite>> = [[], []];
+  var pagesMenuClips:Array<Array<FlxRect>> = [[], []];
+  var pagesMenuSpacingWidths:Array<Array<Float>> = [[], []];
+  var pagesMenuOriginalX:Array<Array<Float>> = [[], []];
+  var pagesMenuBorderOriginalX:Array<Array<Float>> = [[], []];
+  var pagesMenuFullScale:Array<Array<Float>> = [[], []];
+  var pagesMenuStartIndex:Array<Int> = [-1, -1];
+  var pagesMinCamX:Array<Float> = [0, 0];
+  var pagesMaxCamX:Array<Float> = [0, 0];
+  var pagesIsSpreading:Array<Bool> = [false, false];
+
+  var currentPage:Int = 0;
+  var camFollowExtras:FlxObject;
+  var camExtras:FunkinCamera;
+  var camMain:FunkinCamera;
+  var pageSlideDistance:Float;
+  var pageTransitionTime:Float = 0.35;
 
   // Estado
   var selectedIndex:Int = 0;
@@ -75,12 +103,12 @@ class RetroMainMenu extends MusicBeatState
   var isBusy:Bool = false;
   var isExiting:Bool = false;
   var hasSelection:Bool = false;
-  var menuStartIndex:Int = -1;
 
   var idleTimer:FlxTimer;
   var idleTimeoutSeconds:Float = 3.0;
 
   // Mouse/Touch
+  var backBtn:Dynamic = null;
   var lastMousePos:FlxPoint;
   var _totalScreenMovedX:Float = 0;
   var _totalScreenMovedY:Float = 0;
@@ -107,17 +135,25 @@ class RetroMainMenu extends MusicBeatState
 
     if (_overrideMusic != null) overrideMusic = _overrideMusic;
 
-    menuItems = [];
-    menuCallbacks = [];
-    menuHitboxes = [];
-    menuNames = [];
-    menuClips = [];
-    menuShaders = [];
-    menuUsesShaders = [];
-    menuBorders = [];
-    menuSpacingWidths = [];
+    for (page in 0...2) {
+      pagesMenuItems[page] = [];
+      pagesMenuCallbacks[page] = [];
+      pagesMenuHitboxes[page] = [];
+      pagesMenuNames[page] = [];
+      pagesMenuClips[page] = [];
+      pagesMenuShaders[page] = [];
+      pagesMenuUsesShaders[page] = [];
+      pagesMenuBorders[page] = [];
+      pagesMenuSpacingWidths[page] = [];
+      pagesMenuOriginalX[page] = [];
+      pagesMenuBorderOriginalX[page] = [];
+      pagesMenuFullScale[page] = [];
+    }
+
+    bgCurtainBorders = [];
 
     camFollow = new FlxObject(0, 0, 1, 1);
+    camFollowExtras = new FlxObject(0, 0, 1, 1);
     idleTimer = new FlxTimer();
     lastMousePos = FlxPoint.get(0, 0);
 
@@ -137,15 +173,13 @@ class RetroMainMenu extends MusicBeatState
 
   override function create():Void
   {
-    //FlxG.cameras.reset(new FunkinCamera('mainMenu'));
-
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
     if (!overrideMusic) playMenuMusic();
 
     if (FlxG.onMobile) {
-      var backBtn = addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
+      backBtn = addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
       /*backBtn.onConfirmStart.add(function() {
         canNavigate = false;
         backBtn.active = true;
@@ -164,19 +198,98 @@ class RetroMainMenu extends MusicBeatState
     bg.screenCenter();
     add(bg);
 
-    add(camFollow);
+    var curtain1 = new FlxSprite(-FlxG.width * 0.1, 0);
+    curtain1.makeGraphic(Std.int(FlxG.width * 0.6), Std.int(FlxG.height * 1.1), FlxColor.BLACK);
+    curtain1.scrollFactor.set(0, 0);
+    curtain1.updateHitbox();
+    add(curtain1);
 
-    menuStartIndex = members.length;
+    var curtain2 = new FlxSprite(FlxG.width / 2, 0);
+    curtain2.makeGraphic(Std.int(FlxG.width * 0.6), Std.int(FlxG.height * 1.1), FlxColor.BLACK);
+    curtain2.scrollFactor.set(0, 0);
+    curtain2.updateHitbox();
+    add(curtain2);
+
+    bgCurtainBorders.push(curtain1);
+    bgCurtainBorders.push(curtain2);
+
+    add(camFollow);
+    add(camFollowExtras);
+
+    pageSlideDistance = FlxG.width * 0.95;
+
+    camExtras = new FunkinCamera('mainMenuExtras');
+    camExtras.bgColor = FlxColor.TRANSPARENT;
+    camExtras.zoom = 0.9;
+    camExtras.visible = false;
+    FlxG.cameras.add(camExtras, false);
+
+    camMain = new FunkinCamera('mainMenuMain');
+    camMain.bgColor = FlxColor.TRANSPARENT;
+    FlxG.cameras.add(camMain, false);
+
+    curtain1.cameras = [camMain];
+    curtain2.cameras = [camMain];
 
     var path = 'ui/mainmenu/';
-    createMenuItem('story', path + 'story', goToStory, 0.87);
-    createMenuItem('side', path + 'side', goToFreeplay, 0.87);
-    createMenuItem('credits', path + 'credits', goToCredits, 0.87);
-    createMenuItem('options', path + 'options', goToOptions, 0.75);
+
+    isWideScreen = FlxG.width > 1280;
+
+    // Página 2 (extras) é criada primeiro: fica atrás dos botões principais,
+    // na mesma posição/layout, mas em escala reduzida (0.9) até a transição.
+    pagesMenuStartIndex[1] = members.length;
+    createMenuItem('trophies', path + 'trophies', openTrophyState, 0.87, 1);
+    createMenuItem('side', path + 'side', goToFreeplay, 0.87, 1);
+    createMenuItem('credits', path + 'credits', goToCredits, 1, 1);
+    createMenuItem('gallery', path + 'gallerylocked', interactLocked, 0.75, 1);
+
+    pagesMenuStartIndex[0] = members.length;
+    createMenuItem('story', path + 'story', goToStory, 0.87, 0);
+    createMenuItem('freeplay', path + 'firstfreeplay', interactLocked, 0.87, 0);
+    createMenuItem('extras', path + 'extras', goToExtras, 1, 0);
+    createMenuItem('options', path + 'options', goToOptions, 0.75, 0);
+
     if (isWideScreen) {
       camMaxOffset += 400;
     }
-    positionMenuItems();
+
+    positionMenuItems(0);
+    positionMenuItems(1);
+
+    for (i in 0...pagesMenuItems[1].length) {
+      var extraItem = pagesMenuItems[1][i];
+      var extraHitbox = pagesMenuHitboxes[1][i];
+      var extraBorder = pagesMenuBorders[1][i];
+
+      extraItem.cameras = [camExtras];
+      if (extraBorder != null) extraBorder.cameras = [camExtras];
+      extraHitbox.cameras = [camExtras];
+      extraHitbox.exists = false;
+    }
+
+    for (i in 0...pagesMenuItems[0].length) {
+      var mainItem = pagesMenuItems[0][i];
+      var mainHitbox = pagesMenuHitboxes[0][i];
+      var mainBorder = pagesMenuBorders[0][i];
+
+      mainItem.cameras = [camMain];
+      if (mainBorder != null) mainBorder.cameras = [camMain];
+      mainHitbox.cameras = [camMain];
+    }
+
+    menuItems = pagesMenuItems[0];
+    menuCallbacks = pagesMenuCallbacks[0];
+    menuHitboxes = pagesMenuHitboxes[0];
+    menuNames = pagesMenuNames[0];
+    menuClips = pagesMenuClips[0];
+    menuShaders = pagesMenuShaders[0];
+    menuUsesShaders = pagesMenuUsesShaders[0];
+    menuBorders = pagesMenuBorders[0];
+    menuSpacingWidths = pagesMenuSpacingWidths[0];
+    menuStartIndex = pagesMenuStartIndex[0];
+    minCamX = pagesMinCamX[0];
+    maxCamX = pagesMaxCamX[0];
+    isSpreading = pagesIsSpreading[0];
 
     var labelSize = Std.int(FlxG.height * 0.75);
     label1 = FunkinSprite.create(0, 0);
@@ -184,8 +297,10 @@ class RetroMainMenu extends MusicBeatState
     label1.animation.addByPrefix('nothing', 'nothing', 1, true);
     label1.animation.addByPrefix('story', 'story', 1, true);
     label1.animation.addByPrefix('freeplay', 'freeplay', 1, true);
+    label1.animation.addByPrefix('extras', 'extras', 1, true);
     label1.animation.addByPrefix('options', 'options', 1, true);
     label1.animation.play('story');
+    label1.cameras = [camMain];
     label1.setGraphicSize(labelSize);
     label1.updateHitbox();
     //label1.y = baseY - (label1.height / 2);
@@ -198,8 +313,11 @@ class RetroMainMenu extends MusicBeatState
     label2.animation.addByPrefix('nothing', 'nothing', 1, true);
     label2.animation.addByPrefix('credits', 'credits', 1, true);
     label2.animation.addByPrefix('side', 'side', 1, true);
+    label2.animation.addByPrefix('trophies', 'trophies', 1, true);
+    label2.animation.addByPrefix('gallery', 'gallery', 1, true);
     label2.animation.addByPrefix('options', 'options', 1, true);
     label2.animation.play('side');
+    label2.cameras = [camMain];
     label2.setGraphicSize(labelSize);
     label2.updateHitbox();
     //label2.y = label1.y;
@@ -214,10 +332,12 @@ class RetroMainMenu extends MusicBeatState
 
     // FlxG.width * 0.7
     camFollow.setPosition(FlxG.width / 2 + camMinOffset, baseY);
-    resetCamera(isSpreading ? true : false);
+    camFollowExtras.setPosition(FlxG.width / 2 + camMinOffset, baseY);
+    resetCamera(isSpreading ? true : false, camMain, camFollow);
+    resetCamera(pagesIsSpreading[1] ? true : false, camExtras, camFollowExtras);
 
     var closeCallback:Dynamic = function(_:Dynamic) {
-      resetCamera();
+      resetCurrentCamera();
     };
     subStateClosed.add(closeCallback);
 
@@ -237,6 +357,7 @@ class RetroMainMenu extends MusicBeatState
       state.leftWatermarkText.font = Paths.font('Kenyan Coffee Rg.otf');
       state.leftWatermarkText.size = FlxG.onMobile ? 30 : 25;
       state.leftWatermarkText.text = waterMarkText;
+      state.leftWatermarkText.cameras = [camMain];
       state.leftWatermarkText.y = FlxG.height - state.leftWatermarkText.fieldHeight - (FlxG.onMobile ? 57 : 45);
     }
     if (state.rightWatermarkText != null && RetroSave.isDebug()) {
@@ -247,9 +368,15 @@ class RetroMainMenu extends MusicBeatState
       state.rightWatermarkText.x = FlxG.width - state.rightWatermarkText.width - 5;
       state.rightWatermarkText.y = FlxG.height - state.rightWatermarkText.height - 5;
       state.rightWatermarkText.visible = true;
+      state.rightWatermarkText.cameras = [camMain];
     }
 
     lastMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
+
+    var save:Save = Save.instance;
+    if (save.modOptions.get('retroWasInExtrasMenu', false)) {
+      startPageTransition(1, true);
+    };
 
     // Habilitar navegação
     new FlxTimer().start(0.6, function(_:FlxTimer) {
@@ -257,7 +384,7 @@ class RetroMainMenu extends MusicBeatState
     });
   }
 
-  function createMenuItem(name:String, atlasPath:String, callback:Dynamic, sizeMult:Int):Void
+  function createMenuItem(name:String, atlasPath:String, callback:Dynamic, sizeMult:Int, page:Int):Void
   {
     var item:FunkinSprite = FunkinSprite.create(0, 0);
 
@@ -267,30 +394,43 @@ class RetroMainMenu extends MusicBeatState
     item.animation.addByPrefix('bright', upperName + 'BRIGHT', 24, false);
     item.animation.addByPrefix('dark', upperName + 'DARK', 24, false);
     item.animation.play('bright');
-    item.setGraphicSize(Std.int(sizeMult * FlxG.height));
+    item.setGraphicSize(Std.int(sizeMult * FlxG.height), Std.int(sizeMult * FlxG.height));
     item.updateHitbox();
 
-    isWideScreen = FlxG.width > 1280;
+    pagesMenuFullScale[page].push(item.scale.x);
+
     var cutLeft:Float = item.frameWidth / (isWideScreen ? 4.5 : 4);
     var cutRight:Float = cutLeft;
     var shaderOffset:Float = 0;
     var shaderEndOffset:Float = 0;
+    var fuckingHitboxAdjustment:Float = 0;
 
     switch (name) {
       case 'story':
         cutLeft = 20;
-        cutRight += 40;
+        cutRight += 50;
       case 'options':
         cutRight = 70;
-        shaderOffset -= 20;
+        shaderOffset += 0;
         shaderEndOffset += 5;
+      case 'gallery':
+        cutRight = 70;
+        shaderOffset += 50;
       case 'credits':
-        cutLeft -= 20;
-        cutRight += 20;
+        cutLeft -= 10;
+        cutRight += 69;
         shaderOffset -= 20;
+      case 'extras':
+        cutLeft -= 50;
+        cutRight += 50;
+        fuckingHitboxAdjustment = -200;
+        shaderOffset += 10;
       case 'side':
         cutLeft -= 20;
-        cutRight += 20;
+        cutRight += 43;
+      case 'freeplay':
+        cutLeft -= 20;
+        cutRight += 100;
       default:
     }
 
@@ -299,13 +439,14 @@ class RetroMainMenu extends MusicBeatState
     var clipW:Float = item.frameWidth - cutLeft - cutRight;
     var clipH:Float = item.frameHeight;
 
-    var usesShader:Bool = (name == 'side' || name == 'credits' || name == 'options');
-    menuUsesShaders.push(usesShader);
+    var shaderButtons:Array<String> = ['freeplay', 'extras', 'side', 'credits', 'options', 'gallery'];
+    var usesShader:Bool = shaderButtons.contains(name);
+    pagesMenuUsesShaders[page].push(usesShader);
 
-    var border = FunkinSprite.create(0, 0).makeSolidColor(item.frameWidth, item.frameHeight * 1.5, FlxColor.BLACK);
+    var border = FunkinSprite.create(0, 0).makeSolidColor(item.frameWidth / 2, item.frameHeight * 1.5, FlxColor.BLACK);
     border.angle = -11;
     border.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
-    menuBorders.push(border);
+    pagesMenuBorders[page].push(border);
 
     if (usesShader) {
       var shader = new RetroAngleMaskShader();
@@ -315,51 +456,57 @@ class RetroMainMenu extends MusicBeatState
       item.shader = shader;
       shader.attachedSprite = item;
 
-      menuShaders.push(shader);
+      pagesMenuShaders[page].push(shader);
     } else {
-      menuShaders.push(null);
+      pagesMenuShaders[page].push(null);
     }
 
     //item.clipRect = new FlxRect(clipX, clipY, clipW, clipH);
-    menuClips.push(new FlxRect(clipX, clipY, clipW, clipH));
+    pagesMenuClips[page].push(new FlxRect(clipX, clipY, clipW, clipH));
 
     // spacingWidth: teto em frameWidth - 2*defaultCut (tamanho de um item padrão).
     // Itens com cutLeft pequeno (story) não inflam o cálculo de spread.
     var defaultCut:Float = item.frameWidth / (FlxG.onMobile ? 4.5 : 4);
-    menuSpacingWidths.push(Math.min(clipW, item.frameWidth - 2 * defaultCut));
+    pagesMenuSpacingWidths[page].push(Math.min(clipW, item.frameWidth - 2 * defaultCut));
 
-    item.ID = menuItems.length;
+    item.ID = pagesMenuItems[page].length;
     item.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
 
     // CRIAR HITBOX ESPECÍFICA
-    var hitbox = new FlxObject(0, 0, clipW * item.scale.x, clipH * item.scale.y);
+    var finalHitboxWidth:Float = (clipW - fuckingHitboxAdjustment) * item.scale.x;
+    var hitbox:FlxObject = new FlxObject(0, 0, finalHitboxWidth, clipH * item.scale.y);
     hitbox.scrollFactor.set(itemScrollFactor[0], itemScrollFactor[1]);
-    menuHitboxes.push(hitbox);
+    pagesMenuHitboxes[page].push(hitbox);
     add(hitbox);
 
-    menuItems.push(item);
-    menuCallbacks.push(callback);
-    menuNames.push(name);
+    pagesMenuItems[page].push(item);
+    pagesMenuCallbacks[page].push(callback);
+    pagesMenuNames[page].push(name);
 
     add(item);
     add(border);
-    if (name == 'options') {
+    if (name == 'options' || name == 'gallery') {
       border.destroy();
-      menuBorders[menuBorders.length - 1] = null;
+      pagesMenuBorders[page][pagesMenuBorders[page].length - 1] = null;
     }
   }
 
-  function positionMenuItems():Void
+  function positionMenuItems(page:Int):Void
   {
-    var totalItems:Int = menuItems.length;
+    var items = pagesMenuItems[page];
+    var hitboxes = pagesMenuHitboxes[page];
+    var borders = pagesMenuBorders[page];
+    var clips = pagesMenuClips[page];
+
+    var totalItems:Int = items.length;
     if (totalItems == 0) return;
 
     var totalSpriteWidth:Float = 0;
     var screenWidths:Array<Float> = [];
 
     for (i in 0...totalItems) {
-      var sx:Float = menuItems[i].scale.x;
-      var w:Float = menuClips[i].width * sx;
+      var sx:Float = items[i].scale.x;
+      var w:Float = clips[i].width * sx;
       screenWidths.push(w);
       totalSpriteWidth += w;
     }
@@ -368,12 +515,13 @@ class RetroMainMenu extends MusicBeatState
     var availableWidth:Float = FlxG.width - (sidePadding * 2);
 
     var naturalWidth:Float = totalSpriteWidth + (horizontalSpacing * (totalItems - 1));
-    isSpreading = naturalWidth <= availableWidth;
+    var spreading:Bool = naturalWidth <= availableWidth;
+    pagesIsSpreading[page] = spreading;
 
     var finalSpacing:Float = horizontalSpacing;
-    var currentX:Float = -85;
+    var currentX:Float = page == 0 ? -100 : -35;
 
-    if (isSpreading) {
+    if (spreading) {
       if (totalItems > 1) {
         finalSpacing = Math.max(horizontalSpacing, (availableWidth - totalSpriteWidth) / (totalItems - 1));
       }
@@ -382,13 +530,14 @@ class RetroMainMenu extends MusicBeatState
 
     for (i in 0...totalItems)
     {
-      var item:FunkinSprite = menuItems[i];
-      var hitbox:FlxObject = menuHitboxes[i];
-      var border:FunkinSprite = menuBorders[i];
-      var clip:FlxRect = menuClips[i];
+      var item:FunkinSprite = items[i];
+      var hitbox:FlxObject = hitboxes[i];
+      var border:FunkinSprite = borders[i];
+      var clip:FlxRect = clips[i];
       var sx:Float = item.scale.x;
       var sy:Float = item.scale.y;
       var borderOffset:Float = 0;
+      var hitboxOffset:Float = 0;
 
       item.x = currentX - clip.x * sx;
       item.y = baseY - (item.height / 2);
@@ -396,42 +545,70 @@ class RetroMainMenu extends MusicBeatState
       // Ajustar posições (MEU DEUSSSS)
       switch (i) {
         case 0:
-          item.x += 13;
-          borderOffset = 30;
+          if (page == 0) {
+            item.x += 13;
+            borderOffset = 25;
+          } else {
+            item.x += 55;
+            borderOffset = -13;
+          }
+        case 1:
+          if (page == 0) {
+            item.x += 7;
+            borderOffset = 25;
+          } else {
+            borderOffset = 25;
+          }
+        case 2:
+          if (page == 0) {
+            item.x += 38;
+          } else {
+            item.x += 30;
+          }
+          borderOffset = 57;
+        case 3:
+          if (page == 1) {
+            item.x += 40;
+          } else {
+            hitboxOffset -= 100;
+            item.x += 60;
+          }
       }
 
       if (border != null) {
-        border.x = item.x + item.frameWidth - (border.width / 3) + borderOffset;
+        border.x = item.x + item.frameWidth - (border.width / 1.5) + borderOffset;
         border.screenCenter(0x10);
       }
 
-      hitbox.x = currentX;
+      hitbox.x = currentX + ((screenWidths[i] - hitbox.width) / 2) + hitboxOffset;
       hitbox.y = item.y + clip.y * sy;
       hitbox.width = screenWidths[i];
       hitbox.height = clip.height * sy;
+
+      pagesMenuOriginalX[page][i] = item.x;
+      pagesMenuBorderOriginalX[page][i] = border != null ? border.x : 0;
 
       currentX += screenWidths[i] + finalSpacing;
     }
 
     if (totalItems > 0)
     {
-      if (isSpreading) {
+      if (spreading) {
         var screenCenter:Float = FlxG.width / 2;
-        minCamX = screenCenter;
-        maxCamX = screenCenter;
+        pagesMinCamX[page] = screenCenter;
+        pagesMaxCamX[page] = screenCenter;
       } else {
-        var lastItem = menuItems[totalItems - 1];
-        var lastClip = menuClips[totalItems - 1];
+        var lastItem = items[totalItems - 1];
+        var lastClip = clips[totalItems - 1];
 
-        minCamX = (FlxG.width / 2) + camMinOffset;
+        pagesMinCamX[page] = (FlxG.width / 2) + camMinOffset;
 
         var lastItemRight:Float = lastItem.x + ((lastClip.x + lastClip.width) * lastItem.scale.x);
-        maxCamX = lastItemRight - (FlxG.width / 2) + camMaxOffset;
+        pagesMaxCamX[page] = lastItemRight - (FlxG.width / 2) + camMaxOffset;
 
-        if (maxCamX < minCamX) maxCamX = minCamX;
+        if (pagesMaxCamX[page] < pagesMinCamX[page]) pagesMaxCamX[page] = pagesMinCamX[page];
       }
     }
-    //if (FlxG.onMobile) throw isSpreading;
   }
 
   function setIdleState(?doTween:Bool = true):Void
@@ -482,7 +659,8 @@ class RetroMainMenu extends MusicBeatState
       insert(menuStartIndex + index * 2, item);
       if (border != null) {
         remove(border);
-        insert(menuStartIndex + index * 2 + 1, border);
+        var itemPos:Int = members.indexOf(item);
+        insert(itemPos + 1, border);
       }
     }
   }
@@ -521,7 +699,7 @@ class RetroMainMenu extends MusicBeatState
       var t:Float = (lastCenter != firstCenter) ? (selectedCenter - firstCenter) / (lastCenter - firstCenter) : 0;
       var targetX:Float = FlxMath.lerp(minCamX, maxCamX, FlxMath.bound(t, 0, 1));
 
-      camFollow.setPosition(targetX, baseY);
+      activeCamFollow().setPosition(targetX, baseY);
 
       /* OLD
       var targetX:Float = selected.x + clipData.x + (clipData.width);
@@ -544,7 +722,7 @@ class RetroMainMenu extends MusicBeatState
       return;
     }
 
-    var isExtra:Bool = (name == 'side' || name == 'credits');
+    var isExtra:Bool = (name == 'side' || name == 'credits' || name == 'trophies' || name == 'gallery');
     var activeLabel = isExtra ? label2 : label1;
     var inactiveLabel = isExtra ? label1 : label2;
 
@@ -572,13 +750,28 @@ class RetroMainMenu extends MusicBeatState
         offsetExtraY = -40;
       case 'side':
         side = 1.0;
+        offsetExtra = 100;
+      case 'freeplay':
+        side = 1.0;
         offsetExtra = 50;
+        offsetExtraY = -5;
       case 'credits':
         side = -1.0;
-        offsetExtra = 50;
+        offsetExtra = -40;
+      case 'extras':
+        side = -1.0;
+        offsetExtra = 55;
       case 'options':
         side = -1.0;
         offsetExtra = 200;
+      case 'trophies':
+        side = 1.0;
+        offsetExtra = 70;
+        offsetExtraY = -5;
+      case 'gallery':
+        side = -1.0;
+        offsetExtra = 50;
+        offsetExtraY = 15;
     }
 
     activeLabel.y = baseY - (activeLabel.height / 2) + offsetExtraY;
@@ -670,6 +863,153 @@ class RetroMainMenu extends MusicBeatState
     startExitState(stateFunc, false);
   }
 
+  function goToExtras():Void
+  {
+    if (isBusy || isExiting || currentPage != 0) return;
+    setIdleState(true);
+    startPageTransition(1);
+  }
+
+  function goBackToMain():Void
+  {
+    if (isBusy || isExiting || currentPage != 1) return;
+    setIdleState(false);
+    startPageTransition(0);
+  }
+
+  function startPageTransition(toPage:Int, ?instant:Bool):Void
+  {
+    isBusy = true;
+    canNavigate = false;
+    idleTimer.cancel();
+
+    var save:Save = Save.instance;
+    save.modOptions.set('retroWasInExtrasMenu', toPage == 1);
+    save.flush();
+
+    if (toPage == 1) camExtras.visible = true;
+
+    var goingForward:Bool = toPage == 1;
+    var camera:FlxCamera = goingForward ? camExtras : camMain;
+
+    var hiddenPage:Int = goingForward ? 0 : 1;
+    var revealedPage:Int = toPage;
+
+    var hiddenItems = pagesMenuItems[hiddenPage];
+    var hiddenHitboxes = pagesMenuHitboxes[hiddenPage];
+    var hiddenBorders = pagesMenuBorders[hiddenPage];
+
+    var revealedItems = pagesMenuItems[revealedPage];
+    var revealedBorders = pagesMenuBorders[revealedPage];
+
+    FunkinSound.playOnce(Paths.sound(goingForward ? 'scrollMenu' : 'cancelMenu'), 1);
+
+    var c1StartX:Float = -FlxG.width * 0.1;
+    var c2StartX:Float = FlxG.width / 2;
+
+    var curtainMoveDist:Float = FlxG.width * 0.6;
+
+    var c1TargetX:Float = goingForward ? (c1StartX - curtainMoveDist) : c1StartX;
+    var c2TargetX:Float = goingForward ? (c2StartX + curtainMoveDist) : c2StartX;
+
+    var easeCurtain = goingForward ? FlxEase.expoOut : FlxEase.expoIn;
+    FlxTween.tween(bgCurtainBorders[0], {x: c1TargetX}, pageTransitionTime, {ease: easeCurtain});
+    FlxTween.tween(bgCurtainBorders[1], {x: c2TargetX}, pageTransitionTime, {ease: easeCurtain});
+
+    for (i in 0...hiddenItems.length)
+    {
+      var targetX:Float = pagesMenuOriginalX[hiddenPage][i];
+      var targetBorderX:Float = pagesMenuBorderOriginalX[hiddenPage][i];
+      if (goingForward) {
+        var offset:Float = (i < 2 ? -1 : 1) * pageSlideDistance;
+        targetX += offset;
+        targetBorderX += offset;
+      }
+
+      var hiddenFullScale:Float = pagesMenuFullScale[hiddenPage][i];
+      var hiddenTargetScale:Float = goingForward ? hiddenFullScale : hiddenFullScale * 0.9;
+      var camZoom:Float = goingForward ? 1 : 0.9;
+
+      slideItemSet(hiddenItems[i], hiddenHitboxes[i], hiddenBorders[i], targetX, targetBorderX, FlxEase.quintIn, instant);
+      zoomItemSet(camExtras, camZoom, goingForward ? FlxEase.quintIn : FlxEase.expoOut, instant);
+      //zoomItemSet(hiddenItems[i], hiddenBorders[i], hiddenTargetScale, goingForward ? FlxEase.expoIn : FlxEase.expoOut);
+      hiddenHitboxes[i].exists = false;
+    }
+
+    for (i in 0...revealedItems.length)
+    {
+      var targetX:Float = pagesMenuOriginalX[revealedPage][i];
+      var targetBorderX:Float = pagesMenuBorderOriginalX[revealedPage][i];
+      var fullScale:Float = pagesMenuFullScale[revealedPage][i];
+      var targetScale:Float = fullScale;
+      var camZoom:Float = 1;
+
+      slideItemSet(revealedItems[i], pagesMenuHitboxes[revealedPage][i], revealedBorders[i], targetX, targetBorderX, FlxEase.expoOut, instant);
+      //zoomItemSet(camera, targetScale, goingForward ? FlxEase.expoOut : FlxEase.expoIn);
+      //zoomItemSet(revealedItems[i], revealedBorders[i], targetScale, goingForward ? FlxEase.expoOut : FlxEase.expoIn);
+    }
+
+    new FlxTimer().start(pageTransitionTime, function(_:FlxTimer) {
+      finishPageTransition(toPage);
+    });
+  }
+
+  function slideItemSet(item:FunkinSprite, hitbox:FlxObject, border:FunkinSprite, targetX:Float, targetBorderX:Float, ease:Dynamic, ?instant:Bool):Void
+  {
+    var deltaX:Float = targetX - item.x;
+
+    if (!instant) {
+      FlxTween.tween(item, {x: targetX}, pageTransitionTime, {ease: ease});
+      //FlxTween.tween(hitbox, {x: hitbox.x + deltaX}, pageTransitionTime, {ease: ease});
+      if (border != null) FlxTween.tween(border, {x: targetBorderX}, pageTransitionTime, {ease: ease});
+    } else {
+      item.x = targetX;
+      if (border != null) border.x = targetBorderX;
+    }
+  }
+
+  function zoomItemSet(camera:FlxCamera, targetScale:Float, ease:Dynamic, ?instant:Bool):Void
+  {
+    if (!instant) {
+      FlxTween.tween(camera, {zoom: targetScale}, pageTransitionTime, {ease: ease});
+    } else {
+      camera.zoom = targetScale;
+    }
+    //FlxTween.tween(item.scale, {x: targetScale, y: targetScale}, pageTransitionTime, {ease: ease});
+    //if (border != null) FlxTween.tween(border.scale, {x: targetScale, y: targetScale}, pageTransitionTime, {ease: ease});
+  }
+
+  function finishPageTransition(toPage:Int):Void
+  {
+    currentPage = toPage;
+
+    if (currentPage == 0) camExtras.visible = false;
+
+    menuItems = pagesMenuItems[toPage];
+    menuCallbacks = pagesMenuCallbacks[toPage];
+    menuHitboxes = pagesMenuHitboxes[toPage];
+    menuNames = pagesMenuNames[toPage];
+    menuClips = pagesMenuClips[toPage];
+    menuShaders = pagesMenuShaders[toPage];
+    menuUsesShaders = pagesMenuUsesShaders[toPage];
+    menuBorders = pagesMenuBorders[toPage];
+    menuSpacingWidths = pagesMenuSpacingWidths[toPage];
+    menuStartIndex = pagesMenuStartIndex[toPage];
+    minCamX = pagesMinCamX[toPage];
+    maxCamX = pagesMaxCamX[toPage];
+    isSpreading = pagesIsSpreading[toPage];
+
+    for (hitbox in menuHitboxes) hitbox.exists = true;
+
+    selectedIndex = 0;
+    activeCamFollow().setPosition(FlxG.width / 2 + camMinOffset, baseY);
+    resetCurrentCamera(isSpreading);
+    setIdleState(false);
+
+    isBusy = false;
+    canNavigate = true;
+  }
+
   function startExitState(state:Dynamic, customFunction:Bool, ?transitionTime:Float = 0.15):Void
   {
     if (isExiting) return;
@@ -696,6 +1036,7 @@ class RetroMainMenu extends MusicBeatState
     bgFront.scrollFactor.set(0, 0);
     bgFront.screenCenter();
     bgFront.alpha = 0;
+    bgFront.cameras = [camMain];
     bgFront.updateHitbox();
     insert(1000, bgFront);
 
@@ -720,11 +1061,29 @@ class RetroMainMenu extends MusicBeatState
     });
   }
 
-  function resetCamera(snap:Bool = true):Void
+  function resetCamera(snap:Bool = true, ?cam:FlxCamera, ?follow:FlxObject):Void
   {
-    FlxG.camera.follow(camFollow, null, 0.3); // 0.06
+    if (cam == null) cam = FlxG.camera;
+    if (follow == null) follow = camFollow;
 
-    if (snap) FlxG.camera.snapToTarget();
+    cam.follow(follow, null, 0.3); // 0.06
+
+    if (snap) cam.snapToTarget();
+  }
+
+  function resetCurrentCamera(snap:Bool = true):Void
+  {
+    resetCamera(snap, activeCamera(), activeCamFollow());
+  }
+
+  function activeCamera():FlxCamera
+  {
+    return currentPage == 0 ? camMain : camExtras;
+  }
+
+  function activeCamFollow():FlxObject
+  {
+    return currentPage == 0 ? camFollow : camFollowExtras;
   }
 
   override function closeSubState():Void
@@ -742,7 +1101,7 @@ class RetroMainMenu extends MusicBeatState
 
     // MOUSE/TOUCH HANDLING
 
-    var camMoving:Bool = (Math.abs(FlxG.camera.scroll.x - (camFollow.x - FlxG.width / 2)) > 1);
+    var camMoving:Bool = (Math.abs(activeCamera().scroll.x - (activeCamFollow().x - FlxG.width / 2)) > 1);
 
     var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased || SwipeUtil.swipeAny;
     var currentMouseX:Float = FlxG.mouse.x;
@@ -751,7 +1110,7 @@ class RetroMainMenu extends MusicBeatState
       var t:Float = FlxMath.bound(currentMouseX / FlxG.width, 0, 1);
       var targetX:Float = FlxMath.lerp(minCamX, maxCamX, t);
 
-      camFollow.setPosition(targetX, baseY);
+      activeCamFollow().setPosition(targetX, baseY);
     }
 
     if (lastMousePos == null) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
@@ -878,12 +1237,33 @@ class RetroMainMenu extends MusicBeatState
     canNavigate = false;
     isBusy = true;
     FlxG.sound.music.fadeOut(time, 0);
-    FlxG.camera.fade(0xFF262a34, time, false, function() {
+    camMain.fade(0xFF262a34, time, false, function() {
       FlxG.switchState(() -> new RetroTrophyState());
     }, true);
   }
 
+  function interactLocked():Void {
+    if (isBusy || isExiting) return;
+    FunkinSound.playOnce(Paths.sound('menus/no'));
+    camMain.shake(0.003, 0.1, null, true);
+    camExtras.shake(0.003, 0.1, null, true);
+    RetroAchievements.award('misc-nolock', true, true);
+    isBusy = false;
+    canNavigate = true;
+    isExiting = false;
+  }
+
   function goBack():Void
+  {
+    if (currentPage == 1) {
+      goBackToMain();
+      return;
+    }
+
+    exitToTitle();
+  }
+
+  function exitToTitle():Void
   {
     canNavigate = false;
     rememberedSelectedIndex = selectedIndex;
@@ -894,7 +1274,7 @@ class RetroMainMenu extends MusicBeatState
       FlxG.switchState(() -> new TitleState());
     };
 
-    FlxG.camera.fade(0xFF000000, 0.1, false, fallbackFunc, true);
+    camMain.fade(0xFF000000, 0.1, false, fallbackFunc, true);
   }
 
   override function destroy():Void

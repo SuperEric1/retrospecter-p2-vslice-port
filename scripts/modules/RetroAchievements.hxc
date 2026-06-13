@@ -2,6 +2,7 @@ package supereric.retrospecter.modules;
 
 import funkin.modding.module.Module;
 import funkin.save.Save;
+import funkin.play.PlayState;
 import funkin.graphics.FunkinSprite;
 import funkin.audio.FunkinSound;
 import funkin.Paths;

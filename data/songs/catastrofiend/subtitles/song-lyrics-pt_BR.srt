@@ -1,0 +1,63 @@
+﻿1
+00:00:58,100 --> 00:00:59,510
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Saia Agora!</font>
+
+2
+00:00:59,511 --> 00:01:01,500
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Ou Enfrente Minha Ira!</font>
+
+3
+00:01:05,450 --> 00:01:07,210
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Atravesse Esses Portões</font>
+
+4
+00:01:07,211 --> 00:01:09,080
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">E Você Vai MORRER!</font>
+
+5
+00:01:12,720 --> 00:01:16,350
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Eu vou carbonizar seus OSSOS...</font>
+
+6
+00:01:20,890 --> 00:01:22,369
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Grrr...</font>
+
+7
+00:01:22,370 --> 00:01:23,619
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Tudo bem...</font>
+
+8
+00:01:23,620 --> 00:01:24,529
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Isso...</font>
+
+9
+00:01:24,530 --> 00:01:25,449
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Significa...</font>
+
+10
+00:01:25,450 --> 00:01:27,260
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">GUERRA!</font>
+
+11
+00:04:23,620 --> 00:04:25,440
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Criança inútil...</font>
+
+12
+00:04:29,080 --> 00:04:30,880
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Você É Uma</font>
+
+13
+00:04:30,881 --> 00:04:32,720
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Grande vergonha.</font>
+
+14
+00:04:38,160 --> 00:04:39,990
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Me ajude a lutar...!</font>
+
+15
+00:04:43,610 --> 00:04:47,070
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Eu serei seu FIM...</font>
+
+16
+00:04:47,320 --> 00:04:50,910
+<font color="#dcfcf3" face="Atari ST 8x16 System Font" size="35px">Eu sou sua CATÁSTROFE!</font>

@@ -36,7 +36,7 @@ class RetroChangeCharacterModule extends Module {
 		super.onSongEvent(event);
 		var theEvent = event.eventData;
 		if (theEvent.eventKind == "RetroChangeCharacter") {
-			//if (!PlayStatePlaylist.isStoryMode && theEvent.value?.story ?? false) return;
+			if (!PlayStatePlaylist.isStoryMode && theEvent.value?.story ?? false) return;
 			changeChar(theEvent.value.character, theEvent.value.newchar);
 		}
 	}
