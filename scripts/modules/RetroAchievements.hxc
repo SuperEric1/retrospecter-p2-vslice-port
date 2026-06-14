@@ -29,21 +29,22 @@ class RetroAchievements extends Module
   static var PATH:String = 'ui/menu/trophies/';
   static var SAVE_KEY:String = 'retroAchievements';
 
-  static var TOAST_PADDING:Float = 15;
-  static var TOAST_CORNER_RADIUS:Float = 12;
-  static var TOAST_PEEK_OFFSET:Float = 50;
-  static var TOAST_SCALE_STEP:Float = 0.04;
-  static var TOAST_SCALE_STEP_SMALL:Float = 0.1;
+  static var TOAST_SCALE_MULT:Float = (FlxG.isMobile) ? 1.25 : 1.0;
+  static var TOAST_PADDING:Float = 15 * TOAST_SCALE_MULT;
+  static var TOAST_CORNER_RADIUS:Float = 12 * TOAST_SCALE_MULT;
+  static var TOAST_PEEK_OFFSET:Float = 50 * TOAST_SCALE_MULT;
+  static var TOAST_SCALE_STEP:Float = 0.04 * TOAST_SCALE_MULT;
+  static var TOAST_SCALE_STEP_SMALL:Float = 0.1 * TOAST_SCALE_MULT;
   static var TOAST_MIN_SCALE:Float = 0.75;
-  static var TOAST_STAIR_OFFSET:Float = 2;
-  static var TOAST_GROUP_GAP:Float = 20;
-  static var TOAST_W:Float = 480;
-  static var TOAST_H:Float = 134;
-  static var ICON_SIZE:Float = 110;
-  static var TITLE_FONT_SIZE:Int = 24;
-  static var TITLE_MIN_FONT_SIZE:Int = 12;
-  static var DESC_FONT_SIZE:Int = 20;
-  static var DESC_MIN_FONT_SIZE:Int = 11;
+  static var TOAST_STAIR_OFFSET:Float = 2 * TOAST_SCALE_MULT;
+  static var TOAST_GROUP_GAP:Float = 20 * TOAST_SCALE_MULT;
+  static var TOAST_W:Float = 480 * TOAST_SCALE_MULT;
+  static var TOAST_H:Float = 134 * TOAST_SCALE_MULT;
+  static var ICON_SIZE:Float = Std.int(110 * TOAST_SCALE_MULT);
+  static var TITLE_FONT_SIZE:Int = Std.int(24 * TOAST_SCALE_MULT);
+  static var TITLE_MIN_FONT_SIZE:Int = Std.int(12 * TOAST_SCALE_MULT);
+  static var DESC_FONT_SIZE:Int = Std.int(20 * TOAST_SCALE_MULT);
+  static var DESC_MIN_FONT_SIZE:Int = Std.int(11 * TOAST_SCALE_MULT);
   static var ENTER_TIME:Float = 1.2;
   static var DISPLAY_TIME:Float = 3.0;
   static var LEAVE_TIME:Float = 0.15;
@@ -526,7 +527,7 @@ class RetroAchievements extends Module
       }
     }
     var padLeft:Float = 12;
-    var titlePadTop:Float = 14;
+    var titlePadTop:Float = 14 * TOAST_SCALE_MULT;
 
     // Container. the entire toast moves as one unit
     var container = new Sprite();
@@ -594,8 +595,8 @@ class RetroAchievements extends Module
     var cancelBm = new Bitmap(cancelGraphic.graphic.bitmap);
     cancelBm.x = 3;
     cancelBm.y = 3;
-    cancelBm.width = 14;
-    cancelBm.height = 14;
+    cancelBm.width = 14 * TOAST_SCALE_MULT;
+    cancelBm.height = 14 * TOAST_SCALE_MULT;
     cancelSprite.addChild(cancelBm);
 
     cancelSprite.x = 2;
@@ -795,8 +796,8 @@ class RetroAchievements extends Module
     if (FlxG.keys.justPressed.N && RetroSave.isDebug()) {
       queueToast('death-deathgf');
       //grantAchievement('all-dummy');
-      // queueToast('all-all');
-      // queueToast('all-all');
+      queueToast('all-all');
+      queueToast('all-all');
       // queueToast('all-all');
       // queueToast('all-all');
       showQueuedToasts();

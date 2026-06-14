@@ -1267,7 +1267,7 @@ class RetroMainMenu extends MusicBeatState
     FunkinSound.playOnce(Paths.sound('menus/no'));
     camMain.shake(0.003, 0.1, null, true);
     camExtras.shake(0.003, 0.1, null, true);
-    RetroAchievements.award('misc-nolock', true, true);
+    RetroAchievements.award('misc-nolock', true, true, RetroSave.isDebug());
     isBusy = false;
     canNavigate = true;
     isExiting = false;
