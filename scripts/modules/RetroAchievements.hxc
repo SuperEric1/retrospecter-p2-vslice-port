@@ -42,9 +42,9 @@ class RetroAchievements extends Module
   static var TOAST_H:Float = 134 * TOAST_SCALE_MULT;
   static var ICON_SIZE:Float = Std.int(110 * TOAST_SCALE_MULT);
   static var TITLE_FONT_SIZE:Int = Std.int(24 * TOAST_SCALE_MULT);
-  static var TITLE_MIN_FONT_SIZE:Int = Std.int(12 * TOAST_SCALE_MULT);
+  static var TITLE_MIN_FONT_SIZE:Int = 12;
   static var DESC_FONT_SIZE:Int = Std.int(20 * TOAST_SCALE_MULT);
-  static var DESC_MIN_FONT_SIZE:Int = Std.int(11 * TOAST_SCALE_MULT);
+  static var DESC_MIN_FONT_SIZE:Int = 11;
   static var ENTER_TIME:Float = 1.2;
   static var DISPLAY_TIME:Float = 3.0;
   static var LEAVE_TIME:Float = 0.15;
@@ -533,7 +533,7 @@ class RetroAchievements extends Module
         targetY = last.targetY + TOAST_H * last.targetScale + TOAST_GROUP_GAP;
       }
     }
-    var padLeft:Float = 12;
+    var padLeft:Float = 12 * TOAST_SCALE_MULT;
     var titlePadTop:Float = 14 * TOAST_SCALE_MULT;
 
     // Container. the entire toast moves as one unit
@@ -558,7 +558,7 @@ class RetroAchievements extends Module
     titleField.selectable = false;
     titleField.width = TOAST_W - ICON_SIZE - 50;
     titleField.x = ICON_SIZE + 35 + padLeft;
-    titleField.y = 12 + titlePadTop;
+    titleField.y = (12 + titlePadTop) * TOAST_SCALE_MULT;
 
     var currentTitleSize:Int = TITLE_FONT_SIZE;
     while (titleField.numLines > 1 && currentTitleSize > TITLE_MIN_FONT_SIZE) {
@@ -574,11 +574,11 @@ class RetroAchievements extends Module
     descField.setTextFormat(new TextFormat('Atari ST 8x16 System Font', DESC_FONT_SIZE, 0xFFFFFF));
     descField.wordWrap = true;
     descField.selectable = false;
-    descField.width = TOAST_W - ICON_SIZE - 50;
+    descField.width = TOAST_W - ICON_SIZE - (50 * TOAST_SCALE_MULT);
     descField.x = ICON_SIZE + 35 + padLeft;
-    descField.y = 50 + titlePadTop;
+    descField.y = (50 + titlePadTop) * TOAST_SCALE_MULT;
 
-    var descBottomLimit:Float = TOAST_H - 3;
+    var descBottomLimit:Float = TOAST_H - (7 * TOAST_SCALE_MULT);
     if ((descField.y + descField.textHeight) > descBottomLimit) {
       var availableHeight:Float = descBottomLimit - descField.y;
       var fittedSize:Int = Std.int(DESC_FONT_SIZE * availableHeight / descField.textHeight);
@@ -801,9 +801,9 @@ class RetroAchievements extends Module
     super.onUpdate(event);
 
     if (FlxG.keys.justPressed.N && RetroSave.isDebug()) {
+      queueToast('wrath-blindhydra');
       queueToast('death-deathgf');
       //grantAchievement('all-dummy');
-      queueToast('all-all');
       queueToast('all-all');
       // queueToast('all-all');
       // queueToast('all-all');
