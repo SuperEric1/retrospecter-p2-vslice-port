@@ -713,6 +713,7 @@ class RetroTrophyState extends MusicBeatState
       backBtn.colorTransform.alphaOffset = -255 * 0.5;
       backBtn.scale.set(0.65, 0.65);
       backBtn.updateHitbox();
+      backBtn.blend = 0;
       FlxTween.tween(backBtn, {x: FlxG.width - 230}, 1, {ease: FlxEase.expoOut});
     }
   }

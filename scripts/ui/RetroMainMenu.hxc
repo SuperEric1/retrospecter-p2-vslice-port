@@ -16,6 +16,7 @@ import flixel.text.FlxText;
 import funkin.save.Save;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.FunkinMemory;
+import funkin.mobile.ui.FunkinBackButton;
 import funkin.util.Constants;
 import funkin.util.TouchUtil;
 import funkin.util.HapticUtil;
@@ -108,7 +109,7 @@ class RetroMainMenu extends MusicBeatState
   var idleTimeoutSeconds:Float = 3.0;
 
   // Mouse/Touch
-  var backBtn:Dynamic = null;
+  var backBtn:FunkinBackButton = null;
   var lastMousePos:FlxPoint;
   var _totalScreenMovedX:Float = 0;
   var _totalScreenMovedY:Float = 0;
@@ -230,8 +231,6 @@ class RetroMainMenu extends MusicBeatState
 
     curtain1.cameras = [camMain];
     curtain2.cameras = [camMain];
-
-    if (backBtn != null) backBtn.cameras = [camMain];
 
     var path = 'ui/mainmenu/';
 
@@ -379,6 +378,18 @@ class RetroMainMenu extends MusicBeatState
     if (save.modOptions.get('retroWasInExtrasMenu', false)) {
       startPageTransition(1, true);
     };
+
+    if (FlxG.onMobile) {
+      backBtn = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.5);
+      add(backBtn);
+      backBtn.scale.set(0.75, 0.75);
+      backBtn.updateHitbox();
+      backBtn.cameras = [camMain];
+      if (!save.modOptions.get('retroWasInExtrasMenu', false)) {
+        backBtn.x = FlxG.width;
+        FlxTween.tween(backBtn, {x: FlxG.width - 230}, 1, {ease: FlxEase.expoOut});
+      }
+    }
 
     // Habilitar navegação
     new FlxTimer().start(0.6, function(_:FlxTimer) {
@@ -911,7 +922,7 @@ class RetroMainMenu extends MusicBeatState
     var revealedItems = pagesMenuItems[revealedPage];
     var revealedBorders = pagesMenuBorders[revealedPage];
 
-    FunkinSound.playOnce(Paths.sound(goingForward ? 'scrollMenu' : 'cancelMenu'), 1);
+    //FunkinSound.playOnce(Paths.sound(goingForward ? 'scrollMenu' : 'cancelMenu'), 1);
 
     var c1StartX:Float = -FlxG.width * 0.1;
     var c2StartX:Float = FlxG.width / 2;
@@ -1282,6 +1293,10 @@ class RetroMainMenu extends MusicBeatState
     var fallbackFunc:Dynamic = function():Void {
       FlxG.switchState(() -> new TitleState());
     };
+
+    if (backBtn != null) {
+      FlxTween.tween(backBtn, {x: FlxG.width}, 0.1, {ease: FlxEase.expoOut});
+    }
 
     camMain.fade(0xFF000000, 0.1, false, fallbackFunc, true);
   }
