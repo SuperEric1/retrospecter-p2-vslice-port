@@ -539,7 +539,7 @@ class RetroMainMenu extends MusicBeatState
       var sx:Float = item.scale.x;
       var sy:Float = item.scale.y;
       var borderOffset:Float = 0;
-      var hitboxOffsets:Array<Float> = [-155, -30];
+      var hitboxOffsets:Array<Float> = [!spreading ? -155 : 20, -30];
       var hitboxAdjustment:Float = 0;
 
       item.x = currentX - clip.x * sx;
