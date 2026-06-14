@@ -285,6 +285,11 @@ class RetroPlayState extends Module {
       return;
     }
 
+    // Conquista de acertar uma nota enquanto tá com o efeito de beam
+    if (event.note.scoreable && hydraBeamStates.get(noteDir) != 0) {
+      RetroAchievements.award('wrath-blindhydra', true, true);
+    }
+
     if (k == 'chain' || k == 'autoChain') {
       if (PlayState.instance.isBotPlayMode) {
         event.cancel();

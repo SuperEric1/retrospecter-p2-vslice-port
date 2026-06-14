@@ -66,7 +66,7 @@ class RetroAchievements extends Module
     { id: 'wrath-blindhydra' },
     { id: 'wrath-funsizebf' },
 
-    { id: 'wrath-hydradodge' },
+    { id: 'wrath-hydradodge' }, // done
     { id: 'wrath-phone' },
     { id: 'wrath-hard' },
     { id: 'wrath-all' },
@@ -282,7 +282,7 @@ class RetroAchievements extends Module
 
     // MISC
     { id: 'misc-rockone' },
-    { id: 'misc-nolock', iconOverride: 'misc/nolock' },
+    { id: 'misc-nolock', iconOverride: 'misc/nolock' }, // done
     { id: 'misc-all' },
     { id: 'misc-hell' },
 
@@ -293,7 +293,7 @@ class RetroAchievements extends Module
 
     { id: 'misc-everynote' },
     { id: 'misc-idiot' },
-    { id: 'misc-incognito' },
+    { id: 'misc-incognito' }, // done
 
     // CORRUPTRO
     { id: 'corruptro-fivepoisons' },

@@ -552,6 +552,7 @@ class WrathPhase4Stage extends Stage
 
         if (curStep >= 1536) {
           var durSeconds = 10;
+          getBoyfriend().antialiasing = true;
           PlayState.instance.tweenCameraToPosition(getBoyfriend().x + 150, getBoyfriend().y + 100, 1, FlxEase.quadOut);
           PlayState.instance.tweenCameraZoom(3.55, durSeconds, false, FlxEase.quadOut);
 
@@ -600,6 +601,7 @@ class WrathPhase4Stage extends Stage
           geyserR.animation.play('loop');
           geyserM.animation.play('loop');
           bfPositionX -= 150;
+          getBoyfriend().antialiasing = false;
           PlayState.instance.tweenCameraZoom(1.4, 2, false, FlxEase.quadOut);
           FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
           FlxTween.tween(symbol, {alpha: 0}, 0.2, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
@@ -970,6 +972,8 @@ class WrathPhase4Stage extends Stage
     bloh = false;
     showingPlayerStrums = false;
     focusInDad = false;
+
+    getBoyfriend().antialiasing = false;
 
     loadedPart = 0;
     loadSectionOne();
