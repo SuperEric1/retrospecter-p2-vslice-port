@@ -326,6 +326,10 @@ class RetroAchievements extends Module
   {
     super('RetroAchievements');
     initSave();
+
+    if (RetroSave.isResetAchievements()) {
+      resetAllAchievements();
+    }
   }
 
   public static function resetAllAchievements():Void
@@ -355,8 +359,11 @@ class RetroAchievements extends Module
     trace("Awarded achievement: " + id);
 
     if (showToast) {
-      queueToast(id);
-      if (instaShow) showQueuedToasts();
+      if (instaShow) {
+        _showQueue([id]);
+      } else {
+        queueToast(id);
+      }
     }
   }
 

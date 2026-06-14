@@ -542,6 +542,12 @@ class RetroTrophyState extends MusicBeatState
     var pageStart:Int = currentPage * GRID_SIZE;
     var catColor:FlxColor = cat.color;
 
+    if (cat.id == 'misc') {
+      selector.color = FlxColor.BLACK;
+    } else {
+      selector.color = -1;
+    }
+
     for (i in 0...GRID_SIZE) {
       var slot = iconSlots[i];
       var achIndex:Int = pageStart + i;
