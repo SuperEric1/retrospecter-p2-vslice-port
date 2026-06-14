@@ -1275,6 +1275,7 @@ class RetroMainMenu extends MusicBeatState
 
   function goBack():Void
   {
+    if (isBusy || isExiting || !canNavigate) return;
     if (currentPage == 1) {
       goBackToMain();
       return;
