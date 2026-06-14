@@ -380,7 +380,7 @@ class RetroMainMenu extends MusicBeatState
     };
 
     if (FlxG.onMobile) {
-      backBtn = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.5, true);
+      backBtn = new FunkinBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.5);
       add(backBtn);
       backBtn.scale.set(0.75, 0.75);
       backBtn.updateHitbox();
