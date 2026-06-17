@@ -23,8 +23,9 @@ import funkin.play.stage.StageProp;
 import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
 import funkin.util.Constants;
-import funkin.ui.FullScreenScaleMode;
 
 import supereric.retrospecter.modules.RetroLanguage;
 
@@ -43,6 +44,30 @@ class SatisfractureSong extends Song
   var cutsceneSounds:Array<FunkinSound> = [];
   var isDoingEnough:Bool = false;
 
+  var isMobile:Bool;
+  var modcharts:Bool = true;
+  var hasStoredStrums:Bool = false;
+
+  var defaultStrumX:Array<Float> = [0, 0, 0, 0, 0, 0, 0, 0];
+  var defaultStrumY:Array<Float> = [0, 0, 0, 0, 0, 0, 0, 0];
+  var defaultOpponentStrumlineX:Float = 0;
+  var defaultPlayerStrumlineX:Float = 0;
+
+  var camHudAngle:Float = 0;
+  var hudAlpha:Float = 1.0;
+  var showOnlyStrums:Bool = false;
+
+  var mcSway:Bool = false;
+  var mcQuickdraw:Bool = false;
+  var mcQuickdraw2:Bool = false;
+  var mcQuickdraw3:Bool = false;
+  var mcQuickdraw4:Bool = false;
+  var mcCrisscross:Bool = false;
+  var mcCrisscross2:Bool = false;
+  var mcSpeedy:Bool = false;
+  var mcFadingCrissCross:Bool = false;
+  var mcDidFinalFade:Bool = false;
+
   var beepSound:FunkinSound;
   var micSound:FunkinSound;
   var cutsceneMusic:FunkinSound;
@@ -56,6 +81,7 @@ class SatisfractureSong extends Song
 
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
+    hasStoredStrums = false;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -86,6 +112,12 @@ class SatisfractureSong extends Song
       }]);
     }
 
+  }
+
+  override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    if (!hasStoredStrums && modcharts) storeDefaultStrums();
   }
 
 
@@ -204,7 +236,8 @@ class SatisfractureSong extends Song
     cutsceneSounds.push(micSound);
   }
 
-  public function onStepHit(event) { //TODO: melhorar os steps pra que possa ocorrer de boa. e deixar mais accruate com o og
+  public override function onStepHit(event:SongTimeScriptEvent):Void
+  {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
     if (PlayState.instance.isGameOverState) return;
@@ -216,33 +249,38 @@ class SatisfractureSong extends Song
     ];
 
     // ENOUGH
-    // As animações alt ativam no script do personagem
-    if (event.step == 176) { //notas do retro somem
+    if (event.step == 176) {
       playState.cameraFollowPoint.setPosition(retroPos[0] - 350, retroPos[1]);
-      //tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
     }
-    if (event.step == 188) { //enough (o zoom é no chart)
+    if (event.step == 188) {
       isDoingEnough = true;
       playState.mayPauseGame = false;
-      // desativar controles para nao perder vida sem querer
-      // movido pro onghostnotemiss para ter ghost tapping no lugar
-      //PlayState.instance.disableKeys = true;
       playState.tweenCameraToPosition(retroPos[0] - 200, retroPos[1] - 100, 0.2, FlxEase.quadOut);
+      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0},
+        (Conductor.instance.stepLengthMs * 0.5) / 1000, {ease: FlxEase.linear}));
 
-      tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 0.5)  / 1000, {ease: FlxEase.linear}));
-    }
-    if (event.step == 191) { // aparecer notas novamente
-      //tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 1}, (Conductor.instance.stepLengthMs * 1)  / 1000, {ease: FlxEase.linear}));
+      // modchart: fade opponent strums
+      if (modcharts) {
+        for (i in 0...4) tweenFadeOut(i, 0, 0.4);
+      }
     }
     if (event.step == 192) {
       playState.mayPauseGame = true;
       isDoingEnough = false;
       playState.tweenCameraToPosition(retroPos[0], retroPos[1], 0);
-      //PlayState.instance.disableKeys = false;
       PlayState.instance.opponentStrumline.alpha = 1;
-      FlxG.camera.flash(0xFFFFFFFF, 0.3);
+      PlayState.instance.camGame.flash(0xFFFFFFFF, 0.3);
+      PlayState.instance.camHUD.flash(0xFFFFFFFF, 0.2);
+
+      // modchart: restaura HUD e strums do player
+      if (modcharts) {
+        for (i in 0...8) tweenFadeIn(i, 1, 0.01);
+        showOnlyStrums = false;
+        PlayState.instance.camHUD.alpha = 1;
+        hudAlpha = 1.0;
+      }
     }
-    if (event.step >= 193 && event.step < 260) { // caso o jogador lague
+    if (event.step >= 193 && event.step < 260) {
       playState.mayPauseGame = true;
       isDoingEnough = false;
       PlayState.instance.playerStrumline.alpha = 1;
@@ -250,41 +288,155 @@ class SatisfractureSong extends Song
     }
 
     var healthBar = [
-			playState.healthBar,
-			playState.healthBarBG,
-			playState.scoreText,
-			playState.iconP2,
-			playState.iconP1
-		];
+      playState.healthBar,
+      playState.healthBarBG,
+      playState.scoreText,
+      playState.iconP2,
+      playState.iconP1
+    ];
 
     if (PlayStatePlaylist.isStoryMode) {
-      // Eventos perto do fim
-      if (event.step == 1120) { // fade notas do oponente
-        tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
-      };
+      if (event.step == 1120) {
+        tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0},
+          (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.linear}));
+      }
 
-      var noteFadeDuration = 2;
-      var heightOffset = FlxG.height + 50;
+      var noteFadeDuration:Float = 2;
+      var heightOffset:Float = FlxG.height + 50;
 
       if (event.step == 1146) {
-        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[1], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[1],
+          {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
       }
       if (event.step == 1148) {
-        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[2], {y: heightOffset}, noteFadeDuration + 1, {ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[2],
+          {y: heightOffset}, noteFadeDuration + 1, {ease: FlxEase.quadOut}));
       }
       if (event.step == 1150) {
-        //tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {x: playState.playerStrumline.strumlineNotes.members[3].x + 10}, noteFadeDuration * 1.5, {ease: FlxEase.quadInOut}));
-        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3], {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[3],
+          {y: heightOffset}, noteFadeDuration, {ease: FlxEase.quadOut}));
       }
-
-      if (event.step == 1153) { // fade final no hud
-        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.linear}));
-
-        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[0], {x: PlayState.instance.playerStrumline.strumlineNotes.members[0].x - 40}, (Conductor.instance.stepLengthMs * 19)  / 1000, {ease: FlxEase.quadInOut}));
+      if (event.step == 1153) {
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0},
+          (Conductor.instance.stepLengthMs * 19) / 1000, {ease: FlxEase.linear}));
+        tweens.push(FlxTween.tween(PlayState.instance.playerStrumline.strumlineNotes.members[0],
+          {x: PlayState.instance.playerStrumline.strumlineNotes.members[0].x - 40},
+          (Conductor.instance.stepLengthMs * 19) / 1000, {ease: FlxEase.quadInOut}));
         for (bar in healthBar) {
-          tweens.push(FlxTween.tween(bar, {alpha: 0}, (Conductor.instance.stepLengthMs * 18)  / 1000, {ease: FlxEase.linear}));
+          tweens.push(FlxTween.tween(bar, {alpha: 0},
+            (Conductor.instance.stepLengthMs * 18) / 1000, {ease: FlxEase.linear}));
         }
-      };
+      }
+    }
+
+    if (!modcharts) return;
+
+    if ((event.step >= 578 && event.step < 600) || (event.step >= 706 && event.step < 760) || (event.step >= 840 && event.step < 896) || (event.step >= 1030 && event.step < 1144))
+    {
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+      for (i in 0...8) {
+        setStrumX(i, defaultStrumX[i]);
+        setStrumY(i, defaultStrumY[i]);
+        setStrumAngle(i, 0);
+      }
+    }
+
+    // hudAlpha fade a partir de step 1169
+    if (event.step > 1169) {
+      hudAlpha -= 0.1;
+      if (hudAlpha < 0) hudAlpha = 0;
+    }
+
+    // Sway
+    if (!mcSway && ((event.step >= 192 && event.step < 320) || (event.step >= 448 && event.step < 576) || (event.step >= 832 && event.step < 1024)))
+    {
+      mcSway = true;
+    }
+    else if (mcSway && ((event.step >= 320 && event.step < 448) || (event.step >= 576 && event.step < 832) || event.step >= 1024))
+    {
+      mcSway = false;
+      PlayState.instance.camHUD.angle = 0;
+    }
+
+    // Quickdraw
+    if (!mcQuickdraw && event.step >= 320 && event.step < 448)
+      mcQuickdraw = true;
+    else if (mcQuickdraw && event.step >= 448)
+      mcQuickdraw = false;
+
+    if (!mcQuickdraw2 && event.step >= 448 && event.step < 576)
+      mcQuickdraw2 = true;
+    else if (mcQuickdraw2 && event.step >= 576) {
+      mcQuickdraw2 = false;
+      for (i in 0...8) setStrumY(i, defaultStrumY[i]);
+    }
+
+    if (!mcQuickdraw3 && event.step >= 960 && event.step < 992) {
+      mcQuickdraw3 = true;
+    }
+    else if (mcQuickdraw3 && event.step >= 992) {
+      mcQuickdraw3 = false;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+    }
+
+    if (!mcQuickdraw4 && event.step >= 992 && event.step < 1024)
+      mcQuickdraw4 = true;
+    else if (mcQuickdraw4 && event.step >= 1024) {
+      mcQuickdraw4 = false;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+    }
+
+    // Criss-Cross fade
+    if (!mcFadingCrissCross && ((event.step >= 640 && event.step < 704) || (event.step >= 832 && event.step < 960)))
+    {
+      for (i in 0...4) tweenFadeOut(i, 0.3, 0.4);
+      mcFadingCrissCross = true;
+    }
+    if (mcFadingCrissCross && ((event.step >= 704 && event.step < 832) || (event.step >= 960 && event.step < 1024)))
+    {
+      for (i in 0...4) tweenFadeIn(i, 1, 0.4);
+      mcFadingCrissCross = false;
+    }
+
+    if (!mcCrisscross && event.step >= 640 && event.step < 704)
+      mcCrisscross = true;
+    else if (mcCrisscross && event.step >= 704 && event.step < 832) {
+      mcCrisscross = false;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+    }
+
+    if (!mcCrisscross2 && event.step >= 832 && event.step < 960)
+      mcCrisscross2 = true;
+    else if (mcCrisscross2 && event.step >= 960) {
+      mcCrisscross2 = false;
+      //PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+      //PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+      for (i in 0...8) setStrumY(i, defaultStrumY[i]);
+    }
+
+    // Speedy
+    if (!mcSpeedy && event.step >= 768 && event.step < 832)
+      mcSpeedy = true;
+    else if (mcSpeedy && event.step >= 832)
+      mcSpeedy = false;
+
+    // Spin strums
+    if (event.step == 576 || event.step == 704 || event.step == 1024) {
+      for (i in 0...8) {
+        tweenPosXAngle(i, defaultStrumX[i], getStrumAngle(i) + 360, 0.2);
+        setStrumY(i, defaultStrumY[i]);
+      }
+    }
+
+    // Fade final
+    if (PlayStatePlaylist.isStoryMode && !mcDidFinalFade && event.step >= 1152) {
+      for (i in 4...8) tweenFadeOut(i, 0, 3);
+      tweenStrumX(4, 600, 2);
+      mcDidFinalFade = true;
     }
   }
 
@@ -306,6 +458,24 @@ class SatisfractureSong extends Song
     }
   }
 
+  var stoppedEnough:Bool = false;
+
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (!stoppedEnough && event.beat >= 48) {
+      PlayState.instance.camHUD.flash(0xFFFFFFFF, 0.2);
+
+      playState.currentStage.getBoyfriend().playAnimation('singLEFTmiss', true);
+      PlayState.instance.tweenCameraZoom(playState.defaultCameraZoom, 0);
+
+      playState.mayPauseGame = true;
+      isDoingEnough = false;
+
+      stoppedEnough = true;
+    }
+  }
+
   override function onNoteGhostMiss(event)
   {
     super.onNoteGhostMiss(event);
@@ -315,7 +485,8 @@ class SatisfractureSong extends Song
     }
   }
 
-  override private function onStateChangeEnd(event)
+  // what??
+  /*override private function onStateChangeEnd(event)
 	{
     if (isDoingEnough) {
 		  Constants.GHOST_TAPPING = true;
@@ -328,7 +499,7 @@ class SatisfractureSong extends Song
     }
 
 		super.onStateChangeEnd(event);
-	}
+	}*/
 
   override function onDestroy(event)
 	{
@@ -337,6 +508,19 @@ class SatisfractureSong extends Song
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
     isDoingEnough = false;
+    stoppedEnough = false;
+    hudAlpha = 1.0;
+    mcSway = false;
+    mcQuickdraw = false;
+    mcQuickdraw2 = false;
+    mcQuickdraw3 = false;
+    mcQuickdraw4 = false;
+    mcCrisscross = false;
+    mcCrisscross2 = false;
+    mcSpeedy = false;
+    mcFadingCrissCross = false;
+    mcDidFinalFade = false;
+    hasStoredStrums = false;
 		resetTweens();
 	}
 
@@ -395,6 +579,29 @@ class SatisfractureSong extends Song
 
     PlayState.instance.healthBar.alpha = 1;
     PlayState.instance.healthBarBG.alpha = 1;
+
+    stoppedEnough = false;
+
+    PlayState.instance.camHUD.angle = 0;
+    PlayState.instance.camHUD.alpha = 1;
+    hudAlpha = 1.0;
+    mcSway = false;
+    mcQuickdraw = false;
+    mcQuickdraw2 = false;
+    mcQuickdraw3 = false;
+    mcQuickdraw4 = false;
+    mcCrisscross = false;
+    mcCrisscross2 = false;
+    mcSpeedy = false;
+    mcFadingCrissCross = false;
+    mcDidFinalFade = false;
+    PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX;
+    PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX;
+    for (i in 0...8) {
+      setStrumX(i, defaultStrumX[i]);
+      setStrumY(i, defaultStrumY[i]);
+      setStrumAngle(i, 0);
+    }
   }
 
   var isMobilePauseButtonPressed:Bool = false;
@@ -450,6 +657,115 @@ class SatisfractureSong extends Song
         }
       });
     }
+
+    if (modcharts)
+      updateModchart(event.elapsed);
+  }
+
+  function getStrum(i:Int) {
+    if (i < 4)
+      return PlayState.instance.opponentStrumline.strumlineNotes.members[i];
+    return PlayState.instance.playerStrumline.strumlineNotes.members[i - 4];
+  }
+
+  function setStrumX(i:Int, val:Float) { getStrum(i).x = val; }
+  function setStrumY(i:Int, val:Float) { getStrum(i).y = val; }
+  function setStrumAngle(i:Int, val:Float) { getStrum(i).angle = val; }
+  function getStrumAngle(i:Int):Float { return getStrum(i).angle; }
+
+  function tweenStrumX(i:Int, x:Float, time:Float) {
+    if (!hasStoredStrums) return;
+    tweens.push(FlxTween.tween(getStrum(i), {x: x}, time));
+  }
+  function tweenStrumAngle(i:Int, angle:Float, time:Float) {
+    tweens.push(FlxTween.tween(getStrum(i), {angle: angle}, time));
+  }
+  function tweenStrumAlpha(i:Int, alpha:Float, time:Float, ease:Dynamic) {
+    tweens.push(FlxTween.tween(getStrum(i), {alpha: alpha}, time, {ease: ease}));
+  }
+
+  function tweenPosXAngle(i:Int, x:Float, angle:Float, time:Float) {
+    if (!hasStoredStrums) return;
+    tweenStrumX(i, x, time);
+    tweenStrumAngle(i, angle, time);
+  }
+  function tweenFadeIn(i:Int, alpha:Float, time:Float) {
+    tweenStrumAlpha(i, alpha, time, FlxEase.circIn);
+  }
+  function tweenFadeOut(i:Int, alpha:Float, time:Float) {
+    tweenStrumAlpha(i, alpha, time, FlxEase.circOut);
+  }
+
+  function storeDefaultStrums() {
+    for (i in 0...4) {
+      defaultStrumX[i] = PlayState.instance.opponentStrumline.strumlineNotes.members[i].x;
+      defaultStrumY[i] = PlayState.instance.opponentStrumline.strumlineNotes.members[i].y;
+    }
+    for (i in 0...4) {
+      defaultStrumX[i + 4] = PlayState.instance.playerStrumline.strumlineNotes.members[i].x;
+      defaultStrumY[i + 4] = PlayState.instance.playerStrumline.strumlineNotes.members[i].y;
+    }
+    defaultOpponentStrumlineX = PlayState.instance.opponentStrumline.x;
+    defaultPlayerStrumlineX = PlayState.instance.playerStrumline.x;
+    hasStoredStrums = true;
+  }
+
+  function updateModchart(elapsed:Float) {
+    if (!hasStoredStrums) return;
+    var songPos:Float = Conductor.instance.songPosition;
+    var currentBeat:Float = Conductor.instance.currentBeatTime;
+
+    if (mcSway) PlayState.instance.camHUD.angle = 5 * Math.sin(currentBeat * 0.504);
+
+    if (mcQuickdraw) {
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX + 32 * Math.sin((currentBeat + 1 * 2) * Math.PI);
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX + 32 * Math.sin((currentBeat + 1 * 2) * Math.PI);
+      for (i in 0...8) {
+        setStrumY(i, defaultStrumY[i]);
+      }
+    }
+
+    if (mcQuickdraw2) {
+      for (i in 0...8) {
+        setStrumX(i, defaultStrumX[i]);
+        setStrumY(i, defaultStrumY[i] + 16 * Math.sin((currentBeat + i * 2) * Math.PI));
+      }
+    }
+
+    /*if (mcQuickdraw3) {
+      PlayState.instance.opponentStrumline.x = defaultPlayerStrumlineX + 32 * Math.sin((currentBeat + 1 * 2) * Math.PI);
+      PlayState.instance.playerStrumline.x = defaultOpponentStrumlineX + 32 * Math.sin((currentBeat + 1 * 2) * Math.PI);
+    }*/
+
+    if (mcQuickdraw4) {
+      //PlayState.instance.opponentStrumline.x = defaultPlayerStrumlineX;
+      //PlayState.instance.playerStrumline.x = defaultOpponentStrumlineX;
+      for (i in 4...8)
+        setStrumY(i, defaultStrumY[i] + 16 * Math.sin((currentBeat + i) * Math.PI));
+    }
+
+    if (mcCrisscross) {
+      var oppOffset:Float = 300 * Math.sin(currentBeat * 0.503) + 350 - 42;
+      var plrOffset:Float = -300 * Math.sin(currentBeat * 0.503) - 275 - 42;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX + oppOffset;
+      if (!isMobile) PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX + plrOffset;
+    }
+
+    if (mcCrisscross2) {
+      /*var oppOffset:Float = 300 * Math.sin(currentBeat * 0.504) + 350 - 42;
+      var plrOffset:Float = -300 * Math.sin(currentBeat * 0.504) - 275 - 42;
+      PlayState.instance.opponentStrumline.x = defaultOpponentStrumlineX + oppOffset;
+      PlayState.instance.playerStrumline.x = defaultPlayerStrumlineX + plrOffset;*/
+      for (i in 0...8)
+        setStrumY(i, defaultStrumY[i] + 16 * Math.cos((currentBeat + i * 5) * Math.PI));
+    }
+
+    if (mcSpeedy) {
+      for (i in 0...8)
+        setStrumY(i, defaultStrumY[i] + 16 * Math.cos(currentBeat + i));
+    }
+
+    if (hudAlpha > 0) PlayState.instance.camHUD.alpha = hudAlpha;
   }
 
   public override function onSongEnd(event:ScriptEvent):Void
@@ -462,11 +778,14 @@ class SatisfractureSong extends Song
   {
     super.onCreate(event);
 
+    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+
     cutsceneSkipped = false;
     canSkipCutscene = false;
     cutsceneTimerManager = null;
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
+    hasStoredStrums = false;
     isDoingEnough = false;
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;

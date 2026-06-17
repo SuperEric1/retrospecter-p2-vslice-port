@@ -1612,7 +1612,7 @@ class RetroPlayState extends Module {
           spectreOppHit = false;
         }
       }
-      applySpectreAlpha();
+
     }
 
     // Health drain things
@@ -1820,6 +1820,10 @@ class RetroPlayState extends Module {
 
     var isSpectreActive:Bool = forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre');
 
+    if (isSpectreActive) {
+      applySpectreAlpha();
+    }
+
     for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
       if (holdNote == null || !holdNote.alive) continue;
       if (!isDoingVocalThing && holdNote.missedNote && holdNote.scoreable && holdNote.sustainLength > Constants.HOLD_DROP_PENALTY_THRESHOLD_MS) {
@@ -1849,7 +1853,7 @@ class RetroPlayState extends Module {
       if (holdNote == null || !holdNote.alive) continue;
 
       // Update hold covers to match
-      if (holdNote.hitNote && !isSpectreActive) {
+      if (!isMobile && holdNote.hitNote && !isSpectreActive) {
         var targetAlpha = PlayState.instance.opponentStrumline.strumlineNotes.members[holdNote.noteData.getDirection()].alpha;
         var cover = holdNote.cover;
         if (cover != null && cover.alpha != targetAlpha) cover.alpha = targetAlpha;
@@ -1879,6 +1883,8 @@ class RetroPlayState extends Module {
       holdNote.alpha = clampedPlayerAlpha;
       if (holdNote.cover != null) holdNote.cover.alpha = clampedPlayerAlpha;
     }
+
+    if (isMobile) return;
 
     for (note in PlayState.instance.opponentStrumline.notes.members) {
       if (note == null || !note.alive) continue;
