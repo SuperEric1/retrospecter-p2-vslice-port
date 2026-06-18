@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "name": "Misc",
+  "songs": [],
+  "visible": false,
+  "capsule": {
+    "name": "MISC"
+  },
+  "titleAsset": "storymenu/titles/not",
+  "background": "#000000",
+  "props": []
+}

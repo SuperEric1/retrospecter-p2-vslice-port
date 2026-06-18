@@ -1,12 +1,12 @@
 {
   "version": "1.0.0",
-  "name": "REMIXES",
+  "name": "Mixter",
   "songs": ["tripletrouble-r"],
   "visible": false,
   "capsule": {
     "name": "REMIXES"
   },
-  "titleAsset": "storymenu/titles/finale",
+  "titleAsset": "storymenu/titles/not",
   "background": "#000000",
   "props": []
 }
