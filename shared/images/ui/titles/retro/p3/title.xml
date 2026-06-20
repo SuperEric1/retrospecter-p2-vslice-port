@@ -2,7 +2,7 @@
 <!--
 Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
 -->
-<TextureAtlas imagePath="mixter.png" width="1387" height="1445">
+<TextureAtlas imagePath="title.png" width="1387" height="1445">
 	<SubTexture name="TITLE_Apocalypse0001" x="1347" y="553" width="1" height="26" frameX="-374" frameY="-212" frameWidth="750" frameHeight="450"/>
 	<SubTexture name="TITLE_Apocalypse0002" x="1362" y="466" width="24" height="87" rotated="true" frameX="-331" frameY="-213" frameWidth="750" frameHeight="450"/>
 	<SubTexture name="TITLE_Apocalypse0003" x="982" y="1389" width="198" height="20" frameX="-276" frameY="-215" frameWidth="750" frameHeight="450"/>

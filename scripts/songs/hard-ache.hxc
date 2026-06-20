@@ -47,6 +47,8 @@ class HardAcheSong extends Song
     if (!testing) playState.mayPauseGame = false;
     if (playState.camControls != null) playState.camControls.visible = false;
 
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p2', true]);
+
     if (!suggestive) {
       playState.currentInstrumental = 'nolines';
       if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
@@ -183,10 +185,10 @@ class HardAcheSong extends Song
       playState.camHUD.visible = true;
     }
 
-    // TODO: Start enemy title animation (story mode)
-    if (step >= 144 && !showLogo && PlayStatePlaylist.isStoryMode) {
+    // Start enemy title animation (story mode)
+    if (step >= 144 && !showLogo) {
       showLogo = true;
-      // Here we should show the enemy's title but we don't have the module for it yet.
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
 
     if (!isSaku) {

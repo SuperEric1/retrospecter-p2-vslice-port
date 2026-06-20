@@ -70,6 +70,8 @@ class EmbuzzleSong extends Song
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
 
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['hivemine/p2', true]);
+
     tempBlack = FunkinSprite.create(0, 0);
     tempBlack.makeGraphic(FlxG.width * 1.1, FlxG.height * 1.1, FlxColor.fromString('#25002A'));
     tempBlack.scrollFactor.set(0, 0);
@@ -220,10 +222,10 @@ class EmbuzzleSong extends Song
 
     var curStep = event.step;
 
-    // TODO: Start enemy title animation (story mode)
-    if (curStep >= 1296 && !showLogo && PlayStatePlaylist.isStoryMode) {
+    // Start enemy title animation (story mode)
+    if (curStep >= 1296 && !showLogo) {
       showLogo = true;
-      // Here we should show the enemy's title but we don't have the module for it yet.
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
   }
 

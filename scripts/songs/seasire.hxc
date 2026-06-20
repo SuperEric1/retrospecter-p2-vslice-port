@@ -49,6 +49,8 @@ class SeasireSong extends Song
     flashingLights = Preferences.flashingLights;
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['atrocean', true]);
+
     flash = FunkinSprite.create();
     flash.makeGraphic(1, 1, 0xFFFFFFFF);
     flash.scrollFactor.set(0, 0);
@@ -133,9 +135,9 @@ class SeasireSong extends Song
     var curStep = event.step;
 
     // Start enemy title animation (story mode)
-    if (curStep >= 80 && !shownLogo && PlayStatePlaylist.isStoryMode) {
+    if (curStep >= 80 && !shownLogo) {
       shownLogo = true;
-      // Here we should show the enemy's title but we don't have the module for it yet.
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
   }
 

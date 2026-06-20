@@ -6,6 +6,15 @@
     "hard": 2.3
   },
   "events": [
+  {
+    "t": 0,
+    "e": "SetCameraBop",
+    "v": {
+    "rate": 4,
+    "intensity": 1.515,
+    "offset": 0
+  }
+  },
     { "t": 0, "e": "FocusCamera", "v": { "char": "0" } },
     { "t": 5106.3829787234, "e": "FocusCamera", "v": { "char": "1" } },
     { "t": 10212.7659574468, "e": "FocusCamera", "v": { "char": "0" } },

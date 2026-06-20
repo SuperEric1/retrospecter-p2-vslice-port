@@ -579,7 +579,7 @@ class RetroTrophyState extends MusicBeatState
         slot.colorTransform.redOffset = -100;
         slot.colorTransform.blueOffset = -100;
         slot.colorTransform.greenOffset = -100;
-        slot.alpha = 0.7;
+        slot.alpha = 0.5;
       } else {
         slot.colorTransform.redOffset = 0;
         slot.colorTransform.blueOffset = 0;

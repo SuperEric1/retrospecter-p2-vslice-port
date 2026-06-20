@@ -18,13 +18,15 @@ import funkin.ui.FullScreenScaleMode;
 
 import supereric.retrospecter.modules.RetroAchievements;
 
-class EctospasmSong extends Song
+class EctospasmApocalypseSong extends Song
 {
   var playState:PlayState;
 
   public function new()
   {
-    super('ectospasm');
+    super('ectospasm', {
+      variation: 'apocalypse'
+    });
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -83,17 +85,5 @@ class EctospasmSong extends Song
   {
     super.onSongRetry(event);
 
-  }
-
-  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
-  {
-      return !Save.instance.hasBeatenSong(this.id, null);
-  }
-
-  public override function listAltInstrumentalIds(difficultyId:String, variationId:String):Array<String>
-  {
-    var results:Array<String> = super.listAltInstrumentalIds(difficultyId, variationId);
-
-    return results;
   }
 }

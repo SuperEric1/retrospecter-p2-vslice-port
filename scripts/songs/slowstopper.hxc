@@ -8,6 +8,7 @@ import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
 import funkin.mobile.input.ControlsHandler;
+import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 import supereric.retrospecter.modules.RetroUtil;
 
@@ -63,6 +64,8 @@ class SlowstopperSong extends Song
     if (isMobile) downscroll = true;
     flashingLights = Preferences.flashingLights;
     showLogo = false;
+
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['dozirc', true]);
 
     if (PlayState.instance.startTimestamp <= 1000) {
       var dad = PlayState.instance.currentStage.getDad();
@@ -297,9 +300,9 @@ class SlowstopperSong extends Song
     if (PlayState.instance.isGamePaused) return;
     if (PlayState.instance.isGameOverState) return;
 
-    if (event.step >= 432 && !showLogo && PlayStatePlaylist.isStoryMode) {
+    if (event.step >= 432 && !showLogo) {
       showLogo = true;
-      PlayState.instance.currentStage?.scriptCall('startEnemyTitle', []);
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
   }
 
@@ -357,7 +360,7 @@ class SlowstopperSong extends Song
         // strum.x = defaultOpponentStrumX[savedData[i]] - camX + globalOffset;
         // strum.y = defaultOpponentStrumY[savedData[i]] - camY;
       }
-      
+
       // Sync notes pos
       for (note in PlayState.instance.opponentStrumline.notes.members) {
         if (note == null || !note.alive || !note.visible) continue;

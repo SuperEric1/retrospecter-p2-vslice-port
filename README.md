@@ -13,7 +13,6 @@ TODO:
 - [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
 - [ ] Scrollspeed changes for the third strumline
-- [ ] Enemy title popup module + apply to all songs that have it (todo)
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
 - [ ] Sweet talk intro instruction
@@ -26,6 +25,7 @@ TODO:
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Spanish translation
+- [X] Enemy title popup module + apply to all songs that have it (todo)
 - [X] Catastrofiend subtitles and modchart
 - [X] Phase 2 end cutscene
 - [X] Cloth scythes

@@ -12,11 +12,13 @@ import funkin.play.PlayStatePlaylist;
 import funkin.play.cutscene.CutsceneType;
 import funkin.play.cutscene.VideoCutscene;
 import funkin.play.GameOverSubState;
-import funkin.play.PlayStatePlaylist;
 import funkin.ui.FullScreenScaleMode;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.song.Song;
 import funkin.save.Save;
+
+import supereric.retrospecter.modules.RetroTitle;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class ApocalyptroSong extends Song
 {
@@ -66,6 +68,8 @@ class ApocalyptroSong extends Song
     resetFlags();
     hasPlayedCutscene = false;
     hasPlayedDialogue = false;
+    shownTitle = false;
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['retro/p3', true]);
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -89,6 +93,8 @@ class ApocalyptroSong extends Song
     if (!PlayStatePlaylist.isStoryMode) {
       hasPlayedCutscene = true;
       hasPlayedDialogue = true;
+    } else if (hasPlayedDialogue && PlayStatePlaylist.isStoryMode) {
+      RetroAchievements.grantAc('wrath-p2', true, true);
     }
 
     if (hasPlayedCutscene && !hasPlayedDialogue)
@@ -168,10 +174,10 @@ class ApocalyptroSong extends Song
 
     var curStep = event.step;
 
-    // TODO: Start enemy title animation (story mode)
-    if (!showLogo && curStep >= 16 && PlayStatePlaylist.isStoryMode) {
+    //
+    if (!showLogo && curStep >= 16) {
       showLogo = true;
-      // Here we should show the enemy's title but we don't have the module for it yet.
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
 
     for (holdNote in playState.opponentStrumline.holdNotes.members) {
@@ -189,6 +195,8 @@ class ApocalyptroSong extends Song
     dadFocusPoint = [];
     hasPlayedCutscene = false;
     hasPlayedDialogue = false;
+    showLogo = false;
+    resetFlags();
     resetTweens();
   }
 
@@ -294,6 +302,7 @@ class ApocalyptroSong extends Song
     playStage.getDad().cameraFocusPoint.y = dadFocusPoint[1];
     resetTweens();
     resetFlags();
+    shownTitle = false;
   }
 
   function weirdPulse():Void

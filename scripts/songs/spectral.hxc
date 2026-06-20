@@ -110,7 +110,7 @@ class SpectralSong extends Song
     if (step >= 1528 && step < 1532) {
       tweens.push(FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0.1}, (Conductor.instance.stepLengthMs * 5) / 1000, {ease: FlxEase.circOut}));
     }
-    
+
     if (step == 1857) resetStrumlinePositions();
 
     if (step == 132 || step == 1028) {
@@ -260,6 +260,7 @@ class SpectralSong extends Song
     hasPlayedEndCutscene = false;
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['retro/p2']);
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

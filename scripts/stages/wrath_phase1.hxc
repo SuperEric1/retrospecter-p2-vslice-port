@@ -32,7 +32,8 @@ class wrathPhaseOneStage extends Stage
     for (obj in objects) {
       // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
       var rim = new DropShadowShader();
-      rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
+      rim.setAdjustColor(-5, 0, -5, 0); // brilho, hue, contraste e saturação
+      //rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
       rim.color = 0xFF29c23e; // #29c23eff
       rim.angle = 90;
       rim.antialiasAmt = 0;
@@ -58,7 +59,7 @@ class wrathPhaseOneStage extends Stage
       overlay.loadTexture('wrath/wrath_overlay');
       overlay.screenCenter();
       overlay.scrollFactor.set(0.6, 0.6);
-      overlay.blend = 'screen';
+      overlay.blend = 12;
       overlay.y += -128;
       overlay.x += 40;
       //overlay.cameras = [PlayState.instance.camGame];
@@ -87,23 +88,22 @@ class wrathPhaseOneStage extends Stage
     super.addCharacter(character, charType);
     trace('Applied stage shader to ' + character.characterName);
 
-    var rim = new DropShadowShader();
+    /*var rim = new DropShadowShader();
     rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
     rim.color = 0xFF29c23e; // #29c23eff
     character.shader = rim;
     rim.attachedSprite = character;
-    rim.antialiasAmt = 0;
+    rim.antialiasAmt = 0;*/
 
     switch (charType)
     {
       case CharacterType.BF:
-        rim.angle = 90;
-        //rim.threshold = 0.3;
         if (getBoyfriend().characterId == 'bf-retrospecter') {
           character.idleSuffix = '-alt';
           character.danceEvery = 1;
         }
 
+        /*rim.angle = 90;
         character.animation.onFrameChange.add(function() {
           if (getBoyfriend() != null)
           {
@@ -120,11 +120,10 @@ class wrathPhaseOneStage extends Stage
 
       case CharacterType.DAD:
         rim.angle = 90;
-        //rim.threshold = 0.3;
 
         character.animation.onFrameChange.add(function() {
           rim.updateFrameInfo(getDad().frame);
-        });
+        });*/
 
       default:
     }

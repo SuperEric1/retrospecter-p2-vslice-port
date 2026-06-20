@@ -780,6 +780,8 @@ class SatisfractureSong extends Song
 
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['retro/p1']);
+
     cutsceneSkipped = false;
     canSkipCutscene = false;
     cutsceneTimerManager = null;

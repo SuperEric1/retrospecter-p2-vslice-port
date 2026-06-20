@@ -23,6 +23,7 @@ class SweetTalkSong extends Song
   var isMobile = false;
 
   // Flags
+  var shownLogo:Bool = false;
   var e:Bool = false;
   var g:Bool = false;
   var bb:Bool = false;
@@ -81,6 +82,8 @@ class SweetTalkSong extends Song
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['hivemine/p1', true]);
 
     // Camera settings
     disableFocus = true;
@@ -302,6 +305,20 @@ class SweetTalkSong extends Song
           opponentStrum.x = defaultOpponentStrumX[i] + xOffset;
         }
       }*/
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (playState == null) return;
+    if (playState.isGamePaused) return;
+    if (playState.isGameOverState) return;
+
+    // Start enemy title animation (story mode)
+    if (event.step >= 144 && !shownLogo) {
+      shownLogo = true;
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
   }
 
@@ -747,6 +764,7 @@ class SweetTalkSong extends Song
 
   function resetFlags():Void
   {
+    shownLogo = false;
     e = false;
     g = false;
     bb = false;

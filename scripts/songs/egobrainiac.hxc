@@ -372,6 +372,8 @@ class EgobrainiacSong extends Song
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['izzy']);
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

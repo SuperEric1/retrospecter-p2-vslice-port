@@ -6,6 +6,7 @@ import flixel.tweens.FlxEase;
 import flixel.math.FlxAngle;
 import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import funkin.Conductor;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
@@ -35,6 +36,7 @@ class WrathPhase2Stage extends Stage
   var hasRefreshedProps:Bool = false;
   var isSpectral:Bool = false;
   var isEctospasm:Bool = false;
+  var isWideScreen:Bool = false;
   var optimize:Bool = false; // Lógica de otimização (false = criar todos os props)
 
   // Cutscene variables
@@ -154,6 +156,8 @@ class WrathPhase2Stage extends Stage
 
     hasPlayedInGameCutscene = false;
     hasPlayedOutroCutscene = false;
+
+    isWideScreen = FlxG.width > 1280;
 
     if (hasCreatedStage) return;
 
@@ -279,6 +283,15 @@ class WrathPhase2Stage extends Stage
       caveL.antialiasing = false;
       add(caveL);
 
+      if (isWideScreen) {
+        var caveExtra = caveL.clone();
+        caveExtra.x = caveL.x - caveL.width + 1.5;
+        caveExtra.flipX = false;
+        caveExtra.scrollFactor.set(0.8, 0.8);
+        caveExtra.antialiasing = false;
+        add(caveExtra);
+      }
+
       // Runes Left (backgroundLevel > 1)
       runesCanGlow = true;
 
@@ -321,6 +334,15 @@ class WrathPhase2Stage extends Stage
       caveR.y += wrathYAdjust + 25;
       caveR.antialiasing = false;
       add(caveR);
+
+      if (isWideScreen) {
+        var caveExtra = caveR.clone();
+        caveExtra.x = caveR.x + caveR.width - 1.5;
+        caveExtra.flipX = true;
+        caveExtra.scrollFactor.set(0.8, 0.8);
+        caveExtra.antialiasing = false;
+        add(caveExtra);
+      }
 
       // Runes Right (backgroundLevel > 1)
       runesOffset = [200, 265];
@@ -460,22 +482,22 @@ class WrathPhase2Stage extends Stage
     if (character == null) return;
     trace('Applied stage shader to ' + character.characterName);
 
-    var rim = new DropShadowShader();
+    /*var rim = new DropShadowShader();
     rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
     rim.color = 0xFF1ab635; // #1ab635ff
     character.shader = rim;
     rim.attachedSprite = character;
-    rim.antialiasAmt = 0;
+    rim.antialiasAmt = 0;*/
 
     switch (charType)
     {
       case CharacterType.BF:
-        rim.angle = 90;
         if (getBoyfriend().characterId == 'bf-retrospecter') {
           character.idleSuffix = '-alt';
           character.danceEvery = 1;
         }
 
+        /*rim.angle = 90;
         character.animation.onFrameChange.add(function() {
           if (getBoyfriend() != null)
           {
@@ -489,17 +511,17 @@ class WrathPhase2Stage extends Stage
 
         character.animation.onFrameChange.add(function() {
           rim.updateFrameInfo(getGirlfriend().frame);
-        });
+        });*/
 
       case CharacterType.DAD:
         fixRetroPos();
-        rim.angle = 90;
+        /*rim.angle = 90;
         //rim.threshold = 0.3;
 
         character.animation.onFrameChange.add(function() {
           if (getDad() == null) return;
           rim.updateFrameInfo(getDad().frame);
-        });
+        });*/
 
       default:
     }
@@ -521,11 +543,58 @@ class WrathPhase2Stage extends Stage
       overlay.loadTexture('wrath/wrath_overlay');
       overlay.screenCenter();
       overlay.scrollFactor.set(0.6, 0.6);
-      overlay.blend = 'screen';
+      overlay.blend = 12;
       overlay.y += -128;
       overlay.x += 40;
+      overlay.scale.set(1.1, 1);
       overlay.zIndex = 9000;
       add(overlay);
+
+      // Borders for wide screens
+      if (isWideScreen) {
+        /*var overlay2 = FunkinSprite.create(overlay.x - overlay.width, overlay.y);
+        overlay2.loadTexture('wrath/wrath_overlay');
+        overlay2.scrollFactor.set(overlay.scrollFactor.x, overlay.scrollFactor.y);
+        overlay2.blend = overlay.blend;
+        overlay2.zIndex = overlay.zIndex;
+        add(overlay2);
+
+        var overlay3 = FunkinSprite.create(overlay.x + overlay.width, overlay.y);
+        overlay3.loadTexture('wrath/wrath_overlay');
+        overlay3.scrollFactor.set(overlay.scrollFactor.x, overlay.scrollFactor.y);
+        overlay3.blend = overlay.blend;
+        overlay3.zIndex = overlay.zIndex;
+        add(overlay3);*/
+
+        var camZoom = PlayState.instance.stageZoom;
+        var w = 500;
+        var h = Math.ceil((FlxG.height + 50) / camZoom);
+        var color = 0xFF000f03; // #000f03
+
+        var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+        border1.x -= 1000;
+        border1.screenCenter(0x10);
+        border1.scrollFactor.set(1.1, 0);
+        border1.zIndex = rocksLeft.zIndex + 1;
+        add(border1);
+        var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+        fillBorderLeft.zIndex = border1.zIndex;
+        fillBorderLeft.x -= fillBorderLeft.width;
+        fillBorderLeft.scrollFactor.set(border1.scrollFactor.x, border1.scrollFactor.y);
+        add(fillBorderLeft);
+
+        var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+        border2.x = wrathXAdjust + 1970;
+        border2.screenCenter(0x10);
+        border2.scrollFactor.set(1.1, 0);
+        border2.zIndex = rocks.zIndex + 1;
+        add(border2);
+        var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+        fillBorderRight.zIndex = border2.zIndex;
+        fillBorderRight.scrollFactor.set(border2.scrollFactor.x, border2.scrollFactor.y);
+        add(fillBorderRight);
+      }
+
       refresh();
     }
 

@@ -8,12 +8,14 @@ import funkin.save.Save;
 class GlunisherSong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
+  var showLogo:Bool = false;
 
   public function new()
   {
     super('glunisher');
 
     hasPlayedInGameCutscene = false;
+    showLogo = false;
   }
 
   function onCreate(event:ScriptEvent):Void
@@ -21,6 +23,8 @@ class GlunisherSong extends Song
     super.onCreate(event);
 
     hasPlayedInGameCutscene = false;
+    showLogo = false;
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['insatian', true]);
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -37,6 +41,22 @@ class GlunisherSong extends Song
       rd.scriptCall('startDialogue', ['glunisher story', 'pre', function() {
         PlayState.instance.startCountdown();
       }]);
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var curStep = event.step;
+
+    // Start enemy title animation (story mode)
+    if (curStep >= 144 && !showLogo) {
+      showLogo = true;
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
   }
 

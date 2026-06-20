@@ -433,11 +433,14 @@ class RetroGameUI extends Module {
 
   function createCard(text:String, isTitle:Bool = false) {
     var group = new FunkinGroup();
-    group.x -= 300;
+    group.cameras = [PlayState.instance.camCutscene];
+    group.zIndex = 999999;
+    group.scrollFactor.set(0, 0);
+    group.refresh();
+    group.screenCenter(0x10);
 
     var cardMargin:Float = isTitle ? 20 : 25;
     var card = FunkinSprite.create(0, 0, isTitle ? 'titlecard' : 'subcard');
-    card.visible = false;
     card.antialiasing = false;
     group.add(card);
 
@@ -446,7 +449,6 @@ class RetroGameUI extends Module {
 
     // fieldWidth = 0 para medir a largura natural sem quebra de linha
     var cardText:FlxText = new FlxText(0, 0, 0, text.toUpperCase(), fontSize);
-    cardText.visible = false;
     group.add(cardText);
     cardText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), fontSize, 0xFFFFFFFF, 'center');
     cardText.letterSpacing = -1;
@@ -461,16 +463,7 @@ class RetroGameUI extends Module {
     cardText.localX = card.x + cardMargin;
     cardText.localY = card.y + (card.height / 2) - (cardText.height / 2);
 
-    group.cameras = [PlayState.instance.camCutscene];
-    group.scrollFactor.set(0, 0);
-    group.refresh();
-    group.screenCenter(0x10);
     PlayState.instance.add(group);
-
-    cardText.visible = true;
-    card.visible = true;
-
-    group.x = 0;
 
     return group;
   }

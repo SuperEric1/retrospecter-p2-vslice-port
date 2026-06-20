@@ -1,0 +1,141 @@
+package supereric.retrospecter.modules;
+
+import funkin.modding.module.Module;
+import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
+import funkin.graphics.FunkinSprite;
+import flixel.util.FlxTimer;
+import flixel.util.FlxTimerManager;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+
+class RetroTitle extends Module
+{
+  final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+  final DISPLAY_DURATION:Float = 3;
+  final APPEAR_DELAY:Float = 1;
+  final PATH:String = 'ui/titles/';
+
+  private var globalTimerManager:FlxTimerManager = null;
+
+  public var titlePath:String = null;
+  private var titleSpr:FunkinSprite = null;
+
+  private var timerAppear:FlxTimer = null;
+  private var timer:FlxTimer = null;
+  private var delayTitle:Bool = false;
+  private var forceShow:Bool = false;
+
+  public function new()
+  {
+    super('RetroTitle');
+  }
+
+  public function load(path:String, ?delayed:Bool = false, ?force:Bool = false):Void {
+    titlePath = path;
+    delayTitle = delayed;
+    forceShow = force;
+  }
+
+  public function createTitle():Void
+  {
+    var anim:String = 'anim0';
+    switch (titlePath) {
+      case 'retro/p3':
+        anim = 'TITLE_Apocalypse0';
+    }
+
+    var title = FunkinSprite.create(0, 0, PATH + titlePath + '/title');
+    title.loadSparrow(PATH + titlePath + '/title');
+    title.animation.addByPrefix('idle', anim, 24, false);
+    title.animation.addByPrefix('not', 'nothing', 1, false);
+    title.animation.play('not');
+    title.visible = false;
+    title.cameras = [PlayState.instance.camCutscene];
+    title.scrollFactor.set(0, 0);
+    title.screenCenter();
+    title.scale.set(0.8 * screenRatio, 0.8 * screenRatio);
+
+    PlayState.instance.add(title);
+    PlayState.instance.refresh();
+
+    titlePath = null;
+    titleSpr = title;
+  }
+
+  public function play():Void {
+    if (titleSpr == null || !titleSpr.exists) return;
+
+    titleSpr.alpha = 1;
+    titleSpr.visible = true;
+    titleSpr.animation.play('idle');
+
+    timer = new FlxTimer(globalTimerManager).start(DISPLAY_DURATION, function(t:FlxTimer)
+    {
+      FlxTween.tween(titleSpr, { alpha: 0 }, 0.5, { ease: FlxEase.expoOut });
+    });
+  }
+
+  public function playDelayed():Void {
+    if (titleSpr == null || !titleSpr.exists) return;
+
+    timerAppear = new FlxTimer(globalTimerManager).start(APPEAR_DELAY, function(t:FlxTimer)
+    {
+      play();
+    });
+  }
+
+  public override function onSongStart(event:ScriptEvent):Void
+  {
+    super.onSongStart(event);
+    var canShow = PlayStatePlaylist.isStoryMode || forceShow;
+
+    if (titlePath != null && canShow) createTitle();
+
+    if (titleSpr != null && !delayTitle && canShow) {
+      playDelayed();
+    }
+  }
+
+  public override function onSongRetry(event:ScriptEvent):Void
+  {
+    super.onSongRetry(event);
+
+    if (globalTimerManager != null) globalTimerManager.clear();
+
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
+    if (timerAppear != null) {
+      timerAppear.cancel();
+      timerAppear = null;
+    }
+
+    if (titleSpr != null) {
+      FlxTween.cancelTweensOf(titleSpr);
+      titleSpr.alpha = 1;
+      titleSpr.visible = false;
+      titleSpr.animation.play('not');
+    }
+  }
+
+  public override function onUpdate(event:UpdateScriptEvent):Void {
+    super.onUpdate(event);
+    if (PlayState.instance == null) return;
+    if (titleSpr == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    if (globalTimerManager != null) globalTimerManager.update(event.elapsed);
+  }
+
+  public override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    delayTitle = false;
+    forceShow = false;
+    titleSpr = null;
+    titlePath = null;
+  }
+}

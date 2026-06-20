@@ -74,6 +74,8 @@ class FuzzyFeelingSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p1', true]);
+
     if (retroNoteStyles == null) retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
   }
 
@@ -251,9 +253,9 @@ class FuzzyFeelingSong extends Song
 
     var curStep:Int = event.step;
 
-    if (curStep >= 128 && !shownLogo && PlayStatePlaylist.isStoryMode) {
+    if (curStep >= 128 && !shownLogo) {
       shownLogo = true;
-      // TODO: show enemy title when the module is available
+      ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
     }
 
     if (laughId == 0 && curStep >= 248) {
@@ -407,7 +409,9 @@ class FuzzyFeelingSong extends Song
       playState.playerStrumline.x = defaultPlayerStrumlineX;
       playState.playerStrumline.y = defaultPlayerStrumlineY;
     } else if (beat >= 256 && beat < 288 && !flyTogether) {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, { alpha: 0.3 }, 0.4, { ease: FlxEase.circOut }));
+      for (s in playState.opponentStrumline.strumlineNotes) {
+        tweens.push(FlxTween.tween(playState.opponentStrumline, { alpha: 0.3 }, 0.4, { ease: FlxEase.circOut }));
+      }
       flyTogether = true;
       p1Pulse = true;
       p2Pulse = true;
@@ -416,7 +420,7 @@ class FuzzyFeelingSong extends Song
       var so = playState.opponentStrumline;
       var sp = playState.playerStrumline;
 
-      for (s in so) {
+      for (s in so.strumlineNotes) {
         tweens.push(FlxTween.tween(s, { alpha: opponentAlpha }, 0.4, { ease: FlxEase.circIn }));
       }
 

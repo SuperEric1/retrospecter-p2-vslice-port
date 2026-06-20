@@ -61,28 +61,28 @@ class RetroAchievements extends Module
     //{ id: 'all-dummy', iconOverride: 'dummy', unlockable: false, hidden: true },
 
     // WRATH
-    { id: 'wrath-p2' },
+    { id: 'wrath-p2' }, // done
     { id: 'wrath-chained' },
-    { id: 'wrath-blindhydra' },
-    { id: 'wrath-funsizebf' },
+    { id: 'wrath-blindhydra' }, // done
+    { id: 'wrath-funsizebf', unlockable: false },
 
     { id: 'wrath-hydradodge' }, // done
     { id: 'wrath-phone' },
-    { id: 'wrath-hard' },
+    { id: 'wrath-hard' }, // done
     { id: 'wrath-all' },
 
-    { id: 'wrath-catastro' },
-    { id: 'wrath-retrogf' },
-    { id: 'wrath-tenpoisons' },
+    { id: 'wrath-catastro' }, // done
+    { id: 'wrath-retrogf', unlockable: false },
+    { id: 'wrath-tenpoisons' }, // done
     { id: 'wrath-apocalypseecto' },
 
     { id: 'wrath-fourchains' },
-    { id: 'wrath-sidestory' },
-    { id: 'wrath-hell' },
-    { id: 'wrath-normal' },
+    { id: 'wrath-sidestory', unlockable: false },
+    { id: 'wrath-hell' }, // done
+    { id: 'wrath-normal' }, // done
 
-    { id: 'wrath-ecto' },
-    { id: 'wrath-brawnstorm' },
+    { id: 'wrath-ecto' }, // done
+    { id: 'wrath-brawnstorm', unlockable: false },
 
     // LUST
     { id: 'lust-phone' },

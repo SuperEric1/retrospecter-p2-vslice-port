@@ -21,6 +21,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.ui.FullScreenScaleMode;
 import haxe.ds.IntMap;
 
+import supereric.retrospecter.modules.RetroAchievements;
+
 class CatastrofiendSong extends Song
 {
   var tweens = [];
@@ -94,6 +96,10 @@ class CatastrofiendSong extends Song
     hasPlayedEndCutscene = false;
 
     if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedCutscene = true;
+
+    if (PlayStatePlaylist.isStoryMode && hasPlayedCutscene) {
+      RetroAchievements.grantAc('wrath-catastro', true, true);
+    }
 
     if (!hasPlayedCutscene)
     {
@@ -410,6 +416,19 @@ class CatastrofiendSong extends Song
    public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      RetroAchievements.grantAc('wrath-normal');
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('wrath-hard');
+      }
+
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('wrath-hell');
+      }
+    }
   }
 
   function startFinale()
@@ -535,6 +554,8 @@ class CatastrofiendSong extends Song
     didShowStrum = false;
     didIntroAnim = false;
     flashingLights = Preferences.flashingLights ?? false;
+
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['retro/p4']);
 
     // Check if downscroll
     isDownscroll = Preferences.downscroll;
