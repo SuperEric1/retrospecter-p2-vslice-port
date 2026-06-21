@@ -2,7 +2,6 @@
 A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
 
 TODO:
-- [ ] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [ ] Remaining extirpatient effects and modchart
 - [ ] Remaining title screen bgs
 - [ ] Checkpoint event (+ add to all songs that have it)
@@ -25,6 +24,7 @@ TODO:
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Spanish translation
+- [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [X] Enemy title popup module + apply to all songs that have it (todo)
 - [X] Catastrofiend subtitles and modchart
 - [X] Phase 2 end cutscene
