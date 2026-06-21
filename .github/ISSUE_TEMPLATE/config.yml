@@ -1,5 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Original mod (PC)
+  - name: Original mod link
     url: https://gamebanana.com/mods/317366
     about: This repo is for the mobile port only. Issues about the original PC mod shouldn't be posted here.
