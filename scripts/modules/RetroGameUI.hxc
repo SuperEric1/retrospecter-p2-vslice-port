@@ -1207,6 +1207,30 @@ class RetroGameUI extends Module {
 				pausedTweens.push(tween);
 			}
 		}
+    for (tween in scoreTweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+    for (tween in comboTweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
+    for (tween in judgementTweens)
+		{
+			if (tween != null)
+			{
+				tween.active = false;
+				pausedTweens.push(tween);
+			}
+		}
 
     if (true) return; // not implemented yet
 
