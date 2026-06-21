@@ -1,6 +1,7 @@
 package supereric.retrospecter.modules;
 
 import funkin.util.GRhythmUtil;
+import funkin.util.ReflectUtil;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.play.notes.Strumline;
@@ -43,6 +44,8 @@ class RetroThirdStrumline extends Module
   private static final THIRD_STRUMLINE_SONGS:StringMap<String, String> = [
     'waitkeeper' => 'third',
   ];
+
+  private static var _scrollSpeedTween:FlxTween = null;
 
   // Flags de sincronização de frame para o sistema de sufixo da Pendulumbra.
   private static var _isDueling:Bool = false;
@@ -268,48 +271,57 @@ class RetroThirdStrumline extends Module
   override function onSongEvent(event:SongEventScriptEvent):Void
   {
     super.onSongEvent(event);
-    if (PlayState.instance == null || !isActive() || event.eventData.eventKind != "ScrollSpeed") return;
+    if (PlayState.instance == null || !isActive() || event.eventData.eventKind != 'ScrollSpeed') return;
 
     var data = event.eventData;
 
-    var scroll:Float = data.getFloat('scroll') ?? 1;
-    var duration:Float = data.getFloat('duration') ?? 4.0;
-    var ease:String = FlxEase.linear;
-
     var strumline:String = data.getString('strumline') ?? 'both';
+    if (strumline == 'player') return;
 
+    var scroll:Float = data.getFloat('scroll') ?? 1.0;
     var absolute:Bool = data.getBool('absolute') ?? false;
 
-    var strumlineNames:Array<String> = [];
-
     if (!absolute)
-    {
-      // If absolute is set to false, do the awesome multiplicative thing
       scroll = scroll * (PlayState.instance?.currentChart?.scrollSpeed ?? 1.0);
+
+    var ease:String = data.getString('ease') ?? 'linear';
+    var easeDir:String = data.getString('easeDir') ?? '';
+
+    if (ease == 'INSTANT')
+    {
+      _tweenThirdScrollSpeed(scroll, 0, null);
+      return;
     }
 
-    if (strumline == 'player') return;
-    var durSeconds = Conductor.instance.stepLengthMs * duration / 1000;
-    _tweenThirdScrollSpeed(scroll, durSeconds, ease);
+    var duration:Float = data.getFloat('duration') ?? 4.0;
+    var durSeconds:Float = Conductor.instance.stepLengthMs * duration / 1000;
+
+    var easeFunctionName:String = ease == 'linear' ? 'linear' : '$ease$easeDir';
+    var easeFunction:Dynamic = ReflectUtil.getProperty(FlxEase, easeFunctionName) ?? FlxEase.linear;
+
+    _tweenThirdScrollSpeed(scroll, durSeconds, easeFunction);
   }
 
-  public function _tweenThirdScrollSpeed(?speed:Float, duration:Float = 0, ?ease:FlxEase):Void
+  private static function _tweenThirdScrollSpeed(speed:Float, duration:Float, easeFunction:Dynamic):Void
   {
-    var value:Float = speed ?? 0;
-    var strum:Strumline = _thirdStrumline;
+    if (_thirdStrumline == null) return;
+
+    if (_scrollSpeedTween != null)
+    {
+      _scrollSpeedTween.cancel();
+      _scrollSpeedTween = null;
+    }
 
     if (duration == 0)
     {
-      strum.scrollSpeed = value;
+      _thirdStrumline.scrollSpeed = speed;
+      return;
     }
-    else
-    {
-      var adjustedDuration:Float = duration / PlayState.instance.playbackRate;
 
-      PlayState.instance.scrollSpeedTweens.push(FlxTween.tween(strum, {
-        'scrollSpeed': value
-      }, adjustedDuration, {ease: ease}));
-    }
+    var adjustedDuration:Float = duration / PlayState.instance.playbackRate;
+    _scrollSpeedTween = FlxTween.tween(_thirdStrumline, {
+      'scrollSpeed': speed
+    }, adjustedDuration, {ease: easeFunction, onComplete: function(_) { _scrollSpeedTween = null; }});
   }
 
   /**
@@ -347,6 +359,12 @@ class RetroThirdStrumline extends Module
     }
 
     _thirdStrumline = null;
+
+    if (_scrollSpeedTween != null)
+    {
+      _scrollSpeedTween.cancel();
+      _scrollSpeedTween = null;
+    }
 
     _isDueling = false;
     _dispatchingForThird = false;

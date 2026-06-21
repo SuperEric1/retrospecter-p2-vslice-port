@@ -17,7 +17,7 @@ class HolyNote extends NoteKind {
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
 		event.note.x += 5;
-		event.note.yOffset += -85;
+		event.note.yOffset += -87;
 
 		event.note.lowPriority = true;
 
