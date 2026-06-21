@@ -18,6 +18,14 @@ class RetroCredits extends Module {
 		});
 
 		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Translators",
+			body: [
+				{line: "MatDenFunnyMan - Italian translation"},
+				{line: "SuperEric - Portuguese translation"},
+			]
+		});
+
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
 			header: "Unofficial V-Slice Port By",
 			body: [
 				{line: "SuperEric"},
