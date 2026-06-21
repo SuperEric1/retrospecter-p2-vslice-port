@@ -733,8 +733,8 @@ class RetroGameUI extends Module {
     }*/
 
     // Calculate accuracy
-    if (totalNotesHit > 0) {
-      currentAccuracy = 100 - ((shits + bads + (missed * 2)) / totalNotesHit * 100);
+    if (totalNotesHit + missed > 0) {
+      currentAccuracy = ((sicks + goods - missed) / (totalNotesHit + missed)) * 100;
       currentAccuracy = Math.min(100, Math.max(0, currentAccuracy));
       //currentAccuracy = Std.int(currentAccuracy);*/
     } else {
