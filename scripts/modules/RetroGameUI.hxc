@@ -111,6 +111,13 @@ class RetroGameUI extends Module {
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
+  var notesHit:Int = 0;
+  var hazardNotesHit:Int = 0;
+  var sickCount:Int = 0;
+  var goodCount:Int = 0;
+  var badCount:Int = 0;
+  var shitCount:Int = 0;
+  var missCount:Int = 0;
   var hiveminePlayerMoney:FlxBitmapText;
   var hivemineOppMoney:FlxBitmapText;
   var hiveminePlayerMoneyValue:Float = 0;
@@ -733,10 +740,10 @@ class RetroGameUI extends Module {
     }*/
 
     // Calculate accuracy
-    if (totalNotesHit + missed > 0) {
-      currentAccuracy = ((sicks + goods - missed) / (totalNotesHit + missed)) * 100;
+    var notesInteracted = sickCount + goodCount + badCount + shitCount + missCount;
+    if (notesInteracted > 0) {
+      currentAccuracy = ((sickCount + goodCount - missCount) / notesInteracted) * 100;
       currentAccuracy = Math.min(100, Math.max(0, currentAccuracy));
-      //currentAccuracy = Std.int(currentAccuracy);*/
     } else {
       currentAccuracy = 0.0;
     }
@@ -761,8 +768,10 @@ class RetroGameUI extends Module {
     statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;
 
     // Update rating text with color
-    if (ratingTextDisplay?.text != ratingData.name) ratingTextDisplay.text = ratingData.name;
-    if (ratingTextDisplay?.color != ratingData.color) ratingTextDisplay.color = ratingData.color;
+    try {
+      if (ratingTextDisplay?.text != ratingData?.name) ratingTextDisplay.text = ratingData?.name;
+      if (ratingTextDisplay?.color != ratingData?.color) ratingTextDisplay.color = ratingData?.color;
+    } catch(e:Dynamic) {}
 
     // Position rating text right after "RANK: " text
     // Calculate the width of "RANK: " in the last line
@@ -1061,6 +1070,12 @@ class RetroGameUI extends Module {
     if (event.note.noteData.getMustHitNote() && !PlayState.instance.isBotPlayMode) { // Só pro jogador!
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
       if (isNormalNote) {
+        notesHit += 1;
+        if (event.judgement == 'sick') sickCount += 1;
+        else if (event.judgement == 'good') goodCount += 1;
+        else if (event.judgement == 'bad') badCount += 1;
+        else if (event.judgement == 'shit') shitCount += 1;
+
         if (!event.note.isHoldNote) {
           updateJudgement(event.judgement, event.score, event.isComboBreak, true);
         } else {
@@ -1069,6 +1084,8 @@ class RetroGameUI extends Module {
         }
         // Update stats display after note hit
         updateStatsDisplay();
+      } else {
+        hazardNotesHit += 1;
       }
     }
   }
@@ -1082,6 +1099,7 @@ class RetroGameUI extends Module {
       var isNormalNote = event.note.scoreable; // Todas as hazard notes têm suas 'scoreable' setadas para false ao spawnar (RetroPlayState.hxc)
 
       if (isNormalNote) {
+        missCount += 1;
         updateJudgement('miss', Scoring.getMissScore(), true, false);
         // Update stats display after miss
         updateStatsDisplay();
@@ -1169,6 +1187,13 @@ class RetroGameUI extends Module {
     isPlayerOppAnimated = false;
     ogBarTexture = null;
     cancelTweens(false);
+    notesHit = 0;
+    hazardNotesHit = 0;
+    sickCount = 0;
+    goodCount = 0;
+    badCount = 0;
+    shitCount = 0;
+    missCount = 0;
     currentAccuracy = 0.0;
     isHivemine = false;
     resetDozircAnim(true);
@@ -1327,6 +1352,14 @@ class RetroGameUI extends Module {
     if (!hasBeenCreated) return;
     if (!isRetro) return;
 
+    notesHit = 0;
+    hazardNotesHit = 0;
+    sickCount = 0;
+    goodCount = 0;
+    badCount = 0;
+    shitCount = 0;
+    missCount = 0;
+
     for (tween in tweens) {
 			if (tween != null) tween.cancel();
 		}
@@ -1447,6 +1480,7 @@ class RetroGameUI extends Module {
         if (!isOppIconAnimated && updateIconAnim) {
           isOppIconAnimated = true;
 
+          // if you change something here please change it also in slowstopper.hxc
           oppIcon.animation.addByPrefix("up", "up", 1, false);
           oppIcon.animation.addByPrefix("down", "down", 1, false);
           oppIcon.animation.addByPrefix("left", "left", 1, false);

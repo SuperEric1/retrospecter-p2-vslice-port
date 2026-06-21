@@ -2,10 +2,10 @@
 <TextureAtlas imagePath="dozirc.png">
 	<!-- Created with Adobe Animate version 23.0.0.407 -->
 	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="idle" x="450" y="0" width="150" height="150"/>
 	<SubTexture name="down" x="0" y="0" width="150" height="150"/>
 	<SubTexture name="left" x="300" y="150" width="150" height="150"/>
 	<SubTexture name="losing" x="0" y="150" width="150" height="150"/>
-	<SubTexture name="idle" x="450" y="0" width="150" height="150"/>
 	<SubTexture name="right" x="150" y="0" width="150" height="150"/>
 	<SubTexture name="up" x="150" y="150" width="150" height="150"/>
 	<SubTexture name="winning" x="300" y="0" width="150" height="150"/>

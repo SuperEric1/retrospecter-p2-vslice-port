@@ -391,11 +391,16 @@ class SlowstopperSong extends Song
   {
     var dad = PlayState.instance?.currentStage?.getDad();
     if (dad != null) { dad.playAnimation('sleep', false); dad.danceEvery = 0; }
-    PlayState.instance.iconP2.configure({
+    var oppIcon = PlayState.instance.iconP2;
+    oppIcon.configure({
       id: 'zzz',
       scale: 0.75,
       offsets: [15, 0],
     });
+    oppIcon.animation.addByPrefix("up", "up", 1, false);
+    oppIcon.animation.addByPrefix("down", "down", 1, false);
+    oppIcon.animation.addByPrefix("left", "left", 1, false);
+    oppIcon.animation.addByPrefix("right", "right", 1, false);
 
     if (!modcharts || !hasStoredStrums) return;
     var crochet = Conductor.instance.beatLengthMs;
@@ -440,6 +445,11 @@ class SlowstopperSong extends Song
 
     PlayState.instance.currentStage?.scriptCall('playElectricity', []);
     dad.initHealthIcon(true);
+    var oppIcon = PlayState.instance.iconP2;
+    oppIcon.animation.addByPrefix("up", "up", 1, false);
+    oppIcon.animation.addByPrefix("down", "down", 1, false);
+    oppIcon.animation.addByPrefix("left", "left", 1, false);
+    oppIcon.animation.addByPrefix("right", "right", 1, false);
 
     if (!modcharts || !hasStoredStrums) return;
     var crochet = Conductor.instance.beatLengthMs;
