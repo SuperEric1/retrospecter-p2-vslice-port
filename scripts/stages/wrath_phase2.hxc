@@ -36,7 +36,7 @@ class WrathPhase2Stage extends Stage
   var hasRefreshedProps:Bool = false;
   var isSpectral:Bool = false;
   var isEctospasm:Bool = false;
-  var isWideScreen:Bool = false;
+  var isWideScreen:Bool = true;
   var optimize:Bool = false; // Lógica de otimização (false = criar todos os props)
 
   // Cutscene variables
@@ -572,9 +572,9 @@ class WrathPhase2Stage extends Stage
         var color = 0xFF000f03; // #000f03
 
         var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
-        border1.x -= 1000;
+        border1.x = -1000;
         border1.screenCenter(0x10);
-        border1.scrollFactor.set(1.1, 0);
+        border1.scrollFactor.set(rocksLeft.scrollFactor.x, 0);
         border1.zIndex = rocksLeft.zIndex + 1;
         add(border1);
         var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
@@ -586,7 +586,7 @@ class WrathPhase2Stage extends Stage
         var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
         border2.x = wrathXAdjust + 1970;
         border2.screenCenter(0x10);
-        border2.scrollFactor.set(1.1, 0);
+        border2.scrollFactor.set(rocks.scrollFactor.x, 0);
         border2.zIndex = rocks.zIndex + 1;
         add(border2);
         var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
@@ -628,7 +628,16 @@ class WrathPhase2Stage extends Stage
       loadSounds();
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['spectral story', 'pre', function() {
-        introCutscene();
+        var retro = PlayState.instance.currentStage.getDad();
+        var retroPos:Array<Float> = [
+          retro.cameraFocusPoint.x,
+          retro.cameraFocusPoint.y
+        ];
+        var zoomTime:Float = 0.5;
+
+        PlayState.instance.tweenCameraZoom(0.85, zoomTime, true, FlxEase.circOut);
+        PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, zoomTime, FlxEase.expoOut);
+        new FlxTimer().start(zoomTime, introCutscene);
       }]);
     }
   }
@@ -1005,7 +1014,7 @@ class WrathPhase2Stage extends Stage
       retro.cameraFocusPoint.y
     ];
 
-    characterStageShader = retro.shader;
+    /*characterStageShader = retro.shader;
     var rim = new DropShadowShader();
     rim.setAdjustColor(-33, 0, -23, 0);
     rim.color = 0xFF29c23e;
@@ -1017,15 +1026,15 @@ class WrathPhase2Stage extends Stage
       {
         rim.updateFrameInfo(retro.frame);
       }
-    });
+    });*/
 
     // Início
     retro.playAnimation('transformation', true);
     growlSound.play();
     groundShakeSound.play();
-    PlayState.instance.tweenCameraZoom(0.85, 0, true, FlxEase.quadInOut);
+    //PlayState.instance.tweenCameraZoom(0.85, 0, true, FlxEase.linear);
     PlayState.instance.tweenCameraZoom(0.75, 1, true, FlxEase.quadInOut);
-    PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, 0, FlxEase.quadInOut);
+    //PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, 0, FlxEase.quadInOut);
 
     // smash ground + unzoom
     new FlxTimer().start(2, function(tmr) {
@@ -1051,7 +1060,7 @@ class WrathPhase2Stage extends Stage
       PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom, 0.5, true, FlxEase.quadInOut);
     });
 
-    new FlxTimer().start(4, function(tmr) {
+    /*new FlxTimer().start(4, function(tmr) {
       var rim = characterStageShader;
       retro.shader = rim;
       rim.attachedSprite = retro;
@@ -1061,7 +1070,7 @@ class WrathPhase2Stage extends Stage
           rim.updateFrameInfo(retro.frame);
         }
       });
-    });
+    });*/
 
     new FlxTimer().start(4.75, function(tmr) {
       retro.playAnimation('idle', true);

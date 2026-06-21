@@ -122,7 +122,6 @@ class SatisfractureSong extends Song
 
 
   function introCutscene() {
-    if (!PlayStatePlaylist.isStoryMode || playState.isChartingMode) return;
     //bgSprite.visible = true;
     playState.togglePauseButton(true);
     playState.isInCutscene = true;
@@ -158,7 +157,8 @@ class SatisfractureSong extends Song
 
     retro.playAnimation('introIdle', true);
 
-    var cutsceneDelay = 1.5;
+    var cutsceneDelay = 1;
+    var cutsceneAdjust = -0.3;
 
     cutsceneConductor = new Conductor();
     cutsceneConductor.forceBPM(140);
@@ -177,14 +177,15 @@ class SatisfractureSong extends Song
 
     // Câmera vai até boyfriend.
     new FlxTimer(cutsceneTimerManager).start(cutsceneDelay, function(tmr) {
-      playState.tweenCameraToPosition(bfPos[0] + -50, bfPos[1] - 100, 1.5, FlxEase.quadInOut); //x, y, rot? eu acho
+      playState.cameraFollowPoint.setPosition(bfPos[0] + -50, bfPos[1] - 100);
+      //playState.tweenCameraToPosition(bfPos[0] + -50, bfPos[1] - 100, 2.5, FlxEase.expoOut); //x, y, rot? eu acho
     });
     // beep + micsound
-    new FlxTimer(cutsceneTimerManager).start(1.7 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(1.7 + cutsceneDelay + cutsceneAdjust, function(tmr) {
       playStage.getBoyfriend().playAnimation('singUP', true);
       beepSound.play();
     });
-    new FlxTimer(cutsceneTimerManager).start(1.723 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(1.723 + cutsceneDelay + cutsceneAdjust, function(tmr) {
       micSound.play();
     });
     /* after beep (o jogo ja muda pro idle)
@@ -192,12 +193,12 @@ class SatisfractureSong extends Song
       playStage.getBoyfriend().playAnimation('idle', true);
     }); */
     // retro acorda
-    new FlxTimer(cutsceneTimerManager).start(2.65 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(2.65 + cutsceneDelay + cutsceneAdjust, function(tmr) {
       retro.playAnimation('intro', true);
     });
 
     // Cutscene acaba.
-    new FlxTimer(cutsceneTimerManager).start(6.3 - 0.5 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(6.3 - 0.5 + cutsceneDelay + cutsceneAdjust, function(tmr) {
       cutsceneSkipped = true;
       canSkipCutscene = false;
       FlxTween.tween(skipText, {alpha: 0}, 0.5, {
@@ -208,7 +209,7 @@ class SatisfractureSong extends Song
         }
       });
     });
-    new FlxTimer(cutsceneTimerManager).start(6.3 + cutsceneDelay, function(tmr) {
+    new FlxTimer(cutsceneTimerManager).start(6.3 + cutsceneDelay + cutsceneAdjust, function(tmr) {
       skipCutscene();
     });
   }
@@ -255,7 +256,7 @@ class SatisfractureSong extends Song
     if (event.step == 188) {
       isDoingEnough = true;
       playState.mayPauseGame = false;
-      playState.tweenCameraToPosition(retroPos[0] - 200, retroPos[1] - 100, 0.2, FlxEase.quadOut);
+      playState.tweenCameraToPosition(retroPos[0] - 200, retroPos[1] - 100, 0.2, FlxEase.expoOut);
       tweens.push(FlxTween.tween(PlayState.instance.playerStrumline, {alpha: 0},
         (Conductor.instance.stepLengthMs * 0.5) / 1000, {ease: FlxEase.linear}));
 

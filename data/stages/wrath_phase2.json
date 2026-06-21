@@ -4,13 +4,13 @@
   "version": "1.0.0",
   "characters": {
     "bf": {
-      "zIndex": 300,
+      "zIndex": 250,
       "position": [1305.5, 925.5],
       "scale": 0.8,
       "cameraOffsets": [-240, -330]
     },
     "dad": {
-      "zIndex": 301,
+      "zIndex": 251,
       "position": [-20, 920],
       "cameraOffsets": [500, -50]
     },
