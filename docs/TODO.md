@@ -7,7 +7,8 @@
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
-- [ ] Judgement offset adjustment option
+- [ ] Judgement offset adjustment option (and italian translation for it)
+- [ ] Progression unlock thingy (beat a week to unlock others, etc)
 - [ ] Story mode menu?
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay

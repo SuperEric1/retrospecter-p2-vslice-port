@@ -78,6 +78,12 @@ options.song_timer.desc = "When enabled, display the song length in the corner o
 options.suggestive = "Suggestive Content"
 options.suggestive.desc = "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song."
 
+options.combooffsetx = "Judgement X Offset"
+options.combooffsetx.desc = "Move the judgement pop-up horizontally (combo, score and rating)."
+
+options.combooffsety = "Judgement Y Offset"
+options.combooffsety.desc = "Move the judgement pop-up vertically (combo, score and rating)."
+
 options.custom_menus = "Custom Menus"
 options.custom_menus.desc = "Enables the mod's custom menus. Disable this if you want the original FNF menus back."
 

@@ -26,6 +26,7 @@ class RetroThirdStrumline extends Module
 
   private static var _thirdStrumline:Strumline = null;
   private static var hasThirdStrum:Bool = false;
+  private static final oppHoldNoteAlphaMult = 1;
 
   // Originalmente "amplification" do código fonte do Funkin'.
   private static final screenRatio:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
@@ -115,6 +116,7 @@ class RetroThirdStrumline extends Module
   private static function _buildThirdStrumline(playState:PlayState, variation:String, isMobile:Bool):Void
   {
     if (_thirdStrumline != null) return;
+    oppHoldNoteAlphaMult = ModuleHandler.getModule('RetroPlayState')?.scriptCall('getOppHoldNoteAlphaMult', []) ?? 1;
     var oppStrumline = playState.opponentStrumline;
 
     //oppStrumline.enterMiniMode(0.4 * screenRatio);
@@ -187,6 +189,7 @@ class RetroThirdStrumline extends Module
   private static function _onThirdNoteIncoming(note:Dynamic):Void
   {
     ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyThirdNoteIncomingOffset', [note]);
+    if (note.isHoldNote && note.holdNoteSprite.alpha != oppHoldNoteAlphaMult) note.holdNoteSprite.alpha = oppHoldNoteAlphaMult;
   }
 
   override function onUpdate(event:UpdateScriptEvent):Void

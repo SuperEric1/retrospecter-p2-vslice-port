@@ -1359,6 +1359,10 @@ class RetroPlayState extends Module {
     }
   }
 
+  public function getOppHoldNoteAlphaMult():Float {
+    return oppHoldNoteAlphaMult;
+  }
+
   function loadChainLockSprites():Void {
     // Se já tivermos sprites carregados (e válidos), não fazemos nada.
     // Mas se o array tiver lixo de uma sessão anterior, limpamos.

@@ -105,6 +105,11 @@ class RetroSave extends Module
     if (!save.modOptions.exists("retroCustomMenus"))
       save.modOptions.set("retroCustomMenus", true);
 
+    if (!save.modOptions.exists("retroComboOffX"))
+      save.modOptions.set("retroComboOffX", 0);
+    if (!save.modOptions.exists("retroComboOffY"))
+      save.modOptions.set("retroComboOffY", 0);
+
     if (!save.modOptions.exists("retroDefaultNotes"))
       save.modOptions.set("retroDefaultNotes", true);
 

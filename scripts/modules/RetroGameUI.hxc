@@ -68,6 +68,7 @@ class RetroGameUI extends Module {
   var healthBgYOffset:Float = 0;
   // move judgements a little bit to the left on non-mobile/non-arrows scheme
   var judgementXOffset = 0; // set when the song loads.
+  var judgementYOffset = 0; // set when the song loads.
   var hudTextScale:Float = 0.47;
   var songLengthEnabled:Bool = true;
   var isHivemine:Bool = false;
@@ -152,7 +153,9 @@ class RetroGameUI extends Module {
       downscroll = Preferences.downscroll;
       isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
       if (isMobileArrowScheme) downscroll = true;
-      judgementXOffset = isMobileArrowScheme ? -30 : -60;
+      judgementXOffset = (isMobileArrowScheme ? -30 : -60) + (Save.instance.modOptions.get('retroComboOffX') ?? 0);
+      judgementYOffset = Save.instance.modOptions.get('retroComboOffY') ?? 0;
+      judgementYOffset = downscroll ? -judgementYOffset : judgementYOffset;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -521,6 +524,7 @@ class RetroGameUI extends Module {
     if (!downscroll) {
       yPos = PlayState.instance.playerStrumline.y + 50;
     }
+    yPos += judgementYOffset;
     var zIndex = 9999;
     if (_fontAtari == null) _fontAtari = FlxBitmapFont.fromAngelCode(Paths.font("AtariST8x16SystemFont-bmp.png"), Paths.font("AtariST8x16SystemFont-bmp.fnt"));
 
