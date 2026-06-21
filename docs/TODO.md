@@ -1,0 +1,45 @@
+# TODO
+
+- [ ] Remaining extirpatient effects and modchart
+- [ ] Remaining title screen bgs
+- [ ] Checkpoint event (+ add to all songs that have it)
+- [ ] Pause menu with custom music based on the opp/stage
+- [ ] Make the settings work across all modules and songs
+- [ ] Encode textures to ASTC again, after running oxipng in all of them
+- [ ] Make dozirc sleep in the options menu after being inactive for some time
+- [ ] Judgement offset adjustment option
+- [ ] Story mode menu?
+- [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
+- [ ] Song ratings for freeplay
+- [ ] Sweet talk intro instruction
+- [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
+- [ ] Update charters in song metadatas
+- [ ] Finish the opponent note skins
+- [ ] Dozirc, Izzy and Sakuroma note mechanics
+- [ ] Review mechanics for better accuracy
+- [ ] Fix reseting strum scales to default when restarting song
+- [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
+- [ ] Add and translate the missing dialogues (superbio finish dialogue too)
+- [ ] Spanish translation
+- [X] Scrollspeed changes for the third strumline
+- [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
+- [X] Enemy title popup module + apply to all songs that have it (todo)
+- [X] Catastrofiend subtitles and modchart
+- [X] Phase 2 end cutscene
+- [X] Cloth scythes
+- [X] Update main menu
+- [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
+- [X] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
+- [X] Dialogues...?
+- [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)
+- [X] Intro for options menu
+- [X] Acid death
+- [X] Hydra note is not pausing when pausing the game
+- [X] Sweet talk difficulties
+- [X] Poison note notesplashes
+- [X] Song length timer
+- [X] Fix title screen on mobile
+- [X] Custom main menu
+- [X] Crash in wrath_phase2 after restarting
+- [X] Catastrofiend difficulties
+- [X] Text engine for voicelines mid-song (maybe use the new subtitles?)

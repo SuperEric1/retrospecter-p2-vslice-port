@@ -1,7 +1,33 @@
-This FAN port is not associated with Team Respec. All credits goes to the original mod's dev team.
-Check the in-game credits to see the credits of the original mod.
+This is a FAN port of Vs. RetroSpecter - Part Two: Infernadise.
+This port is NOT associated with Team Respec.
 
-This port also contains code from the original mod but converted into Haxe
+ORIGINAL MOD
+------------
+All characters, story, art, music, songs, and the Infernadise universe are
+owned by Team Respec. Check the in-game credits for the full list of the
+original mod's team.
 
+Original mod (PC): https://gamebanana.com/mods/317366
+On GameBanana, the original mod is listed under the CC BY-NC-ND 4.0 license.
+This port does not relicense, override, or claim rights over that material.
+
+THIS PORT'S CODE
+----------------
+You're free to use parts of this port's source code in your own mods or projects, as long as
+you give credit.
+
+What's NOT okay: reuploading this port, or modified/"updated"/"fixed"
+versions of it, as a separate download. If you find a bug or want to improve
+something, open an issue or a pull request on the GitHub repo instead —
+that's the only place where updates to this port should happen.
+
+Code converted from the original mod into Haxe is not covered by the above —
+it remains subject to Team Respec's rights, and is only present here as part
+of the fan port.
+
+GitHub page: https://github.com/SuperEric1/retrospecter-p2-vslice-port
+
+DOWNLOAD
+--------
 You can download the original mod (for PC) here:
 https://gamebanana.com/mods/317366

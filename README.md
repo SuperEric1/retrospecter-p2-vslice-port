@@ -1,47 +1,49 @@
-# retrospecter-p2-vslice-port
-A V-Slice port of Vs. RetroSpecter - Part Two: Infernadise. Not associated with Team Respec!
+# Vs. RetroSpecter - Part Two: Infernadise (Mobile Port)
 
-TODO:
-- [ ] Remaining extirpatient effects and modchart
-- [ ] Remaining title screen bgs
-- [ ] Checkpoint event (+ add to all songs that have it)
-- [ ] Pause menu with custom music based on the opp/stage
-- [ ] Make the settings work across all modules and songs
-- [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Make dozirc sleep in the options menu after being inactive for some time
-- [ ] Judgement offset adjustment option
-- [ ] Story mode menu?
-- [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
-- [ ] Song ratings for freeplay
-- [ ] Sweet talk intro instruction
-- [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
-- [ ] Update charters in song metadatas
-- [ ] Finish the opponent note skins
-- [ ] Dozirc, Izzy and Sakuroma note mechanics
-- [ ] Review mechanics for better accuracy
-- [ ] Fix reseting strum scales to default when restarting song
-- [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
-- [ ] Add and translate the missing dialogues (superbio finish dialogue too)
-- [ ] Spanish translation
-- [X] Scrollspeed changes for the third strumline
-- [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
-- [X] Enemy title popup module + apply to all songs that have it (todo)
-- [X] Catastrofiend subtitles and modchart
-- [X] Phase 2 end cutscene
-- [X] Cloth scythes
-- [X] Update main menu
-- [X] Update all songs metadata artists for it to match with the original mod's artits instead of always being RetroSpecter & Kamex
-- [X] Song info popup at the start of songs using PlayState.instance.currentChart... for the info
-- [X] Dialogues...?
-- [X] `addBySymbol()` all dozirc anims in the options menu (URGENT)
-- [X] Intro for options menu
-- [X] Acid death
-- [X] Hydra note is not pausing when pausing the game
-- [X] Sweet talk difficulties
-- [X] Poison note notesplashes
-- [X] Song length timer
-- [X] Fix title screen on mobile
-- [X] Custom main menu
-- [X] Crash in wrath_phase2 after restarting
-- [X] Catastrofiend difficulties
-- [X] Text engine for voicelines mid-song (maybe use the new subtitles?)
+Battle the 7 deadly sins, now on your phone.
+
+This is a high quality **mobile port** of [Vs. RetroSpecter - Part Two: Infernadise](https://gamebanana.com/mods/317366) for V-Slice (base game FNF).
+
+> **On PC?** Go play [the original mod](https://gamebanana.com/mods/317366) instead — this port is made for mobile devices.
+
+> **iOS is NOT supported.** I don't own an iPhone to test or fix issues on it, so iOS builds are not provided.
+
+## ⚠️ Content Warning
+
+This mod contains a character resembling the sin of Lust, which may make some players uncomfortable. The port's options menu has a toggle to disable voice acting and poses for that character's final song.
+
+## Download
+
+Download it through the alternate file sources on the port's GameBanana page: https://gamebanana.com/mods/653579
+
+## What this port HAS from the original
+
+- Full weeks and songs from the main story
+- Mechanics
+- Custom menus
+- Cutscenes
+- Achievements
+- Translations for different languages
+- Custom options
+- SOME extra songs
+
+## What this port DOESN'T have from the original
+
+- Side Stories
+- Extra Songs
+- Some custom menus
+- Other small features
+
+## Credits & Rights
+
+This is a **fan port**, not an official release. I'm not associated with Team Respec, who owns the Infernadise universe and the original mod.
+
+See [CREDITS.txt](CREDITS.txt) for the full breakdown of who owns what, and the terms for reusing this port's source code.
+
+In-game credits list the original mod's team. The port's GameBanana page also lists everyone in the credits section.
+
+## Contributing
+
+Found a bug or want to suggest something? Check [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request.
+
+Current development progress is tracked in [docs/TODO.md](docs/TODO.md).
