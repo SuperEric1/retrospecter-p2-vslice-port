@@ -11,7 +11,6 @@ TODO:
 - [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Judgement offset adjustment option
 - [ ] Story mode menu?
-- [ ] Scrollspeed changes for the third strumline
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
 - [ ] Sweet talk intro instruction
@@ -24,6 +23,7 @@ TODO:
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Spanish translation
+- [X] Scrollspeed changes for the third strumline
 - [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [X] Enemy title popup module + apply to all songs that have it (todo)
 - [X] Catastrofiend subtitles and modchart
