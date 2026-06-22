@@ -106,6 +106,7 @@ class SatisfractureSong extends Song
       PlayState.instance.refresh();*/
 
       loadIntroSounds();
+      PlayState.instance.currentStage.getDad().playAnimation('introIdle', true);
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['satisfracture story', 'pre', function() {
         introCutscene();

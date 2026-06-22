@@ -63,7 +63,7 @@
       "name": "intro",
       "prefix": "Phase 01 Instanz",
       "assetPath": "characters/wrath/IntroCutscene",
-      "offsets": [0, 5.7],
+      "offsets": [-4, -10],
       "frameRate": 24,
       "franeIndices": []
     },
@@ -72,7 +72,7 @@
       "name": "introIdle",
       "prefix": "Phase 01 Instanz 10000",
       "assetPath": "characters/wrath/IntroCutscene",
-      "offsets": [0, 5.7],
+      "offsets": [-4, -10],
       "frameRate": 24,
       "franeIndices": []
     },

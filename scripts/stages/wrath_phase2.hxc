@@ -626,19 +626,23 @@ class WrathPhase2Stage extends Stage
 
       buildProps(true);
       loadSounds();
+
+      var zoomTime:Float = 0.5;
+
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['spectral story', 'pre', function() {
-        var retro = PlayState.instance.currentStage.getDad();
-        var retroPos:Array<Float> = [
-          retro.cameraFocusPoint.x,
-          retro.cameraFocusPoint.y
-        ];
-        var zoomTime:Float = 0.5;
-
-        PlayState.instance.tweenCameraZoom(0.85, zoomTime, true, FlxEase.circOut);
-        PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, zoomTime, FlxEase.expoOut);
-        new FlxTimer().start(zoomTime, introCutscene);
+        introCutscene();
+        //new FlxTimer().start(zoomTime, introCutscene);
       }]);
+
+      var retro = PlayState.instance.currentStage.getDad();
+      var retroPos:Array<Float> = [
+        retro.cameraFocusPoint.x,
+        retro.cameraFocusPoint.y
+      ];
+
+      PlayState.instance.tweenCameraZoom(0.85, zoomTime, true, FlxEase.circOut);
+      PlayState.instance.tweenCameraToPosition(retroPos[0] + 100, retroPos[1] - 10, zoomTime, FlxEase.expoOut);
     }
   }
 
@@ -957,16 +961,19 @@ class WrathPhase2Stage extends Stage
       flames.y += 1000;
       if (vortex != null) vortex.visible = false;
       if (crack != null) crack.visible = false;
+      for (crystal in crystals) {
+        if (crystal == null) continue;
+        crystal.visible = false;
+      }
     } else {
       if (vortex != null) vortex.visible = true;
       if (crack != null) {
         crack.visible = true;
         crack.animation.play('bop');
       }
-      for (i in 0...8) {
-        var crystal = crystals[i];
+      for (crystal in crystals) {
         if (crystal == null) continue;
-        crystal.alpha = 1;
+        crystal.visible = true;
       }
     }
   }

@@ -12,6 +12,7 @@ import flixel.tweens.FlxEase;
 import funkin.graphics.FunkinSprite;
 import funkin.play.PlayState;
 import funkin.save.Save;
+import funkin.effects.IntervalShake;
 import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
 import funkin.Paths;
@@ -180,6 +181,14 @@ class RetroDialogue extends Module
     trace('[RetroDialogue] dialogues.txt carregado.');
   }
 
+  private static function parseFirstNumber(raw:String):Float
+  {
+    var cleaned:String = StringTools.replace(raw, '[', '');
+    cleaned = StringTools.replace(cleaned, ']', '');
+    var sep:String = cleaned.indexOf(',') >= 0 ? ',' : ';';
+    return Std.parseFloat(StringTools.trim(cleaned.split(sep)[0]));
+  }
+
   private static function parseDialogueLine(raw:String):StringMap<String>
   {
     var result:StringMap<String> = new StringMap();
@@ -292,6 +301,8 @@ class RetroDialogue extends Module
       PlayState.instance.disableKeys = false;
       PlayState.instance.camCutscene.visible = true;
       PlayState.instance.camCutscene.alpha = 1;
+      PlayState.instance.camCutscene.stopShake();
+      PlayState.instance.camGame.stopShake();
     }
 
     if (callComplete) {
@@ -505,6 +516,7 @@ class RetroDialogue extends Module
     portraitFront.destroy();
     nameText.destroy();
     nameTextBG.destroy();
+    if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
     dialogueText.destroy();
     skipHintText.destroy();
     continueHintText.destroy();
@@ -590,6 +602,7 @@ class RetroDialogue extends Module
 
     TEXT_DEFAULT_X = boxSprite.x + 40;
     TEXT_DEFAULT_Y = boxSprite.y + 40;
+    if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
     dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, FlxTextBorderStyle.OUTLINE);
     dialogueText.antialiasing = aaOn;
     dialogueText.borderSize = 3;
@@ -741,6 +754,31 @@ class RetroDialogue extends Module
       currentUnableToPress = true;
     }
 
+    // ---- EVENTS ----
+    if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
+
+    if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
+
+    if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
+    if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
+    if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
+    if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
+
+    // ---- SHAKE ----
+    if (line.exists('shake')) {
+      var shakeIntensity:Float = parseFirstNumber(line.get('shake')) * 0.0008;
+      trace(shakeIntensity);
+      IntervalShake.shake(dialogueText, 999999, 0, shakeIntensity, shakeIntensity, FlxEase.linear);
+    }
+
+    PlayState.instance.camCutscene.stopShake();
+    PlayState.instance.camGame.stopShake();
+    if (line.exists('shakePosition')) {
+      var shakePositionIntensity:Float = parseFirstNumber(line.get('shakePosition')) * 0.0003;
+      PlayState.instance.camCutscene.shake(shakePositionIntensity, 999999);
+      PlayState.instance.camGame.shake(shakePositionIntensity, 999999);
+    }
+
     // ---- SONS ----
     if (line.exists('soundPath')) currentSoundPath = line.get('soundPath');
     if (line.exists('sound') && currentSoundPath != '') {
@@ -756,19 +794,8 @@ class RetroDialogue extends Module
       curSimpleSound = FunkinSound.playOnce(Paths.sound(line.get('simpleSound'), 'shared'));
     }
 
-    // ---- EVENTS ----
-    if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
-
-    if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
-
-    if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
-    if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
-    if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
-    if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
-
     // ---- TODO ----
     // focusPoint / forceAllTimeFocus → mover câmera do jogo para um ponto na cena
-    // shake / shakeAll / shakeFront / screenShake → efeitos de trepidação
     // nightflaidEvent             → evento especial da Nightflaid (centraliza sprite, fundo preto, efeitos)
     // cameraZoom / forceZoom / cameraSpeed → controle de zoom da câmera da cena
     // prideOverlayVisible / prideAnim → overlay animado de pride
@@ -1047,7 +1074,7 @@ class RetroDialogue extends Module
     PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0.7, true, function() {
       skipHintText.visible = true;
     }, true);
-    //screenOverlay.color = FlxColor.fromString('#4bffcc');
+    screenOverlay.color = FlxColor.fromString('#4bffcc');
     screenOverlay.alpha = 0.2;
     screenOverlay.blend = 7;
     boxSprite.visible = false;
