@@ -87,6 +87,7 @@ class RetroDialogue extends Module
 
   private var hasCreatedSprites:Bool = false;
   private var currentBoxName:String = '';
+  private var currentFillName:String = '';
   private var loadedAtlasLeft:String = '';
   private var loadedAtlasRight:String = '';
   private var loadedAtlasMid:String = '';
@@ -264,6 +265,7 @@ class RetroDialogue extends Module
     }
 
     PlayState.instance.camCutscene.visible = true;
+    //PlayState.instance.camHUD.alpha = 0;
     PlayState.instance.disableKeys = true;
 
     needsPrideOverlay = false;
@@ -354,8 +356,8 @@ class RetroDialogue extends Module
     boxSprite.screenCenter(0x01);
     boxSprite.zIndex = Z_BOX;
     boxSprite.visible = false;
+    currentFillName = 'fill';
     ps.add(boxSprite);
-    currentBoxName = 'fill';
 
     // Overlay da caixa
     innerSprite = FunkinSprite.create(0, BOX_Y);
@@ -366,6 +368,7 @@ class RetroDialogue extends Module
     innerSprite.color = FlxColor.BLACK;
     innerSprite.zIndex = Z_INNER;
     innerSprite.visible = false;
+    currentBoxName = 'boxOverlay';
     ps.add(innerSprite);
     if (needsPrideOverlay) {
       prideOverlay = new FunkinSprite(0, BOX_Y);
@@ -625,6 +628,14 @@ class RetroDialogue extends Module
     // ---- FUNDO DA CAIXA ----
     var fillColorHex:String = line.exists('boxFill') ? line.get('boxFill') : '000000';
     var fillVisible:Bool = !(line.exists('fillVisible') && line.get('fillVisible') == 'false');
+    var changeFill:String = line.exists('changeFill') ? line.get('changeFill') : 'fill';
+
+    if (changeFill != currentFillName) {
+      currentFillName = changeFill;
+      boxSprite.loadGraphic(Paths.image('dialogue/' + changeFill, 'shared'));
+      boxSprite.screenCenter(0x01);
+      boxSprite.y = BOX_Y;
+    }
     boxSprite.color = FlxColor.fromString('#' + fillColorHex);
     boxSprite.visible = fillVisible;
 
@@ -767,8 +778,8 @@ class RetroDialogue extends Module
     // ---- SHAKE ----
     if (line.exists('shake')) {
       var shakeIntensity:Float = parseFirstNumber(line.get('shake')) * 0.0008;
-      trace(shakeIntensity);
-      IntervalShake.shake(dialogueText, 999999, 0, shakeIntensity, shakeIntensity, FlxEase.linear);
+      //trace(shakeIntensity);
+      IntervalShake.shake(dialogueText, 999999, 0.01, shakeIntensity, shakeIntensity, FlxEase.quadOut);
     }
 
     PlayState.instance.camCutscene.stopShake();
@@ -1046,12 +1057,15 @@ class RetroDialogue extends Module
     // Bloqueia qualquer interação durante o fade
     PlayState.instance.disableKeys = true;
 
+    if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
+
     fadeTween = FlxTween.tween(PlayState.instance.camCutscene, { alpha: 0 }, 1, { ease: FlxEase.quadIn, onComplete: function(_){
         fadeTween = null;
         isFadingOut = false;
         stopDialogue(true);
       }
     });
+    //FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 1, { ease: FlxEase.quadIn, startDelay: 0.4 });
 
     if (ambienceTheme != null) ambienceTheme.fadeOut(1, 0);
     if (curSound != null) curSound.fadeOut(1, 0);

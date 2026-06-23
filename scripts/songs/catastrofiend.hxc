@@ -28,6 +28,7 @@ class CatastrofiendSong extends Song
   var tweens = [];
   var pausedTweens = [];
   var hasPlayedCutscene:Bool;
+  var hasPlayedDialogue:Bool;
   var hasPlayedEndCutscene:Bool;
   var bgSprite:FunkinSprite;
   var flashMultiply:FunkinSprite;
@@ -70,6 +71,7 @@ class CatastrofiendSong extends Song
     super('catastrofiend');
 
     hasPlayedCutscene = false;
+    hasPlayedDialogue = false;
     hasPlayedEndCutscene = false;
 
     // Inicializar o sistema de voicelines
@@ -95,9 +97,14 @@ class CatastrofiendSong extends Song
     super.onCountdownStart(event);
     hasPlayedEndCutscene = false;
 
-    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedCutscene = true;
+    var flashTime:Float = 1.5;
 
-    if (PlayStatePlaylist.isStoryMode && hasPlayedCutscene) {
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) {
+      hasPlayedCutscene = true;
+      hasPlayedDialogue = true;
+    }
+
+    if (PlayStatePlaylist.isStoryMode && hasPlayedDialogue) {
       RetroAchievements.grantAc('wrath-catastro', true, true);
     }
 
@@ -114,7 +121,7 @@ class CatastrofiendSong extends Song
       hasPlayedCutscene = true;
 
       VideoCutscene.onVideoEnded.addOnce(function() {
-          FlxTween.tween(bgSprite, {alpha: 0}, 1.5, null, function() {
+          FlxTween.tween(bgSprite, {alpha: 0}, flashTime, null, function() {
             bgSprite.visible = false;
           });
       });
@@ -122,6 +129,22 @@ class CatastrofiendSong extends Song
       event.cancel(); // CANCEL THE COUNTDOWN!
 
       VideoCutscene.play(Paths.videos('Phase4'));
+
+      return;
+    }
+
+    if (!hasPlayedDialogue) {
+      event.cancel();
+
+      hasPlayedDialogue = true;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+
+      new FlxTimer().start(flashTime * 0.85, function(tmr) {
+        rd.scriptCall('startDialogue', ['catastrofiend story', 'pre', function() {
+          PlayState.instance.startCountdown();
+        }]);
+      });
     }
   }
 
@@ -451,7 +474,7 @@ class CatastrofiendSong extends Song
       FullScreenScaleMode.removeCutouts();
     });
 
-    PlayState.instance.camHUD.visible = false;
+    //PlayState.instance.camHUD.visible = false;
 
     PlayState.instance.isInCutscene = true;
     //hasPlayedEndCutscene = true;
@@ -460,11 +483,11 @@ class CatastrofiendSong extends Song
     PlayState.instance.currentStage.getGirlfriend().danceEvery = 0;
 
     // Add a black background behind the cutscene to fix a transition bug!
-    var bgSprite = new FunkinSprite(-100, -100);
-    bgSprite.makeSolidColor(2000, 2500, 0xFF000000);
-    bgSprite.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
-    bgSprite.zIndex = 1000000;
-    PlayState.instance.add(bgSprite);
+    var bgSpritee = new FunkinSprite(-100, -100);
+    bgSpritee.makeSolidColor(2000, 2500, 0xFF000000);
+    bgSpritee.cameras = [PlayState.instance.camHUD]; // Show over the HUD.
+    bgSpritee.zIndex = 1000000;
+    PlayState.instance.add(bgSpritee);
     PlayState.instance.refresh();
 
     VideoCutscene.play(Paths.videos('Phase4_OUTRO'), CutsceneType.ENDING);
