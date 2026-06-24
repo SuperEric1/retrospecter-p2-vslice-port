@@ -6,7 +6,6 @@
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Make dozirc sleep in the options menu after being inactive for some time
 - [ ] Judgement offset adjustment option (and italian translation for it)
 - [ ] Progression unlock thingy (beat a week to unlock others, etc)
 - [ ] Story mode menu?
@@ -22,6 +21,7 @@
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Spanish translation
+- [X] Make dozirc sleep in the options menu after being inactive for some time
 - [X] Scrollspeed changes for the third strumline
 - [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)
 - [X] Enemy title popup module + apply to all songs that have it (todo)

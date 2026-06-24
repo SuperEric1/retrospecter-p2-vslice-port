@@ -212,7 +212,7 @@ class RetroPlayState extends Module {
     if (PlayState.instance == null) return;
     //if (!isRetro) return;
 
-    if (izzyMechanicTimer != null) {
+    if (izzyMechanicTimer != null && isRetro) {
       event.note.angle = 0;
     }
     var k = event.note.noteData.kind;
@@ -226,18 +226,20 @@ class RetroPlayState extends Module {
       forceOppNotesAlpha = 0.5;
     }
 
-    var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
-    var strumNote = strum.strumlineNotes.members[event.note.noteData.getDirection()];
-    var targetAlpha = strumNote.alpha;
-    if (targetAlpha == 1) targetAlpha = strum.alpha;
-    var forcedAlpha:Float = event.note.noteData.getMustHitNote() ? forceNotesAlpha : forceOppNotesAlpha;
-    if (forcedAlpha != null) targetAlpha = forcedAlpha;
-    var targetAlphaCover = (!event.note.noteData.getMustHitNote() && strum.noteStyle.id != 'retrospecter') ? targetAlpha * oppHoldNoteAlphaMult : targetAlpha;
-    if (event.note.visible && event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisibleKinds.contains(k)) {
-      event.note.alpha = targetAlpha;
+    if (isRetro) {
+      var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
+      var strumNote = strum.strumlineNotes.members[event.note.noteData.getDirection()];
+      var targetAlpha = strumNote.alpha;
+      if (targetAlpha == 1) targetAlpha = strum.alpha;
+      var forcedAlpha:Float = event.note.noteData.getMustHitNote() ? forceNotesAlpha : forceOppNotesAlpha;
+      if (forcedAlpha != null) targetAlpha = forcedAlpha;
+      var targetAlphaCover = (!event.note.noteData.getMustHitNote() && strum.noteStyle.id != 'retrospecter') ? targetAlpha * oppHoldNoteAlphaMult : targetAlpha;
+      if (event.note.visible && event.note.alpha != targetAlpha && !PlayState.instance.startingSong && !alwaysVisibleKinds.contains(k)) {
+        event.note.alpha = targetAlpha;
+      }
+      if (event.note.isHoldNote && event.note.holdNoteSprite.alpha != targetAlphaCover) event.note.holdNoteSprite.alpha = targetAlphaCover;
+      if (alwaysVisibleKinds.contains(k) && event.note.visible) event.note.alpha = 1; // sempre visíveis.
     }
-    if (event.note.isHoldNote && event.note.holdNoteSprite.alpha != targetAlphaCover) event.note.holdNoteSprite.alpha = targetAlphaCover;
-    if (alwaysVisibleKinds.contains(k) && event.note.visible) event.note.alpha = 1; // sempre visíveis.
 
     // Notas que não contam pro score
     // Agora todas as notas são um notekind que já seta scoreable como false, então não é mais necessário.

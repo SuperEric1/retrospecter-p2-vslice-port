@@ -6,11 +6,13 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.math.FlxPoint;
 import funkin.Preferences;
 import funkin.save.Save;
 import funkin.audio.FunkinSound;
 import funkin.graphics.FunkinSprite;
 import funkin.util.TouchUtil;
+import funkin.util.SwipeUtil;
 import funkin.ui.options.OptionsState;
 import funkin.ui.mainmenu.MainMenuState;
 import funkin.util.ReflectUtil;
@@ -40,12 +42,15 @@ class RetroOptionsState extends Module
   var curPage:String = 'options';
   var curText:String = '';
   var hasUpdatedBgSprite:Bool = false;
-  var buttonPosX:Float = FlxG.onMobile ? 72 : 55;
+  var buttonPosX:Float = FlxG.width > 1280 ? 72 : 55;
   var buttonOffsetY:Float = -50;
   var dozircShake:Bool = false;
   var hasChangedButtonPos:Bool = false;
   var isFrontBgFadingIn:Bool = false;
   var isShuttingDown:Bool = false;
+  var idleTimer:FlxTimer;
+  var lastMousePos:FlxPoint;
+  var canSleep:Bool = true;
 
   var backBgAlpha:Float = 0.4;
   var windozBg:FunkinSprite;
@@ -130,6 +135,8 @@ class RetroOptionsState extends Module
     dozirc.setGraphicSize(Std.int(dozirc.width * 1));
     // dude
     dozirc.animation.addBySymbol('anims/default', 'anims/default', 24);
+    dozirc.animation.addBySymbol('anims/sleepy', 'anims/sleepy', 24);
+    dozirc.animation.addBySymbol('anims/sleeping', 'anims/sleeping', 24);
     dozirc.animation.addBySymbol('anims/black', 'anims/black', 24);
     dozirc.animation.addBySymbol('anims/oops', 'anims/oops', 24);
     dozirc.animation.addBySymbol('anims/controls', 'anims/controls', 24);
@@ -256,6 +263,8 @@ class RetroOptionsState extends Module
     overlay.screenCenter();
 
     RetroAchievements.deleteToasts();
+    lastMousePos = FlxPoint.get(0, 0);
+    lastMousePos.set(FlxG.mouse.screenX, FlxG.mouse.screenY);
   }
 
   function buildApps():Void {
@@ -311,6 +320,8 @@ class RetroOptionsState extends Module
     if (appURLs.exists(appIndex)) {
       browserText.text = appURLs.get(appIndex);
     } else browserText.text = "youtube.com/@super_eric"; // default url in case of error
+
+    resetIdleTimer();
   }
 
   function closeBrowser():Void
@@ -336,6 +347,8 @@ class RetroOptionsState extends Module
       browserIcon.visible = browser.visible;
       browserText.visible = browser.visible;
     }
+
+    resetIdleTimer();
   }
 
   public function onStateChangeEnd(event:StateChangeScriptEvent):Void
@@ -350,6 +363,7 @@ class RetroOptionsState extends Module
       if (!event.targetState.members.contains(dozirc) && canUpdate)
       {
         var state = event.targetState;
+        idleTimer = new FlxTimer();
         //loadDebugElements();
         var z:Int = 0;
         taskBarApps = []; // delete the previous apps to prevent errors
@@ -392,6 +406,7 @@ class RetroOptionsState extends Module
           playMenuMusic();
         }
         hasBuilt = true;
+        canSleep = false;
         isShuttingDown = false;
       }
     }
@@ -451,7 +466,7 @@ class RetroOptionsState extends Module
               Save.instance.modOptions.set(option.id, value);
               Save.instance.flush();
             },
-            null, // valueFormatter (você pode adicionar se quiser)
+            null, // valueFormatter
             Save.instance.modOptions.get(option.id, option.defaultValue),
             option.min != null ? option.min : 0.0,
             option.max != null ? option.max : 10.0,
@@ -503,6 +518,8 @@ class RetroOptionsState extends Module
       });
     // Fade from 0.0 to 1 over 4 seconds
     if (shouldFadeIn) FlxG.sound.music.fadeIn(4.0, 0.0, 1.0);
+    canSleep = true;
+    resetIdleTimer();
   }
 
   override function onUpdate(event:ScriptEvent):Void
@@ -514,6 +531,25 @@ class RetroOptionsState extends Module
       var optionsState:OptionsState = FlxG.state;
       if (!hasAddedOptions) createPreferences(optionsState);
       if (!hasBuilt || !canUpdate) return;
+
+      var isTouching:Bool = TouchUtil.justPressed || TouchUtil.justReleased || SwipeUtil.swipeAny;
+      var currentMouseX:Float = FlxG.mouse.x;
+      var currentMouseY:Float = FlxG.mouse.y;
+
+      if (lastMousePos == null) lastMousePos = FlxPoint.get(currentMouseX, currentMouseY);
+
+      var dx:Float = currentMouseX - lastMousePos.x;
+      var dy:Float = currentMouseY - lastMousePos.y;
+      var mouseDist:Float = Math.sqrt(dx * dx + dy * dy);
+
+      if (FlxG.mouse.justMoved && !isTouching) {
+        if (mouseDist > 5) {
+          resetIdleTimer();
+        }
+        lastMousePos.set(currentMouseX, currentMouseY);
+      } else if (isTouching) resetIdleTimer();
+
+      //if (canSleep && (FlxG.mouse.justMoved || TouchUtil.justPressed)) resetIdleTimer();
 
       // Isso permite acessar tudo dentro de OptionsState mesmo sendo privado
       @:privateAccess {
@@ -553,22 +589,29 @@ class RetroOptionsState extends Module
         var settingsApp = taskBarApps[7];
         if (currentPageName == 'options') {
           if (!isShuttingDown) { // handle animations only if the shutdown button isn't pressed, so the shutdown animation can play properly
+            canSleep = true;
             handleOptionsPage(optionsState);
           }
         } else if (currentPageName == 'preferences') {
           if (settingsApp != null) settingsApp?.animation?.play('press');
           isShuttingDown = false; // cancel shutdown!
+          canSleep = false;
           handlePreferencesPage(optionsState);
         } else if (currentPageName == 'controls') {
           if (settingsApp != null) settingsApp?.animation?.play('press');
           isShuttingDown = false; // cancel shutdown!
+          canSleep = false;
           handleControlsPage(optionsState);
         } else if (currentPageName == 'offsets') {
           if (settingsApp != null) settingsApp?.animation?.play('press');
           isShuttingDown = false; // cancel shutdown!
           handleOffsetsPage(optionsState);
+          canSleep = false;
         } else {
-          if (dozirc != null) playMenuAnim('default');
+          if (dozirc != null) {
+            canSleep = true;
+            playMenuAnim('default');
+          }
         }
       }
     }
@@ -652,8 +695,8 @@ class RetroOptionsState extends Module
       // Animate taskbar apps. play animation when the mouse is hovering over them.
       var justPressed = FlxG.mouse.justPressed;
       var justReleased = FlxG.mouse.justReleased;
-      if (FlxG.onMobile && TouchUtil != null) justPressed = TouchUtil.justPressed;
-      if (FlxG.onMobile && TouchUtil != null) justReleased = TouchUtil.justReleased;
+      if ((FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) && TouchUtil != null) justPressed = TouchUtil.justPressed;
+      if ((FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) && TouchUtil != null) justReleased = TouchUtil.justReleased;
       for (i in 0...taskBarApps.length)
       {
         var app = taskBarApps[i];
@@ -1018,6 +1061,7 @@ class RetroOptionsState extends Module
 
     if (animName != curAnim || signText.text != curText)
     {
+      resetIdleTimer();
       if (dozircShake) {
         dozircShake = false;
         IntervalShake.stopShaking(dozirc);
@@ -1110,6 +1154,41 @@ class RetroOptionsState extends Module
       if (tween != null) tween.cancel();
     }
     browserTweens = [];
+  }
+
+  function resetIdleTimer():Void
+  {
+    idleTimer.cancel();
+
+    var timeoutCallback:Dynamic = function(_:FlxTimer) {
+      dozircSleep();
+    };
+
+    var anim:String = dozirc.animation.curAnim.name;
+    if (anim == 'anims/sleepy' || anim == 'anims/sleeping') dozirc.animation.play('anims/default', true);
+
+    idleTimer.start(5, timeoutCallback);
+  }
+
+  function dozircSleep():Void {
+    if (!canSleep || browserOpenForApp == 6) {
+      resetIdleTimer();
+      return;
+    }
+
+    var timeoutCallback:Dynamic = function(_:FlxTimer) {
+      dozircSleep();
+    };
+
+    trace('dozircsleep anim: ' + dozirc.animation.curAnim.name);
+
+    switch (dozirc.animation.curAnim.name) {
+      case 'anims/sleepy':
+        dozirc.animation.play('anims/sleeping', true);
+      default:
+        dozirc.animation.play('anims/sleepy', true);
+        idleTimer.start(3, timeoutCallback);
+    }
   }
 
   function loadDebugElements():Void
