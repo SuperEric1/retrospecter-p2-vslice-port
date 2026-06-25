@@ -182,12 +182,12 @@ class RetroDialogue extends Module
     trace('[RetroDialogue] dialogues.txt carregado.');
   }
 
-  private static function parseFirstNumber(raw:String):Float
+  private static function parseArray(raw:String, i:Int):Float
   {
     var cleaned:String = StringTools.replace(raw, '[', '');
     cleaned = StringTools.replace(cleaned, ']', '');
     var sep:String = cleaned.indexOf(',') >= 0 ? ',' : ';';
-    return Std.parseFloat(StringTools.trim(cleaned.split(sep)[0]));
+    return Std.parseFloat(StringTools.trim(cleaned.split(sep)[i]));
   }
 
   private static function parseDialogueLine(raw:String):StringMap<String>
@@ -305,6 +305,7 @@ class RetroDialogue extends Module
       PlayState.instance.camCutscene.alpha = 1;
       PlayState.instance.camCutscene.stopShake();
       PlayState.instance.camGame.stopShake();
+      PlayState.instance.camHUD.stopShake();
     }
 
     if (callComplete) {
@@ -344,7 +345,7 @@ class RetroDialogue extends Module
     screenOverlay.cameras = [cam];
     screenOverlay.screenCenter();
     screenOverlay.zIndex = Z_OVERLAY;
-    screenOverlay.alpha = 0;
+    screenOverlay.alpha = 0.3;
     screenOverlay.visible = false;
     ps.add(screenOverlay);
 
@@ -777,17 +778,26 @@ class RetroDialogue extends Module
 
     // ---- SHAKE ----
     if (line.exists('shake')) {
-      var shakeIntensity:Float = parseFirstNumber(line.get('shake')) * 0.0008;
+      var shakeIntensity:Float = parseArray(line.get('shake'), 0) * 0.0008;
       //trace(shakeIntensity);
       IntervalShake.shake(dialogueText, 999999, 0.01, shakeIntensity, shakeIntensity, FlxEase.quadOut);
     }
 
     PlayState.instance.camCutscene.stopShake();
     PlayState.instance.camGame.stopShake();
+    PlayState.instance.camHUD.stopShake();
     if (line.exists('shakePosition')) {
-      var shakePositionIntensity:Float = parseFirstNumber(line.get('shakePosition')) * 0.0003;
+      var value:String = line.get('shakePosition');
+      var shakePositionIntensity:Float = parseArray(value, 0) * 0.0004;
       PlayState.instance.camCutscene.shake(shakePositionIntensity, 999999);
       PlayState.instance.camGame.shake(shakePositionIntensity, 999999);
+      PlayState.instance.camHUD.shake(shakePositionIntensity, 999999);
+    } else if (line.exists('shakeAll')) {
+      var value:String = line.get('shakeAll');
+      var shakePositionIntensity:Float = (parseArray(value, 1) * parseArray(value, 0)) * 0.8;
+      PlayState.instance.camCutscene.shake(shakePositionIntensity, 999999);
+      PlayState.instance.camGame.shake(shakePositionIntensity, 999999);
+      PlayState.instance.camHUD.shake(shakePositionIntensity, 999999);
     }
 
     // ---- SONS ----

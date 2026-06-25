@@ -509,7 +509,7 @@ class RetroGameUI extends Module {
       if (card == null) continue;
       if (!card.alive) card.revive();
       card.alpha = 1;
-      tweens.push(FlxTween.tween(card, {x: 0}, 0.6, {ease: FlxEase.sineOut, startDelay: delay}));
+      tweens.push(FlxTween.tween(card, {x: 0}, 0.4, {ease: FlxEase.sineOut, startDelay: delay}));
       delay += 0.7;
     }
 

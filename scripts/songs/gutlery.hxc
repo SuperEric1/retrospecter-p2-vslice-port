@@ -1,19 +1,46 @@
 import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 class GutlerySong extends Song
 {
+  var hasPlayedInGameCutscene:Bool;
+
   public function new()
   {
     super('gutlery');
+    hasPlayedInGameCutscene = false;
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+    hasPlayedInGameCutscene = false;
+  }
+
+  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  {
+    super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedInGameCutscene = true;
+
+    if (!hasPlayedInGameCutscene) {
+      hasPlayedInGameCutscene = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['gutlery story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+    }
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

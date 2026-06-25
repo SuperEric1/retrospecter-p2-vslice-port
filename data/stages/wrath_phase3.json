@@ -18,7 +18,7 @@
     "dad": {
       "zIndex": 300,
       "position": [400, 885],
-      "cameraOffsets": [320, 40]
+      "cameraOffsets": [320, -20]
     }
   },
   "name": "Wrath_phase3"

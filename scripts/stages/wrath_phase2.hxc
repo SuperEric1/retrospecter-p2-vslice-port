@@ -460,6 +460,19 @@ class WrathPhase2Stage extends Stage
       add(rocks);
       add(rocksLeft);
 
+      if (isWideScreen) {
+        var rocksExtra = rocksLeft.clone();
+        rocksExtra.animation.addByPrefix('green', 'green', 0, false);
+        rocksExtra.animation.play('green');
+        rocksExtra.scrollFactor.set(1.1, 1.1);
+        rocksExtra.x = rocksLeft.x - (rocksLeft.width) - 150;
+        rocksExtra.y += 4;
+        rocksExtra.flipX = true;
+        rocksExtra.antialiasing = false;
+        rocksExtra.zIndex = 299;
+        add(rocksExtra);
+      }
+
       // Scale adjustment if not in cutscene
       if (!(PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene)) {
         rocks.scale.x += 0.1;

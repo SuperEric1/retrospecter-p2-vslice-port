@@ -1,4 +1,6 @@
 import flixel.FlxG;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
@@ -37,9 +39,12 @@ class GlunisherSong extends Song
       hasPlayedInGameCutscene = true;
       event.cancel(); // CANCEL THE COUNTDOWN!
 
+      PlayState.instance.camHUD.alpha = 0;
+
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['glunisher story', 'pre', function() {
         PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
       }]);
     }
   }
