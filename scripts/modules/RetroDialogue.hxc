@@ -43,7 +43,7 @@ class RetroDialogue extends Module
   private var fadeTween:FlxTween = null;
   private var needsPrideOverlay:Bool = false;
   private var hasDiacritics:Bool = false;
-  private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf'];
+  private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf', 'Blenda Script.otf'];
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
   private var playerLang:String = "en_US";
   private var ambienceTheme:FunkinSound;
@@ -70,6 +70,7 @@ class RetroDialogue extends Module
   private var screenOverlay:FunkinSprite;
   private var escButton:FunkinSprite;
   private var boxSprite:FunkinSprite;
+  private var blendSprite:FunkinSprite;
   private var innerSprite:FunkinSprite;
   private var prideOverlay:FunkinSprite;
   private var portraitLeft:FunkinSprite;
@@ -88,6 +89,7 @@ class RetroDialogue extends Module
   private var hasCreatedSprites:Bool = false;
   private var currentBoxName:String = '';
   private var currentFillName:String = '';
+  private var currentBlendName:String = '';
   private var loadedAtlasLeft:String = '';
   private var loadedAtlasRight:String = '';
   private var loadedAtlasMid:String = '';
@@ -103,6 +105,7 @@ class RetroDialogue extends Module
 
   private static final Z_OVERLAY:Int = 900000;
   private static final Z_BOX:Int = 900010;
+  private static final Z_BLEND:Int = 900013;
   private static final Z_INNER:Int = 900015;
   private static final Z_PORTRAIT:Int = 900005;
   private static final Z_PORTRAIT_FRONT:Int = 900025;
@@ -513,6 +516,8 @@ class RetroDialogue extends Module
     if (!hasCreatedSprites) return;
     screenOverlay.destroy();
     boxSprite.destroy();
+    if (blendSprite != null) blendSprite.destroy();
+    blendSprite = null;
     innerSprite.destroy();
     portraitLeft.destroy();
     portraitRight.destroy();
@@ -561,6 +566,7 @@ class RetroDialogue extends Module
     boxSprite.visible = false;
     innerSprite.visible = false;
     if (prideOverlay != null) prideOverlay.visible = false;
+    if (blendSprite != null) blendSprite.visible = false;
     portraitLeft.visible = false;
     portraitRight.visible = false;
     portraitMid.visible = false;
@@ -640,6 +646,40 @@ class RetroDialogue extends Module
     boxSprite.color = FlxColor.fromString('#' + fillColorHex);
     boxSprite.visible = fillVisible;
 
+    // ---- BLEND DA CAIXA ----
+    if (line.exists('useBlend') && line.get('useBlend') == 'true') {
+      trace("Usando blend");
+      if (blendSprite == null) {
+        blendSprite = FunkinSprite.create(0, BOX_Y);
+        blendSprite.loadGraphic(Paths.image('dialogue/fill', 'shared'));
+        blendSprite.scrollFactor.set(0, 0);
+        blendSprite.cameras = [PlayState.instance.camCutscene];
+        blendSprite.screenCenter(0x01);
+        blendSprite.zIndex = Z_BLEND;
+        blendSprite.blend = 1;
+        blendSprite.visible = true;
+        currentBlendName = '';
+        PlayState.instance.add(blendSprite);
+        PlayState.instance.refresh();
+      }
+
+      var charName = line.exists('name') ? line.get('name').toLowerCase() : '';
+      trace(charName + " | " + currentBlendName);
+      if (charName != currentBlendName) {
+        switch (charName) {
+          case 'hivemine', 'hiveless':
+            blendSprite.loadGraphic(Paths.image('dialogue/hexa', 'shared'));
+          default:
+        }
+        trace("Blend carregado: " + charName);
+        currentBlendName = line.get('name').toLowerCase();
+      }
+    }
+    if (blendSprite != null) {
+      blendSprite.visible = line.exists('useBlend') ? (line.get('useBlend') == "true") : blendSprite.visible;
+      blendSprite.color = line.exists('colorBlend') ? FlxColor.fromString('#' + line.get('colorBlend')) : blendSprite.color;
+    }
+
     // ---- OVERLAY DA CAIXA ----
     var innerColorHex:String = line.exists('innerColor') ? line.get('innerColor') : '000000';
     var innerAlpha:Float = line.exists('innerAlpha') ? Std.parseFloat(line.get('innerAlpha')) : 1;
@@ -678,15 +718,6 @@ class RetroDialogue extends Module
 
     PlayState.instance.camGame.visible = gameCameraVisible;
     //PlayState.instance.camHUD.visible = gameCameraVisible;
-
-    // TODO: hideEverythingExceptOverlay oculta box/portraits mas mantém overlay visível
-    if (line.exists('hideEverythingExceptOverlay') && line.get('hideEverythingExceptOverlay') == 'true') {
-      boxSprite.visible = false;
-      innerSprite.visible = false;
-      nameText.visible = false;
-      dialogueText.visible = false;
-      if (prideOverlay != null) prideOverlay.visible = false;
-    }
 
     // ---- PORTRAITS ----
     applyPortrait(line, 'Left',  portraitLeft,  loadedAtlasLeft);
@@ -768,6 +799,7 @@ class RetroDialogue extends Module
 
     // ---- EVENTS ----
     if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
+    if (line.exists('forceFocus')) PlayState.instance.tweenCameraToPosition(parseArray(line.get('forceFocus'), 0), parseArray(line.get('forceFocus'), 1), 0);
 
     if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
 
@@ -775,6 +807,15 @@ class RetroDialogue extends Module
     if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
     if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
     if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
+
+    if (line.exists('hideEverythingExceptOverlay') && line.get('hideEverythingExceptOverlay') == 'true') {
+      boxSprite.visible = false;
+      innerSprite.visible = false;
+      nameText.visible = false;
+      dialogueText.visible = false;
+      if (prideOverlay != null) prideOverlay.visible = false;
+      skipHintText.visible = false;
+    }
 
     // ---- SHAKE ----
     if (line.exists('shake')) {
@@ -955,6 +996,7 @@ class RetroDialogue extends Module
     }
 
     // Botão de ESC do mobile
+    if (escButton != null && FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) escButton.active = !currentCantSkip; // Desativar botão caso não possa skipar
     if (escButton != null && escButton.active && escButton.visible != skipHintText.visible) escButton.visible = skipHintText.visible;
 
     if (inputCooldown > 0) return;
@@ -975,7 +1017,7 @@ class RetroDialogue extends Module
         }
       }
 
-      if (escButton.active && escButton.visible && TouchUtil.overlapsComplex(escButton) && TouchUtil.justPressed) {
+      if (escButton.active && TouchUtil.overlapsComplex(escButton) && TouchUtil.justPressed) {
         escButton.animation.play('press');
       }
     }

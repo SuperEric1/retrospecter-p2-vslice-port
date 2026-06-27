@@ -7,20 +7,25 @@ import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class GutlerySong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
+  var hasPlayedEndDialogue:Bool;
 
   public function new()
   {
     super('gutlery');
     hasPlayedInGameCutscene = false;
+    hasPlayedEndDialogue = false;
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
     hasPlayedInGameCutscene = false;
+    hasPlayedEndDialogue = false;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -40,6 +45,26 @@ class GutlerySong extends Song
         PlayState.instance.startCountdown();
         FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
       }]);
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
+
+    if (!hasPlayedEndDialogue) {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFab164a, true, true, function() {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['gutlery story', 'finish', function() {
+          PlayState.instance.mayPauseGame = true;
+          PlayState.instance.endSong();
+        }]);
+      });
+
+      hasPlayedEndDialogue = true;
+      event.cancel();
     }
   }
 

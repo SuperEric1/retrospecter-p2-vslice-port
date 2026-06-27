@@ -9,11 +9,14 @@ import funkin.Conductor;
 import funkin.Preferences;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
+
+import supereric.retrospecter.modules.RetroTransformCutscene;
 
 class DeadfineSong extends Song
 {
@@ -25,6 +28,7 @@ class DeadfineSong extends Song
   var flipMode:Bool = true;
   var jazzFlipMode:Bool = true;
   var hasStoredStrums:Bool = false;
+  var hasPlayedDialogue:Bool = false;
 
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
@@ -84,6 +88,8 @@ class DeadfineSong extends Song
   public function new()
   {
     super('deadfine');
+    hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -96,6 +102,8 @@ class DeadfineSong extends Song
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
     if (isMobile) isDownscroll = true;
     retroGameUI = ModuleHandler.getModule('RetroGameUI') ?? null;
+    hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
 
     flashPurple = FunkinSprite.create(0, 0);
     flashPurple.makeGraphic(4000, 4000, FlxColor.fromString('#9C00DF'));
@@ -134,6 +142,24 @@ class DeadfineSong extends Song
   {
     super.onCountdownStart(event);
 
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedDialogue = true;
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      playState.currentCameraZoom = 0.8;
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['deadfine story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+
+      return;
+    }
+
     if (PlayState.instance.startTimestamp <= 1000) {
       // Focus on a fixed position for the initial zoom
       playState.tweenCameraToPosition(1060, 150, 0);
@@ -150,6 +176,26 @@ class DeadfineSong extends Song
       }
       PlayState.instance.playerStrumline.alpha = 0;
       PlayState.instance.opponentStrumline.alpha = 0;
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
+
+    if (!hasPlayedEndDialogue) {
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF7f1fe3, true, true, function() {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['deadfine story', 'finish', function() {
+          PlayState.instance.mayPauseGame = true;
+          PlayState.instance.endSong();
+        }]);
+      });
+
+      hasPlayedEndDialogue = true;
+      event.cancel();
     }
   }
 

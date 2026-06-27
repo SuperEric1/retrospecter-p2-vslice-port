@@ -30,6 +30,7 @@ class EmbuzzleSong extends Song
   var hmp:Bool = false;
   var showLogo:Bool = false;
   var hasStoredStrums:Bool = false;
+  var hasPlayedDialogue:Bool = false;
 
   var modcharts:Bool = true;
   var isMobile = false;
@@ -59,6 +60,7 @@ class EmbuzzleSong extends Song
   public function new()
   {
     super('embuzzle');
+    hasPlayedDialogue = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -69,6 +71,7 @@ class EmbuzzleSong extends Song
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
+    hasPlayedDialogue = false;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['hivemine/p2', true]);
 
@@ -145,6 +148,20 @@ class EmbuzzleSong extends Song
   {
     super.onCountdownStart(event);
 
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedDialogue = true;
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['embuzzle story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+    }
   }
 
   override function onSongStart(event:ScriptEvent):Void

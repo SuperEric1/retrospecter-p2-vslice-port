@@ -20,6 +20,8 @@
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
+- [ ] Superbio, Deadfine, Gutlery "finish" dialogues translations
+- [ ] Check the end scythes cutscene colors to see if they match
 - [ ] Spanish translation
 - [X] Make dozirc sleep in the options menu after being inactive for some time
 - [X] Scrollspeed changes for the third strumline

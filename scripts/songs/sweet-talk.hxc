@@ -11,6 +11,7 @@ import funkin.FunkinMemory;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
+import funkin.play.PlayStatePlaylist;
 import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
@@ -21,6 +22,7 @@ class SweetTalkSong extends Song
   var pausedTweens:Array<FlxTween> = [];
   var retroPlayState = null;
   var isMobile = false;
+  var hasPlayedDialogue:Bool = false;
 
   // Flags
   var shownLogo:Bool = false;
@@ -72,12 +74,14 @@ class SweetTalkSong extends Song
   public function new()
   {
     super('sweet-talk');
+    hasPlayedDialogue = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
     hasStoredStrums = false;
+    hasPlayedDialogue = false;
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
@@ -162,6 +166,26 @@ class SweetTalkSong extends Song
   public override function onCountdownStart(event:ScriptEvent):Void
   {
     super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedDialogue = true;
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      //playState.tweenCameraToPosition(1060, 150, 0);
+      playState.currentCameraZoom = 0.8;
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['sweet-talk story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+      return;
+    }
+
     if (PlayState.instance.startTimestamp <= 1000) {
       // Initial camera focus
       focusIn(1060, 150, 0.8, false);
