@@ -43,7 +43,8 @@ class RetroDialogue extends Module
   private var fadeTween:FlxTween = null;
   private var needsPrideOverlay:Bool = false;
   private var hasDiacritics:Bool = false;
-  private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf', 'Blenda Script.otf'];
+  private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf', 'Blenda Script.otf', 'atrocean.otf'];
+  private var allCapsFonts:Array<String> = ['atroceanMad.otf'];
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
   private var playerLang:String = "en_US";
   private var ambienceTheme:FunkinSound;
@@ -597,6 +598,7 @@ class RetroDialogue extends Module
     dialogueText.text = '';
 
     var fontName:String = line.exists('font') ? line.get('font') : (curDialogueFont != null ? curDialogueFont : DEFAULT_FONT);
+    if (allCapsFonts.contains(fontName)) fullText = fullText.toUpperCase();
     if (!Assets.exists(Paths.font(fontName)) || (noDiacriticsFonts.contains(fontName) && hasDiacritics)) fontName = DEFAULT_FONT;
     curDialogueFont = fontName;
     var fontSize:Int = line.exists('fontSize') ? Std.int(Std.parseFloat(line.get('fontSize'))) : dialogueText.size;
@@ -609,11 +611,12 @@ class RetroDialogue extends Module
     var borderColorHex:String = line.exists('borderColor') ? line.get('borderColor') : '000000';
     var aaOn:Bool = !(line.exists('sansAtialiasing') && line.get('sansAtialiasing') == 'true');
     var textAlign:String = line.exists('textAlign') ? line.get('textAlign') : 'left';
+    var enableWater:String = line.exists('enableWater') && line.get('enableWater') == 'true' && line.get('name').toLowerCase() == 'atrocean';
 
     TEXT_DEFAULT_X = boxSprite.x + 40;
     TEXT_DEFAULT_Y = boxSprite.y + 40;
     if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
-    dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, FlxTextBorderStyle.OUTLINE);
+    dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, !enableWater ? FlxTextBorderStyle.OUTLINE : FlxTextBorderStyle.NONE);
     dialogueText.antialiasing = aaOn;
     dialogueText.borderSize = 3;
     dialogueText.visible = true;

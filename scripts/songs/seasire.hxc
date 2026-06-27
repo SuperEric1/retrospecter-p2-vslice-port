@@ -13,6 +13,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroTransformCutscene;
 
 class SeasireSong extends Song
 {
@@ -24,6 +25,8 @@ class SeasireSong extends Song
   var flashingLights:Bool = true;
   var hasStoredStrums:Bool = false;
   var isMobile:Bool = false;
+  var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
 
   // Buoyancy
   var buoyancy:Float = 10.0;
@@ -40,6 +43,8 @@ class SeasireSong extends Song
   public function new()
   {
     super('seasire');
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -48,6 +53,8 @@ class SeasireSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     flashingLights = Preferences.flashingLights;
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['atrocean', true]);
 
@@ -73,8 +80,39 @@ class SeasireSong extends Song
   override function onCountdownStart(event:ScriptEvent):Void
   {
     super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedDialogue = true;
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['seasire story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+
+      return;
+    }
+
     if (!hasStoredStrums) storeDefaultStrumPositions();
     if (modcharts) floatUp();
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF12e476, true);
+      hasPlayedCutscene = true;
+      event.cancel();
+    }
   }
 
   override function onSongStart(event:ScriptEvent):Void
