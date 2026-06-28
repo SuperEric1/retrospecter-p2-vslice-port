@@ -829,8 +829,16 @@ class RetroDialogue extends Module
     if (line.exists('focusPoint')) PlayState.instance.cameraFollowPoint.setPosition(parseArray(line.get('focusPoint'), 0), parseArray(line.get('focusPoint'), 1), 0);
     var cameraZoom:Float = line.exists('cameraZoom') ? Std.parseFloat(line.get('cameraZoom')) : PlayState.instance.currentCameraZoom;
     if (cameraZoom != PlayState.instance.currentCameraZoom) PlayState.instance.tweenCameraZoom(cameraZoom, 1, true, FlxEase.quintOut);
+    if (line.exists('addZoomToAllCameras')) {
+      var zoom = parseArray(line.get('addZoomToAllCameras'), 0);
+      var time = parseArray(line.get('addZoomToAllCameras'), 1);
+
+      PlayState.instance.tweenCameraZoom(PlayState.instance.currentCameraZoom + zoom, time, true);
+      FlxTween.tween(PlayState.instance.camCutscene, { zoom: PlayState.instance.camCutscene.zoom + zoom }, time);
+    }
 
     if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
+    if (line.exists('izzyEvent') && line.get('izzyEvent') == 'true') izzyEvent();
     if (line.exists('hivemineEvent')) hivemineEvent();
 
     if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
@@ -1267,6 +1275,8 @@ class RetroDialogue extends Module
     PlayState.instance.add(v);
     extraSprites.push(v);
 
+    PlayState.instance.refresh();
+
     note.y = FlxG.height + 10;
     coin.y = FlxG.height + 10;
     x.alpha = 0;
@@ -1277,6 +1287,36 @@ class RetroDialogue extends Module
     FlxTween.tween(x, { alpha: 1 }, 0.2, { startDelay: time, ease: FlxEase.sineOut });
     FlxTween.tween(coin, { y: originalY[1] }, time, { startDelay: time, ease: FlxEase.sineOut });
     FlxTween.tween(v, { alpha: 1 }, 0.2, { startDelay: time * 2, ease: FlxEase.sineOut });
+  }
+
+  private function izzyEvent():Void {
+    var time:Float = 3;
+
+    var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+    otherOverlay.alpha = 0;
+    otherOverlay.scrollFactor.set(0, 0);
+    otherOverlay.screenCenter();
+    otherOverlay.zIndex = Z_OVERLAY + 1;
+    otherOverlay.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(otherOverlay);
+    PlayState.instance.refresh();
+    extraSprites.push(otherOverlay);
+
+    //FlxTween.color(screenOverlay, time, screenOverlay.color, FlxColor.BLACK);
+    FlxTween.tween(screenOverlay, { alpha: 0 }, time);
+    FlxTween.tween(otherOverlay, { alpha: 0.9 }, time);
+
+    FlxTween.tween(prideOverlay.colorTransform, { redMultiplier: 0, blueMultiplier: 0, greenMultiplier: 0 }, time);
+
+    FlxTween.color(dialogueText, time, dialogueText.color, 0xFFb3f2ee);
+
+    new FlxTimer().start(5, function(tmr:FlxTimer) {
+      extraSprites[0].visible = false;
+      prideOverlay.colorTransform.redMultiplier = 1;
+      prideOverlay.colorTransform.blueMultiplier = 1;
+      prideOverlay.colorTransform.greenMultiplier = 1;
+      nextLine();
+    });
   }
 
   private function resetIntroText():Void {
