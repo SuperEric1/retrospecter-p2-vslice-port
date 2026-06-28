@@ -20,11 +20,16 @@ class HardAcheSong extends Song
   var tweens = [];
   var pausedTweens = [];
   var hasPlayedDialogue:Bool = false;
+  var hasPlayedEndDialogue:Bool = false;
   var suggestive:Bool = true;
   var testing:Bool = false;
 
+  var isStory:Bool = false;
+  var smokeColor = 0xFF90126b;
+
   var blackBG:FunkinSprite;
   var blackFG:FunkinSprite;
+  var smokeBlend:FunkinSprite;
 
   var isSaku:Bool = false;
   var quote:Int = 0;
@@ -43,9 +48,12 @@ class HardAcheSong extends Song
     super.onCreate(event);
     playState = PlayState.instance;
 
+    isStory = PlayStatePlaylist.isStoryMode;
     suggestive = Save.instance.modOptions.get('retroSuggestive');
     if (!testing) playState.mayPauseGame = false;
     if (playState.camControls != null) playState.camControls.visible = false;
+    playState.camHUD.visible = false;
+    playState.camGame.bgColor = smokeColor;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p2', true]);
 
@@ -59,16 +67,27 @@ class HardAcheSong extends Song
     blackBG.zIndex = 1;
     playState.currentStage.add(blackBG);
 
-    blackFG = FunkinSprite.create(0, 0).makeSolidColor(FlxG.width * 1.1 /*4000*/, FlxG.height * 1.1 /*3000*/, 0xFF000000);
+    var camZoom = PlayState.instance.stageZoom - 0.3;
+    var w = Math.ceil((FlxG.width + 50) / camZoom);
+    var h = Math.ceil((FlxG.height + 50) / camZoom);
+
+    blackFG = FunkinSprite.create(-2500, -1200).makeSolidColor(w, h, 0xFFFFFFFF);
+    blackFG.color = smokeColor;
     blackFG.scrollFactor.set(0, 0);
-    blackFG.screenCenter();
-    blackFG.zIndex = 0;
-    blackFG.cameras = [playState.camCutscene];
+    // blackFG.screenCenter();
+    blackFG.zIndex = 999999;
     playState.add(blackFG);
+
+    smokeBlend = FunkinSprite.create(-2500, -1200).makeSolidColor(w, h, smokeColor);
+    smokeBlend.scrollFactor.set(0, 0);
+    smokeBlend.blend = 0;
+    smokeBlend.zIndex = 550;
+    playState.add(smokeBlend);
 
     if (testing || playState.startTimestamp > 10000) {
       blackBG.visible = false;
       blackFG.visible = false;
+      if (smokeBlend != null) smokeBlend.visible = false;
     }
 
     playState.currentStage.refresh();
@@ -89,13 +108,12 @@ class HardAcheSong extends Song
 
     var bf = playState.currentStage?.getBoyfriend();
     isSaku = bf.characterId == 'playable-saku-worried';
-    var isStory = PlayStatePlaylist.isStoryMode;
 
     if (!hasPlayedDialogue && isStory) {
       hasPlayedDialogue = true;
       event.cancel();
 
-      playState.camGame.visible = false;
+      //playState.camGame.visible = false;
       playState.camHUD.visible = false;
 
       var rd = ModuleHandler.getModule('RetroDialogue');
@@ -109,7 +127,7 @@ class HardAcheSong extends Song
       playState.currentCameraZoom = playState.stageZoom - 0.2;
       playState.tweenCameraZoom(playState.stageZoom, 8, true, FlxEase.quadOut);
 
-      playState.camGame.visible = true;
+      //playState.camGame.visible = true;
       playState.camHUD.visible = false;
       if (playState.camControls != null) playState.camControls.visible = false;
 
@@ -118,7 +136,14 @@ class HardAcheSong extends Song
         playState.startSong();
         pauseNow = false;
       }
+
+      PlayState.instance.camGame.bgColor = 0xFF000000;
     }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -157,13 +182,14 @@ class HardAcheSong extends Song
 
     if (step >= 32 && step < 96) {
       blackFG.alpha = 1 - (step - 32) / 64;
+      smokeBlend.alpha = 1 - (step - 32) / 64;
     }
 
     if (!isSaku) {
       if (step >= 72 && quote < 1) {
         quote = 1;
         // I won't break your heart...
-        if (suggestive) playState.currentStage?.getDad().playAnimation('intro', true);
+        if (suggestive) playState.currentStage?.getDad()?.playAnimation('intro', true);
       }
 
       if (step >= 109 && quote < 2) {
@@ -175,6 +201,7 @@ class HardAcheSong extends Song
     if (step >= 128 && !p) {
       p = true;
       blackBG.visible = false;
+      smokeBlend.visible = false;
       FlxG.camera.flash(0xFFFFFFFF, 1.25);
 
       playState.currentStage?.getDad().visible = true;
@@ -232,8 +259,28 @@ class HardAcheSong extends Song
     }
 
     if (step >= 2832 && step <= 2880) {
+      blackFG.cameras = [PlayState.instance.camHUD];
+      blackFG.color = 0xFF000000;
       blackFG.visible = true;
       blackFG.alpha = (step - 2832) / 48.0;
+    }
+
+    if (isStory && !hasPlayedEndDialogue && step >= 2912) {
+      PlayState.instance.mayPauseGame = false;
+
+      blackFG.cameras = [PlayState.instance.camGame];
+      PlayState.instance.camGame.bgColor = 0xFF000000;
+      PlayState.instance.camHUD.visible = false;
+      if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['hard-ache story', 'post', function() {
+        PlayState.instance.mayPauseGame = true;
+        PlayState.instance.endSong();
+      }]);
+
+      hasPlayedEndDialogue = true;
+      event.cancel();
     }
   }
 
@@ -256,6 +303,9 @@ class HardAcheSong extends Song
     resetState();
     playState = null;
     hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
+    smokeBlend = null;
+    FlxG.camera.bgColor = 0xFF000000;
   }
 
   override function onResume(event:ScriptEvent):Void
@@ -294,8 +344,15 @@ class HardAcheSong extends Song
     if (blackBG != null && !testing) blackBG.visible = true;
 
     if (blackFG != null && !testing) {
+      blackFG.color = smokeColor;
       blackFG.alpha = 1;
       blackFG.visible = true;
+      if (PlayState.instance != null) blackFG.cameras = [PlayState.instance.camGame];
+    }
+
+    if (smokeBlend != null && !testing) {
+      smokeBlend.visible = true;
+      smokeBlend.alpha = 1;
     }
 
     if (playState != null) {

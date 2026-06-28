@@ -22,6 +22,7 @@ class FuzzyFeelingSong extends Song
 
   var hasStoredStrums:Bool = false;
   var hasPlayedDialogue:Bool = false;
+  var hasPlayedEndDialogue:Bool = false;
   var defaultStrumX:Array<Float> = [];
   var defaultStrumY:Array<Float> = [];
   var ogPlayerStrumScales:Array<Float> = [];
@@ -65,6 +66,8 @@ class FuzzyFeelingSong extends Song
   public function new()
   {
     super('fuzzy-feeling');
+    hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -73,6 +76,9 @@ class FuzzyFeelingSong extends Song
 
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+
+    hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p1', true]);
 
@@ -112,9 +118,12 @@ class FuzzyFeelingSong extends Song
       hasPlayedDialogue = true;
       event.cancel();
 
+      PlayState.instance.camHUD.alpha = 0;
+
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['fuzzy-feeling story', 'pre', function() {
         playState.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
       }]);
     }
   }
@@ -128,14 +137,17 @@ class FuzzyFeelingSong extends Song
   override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-    if (PlayStatePlaylist.isStoryMode)
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
+
+    if (!hasPlayedEndDialogue)
     {
       event.cancel();
+      hasPlayedEndDialogue = true;
 
       // TODO: add check for completing the other weeks
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['fuzzy-feeling story', 'post', function() {
-        playState.endSong();
+        playState.endSong(true);
       }]);
     }
   }
@@ -469,7 +481,7 @@ class FuzzyFeelingSong extends Song
       }
     } else if (p1Pulse) {
       actorScale = 0.85 / 0.7;
-      if (beat < 292) RetroUtil.addCameraZoom(0.03, 0.04);
+      if (beat < 292 && !hasPlayedEndDialogue) RetroUtil.addCameraZoom(0.03, 0.04);
       for (i in 0...4) {
         var s = playState.playerStrumline.strumlineNotes.members[i];
         s.scale.set(ogPlayerStrumScales[i * 2] * actorScale, ogPlayerStrumScales[(i * 2) + 1] * actorScale);
@@ -565,6 +577,7 @@ class FuzzyFeelingSong extends Song
 
     hasStoredStrums = false;
     hasPlayedDialogue = false;
+    hasPlayedEndDialogue = false;
     defaultStrumX = [];
     defaultStrumY = [];
     ogPlayerStrumScales = [];

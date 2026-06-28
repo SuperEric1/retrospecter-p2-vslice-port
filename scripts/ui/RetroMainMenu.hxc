@@ -177,6 +177,8 @@ class RetroMainMenu extends MusicBeatState
     transIn = FlxTransitionableState.defaultTransIn;
     transOut = FlxTransitionableState.defaultTransOut;
 
+    FlxG.camera.bgColor = FlxColor.BLACK;
+
     if (!overrideMusic) playMenuMusic();
 
     if (FlxG.onMobile) {

@@ -245,6 +245,9 @@ class LustStage extends Stage
   override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     var beat = event.beat;
 
@@ -258,17 +261,17 @@ class LustStage extends Stage
       frontB.animation.curAnim.curFrame = beat % 2;
 
     if (beat % 2 == 0 && hasCreatedStage) {
-      frontB.animation.play('anim', true);
-      cameoBar.animation.play('anim', true);
-      cameoRight.animation.play('anim', true);
-      cameoLeft.animation.play('anim', true);
-      foreCL.animation.play('LeftTable_Bop', true);
-      foreCR.animation.play('RIghttable_bop', true);
-      atrocean.animation.play('anim', true);
-      dozirc.animation.play('anim', true);
+      frontB?.animation?.play('anim', true);
+      cameoBar?.animation?.play('anim', true);
+      cameoRight?.animation?.play('anim', true);
+      cameoLeft?.animation?.play('anim', true);
+      foreCL?.animation?.play('LeftTable_Bop', true);
+      foreCR?.animation?.play('RIghttable_bop', true);
+      atrocean?.animation?.play('anim', true);
+      dozirc?.animation?.play('anim', true);
     }
 
-    cameoMid.animation.play(danced ? 'danceLeft' : 'danceRight');
+    cameoMid?.animation?.play(danced ? 'danceLeft' : 'danceRight');
 
     danced = !danced;
   }

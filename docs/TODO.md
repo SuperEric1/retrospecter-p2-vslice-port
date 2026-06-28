@@ -11,7 +11,6 @@
 - [ ] Story mode menu?
 - [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
-- [ ] Sweet talk intro instruction
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Update charters in song metadatas
 - [ ] Finish the opponent note skins
@@ -23,6 +22,7 @@
 - [ ] Superbio, Deadfine, Gutlery, Macovet, Slowstopper "finish" dialogues translations
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] Spanish translation
+- [X] Sweet talk intro instruction
 - [X] Make dozirc sleep in the options menu after being inactive for some time
 - [X] Scrollspeed changes for the third strumline
 - [X] Hard Ache and Extirpatient chart fixes (stacked notes and missing difficulties)

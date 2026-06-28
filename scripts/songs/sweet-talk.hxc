@@ -16,6 +16,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class SweetTalkSong extends Song
 {
   var tweens:Array<FlxTween> = [];
@@ -23,6 +25,7 @@ class SweetTalkSong extends Song
   var retroPlayState = null;
   var isMobile = false;
   var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
 
   // Flags
   var shownLogo:Bool = false;
@@ -75,6 +78,7 @@ class SweetTalkSong extends Song
   {
     super('sweet-talk');
     hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -82,6 +86,7 @@ class SweetTalkSong extends Song
     super.onCreate(event);
     hasStoredStrums = false;
     hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
@@ -204,6 +209,19 @@ class SweetTalkSong extends Song
       }
       PlayState.instance.playerStrumline.alpha = 0;
       PlayState.instance.opponentStrumline.alpha = 0;
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFbd3fd9, true);
+      hasPlayedCutscene = true;
+      event.cancel();
     }
   }
 

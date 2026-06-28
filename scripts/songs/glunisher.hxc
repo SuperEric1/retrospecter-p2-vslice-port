@@ -7,9 +7,12 @@ import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class GlunisherSong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
+  var hasPlayedCutscene:Bool;
   var showLogo:Bool = false;
 
   public function new()
@@ -17,6 +20,7 @@ class GlunisherSong extends Song
     super('glunisher');
 
     hasPlayedInGameCutscene = false;
+    hasPlayedCutscene = false;
     showLogo = false;
   }
 
@@ -25,6 +29,7 @@ class GlunisherSong extends Song
     super.onCreate(event);
 
     hasPlayedInGameCutscene = false;
+    hasPlayedCutscene = false;
     showLogo = false;
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['insatian', true]);
   }
@@ -62,6 +67,19 @@ class GlunisherSong extends Song
     if (curStep >= 144 && !showLogo) {
       showLogo = true;
       ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFab164a, true);
+      hasPlayedCutscene = true;
+      event.cancel();
     }
   }
 
