@@ -10,7 +10,9 @@ import funkin.play.PlayStatePlaylist;
 import funkin.mobile.input.ControlsHandler;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
+
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroTransformCutscene;
 
 class SlowstopperSong extends Song
 {
@@ -18,6 +20,8 @@ class SlowstopperSong extends Song
   var modcharts:Bool = true;
   var isMobile = false;
   var flashingLights:Bool = true;
+  var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
 
   var modIntroBeat:Bool = false;
   var modRoughPulse:Bool = false;
@@ -52,6 +56,8 @@ class SlowstopperSong extends Song
   public function new()
   {
     super('slowstopper');
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
   }
 
   override function onCreate(event:ScriptEvent):Void
@@ -64,6 +70,8 @@ class SlowstopperSong extends Song
     if (isMobile) downscroll = true;
     flashingLights = Preferences.flashingLights;
     showLogo = false;
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['dozirc', true]);
 
@@ -92,6 +100,22 @@ class SlowstopperSong extends Song
   override function onCountdownStart(event:ScriptEvent):Void
   {
     super.onCountdownStart(event);
+
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) hasPlayedDialogue = true;
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['slowstopper story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+      return;
+    }
 
     if (PlayState.instance.startTimestamp <= 10000) {
       var dad = PlayState.instance.currentStage.getDad();
@@ -127,6 +151,26 @@ class SlowstopperSong extends Song
         strum.y = defaultOpponentStrumY[i] + 100;
         strum.angle = FlxG.random.float(-45, 45);
       }
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFe39212, true, true, function() {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['slowstopper story', 'finish', function() {
+          PlayState.instance.mayPauseGame = true;
+          PlayState.instance.endSong();
+        }]);
+      });
+
+      hasPlayedCutscene = true;
+      event.cancel();
     }
   }
 
