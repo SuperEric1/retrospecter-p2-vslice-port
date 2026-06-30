@@ -63,7 +63,7 @@ class SuperbioSong extends Song
 
   public function onStepHit(event) {
     super.onStepHit(event);
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || hasPlayedCutscene) return;
 		if (PlayState.instance.isGameOverState) return;
 
     if (event.step == 400) {
