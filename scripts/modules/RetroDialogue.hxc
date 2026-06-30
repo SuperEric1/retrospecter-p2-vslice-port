@@ -346,6 +346,10 @@ class RetroDialogue extends Module
     currentSection = '';
   }
 
+  private function getPadding(pixels:Float):Float {
+    return Math.max(FullScreenScaleMode.gameNotchSize.x, pixels);
+  }
+
   private function createSprites():Void
   {
     var ps = PlayState.instance;
@@ -465,9 +469,9 @@ class RetroDialogue extends Module
     skipHintText.setFormat(Paths.font(DEFAULT_FONT), FlxG.height / 15, 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
     if (!FlxG.onMobile || (FlxG.onMobile && ControlsHandler.usingExternalInputDevice)) {
       skipHintText.text = RetroLanguage.tf('dialogue.text.skip', [PlayState.instance.controls.getDialogueNameFromToken("BACK", true)]);
-      skipHintText.x = FlxG.width - skipHintText.fieldWidth - 40;
+      skipHintText.x = FlxG.width - skipHintText.fieldWidth - getPadding(40);
     } else {
-      skipHintText.x = /*(FullScreenScaleMode.gameCutoutSize.x / 2) +*/ 40;
+      skipHintText.x = /*(FullScreenScaleMode.gameCutoutSize.x / 2) +*/ getPadding(40);
       skipHintText.text = RetroLanguage.tf('dialogue.text.skip', ['ESC']);
     }
     skipHintText.scrollFactor.set(0, 0);
@@ -488,7 +492,7 @@ class RetroDialogue extends Module
       continueHintText.text = RetroLanguage.tf('dialogue.text.continue', [RetroLanguage.t('action.button.tap', 'Tap').toUpperCase()]);
     }
     continueHintText.scrollFactor.set(0, 0);
-    continueHintText.x = FlxG.width - continueHintText.fieldWidth - 30;
+    continueHintText.x = FlxG.width - continueHintText.fieldWidth - getPadding(30);
     continueHintText.y = FlxG.height - continueHintText.fieldHeight - 30;
     continueHintText.cameras = [cam];
     continueHintText.zIndex = Z_SKIP - 1;

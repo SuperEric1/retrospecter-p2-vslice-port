@@ -21,6 +21,7 @@
 - [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Superbio, Deadfine, Gutlery, Macovet, Slowstopper "finish" dialogues translations
 - [ ] Check the end scythes cutscene colors to see if they match
+- [ ] DadBattle credits and no death on story mode
 - [ ] Spanish translation
 - [X] Sweet talk intro instruction
 - [X] Make dozirc sleep in the options menu after being inactive for some time
