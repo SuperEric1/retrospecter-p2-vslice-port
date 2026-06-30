@@ -97,7 +97,7 @@ class wrathPhaseOneStage extends Stage
         var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
         border1.x = -1144;
         border1.screenCenter(0x10);
-        border1.scrollFactor.set(1.4, 1.4);
+        border1.scrollFactor.set(1.4, 0);
         border1.zIndex = 400;
         add(border1);
         var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
@@ -109,7 +109,7 @@ class wrathPhaseOneStage extends Stage
         var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
         border2.x = 2178;
         border2.screenCenter(0x10);
-        border2.scrollFactor.set(1.4, 1.4);
+        border2.scrollFactor.set(1.4, 0);
         border2.zIndex = 400;
         add(border2);
         var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
