@@ -42,6 +42,7 @@ class RetroDialogue extends Module
   private var skipNextFadeOut:Bool = false;
   private var isFadingOut:Bool = false;
   private var fadeTween:FlxTween = null;
+  private var fadeToNextLine:Float = 0;
   private var needsPrideOverlay:Bool = false;
   private var hasDiacritics:Bool = false;
   private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf', 'Blenda Script.otf', 'atrocean.otf'];
@@ -49,6 +50,9 @@ class RetroDialogue extends Module
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
   private var playerLang:String = "en_US";
   private var ambienceTheme:FunkinSound;
+
+  // Extra
+  private var penduThing:Bool = false;
 
   // Typewriter
   private var fullText:String = '';
@@ -254,8 +258,10 @@ class RetroDialogue extends Module
     currentLineIndex = 0;
     isActive = true;
     currentSoundPath = '';
+    fadeToNextLine = 0;
     currentSection = section;
     curSongId = PlayState.instance?.currentChart?.song?.id ?? '';
+    penduThing = false;
     if (section == 'pre') {
       var hasEndingSection:Bool = false;
       if (sectionMap != null) {
@@ -538,6 +544,7 @@ class RetroDialogue extends Module
 
     for (sprite in extraSprites) {
       if (sprite == null) continue;
+      FlxTween.cancelTweensOf(sprite);
       sprite.destroy();
     }
     extraSprites = [];
@@ -799,12 +806,13 @@ class RetroDialogue extends Module
     nameTextBG.y = nameText.y + (nameText.height / 2) - (nameTextBG.height / 2);
 
     // ---- CONTROLE DE INPUT ----
-    curResetIntroText = line.exists('resetIntroText') && line.get('resetIntroText') == 'true';
+    curResetIntroText = (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') || (line.exists('resetIntroTextButDontCenter') && line.get('resetIntroTextButDontCenter') == 'true');
     curSkipIntro = line.exists('skipIntro') && line.get('skipIntro') == 'true';
     currentUnableToPress = line.exists('unableToPress') && line.get('unableToPress') == 'true';
     currentCantSkip = line.exists('cantSkip') && line.get('cantSkip') == 'true';
     currentAutoConfirm = line.exists('autoConfirm') && line.get('autoConfirm') == 'true';
     skipNextFadeOut = line.exists('abrupt') && line.get('abrupt') == 'true';
+    fadeToNextLine = line.exists('usingIntroInput') ? Std.parseFloat(line.get('usingIntroInput')) : 0;
 
     var skipVisible:Bool = !(line.exists('skipIsVisible') && line.get('skipIsVisible') == 'false');
     skipHintText.visible = skipVisible && !currentCantSkip;
@@ -825,9 +833,11 @@ class RetroDialogue extends Module
 
     // ---- EVENTS ----
     if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
+    if (line.exists('resetIntroTextButDontCenter') && line.get('resetIntroTextButDontCenter') == 'true') resetIntroText(true);
     if (line.exists('forceFocus')) PlayState.instance.tweenCameraToPosition(parseArray(line.get('forceFocus'), 0), parseArray(line.get('forceFocus'), 1), 0);
+    if (line.exists('forceAllTimeFocus')) PlayState.instance.tweenCameraToPosition(parseArray(line.get('forceAllTimeFocus'), 0), parseArray(line.get('forceAllTimeFocus'), 1), 0);
     if (line.exists('focusPoint')) PlayState.instance.cameraFollowPoint.setPosition(parseArray(line.get('focusPoint'), 0), parseArray(line.get('focusPoint'), 1), 0);
-    var cameraZoom:Float = line.exists('cameraZoom') ? Std.parseFloat(line.get('cameraZoom')) : PlayState.instance.currentCameraZoom;
+    var cameraZoom:Float = line.exists('cameraZoom') ? Std.parseFloat(line.get('cameraZoom')) : (line.exists('forceZoom') ? Std.parseFloat(line.get('forceZoom')) : PlayState.instance.currentCameraZoom);
     if (cameraZoom != PlayState.instance.currentCameraZoom) PlayState.instance.tweenCameraZoom(cameraZoom, 1, true, FlxEase.quintOut);
     if (line.exists('addZoomToAllCameras')) {
       var zoom = parseArray(line.get('addZoomToAllCameras'), 0);
@@ -835,6 +845,34 @@ class RetroDialogue extends Module
 
       PlayState.instance.tweenCameraZoom(PlayState.instance.currentCameraZoom + zoom, time, true);
       FlxTween.tween(PlayState.instance.camCutscene, { zoom: PlayState.instance.camCutscene.zoom + zoom }, time);
+    }
+
+    if (line.exists('skipPendu') && line.get('skipPendu') == 'true') {
+      createPenduLight();
+      innerSprite.visible = false;
+      boxSprite.visible = false;
+    }
+    if (line.exists('bringBackPenduAlpha')) bringBackPenduEvent(line.get('bringBackPenduAlpha'));
+    if (line.exists('scaleTweenPenduLight')) scaleTweenPenduLight(Std.parseFloat(line.get('scaleTweenPenduLight')));
+    if (line.exists('penduThing')) penduThing = line.get('penduThing') == 'true';
+    if (line.exists('fadePendu')) {
+      var t:Float = Std.parseFloat(line.get('fadePendu'));
+      extraSprites[2].visible = false;
+      boxSprite.visible = false;
+      innerSprite.visible = false;
+      FlxTween.tween(extraSprites[0], { alpha: 0 }, t);
+      FlxTween.tween(extraSprites[3], { alpha: 0 }, t);
+      PlayState.instance.camGame.visible = true;
+    }
+
+    if (line.exists('finishIntro') && line.get('finishIntro') == 'true') innerSprite.visible = true;
+    if (line.exists('resete') && line.get('resete') == 'true') {
+      for (spr in extraSprites) {
+        if (spr == null) continue;
+        FlxTween.cancelTweensOf(spr);
+        spr.destroy();
+      }
+      extraSprites = [];
     }
 
     if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
@@ -907,27 +945,19 @@ class RetroDialogue extends Module
     }
 
     // ---- TODO ----
-    // focusPoint / forceAllTimeFocus → mover câmera do jogo para um ponto na cena
     // nightflaidEvent             → evento especial da Nightflaid (centraliza sprite, fundo preto, efeitos)
-    // cameraZoom / forceZoom / cameraSpeed → controle de zoom da câmera da cena
-    // prideOverlayVisible / prideAnim → overlay animado de pride
     // sakuQuote / funRetroQuote / bfQuote / zerktroGfQuote / etc → slots de fala alternativa por personagem ativo
-    // changeMusicVolume / fadeMusicVolume / fadeMusicSpeed / slowlyFadeMusic → controle de volume da música
+    // fadeMusicSpeed / slowlyFadeMusic → controle de volume da música
     // deathBoxVisible / deathBoxY → caixa da morte (UI específica da Nightflaid)
-    // usingIntroInput             → modo especial de input do intro (avanço por tempo, não por botão)
     // startSaku / sakuEvent / hivemineEvent / ectospasmEvent → eventos de história específicos de personagem
     // fadeGameToBlack / endDarkness / outroFinalFade / fadeEndText / fadeOut → fades de cena
-    // gameCameraVisible           → mostra/oculta câmera do jogo durante o diálogo
     // changeDialogueAlpha / changeDialogueY → animação do próprio container de diálogo
-    // colorBlend / useBlend       → blend mode em sprites de portrait
     // changeDarkScaleX            → escala do sprite de escuridão de fundo
     // changeParticlesAlpha        → alpha das partículas de cena (stages com partículas)
     // isOutro / skipOutro / skipNightflaid → marcadores de controle de fluxo do outro
     // nightThing / usingNightflaidColors / nightFlaidEvent → modo visual exclusivo da Nightflaid
     // fadeMixterImg               → fade da imagem flutuante especial do Mixter
-    // scaleTweenPenduLight / fadeInPenduLight / fadePendu / startPenduEvent → eventos do Pendulumbra
     // doAlphaThing / changeAlpha  → fade de elementos específicos
-    // resetIntroText / resetIntroTextButDontCenter → reset de estado do box/intro
     // ignoreFirstLineInStory      → pula a primeira linha em modo história
     // startInvisible / startSkipInvisible → começa com sprites invisíveis
     // cutsceneSkipVisible         → visibilidade do botão de skip da cutscene
@@ -1106,6 +1136,24 @@ class RetroDialogue extends Module
 
   private function nextLine():Void
   {
+    if (penduThing) penduThingEvent();
+    if (fadeToNextLine > 0) {
+      currentUnableToPress = true;
+
+      //PlayState.instance.camCutscene.fade(FlxColor.BLACK, fadeToNextLine, false, true);
+      FlxTween.tween(dialogueText, { alpha: 0 }, fadeToNextLine);
+      FlxTween.tween(continueHintText, { alpha: 0 }, fadeToNextLine);
+      new FlxTimer().start(fadeToNextLine * 1.1, function (t:FlxTimer) {
+        //PlayState.instance.camCutscene.stopFade();
+        dialogueText.alpha = 1;
+        continueHintText.alpha = 1;
+        nextLine();
+      });
+
+      fadeToNextLine = 0;
+      return;
+    }
+
     currentLineIndex++;
     if (currentLineIndex >= currentLines.length) {
       beginFadeOut();
@@ -1319,13 +1367,117 @@ class RetroDialogue extends Module
     });
   }
 
-  private function resetIntroText():Void {
+  private function penduThingEvent():Void {
+    penduThing = false;
+
+    var p:FunkinSprite = FunkinSprite.create(0, 0);
+    p.loadGraphic(Paths.image('dialogue/special/pendu2', 'shared'));
+    p.zIndex = Z_OVERLAY + 10;
+    p.alpha = 0;
+    p.setGraphicSize(1285);
+    p.screenCenter();
+    p.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p);
+    extraSprites.push(p);
+
+    var p2:FunkinSprite = FunkinSprite.create(0, 0);
+    p2.loadGraphic(Paths.image('dialogue/special/pendu1', 'shared'));
+    p2.zIndex = Z_OVERLAY + 11;
+    p2.alpha = 0;
+    p2.setGraphicSize(1285);
+    p2.screenCenter();
+    p2.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p2);
+    extraSprites.push(p2);
+
+    PlayState.instance.refresh();
+
+    FlxTween.cancelTweensOf(penduLight);
+    FlxTween.tween(penduLight, { alpha: 1 }, 1);
+    scaleTweenPenduLight(5, 3);
+
+    FlxTween.color(extraSprites[0], 3, extraSprites[0].color, FlxColor.WHITE);
+
+    new FlxTimer().start(6, function(t:FlxTimer) {
+      var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.WHITE);
+      otherOverlay.scrollFactor.set(0, 0);
+      otherOverlay.screenCenter();
+      otherOverlay.zIndex = Z_OVERLAY + 16;
+      otherOverlay.cameras = [PlayState.instance.camCutscene];
+      PlayState.instance.add(otherOverlay);
+      extraSprites.push(otherOverlay);
+      PlayState.instance.refresh();
+
+      FlxTween.cancelTweensOf(extraSprites[0], ['alpha']);
+      extraSprites[0].color = FlxColor.BLACK;
+      extraSprites[2].alpha = 1;
+      penduLight.alpha = 0;
+
+      FlxTween.tween(otherOverlay, { alpha: 0 }, 4);
+    });
+  }
+
+  private function bringBackPenduEvent(input:String):Void {
+    //var spr:FunkinSprite = input == "true" ? extraSprites[3] : extraSprites[2];
+
+    if (input != "true") {
+      // uuh
+    } else {
+      FlxTween.tween(extraSprites[3], { alpha: 1 }, 3);
+    }
+  }
+
+  private var penduLight:FunkinSprite;
+
+  private function createPenduLight():Void {
+    if (extraSprites.length > 1) return;
+
+    var p:FunkinSprite = FunkinSprite.create(0, 0);
+    p.frames = Paths.getSparrowAtlas('dialogue/special/tunnellight', 'shared');
+    p.animation.addByPrefix('idle', 'anim0', 24, true);
+    p.animation.play('idle');
+    p.zIndex = Z_OVERLAY + 15;
+    p.screenCenter();
+    p.scale.set(0.001, 0.001);
+    p.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p);
+    penduLight = p;
+    extraSprites.push(p);
+    PlayState.instance.refresh();
+
+    FlxTween.tween(penduLight, { alpha: 0.7 }, 10, {type: 4, ease: FlxEase.sineOut});
+  }
+
+  private function scaleTweenPenduLight(size:Float, ?time:Float = 3):Void {
+    var multi:Float = 2;
+    FlxTween.cancelTweensOf(penduLight, ['scale.x', 'scale.y']);
+    FlxTween.tween(penduLight.scale, { x: size * multi, y: size * multi }, time, { ease: FlxEase.sineOut });
+    //trace('tweening: ' + size * multi);
+  }
+
+  private function resetIntroText(?dontCenter:Bool = false):Void {
     dialogueText.alignment = 'center';
     dialogueText.fieldWidth = Std.int(1280 * 0.8);
     dialogueText.size = 40;
     //dialogueText.height += 10;
-    dialogueText.screenCenter();
-    dialogueText.y -= 20;
+    if (!dontCenter) {
+      dialogueText.screenCenter();
+      dialogueText.y -= 20;
+    } else {
+      if (extraSprites.length <= 0) {
+        var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.WHITE);
+        otherOverlay.color = FlxColor.BLACK;
+        otherOverlay.scrollFactor.set(0, 0);
+        otherOverlay.screenCenter();
+        otherOverlay.zIndex = Z_OVERLAY + 1;
+        otherOverlay.cameras = [PlayState.instance.camCutscene];
+        PlayState.instance.add(otherOverlay);
+        PlayState.instance.refresh();
+        extraSprites.push(otherOverlay);
+      }
+
+      dialogueText.screenCenter(0x01);
+    }
     skipHintText.visible = false;
     escButton.visible = false;
     continueHintText.visible = false;

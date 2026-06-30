@@ -64,9 +64,12 @@ class EgobrainiacSong extends Song
       hasPlayedDialogue = true;
       event.cancel();
 
+      PlayState.instance.camHUD.alpha = 0;
+
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['egobrainiac story', 'pre', function() {
         PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
       }]);
     }
   }

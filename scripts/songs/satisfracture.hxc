@@ -110,6 +110,7 @@ class SatisfractureSong extends Song
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['satisfracture story', 'pre', function() {
         introCutscene();
+        PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom, 0.5, true, FlxEase.circOut);
       }]);
     }
 

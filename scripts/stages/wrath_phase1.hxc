@@ -1,5 +1,7 @@
 import flixel.FlxG;
 import flixel.math.FlxAngle;
+import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
@@ -18,10 +20,13 @@ class wrathPhaseOneStage extends Stage
 
   var overlay:StageProp;
   var hasCreatedStage:Bool = false;
+  var isWideScreen:Bool = false;
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+
+    isWideScreen = FlxG.width > 1280;
 
     var objects = [
       'velasma',
@@ -62,9 +67,58 @@ class wrathPhaseOneStage extends Stage
       overlay.blend = 12;
       overlay.y += -128;
       overlay.x += 40;
+      overlay.scale.set(1.1, 1);
+      overlay.zIndex = 350;
       //overlay.cameras = [PlayState.instance.camGame];
-      PlayState.instance.add(overlay);
-      PlayState.instance.refresh();
+      add(overlay);
+
+      // Borders for wide screens
+      if (isWideScreen) {
+
+        var caveExtra = getNamedProp('caveLeft').clone();
+        caveExtra.x = getNamedProp('caveLeft').x - getNamedProp('caveLeft').width + 1.5;
+        caveExtra.flipX = false;
+        caveExtra.scrollFactor.set(0.8, 0.8);
+        caveExtra.antialiasing = false;
+        add(caveExtra);
+
+        var caveExtra2 = getNamedProp('caveRight').clone();
+        caveExtra2.x = getNamedProp('caveRight').x + getNamedProp('caveRight').width - 1.5;
+        caveExtra2.flipX = true;
+        caveExtra2.scrollFactor.set(0.8, 0.8);
+        caveExtra2.antialiasing = false;
+        add(caveExtra2);
+
+        var camZoom = PlayState.instance.stageZoom;
+        var w = 500;
+        var h = Math.ceil((FlxG.height + 50) / camZoom);
+        var color = 0xFF000f03; // #000f03
+
+        var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
+        border1.x = -1144;
+        border1.screenCenter(0x10);
+        border1.scrollFactor.set(1.4, 1.4);
+        border1.zIndex = 400;
+        add(border1);
+        var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
+        fillBorderLeft.zIndex = border1.zIndex;
+        fillBorderLeft.x -= fillBorderLeft.width;
+        fillBorderLeft.scrollFactor.set(border1.scrollFactor.x, border1.scrollFactor.y);
+        add(fillBorderLeft);
+
+        var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
+        border2.x = 2178;
+        border2.screenCenter(0x10);
+        border2.scrollFactor.set(1.4, 1.4);
+        border2.zIndex = 400;
+        add(border2);
+        var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
+        fillBorderRight.zIndex = border2.zIndex;
+        fillBorderRight.scrollFactor.set(border2.scrollFactor.x, border2.scrollFactor.y);
+        add(fillBorderRight);
+      }
+
+      refresh();
     }
 
     hasCreatedStage = true;
