@@ -1088,7 +1088,7 @@ class RetroDialogue extends Module
     }
 
     // Botão de ESC do mobile
-    if (escButton != null && FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) escButton.active = !currentCantSkip && !hideSkip; // Desativar botão caso não possa skipar
+    if (escButton != null && FlxG.onMobile && !ControlsHandler.usingExternalInputDevice) escButton.active = !currentCantSkip; // Desativar botão caso não possa skipar
     if (escButton != null && escButton.active && escButton.visible != skipHintText.visible) escButton.visible = skipHintText.visible;
 
     if (inputCooldown > 0) return;
