@@ -7,15 +7,19 @@ import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroTransformCutscene;
+
 class WaitkeeperSong extends Song
 {
   var hasPlayedInGameCutscene:Bool;
+  var hasPlayedCutscene:Bool;
 
   public function new()
   {
     super('waitkeeper');
 
     hasPlayedInGameCutscene = false;
+    hasPlayedCutscene = false;
   }
 
   function onCreate(event:ScriptEvent):Void
@@ -23,6 +27,7 @@ class WaitkeeperSong extends Song
     super.onCreate(event);
 
     hasPlayedInGameCutscene = false;
+    hasPlayedCutscene = false;
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -42,6 +47,26 @@ class WaitkeeperSong extends Song
         PlayState.instance.startCountdown();
         FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
       }]);
+    }
+  }
+
+  public override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend()], 0xFFFB284D, true, true, function() {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['waitkeeper story', 'finish', function() {
+          PlayState.instance.mayPauseGame = true;
+          PlayState.instance.endSong();
+        }]);
+      });
+
+      hasPlayedCutscene = true;
+      event.cancel();
     }
   }
 

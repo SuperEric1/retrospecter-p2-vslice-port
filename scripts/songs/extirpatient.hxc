@@ -12,8 +12,11 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
+
+import supereric.retrospecter.modules.RetroTransformCutscene;
 
 class ExtirpatientSong extends Song
 {
@@ -46,7 +49,9 @@ class ExtirpatientSong extends Song
   var modcharts:Bool = true;
   var flashingLights:Bool = true;
   var flash:FunkinSprite;
-  var hasStoredStrums = false;
+  var hasStoredStrums:Bool = false;
+  var hasPlayedDialogue:Bool = false;
+  var hasPlayedCutscene:Bool = false;
 
   var flashyBits:Array<Int> = [79, 143, 171, 199, 279, 311, 339, 367];
   var zoomBeats:Array<Int> = [415, 447, 479, 511, 543, 575, 607, 639, 671];
@@ -89,12 +94,16 @@ class ExtirpatientSong extends Song
   public function new()
   {
     super('extirpatient');
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
   }
 
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
     hasStoredStrums = false;
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
@@ -102,10 +111,12 @@ class ExtirpatientSong extends Song
     flashingLights = Preferences.flashingLights;
 
     // For testing purposes
-    /*if (FlxG.onMobile) {
+    if (FlxG.onMobile) {
       // jump to tricky
-      playState.startTimestamp = 263000;
-    }*/
+      //playState.startTimestamp = 263000;
+      // jump to end
+      //playState.startTimestamp = 420000;
+    }
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
@@ -148,8 +159,26 @@ class ExtirpatientSong extends Song
   {
     super.onCountdownStart(event);
 
+    if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) {
+      hasPlayedDialogue = true;
+      hasPlayedCutscene = true;
+    }
+
+    if (!hasPlayedDialogue) {
+      hasPlayedDialogue = true;
+      event.cancel(); // CANCEL THE COUNTDOWN!
+
+      PlayState.instance.camHUD.alpha = 0;
+
+      var rd = ModuleHandler.getModule('RetroDialogue');
+      rd.scriptCall('startDialogue', ['extirpatient story', 'pre', function() {
+        PlayState.instance.startCountdown();
+        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+      }]);
+    }
+
     // Initial camera position if song just started
-    if (Conductor.instance.songPosition < 100) {
+    if (playState.startTimestamp < 1000) {
       var dad = PlayState.instance.currentStage.getDad();
       PlayState.instance.currentCameraZoom = 0.6;
       playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x - 300, dad.cameraFocusPoint.y - 200);
@@ -635,6 +664,23 @@ class ExtirpatientSong extends Song
     if (curStep >= 3200 && !f) {
       playState.health = 1;
       f = true;
+    }
+
+    if (curStep >= 3518 && !hasPlayedCutscene) {
+      hasPlayedCutscene = true;
+      PlayState.instance.mayPauseGame = false;
+      PlayState.instance.camGame.fade(FlxColor.BLACK, 0.5, false, null, true);
+      if (PlayState.instance.camSubtitles != null) PlayState.instance.camSubtitles.visible = false;
+
+      new FlxTimer().start(0.5, function(tmr) {
+        var rd = ModuleHandler.getModule('RetroDialogue');
+        rd.scriptCall('startDialogue', ['extirpatient story', 'post', function() {
+            rd.scriptCall('startDialogue', ['outro', 'pre', function() {
+            PlayState.instance.mayPauseGame = true;
+            PlayState.instance.endSong();
+          }]);
+        }]);
+      });
     }
   }
 

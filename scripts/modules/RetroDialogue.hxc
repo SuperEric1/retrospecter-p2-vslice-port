@@ -44,11 +44,13 @@ class RetroDialogue extends Module
   private var fadeTween:FlxTween = null;
   private var fadeToNextLine:Float = 0;
   private var needsPrideOverlay:Bool = false;
+  private var needsDeathBox:Bool = false;
   private var hasDiacritics:Bool = false;
   private var noDiacriticsFonts:Array<String> = ['EastSeaDokdo.ttf', 'aApiNyala.ttf', 'Blenda Script.otf', 'atrocean.otf'];
   private var allCapsFonts:Array<String> = ['atroceanMad.otf'];
   private var diacriticsLanguages:Array<String> = ['pt_BR', 'es_ES', 'fr_FR', 'it_IT', 'de_DE'];
   private var playerLang:String = "en_US";
+  private var hasCutouts:Bool = false;
   private var ambienceTheme:FunkinSound;
 
   // Extra
@@ -60,6 +62,7 @@ class RetroDialogue extends Module
   private var charTimer:Float = 0;
   private var isTyping:Bool = false;
   private var currentSpeed:Float = 0.05;
+  private var secTextVisible:Bool = false;
 
   // Controle de avanço
   private var timedNextTimer:Float = -1;
@@ -71,6 +74,7 @@ class RetroDialogue extends Module
   private var curResetIntroText:Bool = false;
   private var curSkipIntro:Bool = false;
   private var destroyOnEnd:Bool = false;
+  private var fadeToNextLineTimer:FlxTimer;
 
   // Sprites
   private var screenOverlay:FunkinSprite;
@@ -79,6 +83,7 @@ class RetroDialogue extends Module
   private var blendSprite:FunkinSprite;
   private var innerSprite:FunkinSprite;
   private var prideOverlay:FunkinSprite;
+  private var deathBox:FunkinSprite;
   private var portraitLeft:FunkinSprite;
   private var portraitRight:FunkinSprite;
   private var portraitMid:FunkinSprite;
@@ -86,6 +91,7 @@ class RetroDialogue extends Module
   private var nameText:FlxText;
   private var nameTextBG:FlxText;
   private var dialogueText:FlxText;
+  private var secDialogueText:FlxText;
   private var skipHintText:FlxText;
   private var continueHintText:FlxText;
   private var curSoundEffect:FunkinSound = null;
@@ -288,10 +294,29 @@ class RetroDialogue extends Module
         break;
       }
     }
+    needsDeathBox = false;
+    for (dialogueLine in lines) {
+      if (dialogueLine.exists('deathBoxVisible')) {
+        needsDeathBox = true;
+        break;
+      }
+    }
+    needsSecText = false;
+    for (dialogueLine in lines) {
+      if (dialogueLine.exists('secText')) {
+        needsSecText = true;
+        break;
+      }
+    }
 
     if (!hasCreatedSprites) createSprites();
     showAll();
     applyLine(currentLines[0]);
+
+    if (hasCutouts) {
+      FullScreenScaleMode.removeCutouts();
+      hasCutouts = false;
+    }
   }
 
   public function stopDialogue(?callComplete:Bool = true):Void
@@ -302,9 +327,18 @@ class RetroDialogue extends Module
     skipNextFadeOut = false;
     isActive = false;
     isTyping = false;
+    secTextVisible = false;
     timedNextTimer = -1;
     currentLines = [];
     currentLineIndex = 0;
+    if (fadeToNextLineTimer != null) {
+      fadeToNextLineTimer.cancel();
+      fadeToNextLineTimer = null;
+    }
+    if (hasCutouts) {
+      FullScreenScaleMode.removeCutouts();
+      hasCutouts = false;
+    }
 
     if (callComplete && ambienceTheme != null) {
       ambienceTheme.stop();
@@ -338,7 +372,7 @@ class RetroDialogue extends Module
     if (curSoundEffect != null && curSoundEffect != ambienceTheme) curSoundEffect.stop();
     if (curSimpleSound != null && curSimpleSound != ambienceTheme) curSimpleSound.stop();
 
-    if (destroyOnEnd || currentSection != 'pre') {
+    if ((curSongId != 'extirpatient' && currentSection != 'post') && (destroyOnEnd || currentSection != 'pre')) {
       destroyAllSprites();
       destroyOnEnd = false;
     }
@@ -400,6 +434,18 @@ class RetroDialogue extends Module
       prideOverlay.zIndex = Z_INNER + 1;
       prideOverlay.visible = false;
       ps.add(prideOverlay);
+    }
+    if (needsDeathBox) {
+      deathBox = new FunkinSprite(0, 600);
+      deathBox.frames = Paths.getSparrowAtlas('dialogue/nightBox', 'shared');
+      deathBox.animation.addByPrefix('idle', 'anim0', 24, true);
+      deathBox.animation.play('idle');
+      deathBox.screenCenter(0x01);
+      deathBox.scrollFactor.set(0, 0);
+      deathBox.cameras = [cam];
+      deathBox.zIndex = Z_INNER + 1;
+      deathBox.visible = false;
+      ps.add(deathBox);
     }
 
     // Portraits
@@ -463,6 +509,19 @@ class RetroDialogue extends Module
     dialogueText.zIndex = Z_TEXT;
     dialogueText.visible = false;
     ps.add(dialogueText);
+
+    // Segundo texto do diálogo
+    if (needsSecText) {
+      secDialogueText = new FlxText(0, TEXT_DEFAULT_Y, Std.int(FlxG.width - 160), '', 48);
+      secDialogueText.setFormat(Paths.font(DEFAULT_FONT), 48, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+      secDialogueText.wordWrap = true;
+      secDialogueText.scrollFactor.set(0, 0);
+      secDialogueText.borderSize = 2.5;
+      secDialogueText.cameras = [cam];
+      secDialogueText.zIndex = Z_TEXT;
+      secDialogueText.visible = false;
+      ps.add(secDialogueText);
+    }
 
     // Texto de skip
     skipHintText = new FlxText(0, 0, 0, '', 22);
@@ -532,6 +591,8 @@ class RetroDialogue extends Module
     screenOverlay.destroy();
     boxSprite.destroy();
     if (blendSprite != null) blendSprite.destroy();
+    if (prideOverlay != null) prideOverlay.destroy();
+    if (deathBox != null) deathBox.destroy();
     blendSprite = null;
     innerSprite.destroy();
     portraitLeft.destroy();
@@ -542,6 +603,8 @@ class RetroDialogue extends Module
     nameTextBG.destroy();
     if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
     dialogueText.destroy();
+    if (IntervalShake.isShaking(secDialogueText)) IntervalShake.stopShaking(secDialogueText);
+    if (secDialogueText != null) secDialogueText.destroy();
     skipHintText.destroy();
     continueHintText.destroy();
     escButton.destroy();
@@ -570,6 +633,11 @@ class RetroDialogue extends Module
       curSimpleSound.destroy();
     }
 
+    if (hasCutouts) {
+      FullScreenScaleMode.removeCutouts();
+      hasCutouts = false;
+    }
+
     hasCreatedSprites = false;
   }
 
@@ -588,6 +656,7 @@ class RetroDialogue extends Module
     boxSprite.visible = false;
     innerSprite.visible = false;
     if (prideOverlay != null) prideOverlay.visible = false;
+    if (deathBox != null) deathBox.visible = false;
     if (blendSprite != null) blendSprite.visible = false;
     portraitLeft.visible = false;
     portraitRight.visible = false;
@@ -596,6 +665,7 @@ class RetroDialogue extends Module
     nameText.visible = false;
     nameTextBG.visible = false;
     dialogueText.visible = false;
+    if (secDialogueText != null) secDialogueText.visible = false;
     skipHintText.visible = false;
     continueHintText.visible = false;
     escButton.visible = false;
@@ -603,6 +673,14 @@ class RetroDialogue extends Module
 
   private function applyLine(line:StringMap<String>):Void
   {
+    if (line.exists('shouldUseDark')) {
+      PlayState.instance.camCutscene.fade(FlxColor.BLACK, 5, false, null, true);
+      timedNextTimer = Std.parseFloat(line.get('startTimedNext'));
+      currentUnableToPress = line.get('unableToPress') == 'true';
+      currentCantSkip = line.get('cantSkip') == 'true';
+      skipNextFadeOut = true;
+      return;
+    }
     var textKey:String = line.exists('textKey') ? line.get('textKey') : '';
     var prefix:String = line.exists('prefix') ? line.get('prefix') : '';
     var rawText:String = RetroLanguage.t(textKey, 'Retro have two dicks\n(ERROR loading line)');
@@ -650,7 +728,7 @@ class RetroDialogue extends Module
     var textColor:FlxColor = FlxColor.fromString('#' + textColorHex);
     if (!line.exists('textColor')) textColor = dialogueText.color;
 
-    var useBorder:Bool = line.exists('textBorder') && line.get('textBorder') == 'true';
+    var useBorder:Bool = line.exists('textBorder') ? line.get('textBorder') == 'true' : true;
     var borderColorHex:String = line.exists('borderColor') ? line.get('borderColor') : '000000';
     var aaOn:Bool = !(line.exists('sansAtialiasing') && line.get('sansAtialiasing') == 'true');
     var textAlign:String = line.exists('textAlign') && line.get('textAlign') == '1' ? 'center' : 'left';
@@ -658,18 +736,25 @@ class RetroDialogue extends Module
 
     TEXT_DEFAULT_X = boxSprite.x + 40;
     TEXT_DEFAULT_Y = boxSprite.y + 40;
+    final TEXT_FIELDWIDTH = boxSprite.width * 0.96;
+    FlxTween.cancelTweensOf(dialogueText);
     if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
     dialogueText.setFormat(Paths.font(fontName), fontSize, textColor, textAlign, !removeBorder ? FlxTextBorderStyle.OUTLINE : FlxTextBorderStyle.NONE);
     dialogueText.antialiasing = aaOn;
     dialogueText.borderSize = 2.5;
+    dialogueText.borderQuality = 0;
     dialogueText.visible = true;
-    dialogueText.fieldWidth = boxSprite.width * 0.96;
+    dialogueText.fieldWidth = TEXT_FIELDWIDTH;
+    dialogueText.fieldHeight = 0;
     dialogueText.x = TEXT_DEFAULT_X;
     dialogueText.y = TEXT_DEFAULT_Y;
+    dialogueText.alpha = 1;
     if (useBorder) dialogueText.borderColor = FlxColor.fromString('#' + borderColorHex);
     else dialogueText.borderColor = 0xFF000000;
 
+    FlxTween.cancelTweensOf(continueHintText);
     continueHintText.visible = false;
+    continueHintText.alpha = 1;
 
     if (line.exists('specificTextPosition'))
     {
@@ -681,6 +766,39 @@ class RetroDialogue extends Module
     if (isSakuBox && !line.exists('specificTextPosition')) {
       var yAdd:Float = 22;
       dialogueText.y = TEXT_DEFAULT_Y + yAdd;
+    }
+
+    // ---- SEGUNDO TEXTO ----
+    secTextVisible = line.exists('secText');
+    if (secTextVisible) {
+      FlxTween.cancelTweensOf(secDialogueText);
+      if (IntervalShake.isShaking(secDialogueText)) IntervalShake.stopShaking(secDialogueText);
+      var secSize:Int = line.exists('secSize') ? Std.int(Std.parseFloat(line.get('secSize'))) : fontSize;
+      secDialogueText.setFormat(Paths.font(DEFAULT_FONT), secSize, 0xFFFFFFFF, textAlign, FlxTextBorderStyle.OUTLINE, 0xFF000000);
+      secDialogueText.antialiasing = aaOn;
+      secDialogueText.borderSize = 2.5;
+      secDialogueText.borderQuality = 0;
+      secDialogueText.fieldWidth = TEXT_FIELDWIDTH;
+      secDialogueText.fieldHeight = 0;
+      secDialogueText.alpha = 1;
+      secDialogueText.visible = true;
+      secDialogueText.x = TEXT_DEFAULT_X;
+      secDialogueText.y = TEXT_DEFAULT_Y;
+      secDialogueText.text = fullText.substring(0, displayedChars);
+
+      if (line.exists('shakeSecDialogue'))
+      {
+        var secArr:String = line.get('shakeSecDialogue');
+        secDialogueText.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + parseArray(secArr, 0);
+        secDialogueText.y = parseArray(secArr, 2);
+
+        var secShakeIntensity:Float = parseArray(secArr, 1) * 0.0008;
+        IntervalShake.shake(secDialogueText, 999999, 0.02, secShakeIntensity, secShakeIntensity, FlxEase.quadOut);
+      }
+    }
+    else if (secDialogueText != null) {
+      if (IntervalShake.isShaking(secDialogueText)) IntervalShake.stopShaking(secDialogueText);
+      secDialogueText.visible = false;
     }
 
     // ---- BLEND DA CAIXA ----
@@ -743,9 +861,18 @@ class RetroDialogue extends Module
       }
       if (prideVisible && line.exists('prideAnim')) prideOverlay.animation.play(line.get('prideAnim'), false);
     }
+    if (deathBox != null) {
+      var deathBoxVisible:Bool = line.exists('deathBoxVisible') ? line.get('deathBoxVisible') == 'true' : deathBox.visible;
+      deathBox.visible = deathBoxVisible;
+      deathBox.y = line.exists('deathBoxY') ? Std.parseFloat(line.get('deathBoxY')) : deathBox.y;
+      if (deathBoxVisible) {
+        innerSprite.visible = false;
+        boxSprite.visible = false;
+      }
+    }
 
     // ---- FUNDO ----
-    var gameCameraVisible:Bool = line.exists('gameCameraVisible') ? line.get('gameCameraVisible') : PlayState.instance.camGame.visible;
+    var gameCameraVisible:Bool = line.exists('gameCameraVisible') ? line.get('gameCameraVisible') == 'true' : PlayState.instance.camGame.visible;
     var overlayAlpha:Float = line.exists('overlayAlpha') ? Std.parseFloat(line.get('overlayAlpha')) : screenOverlay.alpha;
     var overlayFillHex:Bool = line.exists('overlayFill') && FlxColor.fromString('#' + line.get('overlayFill')) != null;
     if (overlayFillHex) screenOverlay.color = FlxColor.fromString('#' + line.get('overlayFill'));
@@ -764,12 +891,17 @@ class RetroDialogue extends Module
 
     // ---- AJUSTE DE OVERFLOW ----
     dialogueText.text = fullText;
-    var textMaxY = boxSprite.y + boxSprite.height - 3;
+    var boxOverflow = boxSprite;
+    if (deathBox != null && deathBox.visible) boxOverflow = deathBox;
+    var textMaxY = boxOverflow.y + boxOverflow.height - 3;
+    if (line.exists('nightflaidEvent')) textMaxY = 400;
+    if (secTextVisible) textMaxY = boxOverflow.y + boxOverflow.height / 2;
     var currentFontSize:Int = fontSize;
     while ((dialogueText.y + dialogueText.height) > textMaxY && currentFontSize > TEXT_MIN_FONT_SIZE) {
       currentFontSize = Std.int(currentFontSize * 0.8);
       if (currentFontSize < TEXT_MIN_FONT_SIZE) currentFontSize = TEXT_MIN_FONT_SIZE;
       dialogueText.size = currentFontSize;
+      dialogueText.fieldWidth = TEXT_FIELDWIDTH;
     }
     dialogueText.text = '';
 
@@ -818,7 +950,7 @@ class RetroDialogue extends Module
     skipNextFadeOut = line.exists('abrupt') && line.get('abrupt') == 'true';
     fadeToNextLine = line.exists('usingIntroInput') ? Std.parseFloat(line.get('usingIntroInput')) : 0;
 
-    var skipVisible:Bool = !(line.exists('skipIsVisible') && line.get('skipIsVisible') == 'false');
+    var skipVisible:Bool = line.exists('skipIsVisible') ? line.get('skipIsVisible') == 'true' : skipHintText.visible;
     skipHintText.visible = skipVisible && !currentCantSkip;
 
     // ---- AUTO-AVANÇO ----
@@ -836,6 +968,10 @@ class RetroDialogue extends Module
     }
 
     // ---- EVENTS ----
+    if (line.exists('addCutouts') && line.get('addCutouts') == 'true' && FlxG.width > 1280) {
+      hasCutouts = true;
+      FullScreenScaleMode.addCutouts();
+    }
     if (line.exists('resetIntroText') && line.get('resetIntroText') == 'true') resetIntroText();
     if (line.exists('resetIntroTextButDontCenter') && line.get('resetIntroTextButDontCenter') == 'true') resetIntroText(true);
     if (line.exists('forceFocus')) PlayState.instance.tweenCameraToPosition(parseArray(line.get('forceFocus'), 0), parseArray(line.get('forceFocus'), 1), 0);
@@ -852,7 +988,7 @@ class RetroDialogue extends Module
     }
 
     if (line.exists('skipPendu') && line.get('skipPendu') == 'true') {
-      createPenduLight();
+      if (curSongId == 'waitkeeper') createPenduLight();
       innerSprite.visible = false;
       boxSprite.visible = false;
     }
@@ -867,6 +1003,39 @@ class RetroDialogue extends Module
       FlxTween.tween(extraSprites[0], { alpha: 0 }, t);
       FlxTween.tween(extraSprites[3], { alpha: 0 }, t);
       PlayState.instance.camGame.visible = true;
+    }
+
+    if (line.exists('nightThing') && line.get('nightThing') == 'true') createNightflaidSprites();
+    if (line.exists('nightflaidEvent') && line.get('nightflaidEvent') == 'true') {
+      dialogueText.fieldWidth = 1280 * 0.97;
+      dialogueText.screenCenter(0x01);
+      //dialogueText.alignment = 'center';
+    }
+    if (line.exists('skipNightflaid') && line.get('skipNightflaid') == 'true') {
+      innerSprite.visible = false;
+      boxSprite.visible = false;
+    }
+    if (line.exists('nightFadeFirst')) {
+      var t:Float = Std.parseFloat(line.get('nightFadeFirst'));
+      FlxTween.tween(extraSprites[1], { alpha: 1 }, t);
+    }
+    if (line.exists('nightFadeSecond')) {
+      var t:Float = Std.parseFloat(line.get('nightFadeSecond'));
+      FlxTween.tween(extraSprites[2], { alpha: 1 }, t);
+    }
+    if (line.exists('nightFadeThird')) {
+      var t:Float = Std.parseFloat(line.get('nightFadeThird'));
+      extraSprites[1].visible = false;
+      FlxTween.tween(extraSprites[0], { alpha: 0 }, t);
+      FlxTween.tween(extraSprites[2], { alpha: 0 }, t);
+      innerSprite.visible = false;
+      boxSprite.visible = false;
+      PlayState.instance.camGame.visible = true;
+    }
+    if (line.exists('usingNightflaidColors')) {
+      skipHintText.color = FlxColor.BLACK;
+      skipHintText.borderColor = FlxColor.RED;
+      escButton.color = FlxColor.RED;
     }
 
     if (line.exists('finishIntro') && line.get('finishIntro') == 'true') innerSprite.visible = true;
@@ -913,7 +1082,7 @@ class RetroDialogue extends Module
     if (line.exists('shake')) {
       var shakeIntensity:Float = parseArray(line.get('shake'), 0) * 0.0008;
       //trace(shakeIntensity);
-      IntervalShake.shake(dialogueText, 999999, 0.01, shakeIntensity, shakeIntensity, FlxEase.quadOut);
+      IntervalShake.shake(dialogueText, 999999, 0.02, shakeIntensity, shakeIntensity, FlxEase.quadOut);
     }
 
     PlayState.instance.camCutscene.stopShake();
@@ -1035,17 +1204,23 @@ class RetroDialogue extends Module
     return best;
   }
 
-  private function shouldSkipToLastLine():Bool
+  private function getSkipTargetLine():Int
   {
     switch (curSongId)
     {
+      case 'satisfracture':
+        if (currentSection == 'pre') return 7;
       case 'fuzzy-feeling':
-        return currentSection == 'fork';
+        if (currentSection == 'fork') return currentLines.length - 1;
       case 'sweet-talk':
-        return currentSection == 'pre';
-      default:
-        return false;
+        if (currentSection == 'pre') return currentLines.length - 1;
+      case 'extirpatient':
+        if (currentSection == 'pre') return 20;
+      case 'waitkeeper':
+        if (currentSection == 'pre') return 11;
+        if (currentSection == 'finish') return currentLines.length - 1;
     }
+    return -1;
   }
 
   override public function onUpdate(event:UpdateScriptEvent):Void
@@ -1070,10 +1245,13 @@ class RetroDialogue extends Module
         charTimer -= currentSpeed;
         displayedChars++;
       }
-      if (displayedChars != prevChars)
+      if (displayedChars != prevChars) {
         dialogueText.text = fullText.substring(0, displayedChars);
+        if (secTextVisible) secDialogueText.text = dialogueText.text;
+      }
       if (displayedChars >= fullText.length) {
         isTyping = false;
+        currentUnableToPress = false;
         inputCooldown = 0;
         if (currentAutoConfirm && timedNextTimer < 0)
           timedNextTimer = 0.0;
@@ -1119,8 +1297,9 @@ class RetroDialogue extends Module
     }
 
     if (pressBack && !currentCantSkip) {
-      if (shouldSkipToLastLine() && currentLineIndex < currentLines.length - 1) {
-        currentLineIndex = currentLines.length - 1;
+      var skipTarget:Int = getSkipTargetLine();
+      if (skipTarget != -1 && currentLineIndex < skipTarget) {
+        currentLineIndex = skipTarget;
         inputCooldown = INPUT_COOLDOWN_SEC;
         applyLine(currentLines[currentLineIndex]);
       } else {
@@ -1129,12 +1308,13 @@ class RetroDialogue extends Module
       return;
     }
 
-    if (pressAccept && !currentUnableToPress) {
-      if (isTyping) {
+    if (pressAccept) {
+      if (isTyping && !currentUnableToPress) {
         displayedChars = fullText.length;
         dialogueText.text = fullText;
+        if (secTextVisible) secDialogueText.text = fullText;
         isTyping = false;
-      } else { nextLine(); }
+      } else if (!currentUnableToPress) { nextLine(); }
     }
   }
 
@@ -1147,15 +1327,18 @@ class RetroDialogue extends Module
       //PlayState.instance.camCutscene.fade(FlxColor.BLACK, fadeToNextLine, false, true);
       FlxTween.tween(dialogueText, { alpha: 0 }, fadeToNextLine);
       FlxTween.tween(continueHintText, { alpha: 0 }, fadeToNextLine);
-      new FlxTimer().start(fadeToNextLine * 1.1, function (t:FlxTimer) {
+      fadeToNextLineTimer = new FlxTimer().start(fadeToNextLine * 1.1, function (t:FlxTimer) {
         //PlayState.instance.camCutscene.stopFade();
-        dialogueText.alpha = 1;
-        continueHintText.alpha = 1;
         nextLine();
       });
 
       fadeToNextLine = 0;
       return;
+    }
+
+    if (fadeToNextLineTimer != null) {
+      fadeToNextLineTimer.cancel();
+      fadeToNextLineTimer = null;
     }
 
     currentLineIndex++;
@@ -1185,10 +1368,14 @@ class RetroDialogue extends Module
     destroyAllSprites();
     isActive = false;
     isTyping = false;
+    secTextVisible = false;
     destroyOnEnd = false;
     needsPrideOverlay = false;
+    needsDeathBox = false;
+    fadeToNextLine = 0;
     currentSection = '';
     if (fadeTween != null) { fadeTween.cancel(); fadeTween = null; }
+    if (fadeToNextLineTimer != null) { fadeToNextLineTimer.cancel(); fadeToNextLineTimer = null; }
     isFadingOut = false;
     skipNextFadeOut = false;
     hasCreatedSprites = false;
@@ -1230,6 +1417,7 @@ class RetroDialogue extends Module
     PlayState.instance.disableKeys = true;
 
     if (IntervalShake.isShaking(dialogueText)) IntervalShake.stopShaking(dialogueText);
+    if (secDialogueText != null && IntervalShake.isShaking(secDialogueText)) IntervalShake.stopShaking(secDialogueText);
 
     fadeTween = FlxTween.tween(PlayState.instance.camCutscene, { alpha: 0 }, 1, { ease: FlxEase.quadIn, onComplete: function(_){
         fadeTween = null;
@@ -1457,6 +1645,31 @@ class RetroDialogue extends Module
     FlxTween.cancelTweensOf(penduLight, ['scale.x', 'scale.y']);
     FlxTween.tween(penduLight.scale, { x: size * multi, y: size * multi }, time, { ease: FlxEase.sineOut });
     //trace('tweening: ' + size * multi);
+  }
+
+  private function createNightflaidSprites():Void {
+    if (extraSprites.length > 1) return;
+    var p:FunkinSprite = FunkinSprite.create(0, 0);
+    p.loadGraphic(Paths.image('dialogue/special/night2', 'shared'));
+    p.zIndex = Z_OVERLAY + 10;
+    p.alpha = 0;
+    p.setGraphicSize(1285);
+    p.screenCenter();
+    p.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p);
+    extraSprites.push(p);
+
+    var p2:FunkinSprite = FunkinSprite.create(0, 0);
+    p2.loadGraphic(Paths.image('dialogue/special/night1', 'shared'));
+    p2.zIndex = Z_OVERLAY + 11;
+    p2.alpha = 0;
+    p2.setGraphicSize(1285);
+    p2.screenCenter();
+    p2.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p2);
+    extraSprites.push(p2);
+
+    PlayState.instance.refresh();
   }
 
   private function resetIntroText(?dontCenter:Bool = false):Void {
