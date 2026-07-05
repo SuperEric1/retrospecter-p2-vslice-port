@@ -18,8 +18,8 @@
 - [ ] Review mechanics for better accuracy
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
-- [ ] Add and translate the missing dialogues (superbio finish dialogue too)
 - [ ] Superbio, Deadfine, Gutlery, Macovet, Slowstopper, Waitkeeper, Outro (extirpatient) "finish" dialogues translations
+- [ ] Superbio camerabop and review english translation text for nightflaid event thing
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] DadBattle credits and no death on story mode
 - [ ] Spanish translation

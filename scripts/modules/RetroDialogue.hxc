@@ -15,6 +15,7 @@ import funkin.save.Save;
 import funkin.effects.IntervalShake;
 import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
+import funkin.group.FunkinGroup;
 import funkin.Paths;
 import funkin.util.TouchUtil;
 import openfl.Assets;
@@ -55,6 +56,7 @@ class RetroDialogue extends Module
 
   // Extra
   private var penduThing:Bool = false;
+  private var outroZoom:Float = 0;
 
   // Typewriter
   private var fullText:String = '';
@@ -203,7 +205,9 @@ class RetroDialogue extends Module
     var cleaned:String = StringTools.replace(raw, '[', '');
     cleaned = StringTools.replace(cleaned, ']', '');
     var sep:String = cleaned.indexOf(',') >= 0 ? ',' : ';';
-    return Std.parseFloat(StringTools.trim(cleaned.split(sep)[i]));
+    var value:String = StringTools.trim(cleaned.split(sep)[i]);
+    if (!Math.isNaN(Std.parseFloat(value))) return Std.parseFloat(value);
+    return value;
   }
 
   private static function parseDialogueLine(raw:String):StringMap<String>
@@ -500,7 +504,7 @@ class RetroDialogue extends Module
 
     // Texto do diálogo
     dialogueText = new FlxText(0, TEXT_DEFAULT_Y, Std.int(FlxG.width - 160), '', 48);
-    dialogueText.setFormat(Paths.font(DEFAULT_FONT), 48, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+    dialogueText.setFormat(Paths.font(DEFAULT_FONT), 48, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE_FAST, 0xFF000000);
     dialogueText.wordWrap = true;
     dialogueText.scrollFactor.set(0, 0);
     //dialogueText.textField.background = true;
@@ -681,6 +685,13 @@ class RetroDialogue extends Module
       skipNextFadeOut = true;
       return;
     }
+    if (line.exists('finishStoryOutro') && line.get('finishStoryOutro') == 'true') {
+      timedNextTimer = Std.parseFloat(line.get('startTimedNext'));
+      skipNextFadeOut = true;
+      currentUnableToPress = true;
+      currentCantSkip = true;
+      return;
+    }
     var textKey:String = line.exists('textKey') ? line.get('textKey') : '';
     var prefix:String = line.exists('prefix') ? line.get('prefix') : '';
     var rawText:String = RetroLanguage.t(textKey, 'Retro have two dicks\n(ERROR loading line)');
@@ -803,7 +814,7 @@ class RetroDialogue extends Module
 
     // ---- BLEND DA CAIXA ----
     if (line.exists('useBlend') && line.get('useBlend') == 'true') {
-      trace("Usando blend");
+      //trace("Usando blend");
       if (blendSprite == null) {
         blendSprite = FunkinSprite.create(0, BOX_Y);
         blendSprite.loadGraphic(Paths.image('dialogue/fill', 'shared'));
@@ -819,14 +830,14 @@ class RetroDialogue extends Module
       }
 
       var charName = line.exists('name') ? line.get('name').toLowerCase() : '';
-      trace(charName + " | " + currentBlendName);
+      //trace(charName + " | " + currentBlendName);
       if (charName != currentBlendName) {
         switch (charName) {
           case 'hivemine', 'hiveless':
             blendSprite.loadGraphic(Paths.image('dialogue/hexa', 'shared'));
           default:
         }
-        trace("Blend carregado: " + charName);
+        //trace("Blend carregado: " + charName);
         currentBlendName = line.get('name').toLowerCase();
       }
     }
@@ -1038,6 +1049,61 @@ class RetroDialogue extends Module
       escButton.color = FlxColor.RED;
     }
 
+    if (line.exists('createOutroSprites')) createOutroSprites();
+    if (line.exists('skipOutro')) {
+      dialogueText.fieldWidth = 1280 * 0.97;
+      dialogueText.screenCenter(0x01);
+      innerSprite.visible = false;
+    }
+    if (line.exists('setOutroZoom')) outroZoom = Std.parseFloat(line.get('setOutroZoom')) * 0.65;
+    if (line.exists('fadeOutroDark')) {
+      var delay:Float = parseArray(line.get('fadeOutroDark'), 0);
+      var t:Float = parseArray(line.get('fadeOutroDark'), 1);
+      var alpha:Float = parseArray(line.get('fadeOutroDark'), 2);
+      FlxTween.cancelTweensOf(extraSprites[0]);
+      FlxTween.tween(extraSprites[0], { alpha: alpha }, t, { startDelay: delay });
+    }
+    if (line.exists('outroPosition') && line.exists('outroState')) {
+      /*var axis:String = parseArray(line.get('outroPosition'), 0);
+      var startPos:Float = parseArray(line.get('outroPosition'), 2);
+      var endPos:Float = parseArray(line.get('outroPosition'), 1);*/
+      var t:Float = parseArray(line.get('outroPosition'), 3);
+      var state:Int = Std.int(line.get('outroState'));
+
+      positionOutroSprites(state, t);
+      //trace ("Outro position: " + axis + " | " + startPos + " → " + endPos + " | t: " + t);
+      //repositionOutroSprites();
+      /*if (axis == 'x') {
+        FlxTween.tween(extraSprites[2], { x: outroGroupPos[0] - endPos }, t);
+        FlxTween.tween(extraSprites[3], { x: outroGroupPos[0] - endPos }, t);
+      } else if (axis == 'y') {
+        FlxTween.tween(extraSprites[2], { y: outroGroupPos[1] - endPos }, t);
+        FlxTween.tween(extraSprites[3], { y: extraSprites[2].y - extraSprites[2].height + endPos }, t);
+      } else if (axis == 'xy') {
+        var startPosY:Float = parseArray(line.get('outroPosition'), 2);
+        var endPosY:Float = parseArray(line.get('outroPosition'), 1);
+        var startPosX:Float = parseArray(line.get('outroPosition'), 5);
+        var endPosX:Float = parseArray(line.get('outroPosition'), 4);
+        FlxTween.tween(extraSprites[2], { x: outroGroupPos[0] - endPosX, y: outroGroupPos[1] - endPosY }, t);
+        FlxTween.tween(extraSprites[3], { x: outroGroupPos[0] - endPosX, y: extraSprites[2].y - extraSprites[2].height + endPosY }, t);
+      }*/
+    }
+    if (line.exists('outroFinalFade')) {
+      var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+      otherOverlay.alpha = 0;
+      otherOverlay.scrollFactor.set(0, 0);
+      otherOverlay.screenCenter();
+      otherOverlay.zIndex = Z_SKIP + 1;
+      otherOverlay.cameras = [PlayState.instance.camCutscene];
+      PlayState.instance.add(otherOverlay);
+      PlayState.instance.refresh();
+
+      var delay:Float = parseArray(line.get('outroFinalFade'), 0);
+      var t:Float = parseArray(line.get('outroFinalFade'), 1);
+      var alpha:Float = parseArray(line.get('outroFinalFade'), 2);
+      FlxTween.tween(otherOverlay, { alpha: alpha }, t, { startDelay: delay });
+    }
+
     if (line.exists('finishIntro') && line.get('finishIntro') == 'true') innerSprite.visible = true;
     if (line.exists('resete') && line.get('resete') == 'true') {
       for (spr in extraSprites) {
@@ -1052,7 +1118,7 @@ class RetroDialogue extends Module
     if (line.exists('izzyEvent') && line.get('izzyEvent') == 'true') izzyEvent();
     if (line.exists('hivemineEvent')) hivemineEvent();
 
-    if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'));
+    if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'), !line.exists('disableAmbienceLoop'));
     if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
     if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
     if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
@@ -1231,7 +1297,7 @@ class RetroDialogue extends Module
       stopDialogue(false);
       return;
     }
-    if (PlayState.instance.isGamePaused) return;
+    //if (PlayState.instance.isGamePaused) return;
     if (isFadingOut) return;
 
     var elapsed:Float = event.elapsed;
@@ -1433,12 +1499,12 @@ class RetroDialogue extends Module
     if (curSimpleSound != null) curSimpleSound.fadeOut(1, 0);
   }
 
-  private function playAmbienceThemeFrom(themeName:String):Void
+  private function playAmbienceThemeFrom(themeName:String, looped:Bool):Void
   {
     if (ambienceTheme != null) ambienceTheme.stop();
     // if (FlxG.sound.music != null) FlxG.sound.music.stop();
 
-    ambienceTheme = FunkinSound.load(Paths.sound('ambiences/' + themeName), 0.15, true);
+    ambienceTheme = FunkinSound.load(Paths.sound('ambiences/' + themeName), 0.15, looped);
     ambienceTheme.play();
     //FlxG.sound.music.play(true);
   }
@@ -1670,6 +1736,156 @@ class RetroDialogue extends Module
     extraSprites.push(p2);
 
     PlayState.instance.refresh();
+  }
+
+  private var outroGroupPos:Array<Float> = [0, -5000];
+
+  private function createOutroSprites():Void {
+    for (spr in extraSprites) {
+      if (spr == null) continue;
+      spr.destroy();
+    }
+    extraSprites = [];
+
+    PlayState.instance.camHUD.alpha = 1;
+    PlayState.instance.camHUD.visible = true;
+
+    // 0
+    var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+    otherOverlay.alpha = 1;
+    otherOverlay.scrollFactor.set(0, 0);
+    otherOverlay.screenCenter();
+    otherOverlay.zIndex = Z_OVERLAY + 1;
+    otherOverlay.cameras = [PlayState.instance.camCutscene];
+    extraSprites.push(otherOverlay);
+
+    /*var otherOverlay2 = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+    otherOverlay2.alpha = 1;
+    otherOverlay2.scrollFactor.set(0, 0);
+    otherOverlay2.screenCenter();
+    otherOverlay2.zIndex = Z_OVERLAY;
+    otherOverlay2.cameras = [PlayState.instance.camHUD];
+    PlayState.instance.add(otherOverlay2);*/
+
+    // 1
+    var v:FunkinSprite = FunkinSprite.create(0, 0);
+    v.loadGraphic(Paths.image('dialogue/special/vignette', 'shared'));
+    v.zIndex = Z_OVERLAY + 1;
+    v.setGraphicSize(1285);
+    v.screenCenter();
+    v.cameras = [PlayState.instance.camCutscene];
+    extraSprites.push(v);
+
+    // 2
+    /*var group = new FunkinGroup();
+    group.scrollFactor.set(0, 0);
+    group.zIndex = Z_OVERLAY;
+    //group.screenCenter();
+    group.cameras = [PlayState.instance.camHUD];
+    group.x += outroGroupPos[0];
+    group.y += outroGroupPos[1];
+    group.refresh();*/
+
+    var p1:FunkinSprite = FunkinSprite.create(0, 0);
+    p1.loadGraphic(Paths.image('dialogue/special/outroFirst', 'shared'));
+    p1.cameras = [PlayState.instance.camHUD];
+    p1.zIndex = Z_OVERLAY + 1;
+    var p2:FunkinSprite = FunkinSprite.create(0, p1.y + p1.height);
+    p2.loadGraphic(Paths.image('dialogue/special/outroSecond', 'shared'));
+    p2.cameras = [PlayState.instance.camHUD];
+    p2.zIndex = Z_OVERLAY + 3;
+    extraSprites.push(p1);
+    extraSprites.push(p2);
+    // group.add(p1);
+    // group.add(p2);
+
+    // extraSprites.push(group);
+
+    PlayState.instance.add(v);
+    PlayState.instance.add(otherOverlay);
+    // PlayState.instance.add(group);
+    PlayState.instance.add(p1);
+    PlayState.instance.add(p2);
+    PlayState.instance.refresh();
+
+    repositionOutroSprites();
+  }
+
+  private function repositionOutroSprites(?x:Float = 0, ?y:Float = 0):Void {
+    if (extraSprites.length == 0) return;
+
+    var p1:FunkinSprite = extraSprites[2];
+    p1.screenCenter(0x01);
+    p1.x += outroGroupPos[0] + x;
+    p1.y = outroGroupPos[1] + y;
+
+    var p2:FunkinSprite = extraSprites[3];
+    p2.x = p1.x;
+    p2.y = p1.y + p1.height;
+  }
+
+  private function positionOutroSprites(state:Int, t:Float):Void {
+
+    var p1:FunkinSprite = extraSprites[2];
+    var p2:FunkinSprite = extraSprites[3];
+    var o:FunkinSprite = extraSprites[0];
+
+    switch (state) {
+      case 1:
+        FlxTween.cancelTweensOf(p1);
+        FlxTween.cancelTweensOf(p2);
+
+        updateOutroZoom([p1, p2]);
+        repositionOutroSprites(150, -4470);
+
+        FlxTween.tween(p2, { x: p2.x - 361 }, t);
+        FlxTween.tween(o, { alpha: 1 }, 3, { startDelay: t - 3 });
+      case 2:
+        FlxTween.cancelTweensOf(o);
+        if (o.alpha > 0.1) {
+          FlxTween.cancelTweensOf(p1);
+          FlxTween.cancelTweensOf(p2);
+
+          updateOutroZoom([p1, p2]);
+          repositionOutroSprites(0, -2350);
+
+          FlxTween.tween(p2, { y: p2.y - 1035 }, t);
+          FlxTween.tween(o, { alpha: 0 }, 3);
+          FlxTween.tween(o, { alpha: 1 }, 3, { startDelay: t - 3 });
+        } else {
+          FlxTween.tween(o, { alpha: 1 }, 3, { onComplete: function(_) {
+            positionOutroSprites(2, t);
+          }});
+        }
+      case 3:
+        FlxTween.cancelTweensOf(o);
+        if (o.alpha > 0.1) {
+          FlxTween.cancelTweensOf(p1);
+          FlxTween.cancelTweensOf(p2);
+
+          updateOutroZoom([p1, p2]);
+          repositionOutroSprites(0, -250);
+
+          FlxTween.tween(p1, { y: p1.y + 5410 }, t);
+          FlxTween.tween(p2, { y: p2.y + 5410 }, t);
+          FlxTween.tween(o, { alpha: 0 }, 3);
+          FlxTween.tween(o, { alpha: 1 }, 3, { startDelay: t - 3 });
+        } else {
+          FlxTween.tween(o, { alpha: 1 }, 3, { onComplete: function(_) {
+            positionOutroSprites(3, t);
+          }});
+        }
+      default:
+    }
+  }
+
+  private function updateOutroZoom(sprites:Array<FunkinSprite>):Void {
+    for (spr in sprites) {
+      if (spr == null) continue;
+      spr.scale.set(outroZoom, outroZoom);
+      spr.updateHitbox();
+    }
+    repositionOutroSprites();
   }
 
   private function resetIntroText(?dontCenter:Bool = false):Void {

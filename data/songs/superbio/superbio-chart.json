@@ -47,7 +47,16 @@
     {"t": 193411.764705882, "e": "FocusCamera", "v": {"char": "1"}},
     {"t": 204705.882352941, "e": "FocusCamera", "v": {"char": "0"}},
     {"t": 216000, "e": "FocusCamera", "v": {"char": "1"}},
-    {"t": 221647.058823529, "e": "FocusCamera", "v": {"char": "0"}}
+    {"t": 221647.058823529, "e": "FocusCamera", "v": {"char": "0"}},
+  {
+   "t": 221647.058823529,
+   "e": "SetCameraBop",
+   "v": {
+      "rate": 0,
+      "intensity": 0,
+      "offset": 0
+    }
+  }
   ],
   "notes": {
     "easy": [

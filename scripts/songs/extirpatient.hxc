@@ -673,6 +673,8 @@ class ExtirpatientSong extends Song
       if (PlayState.instance.camSubtitles != null) PlayState.instance.camSubtitles.visible = false;
 
       new FlxTimer().start(0.5, function(tmr) {
+        FunkinMemory.cacheTexture(Paths.image('dialogue/special/outroFirst', "shared"));
+        FunkinMemory.cacheTexture(Paths.image('dialogue/special/outroSecond', "shared"));
         var rd = ModuleHandler.getModule('RetroDialogue');
         rd.scriptCall('startDialogue', ['extirpatient story', 'post', function() {
             rd.scriptCall('startDialogue', ['outro', 'pre', function() {
