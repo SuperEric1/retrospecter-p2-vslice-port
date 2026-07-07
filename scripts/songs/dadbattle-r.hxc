@@ -13,6 +13,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.FunkinMemory;
 import funkin.Conductor;
 import funkin.graphics.FunkinSprite;
 import funkin.mobile.input.ControlsHandler;
@@ -67,6 +68,8 @@ class DadBattleRSong extends Song
     }
 
     if (!hasCreatedSprites) {
+      FunkinMemory.cacheTexture(Paths.image('dialogue/special/bar', "shared"));
+
       hasCreatedSprites = true;
       var gradientWidth = FlxG.width - ((isMobile && FullScreenScaleMode.gameCutoutSize.x <= 0) ? 300 : (FullScreenScaleMode.gameCutoutSize.x / 2));
 
@@ -254,7 +257,10 @@ class DadBattleRSong extends Song
       hasPlayedEndCutscene = true;
 
       var rd = ModuleHandler.getModule('RetroDialogue');
-      rd.scriptCall('startDialogue', ['dadbattle story', 'post', null]);
+      rd.scriptCall('startDialogue', ['dadbattle story', 'post', function() {
+        PlayState.instance.mayPauseGame = true;
+        PlayState.instance.endSong();
+      }]);
     }
   }
 

@@ -71,6 +71,8 @@ class RetroDialogue extends Module
   private var inputCooldown:Float = 0;
   private var currentUnableToPress:Bool = false;
   private var currentCantSkip:Bool = false;
+  private var doNOTskip:Bool = false;
+  private var ultraSpecialInput:Bool = false;
   private var currentAutoConfirm:Bool = false;
   private var currentSoundPath:String = '';
   private var curResetIntroText:Bool = false;
@@ -270,6 +272,7 @@ class RetroDialogue extends Module
     currentSoundPath = '';
     fadeToNextLine = 0;
     currentSection = section;
+    doNOTskip = false;
     curSongId = PlayState.instance?.currentChart?.song?.id ?? '';
     penduThing = false;
     if (section == 'pre') {
@@ -312,6 +315,12 @@ class RetroDialogue extends Module
         break;
       }
     }
+
+    for (spr in extraSprites) {
+      if (spr == null) continue;
+      spr.destroy();
+    }
+    extraSprites = [];
 
     if (!hasCreatedSprites) createSprites();
     showAll();
@@ -653,6 +662,10 @@ class RetroDialogue extends Module
     nameTextBG.visible = true;
     dialogueText.visible = true;
     skipHintText.visible = true;
+    for (spr in extraSprites) {
+      if (spr == null) continue;
+      spr.visible = true;
+    }
   }
 
   private function hideAll():Void {
@@ -673,6 +686,10 @@ class RetroDialogue extends Module
     skipHintText.visible = false;
     continueHintText.visible = false;
     escButton.visible = false;
+    for (spr in extraSprites) {
+      if (spr == null) continue;
+      spr.visible = false;
+    }
   }
 
   private function applyLine(line:StringMap<String>):Void
@@ -958,6 +975,7 @@ class RetroDialogue extends Module
     currentUnableToPress = line.exists('unableToPress') && line.get('unableToPress') == 'true';
     currentCantSkip = line.exists('cantSkip') && line.get('cantSkip') == 'true';
     currentAutoConfirm = line.exists('autoConfirm') && line.get('autoConfirm') == 'true';
+    ultraSpecialInput = line.exists('ultraSpecialInput') && line.get('ultraSpecialInput') == 'true';
     skipNextFadeOut = line.exists('abrupt') && line.get('abrupt') == 'true';
     fadeToNextLine = line.exists('usingIntroInput') ? Std.parseFloat(line.get('usingIntroInput')) : 0;
 
@@ -1114,6 +1132,77 @@ class RetroDialogue extends Module
       extraSprites = [];
     }
 
+    if (line.exists('fadeMixterImg')) {
+      createMixterSprites();
+      var type:String = parseArray(line.get('fadeMixterImg'), 0);
+      var t:Float = parseArray(line.get('fadeMixterImg'), 1);
+      boxSprite.visible = false;
+      innerSprite.visible = false;
+
+      if (type == '"in"') {
+        for (spr in extraSprites) {
+          if (spr == null) continue;
+          FlxTween.tween(spr, { alpha: 1 }, t);
+        }
+      } else if (type == '"out"') {
+        for (spr in extraSprites) {
+          if (spr == null) continue;
+          FlxTween.tween(spr, { alpha: 0 }, t);
+        }
+      }
+    }
+    if (line.exists('end') && line.get('end') == 'true') {
+      var p:FunkinSprite = FunkinSprite.create(0, 0);
+      p.loadGraphic(Paths.image('dialogue/special/finalArt', 'shared'));
+      p.zIndex = Z_SKIP + 2;
+      p.alpha = 1;
+      p.setGraphicSize(1280);
+      p.screenCenter();
+      p.cameras = [PlayState.instance.camCutscene];
+      PlayState.instance.add(p);
+      extraSprites.push(p);
+
+      var p2:FunkinSprite = FunkinSprite.create(0, 0);
+      p2.loadGraphic(Paths.image('dialogue/special/end', 'shared'));
+      p2.zIndex = Z_SKIP + 5;
+      p2.alpha = 0;
+      p2.scale.set(0.7, 0.7);
+      p2.updateHitbox();
+      p2.cameras = [PlayState.instance.camCutscene];
+      //p2.x = (FullScreenScaleMode.gameCutoutSize.x / 2) + 20;
+      p2.y = FlxG.height - p2.height /*- 20*/;
+      PlayState.instance.add(p2);
+      extraSprites.push(p2);
+
+      PlayState.instance.refresh();
+    }
+    if (line.exists('endDarkness')) {
+      if (extraSprites.length == 0) {
+        var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+        otherOverlay.alpha = 0;
+        otherOverlay.scrollFactor.set(0, 0);
+        otherOverlay.screenCenter();
+        otherOverlay.zIndex = Z_SKIP + 15;
+        otherOverlay.cameras = [PlayState.instance.camCutscene];
+        PlayState.instance.add(otherOverlay);
+        extraSprites.push(otherOverlay);
+        PlayState.instance.refresh();
+      }
+
+      var a:String = parseArray(line.get('endDarkness'), 1);
+      var t:String = parseArray(line.get('endDarkness'), 2);
+      FlxTween.cancelTweensOf(extraSprites[0]);
+      FlxTween.tween(extraSprites[0], { alpha: a }, t);
+      doNOTskip = true;
+    }
+    if (line.exists('fadeEndText')) {
+      var a:String = parseArray(line.get('fadeEndText'), 0);
+      var t:String = parseArray(line.get('fadeEndText'), 1);
+      FlxTween.cancelTweensOf(extraSprites[2]);
+      FlxTween.tween(extraSprites[2], { alpha: a }, t);
+      doNOTskip = true;
+    }
+
     if (line.exists('startSatisfracture') && line.get('startSatisfracture') == 'true') startSatisfractureEvent();
     if (line.exists('izzyEvent') && line.get('izzyEvent') == 'true') izzyEvent();
     if (line.exists('hivemineEvent')) hivemineEvent();
@@ -1121,6 +1210,7 @@ class RetroDialogue extends Module
     if (line.exists('playAmbienceThemeFrom')) playAmbienceThemeFrom(line.get('playAmbienceThemeFrom'), !line.exists('disableAmbienceLoop'));
     if (line.exists('ambienceFadeVolume') && ambienceTheme != null) ambienceTheme.fadeIn(3, 0, Std.parseFloat(line.get('ambienceFadeVolume')));
     if (line.exists('fadeMusicVolume') && ambienceTheme != null) ambienceTheme.fadeOut(3, Std.parseFloat(line.get('fadeMusicVolume')));
+    if (line.exists('slowlyFadeMusic') && ambienceTheme != null) ambienceTheme.fadeOut(Std.parseFloat(line.get('slowlyFadeMusic')), 0);
     if (line.exists('changeMusicVolume') && ambienceTheme != null) ambienceTheme.volume = Std.parseFloat(line.get('changeMusicVolume'));
 
     if (line.exists('hideEverythingExceptOverlay') && line.get('hideEverythingExceptOverlay') == 'true') {
@@ -1374,13 +1464,13 @@ class RetroDialogue extends Module
       return;
     }
 
-    if (pressAccept) {
-      if (isTyping && !currentUnableToPress) {
+    if (pressAccept && (!currentUnableToPress || (ultraSpecialInput))) {
+      if (isTyping) {
         displayedChars = fullText.length;
         dialogueText.text = fullText;
         if (secTextVisible) secDialogueText.text = fullText;
         isTyping = false;
-      } else if (!currentUnableToPress) { nextLine(); }
+      } else if (!doNOTskip || ultraSpecialInput) { nextLine(); }
     }
   }
 
@@ -1734,6 +1824,30 @@ class RetroDialogue extends Module
     p2.cameras = [PlayState.instance.camCutscene];
     PlayState.instance.add(p2);
     extraSprites.push(p2);
+
+    PlayState.instance.refresh();
+  }
+
+  private function createMixterSprites():Void {
+    if (extraSprites.length > 1) return;
+    var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+    otherOverlay.alpha = 0;
+    otherOverlay.scrollFactor.set(0, 0);
+    otherOverlay.screenCenter();
+    otherOverlay.zIndex = Z_OVERLAY + 1;
+    otherOverlay.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(otherOverlay);
+    extraSprites.push(otherOverlay);
+
+    var p:FunkinSprite = FunkinSprite.create(0, 0);
+    p.loadGraphic(Paths.image('dialogue/special/bar', 'shared'));
+    p.zIndex = Z_OVERLAY + 2;
+    p.alpha = 0;
+    p.setGraphicSize(1285);
+    p.screenCenter();
+    p.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p);
+    extraSprites.push(p);
 
     PlayState.instance.refresh();
   }

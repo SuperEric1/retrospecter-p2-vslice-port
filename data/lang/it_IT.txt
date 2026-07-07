@@ -1,102 +1,106 @@
 # Translation File - Italiano (en_US)
-# Author: your credits here (add more comments if u want)
+# Author: MatDenFunnyMan (aka matt the 2nd italian)
 # Format: key = "value"
 # Lines starting with # are comments and will be ignored
 # Use \n for line breaks and \" for quotes inside text
 
+# NOTE: Some words haven't been changed due to missing translations, or the ones that exist are too ambiguous to be used and had to be changed :P
+
 # - GAMEPLAY -
 stats.accuracy = "ACC: {0}%"
-stats.misses = "MISSES: {0}"
-stats.rating = "RANK:"
-stats.timeLeft = "Time Left"
-stats.card.artist = "By {0}"
-stats.card.remix = "Remix by {0}"
-stats.card.original = "Original by {0}"
-stats.card.charter = "Charted by {0}"
+stats.misses = "MISS: {0}"
+stats.rating = "GRADO:"
+stats.timeLeft = "Tempo Rimanente"
+stats.card.artist = "Di {0}"
+stats.card.remix = "Remix di {0}"
+stats.card.original = "Originale di {0}"
+stats.card.charter = "Chart di {0}"
 
-judgement.sick = "SICK!!"
-judgement.good = "GOOD!"
-judgement.bad = "BAD"
-judgement.shit = "SHIT"
+judgement.sick = "SUPER!!"
+judgement.good = "BENE!"
+judgement.bad = "MID"
+judgement.shit = "MERDA"
 judgement.miss = "MISS"
 
-instruction.chainNote = "MASH TO BREAK FREE"
-instruction.coinNote = "COLLECT COINS TO EARN MORE MONEY!"
+instruction.chainNote = "PREMI RIPETUTAMENTE PER LIBERARTI"
+instruction.coinNote = "COLLEZIONA MONETE PER GUADAGNAR PIU' DENARO!"
 
-nightflaid.static.text.1 = "RESULTS PENDING"
-nightflaid.static.text.2 = "TESTS INCONCLUSIVE"
-nightflaid.static.text.3 = "REQUIRES MORE\n DATA"
-nightflaid.static.text.4 = "SHE'S SAFE"
-nightflaid.static.text.5 = "STAY A LITTLE LONGER,\n WON'T YOU?"
-nightflaid.static.text.6 = "CHEATING DEATH OR\n CHEATING LIFE?"
-nightflaid.static.text.7 = "CONTACTING MIGHTFLAID"
-nightflaid.static.text.8 = "INTRIGUING SPECIMEN"
-nightflaid.static.rareText.1 = "WAR'S ALWAYS THE SAME"
+nightflaid.static.text.1 = "RISULTATI IN ATTESA"
+nightflaid.static.text.2 = "TEST INCONCLUSI"
+nightflaid.static.text.3 = "SERVONO PIU'\n DATI"
+nightflaid.static.text.4 = "LEI E' AL SICURO"
+nightflaid.static.text.5 = "RIMANI ANCORA UN ATTIMO,\n NON VORRESTI?"
+nightflaid.static.text.6 = "SFUGGI ALLA MORTE\n O VIVI A META'?"
+nightflaid.static.text.7 = "CONTATTO NIGHTFLAID"
+nightflaid.static.text.8 = "UN SOGGETTO INTRIGANTE"
+nightflaid.static.rareText.1 = "WAR E' SEMPRE IL SOLITO"
 
-dialogue.text.press = "Press {0}"
-dialogue.text.continue = "({0} to continue )"
-dialogue.text.skip = "{0} to Skip"
-cutscene.text.skip = "Skip [{0}]"
-action.button.pause = "Pause Button"
-action.button.tap = "Tap"
+dialogue.text.press = "Premi {0}"
+dialogue.text.continue = "( {0} per continuare )"
+dialogue.text.skip = "{0} per saltare"
+cutscene.text.skip = "Salta [{0}]"
+action.button.pause = "Bottone Pausa"
+action.button.tap = "Tocca"
 
-game.credits.role.retro = "Director/Writer/Co-Musician"
-game.credits.role.ace = "Main Musician/SFX"
-game.credits.role.artists = "Artists"
-game.credits.role.animators = "Animators"
-game.credits.role.programmers = "Programmers"
-game.credits.role.charters = "Charters"
-game.credits.role.voiceactors = "Voice Actors"
+game.credits.role.retro = "Regista, sceneggiatore e co-musicista"
+game.credits.role.ace = "Musicista principale/SFX (Effetti sonori)"
+game.credits.role.artists = "Artisti"
+game.credits.role.animators = "Animatori"
+game.credits.role.programmers = "Programmatori"
+game.credits.role.charters = "Charter"
+game.credits.role.voiceactors = "Doppiatori"
 
 # - OPTIONS -
-options.mod_desc = "Below, you can customize you gameplay experience in the port.\nFan port by SuperEric (youtube.com/@super_eric)"
+options.mod_desc = "Sotto puoi personalizzare l'esperienza gameplay per il port.\nFanmade port di SuperEric (youtube.com/@super_eric)"
 
-options.language = "Language"
-options.language.desc = "Choose the mod's language. This option also changes subtitles! (Exit the options menu to apply)"
-options.language.signText = "HI"
+options.language = "Lingua"
+options.language.desc = "Seleziona la lingua della mod. Questa opzione include i sottotitoli! (Esci dalle impostazioni per applicare)"
+options.language.signText = "CIAO"
 
-options.modcharts = "Modcharts"
-options.modcharts.desc = "Toggles modcharts.\n(Strum arrows shaking, spinning around, moving, etc.)"
+options.modcharts = "Modchart"
+options.modcharts.desc = "Attiva/disattiva modcharts.\n(Tremolio note strum, rotazione, movimento, etc.)"
 
-options.mechanics = "Mechanics"
-options.mechanics.desc = "Toggles hazard note mechanics for all songs that use them."
+# NOTE: "Hazard note" has been changed to "Note speciali". There isn't a legit italian translation for the term, same as strum notes or charts/modcharts lol
 
-options.transform_notes = "Transform Hazard Notes"
-options.transform_notes.desc = "Transforms hazard notes into normal notes. Note Mechanics needs to be toggled on for this option to work."
+options.mechanics = "Meccaniche Note"
+options.mechanics.desc = "Attiva/disattiva le meccaniche delle\n note speciali per tutte le canzoni che le usano."
 
-options.checkpoints = "Checkpoints"
-options.checkpoints.desc = "Allows to automatically go back to a certain point of the song when retrying."
+options.transform_notes = "Trasforma Note Speciali"
+options.transform_notes.desc = "Trasforma le note speciali in note normali. L'opzione 'Meccaniche Note' dev'essere attiva!"
 
-options.shaders = "Shaders"
-options.shaders.desc = "Toggles shaders for certain sprites and events.\n(Disabling recommended for lower-end phones.)"
+options.checkpoints = "Checkpoint"
+options.checkpoints.desc = "Permette di tornare indietro ad un certo punto della canzone in automatico quando si ritenta."
 
-options.shake = "Screen Shake"
-options.shake.desc = "Shakes Screen during certain events. (ie. Zerktro's singing.)"
+options.shaders = "Shader"
+options.shaders.desc = "Abilita/disabilita shaders per determinate sprite o eventi.\n(Consigliato disabilitarle per dispositivi vecchi)"
 
-options.song_timer = "Song Length Timer"
-options.song_timer.desc = "When enabled, display the song length in the corner of the screen during gameplay. (Not recommended for Story Mode.)"
+options.shake = "Tremolio Schermo"
+options.shake.desc = "Scuote l'intero schermo in certi eventi. (Es. Quando Zerktro canta)"
 
-options.suggestive = "Suggestive Content"
-options.suggestive.desc = "When disabled, certain suggestive details/animations will be removed from Sakuroma's final song."
+options.song_timer = "Timer Durata"
+options.song_timer.desc = "Se abilitato, mostra durata canzone nell'angolo dello schermo durante gameplay. (NON consigliato per Modalità Storia)"
 
-options.custom_menus = "Custom Menus"
-options.custom_menus.desc = "Enables the mod's custom menus. Disable this if you want the original FNF menus back."
+options.suggestive = "Contenuto Suggestivo"
+options.suggestive.desc = "Se disabilitato, alcuni dettagli e animazioni suggestive verranno rimosse dall'ultima canzone di Sakuroma."
+
+options.custom_menus = "Menu Personalizzati"
+options.custom_menus.desc = "Abilita i menu personalizzati della mod. Se vuoi i menu di FNF originali, disabilita questa opzione."
 
 # - MISC -
-warnings.language_select.title = "LANGUAGE SELECTION"
-warnings.language_select.desc = "Select your preferred language below.\nThe entire mod experience, including <y>all text<y>, <y>menus<y>, and <y>dialogs<y>, will be translated accordingly.\nYour choice will be remembered, and you can always change it in the options menu."
+warnings.language_select.title = "SELEZIONE LINGUA"
+warnings.language_select.desc = "Seleziona la tua lingua preferita.\nL'intera mod, includendo <y>testo<y>, <y>menu<y>, e <y>dialoghi<y>, verranno tradotti come si consueto.\nLa tua scelta verrà memorizzata e potrai sempre cambiarla nel menu Impostazioni (Options)."
 
-warnings.generic.title = "DISCLAIMER"
-warnings.generic.desc = "This is a <y>fan-made<y> mobile port of Vs. RetroSpecter - Part Two: Infernadise.\nTeam Respec owns the Infernadise universe and the original mod.\n\n Infernadise is also not tied to any actual religions or beliefs. Demons are just cool.\n\n Also, this mod contains <y>flashing lights/images<y>\n(which can be <y>disabled<y> in the options)."
+warnings.generic.title = "ATTENZIONE"
+warnings.generic.desc = "Questo port mobile (V-Slice) di Vs. RetroSpecter - Parte Due: Infernadise è <y>fan-made<y>.\nTeam Respec possiede l'universo Infernadise e la mod originale.\n\n Infernadise non è affiliato a nessuna religione o credenze. I demoni sono semplicemente fighi.\n\n Inoltre, questa mod contiene <y>luci/immagini lampeggianti<y> (che possono essere rimosse nelle impostazioni)."
 
-warnings.suggestive.title = "SUGGESTIVE CONTENT WARNING"
-warnings.suggestive.desc = "Sakuroma's final song has <m>very suggestive<m> poses, voice lines, and elements in the background.\n\nWould you like to <m>keep<m> these <m>enabled<m> or <m>disable<m> them? (This can be changed in the options menu at any point.)"
-warnings.button_text_keep = "KEEP ENABLED"
-warnings.button_text_disable = "DISABLE"
+warnings.suggestive.title = "AVVERTIMENTO CONTENUTO SUGGESTIVO"
+warnings.suggestive.desc = "La canzone finale di Sakuroma contiene pose, frasi ed elementi in background <m>molto suggestivi<m>.\n\nVorresti <m>tenerli attivi<m> o preferisci <m>disabilitarli?<m> (Questa opzione è sempre cambiabile nelle impostazioni)"
+warnings.button_text_keep = "LASCIA ATTIVO"
+warnings.button_text_disable = "DISABILITA"
 
-warnings.continue_text = "I UNDERSTAND AND WISH TO CONTINUE"
-warnings.proceed_text = "PROCEED"
-warnings.dont_show_again = "DON'T SHOW THIS DISCLAIMER AGAIN"
+warnings.continue_text = "HO CAPITO E DESIDERO CONTINUARE"
+warnings.proceed_text = "PROCEDI"
+warnings.dont_show_again = "NON MOSTRARE PIU' IL DISCLAIMER"
 
-titlescreen.not_associated.1 = "NOT ASSOCIATED"
-titlescreen.not_associated.2 = "WITH"
+titlescreen.not_associated.1 = "NON ASSOCIATO"
+titlescreen.not_associated.2 = "CON"
