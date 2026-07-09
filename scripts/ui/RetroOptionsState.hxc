@@ -1226,6 +1226,7 @@ class RetroOptionsState extends Module
         enumValues: [
           "en_US" => "en_US",
           "pt_BR" => "pt_BR",
+          "es_ES" => "es_ES",
           "it_IT" => "it_IT",
         ],
         defaultValue: Save.instance.modOptions.get("retroLanguage") ?? "en_US",
@@ -1245,13 +1246,13 @@ class RetroOptionsState extends Module
         name: RetroLanguage.t("options.mechanics"),
         description: RetroLanguage.t("options.mechanics.desc"),
       },
-      {
+      /*{
         id: "retroNotesTransform",
         type: OptionType.CHECKBOX,
         defaultValue: false,
         name: RetroLanguage.t("options.transform_notes"),
         description: RetroLanguage.t("options.transform_notes.desc"),
-      },
+      },*/
       {
         id: "retroCheckpoints",
         type: OptionType.CHECKBOX,

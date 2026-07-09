@@ -33,10 +33,10 @@ class RetroTitleWarnings extends MusicBeatState
   private var SOUND_VOLUME:Float = 0.7;
 
   private var LANGUAGES:Array<String> = [
-    "en_US", "pt_BR", "it_IT"//, "es_ES", "fr_FR", "de_DE", "ru_RU"
+    "en_US", "pt_BR", "es_ES", "it_IT"//, "fr_FR", "de_DE", "ru_RU"
   ];
   private var LANGUAGE_NAMES:Array<String> = [
-    "English", "Português (Brasil)", "Italiano"//, "Español", "Français", "Deutsch", "Русский"
+    "English", "Português (Brasil)", "Español", "Italiano"//, "Français", "Deutsch", "Русский"
   ];
 
   private var COLOR_YELLOW:FlxColor = FlxColor.YELLOW;

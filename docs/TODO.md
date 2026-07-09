@@ -18,11 +18,11 @@
 - [ ] Review mechanics for better accuracy
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
-- [ ] Superbio, Deadfine, Gutlery, Macovet, Slowstopper, Waitkeeper, Outro (extirpatient) "finish" dialogues translations
-- [ ] Superbio camerabop and review english translation text for nightflaid event thing
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] DadBattle credits and no death on story mode
-- [ ] Spanish translation
+- [X] Spanish translation
+- [X] Superbio, Deadfine, Gutlery, Macovet, Slowstopper, Waitkeeper, Outro (extirpatient) "finish" dialogues translations
+- [X] Superbio camerabop and review english translation text for nightflaid event thing
 - [X] Sweet talk intro instruction
 - [X] Make dozirc sleep in the options menu after being inactive for some time
 - [X] Scrollspeed changes for the third strumline
