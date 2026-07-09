@@ -195,6 +195,7 @@ class DeadfineSong extends Song
       });
 
       hasPlayedEndDialogue = true;
+      turnOff = true;
       event.cancel();
     }
   }
