@@ -251,6 +251,41 @@ class RetroUtil extends Module
     //if (hudZoom != 0 || hudZoom != null) tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
   }
 
+  public static function hasBeatenWrath():Bool
+  {
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
+    {
+      if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) > 0) return true;
+    }
+
+    return false;
+  }
+
+  public static function hasBeatenLust():Bool
+  {
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
+    {
+      if ((Save.instance.getLevelScore('70-lust', diff)?.score ?? 0) > 0) return true;
+    }
+
+    return false;
+  }
+
+  public static function hasBeatenOthers():Bool
+  {
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
+    {
+      if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) <= 0) return false;
+      if ((Save.instance.getLevelScore('20-pride', diff)?.score ?? 0) <= 0) return false;
+      if ((Save.instance.getLevelScore('30-gluttony', diff)?.score ?? 0) <= 0) return false;
+      if ((Save.instance.getLevelScore('40-greed', diff)?.score ?? 0) <= 0) return false;
+      if ((Save.instance.getLevelScore('50-envy', diff)?.score ?? 0) <= 0) return false;
+      if ((Save.instance.getLevelScore('60-sloth', diff)?.score ?? 0) <= 0) return false;
+    }
+
+    return true;
+  }
+
   /* --------------------------------------------------- */
 
   override function onSongRetry(event:ScriptEvent):Void

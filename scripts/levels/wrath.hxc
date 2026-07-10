@@ -1,5 +1,8 @@
 import funkin.ui.story.Level;
 import funkin.save.Save;
+import funkin.ui.freeplay.FreeplayState;
+
+import supereric.retrospecter.modules.RetroUtil;
 
 class WrathLevel extends Level
 {
@@ -13,15 +16,27 @@ class WrathLevel extends Level
     return true;
   }
 
+  override function getSongs():Array<String>
+  {
+    var list:Array<String> = super.getSongs();
+
+    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !RetroUtil.hasBeatenWrath())
+    {
+      list.remove("spectral");
+      list.remove("apocalyptro");
+      list.remove("catastrofiend");
+    }
+
+    return list;
+  }
+
   override function getSongDisplayNames(difficultyId:String):Array<String>
   {
-    if (Save.instance.hasBeatenLevel('10-wrath'))
-    {
+    if (RetroUtil.hasBeatenWrath()) {
       return ["Satisfracture", "Spectral", "Apocalyptro", "Catastrofiend"];
     }
-    else
-    {
-      return ["?"];
+    else {
+      return ["Satisfracture", "???"];
     }
   }
 }
