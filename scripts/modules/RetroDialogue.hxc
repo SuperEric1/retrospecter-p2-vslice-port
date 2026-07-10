@@ -1016,6 +1016,27 @@ class RetroDialogue extends Module
       FlxTween.tween(PlayState.instance.camCutscene, { zoom: PlayState.instance.camCutscene.zoom + zoom }, time);
     }
 
+    if (line.exists('startIntro')) {
+      if (extraSprites.length < 1) createIntroSprites();
+      var o:FunkinSprite = extraSprites[0];
+      var title:FunkinSprite = extraSprites[1];
+      var beginFade:Float = parseArray(line.get('startIntro'), 0);
+      var scaleTime:Float = parseArray(line.get('startIntro'), 1);
+      var fadeoutDelay:Float = parseArray(line.get('startIntro'), 2);
+      var fadeoutTime:Float = parseArray(line.get('startIntro'), 3);
+
+      title.scale.set(0.3, 0.3);
+
+      FlxTween.tween(o, { alpha: 0 }, beginFade);
+
+      FlxTween.tween(title.scale, { x: 0.7, y: 0.7 }, scaleTime, { ease: FlxEase.sineOut });
+
+      FlxTween.tween(o, { alpha: 1 }, fadeoutTime, { startDelay: fadeoutDelay });
+
+      innerSprite.visible = false;
+      boxSprite.visible = false;
+    }
+
     if (line.exists('skipPendu') && line.get('skipPendu') == 'true') {
       if (curSongId == 'waitkeeper') createPenduLight();
       innerSprite.visible = false;
@@ -1601,6 +1622,13 @@ class RetroDialogue extends Module
 
   private function startSatisfractureEvent():Void
   {
+    for (spr in extraSprites) {
+      if (spr == null) continue;
+      FlxTween.cancelTweensOf(spr);
+      spr.destroy();
+    }
+    extraSprites = [];
+
     PlayState.instance.camCutscene.fade(FlxColor.BLACK, 0.7, true, function() {
       skipHintText.visible = true;
     }, true);
@@ -1844,6 +1872,27 @@ class RetroDialogue extends Module
     p.zIndex = Z_OVERLAY + 2;
     p.alpha = 0;
     p.setGraphicSize(1285);
+    p.screenCenter();
+    p.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(p);
+    extraSprites.push(p);
+
+    PlayState.instance.refresh();
+  }
+
+  private function createIntroSprites():Void {
+    if (extraSprites.length > 1) return;
+    var otherOverlay = FunkinSprite.create(0, 0).makeSolidColor(Std.int(FlxG.width * 1.2), Std.int(FlxG.height * 1.2), FlxColor.BLACK);
+    otherOverlay.scrollFactor.set(0, 0);
+    otherOverlay.screenCenter();
+    otherOverlay.zIndex = Z_OVERLAY + 5;
+    otherOverlay.cameras = [PlayState.instance.camCutscene];
+    PlayState.instance.add(otherOverlay);
+    extraSprites.push(otherOverlay);
+
+    var p:FunkinSprite = FunkinSprite.create(0, 0);
+    p.loadGraphic(Paths.image('dialogue/special/introPre', 'shared'));
+    p.zIndex = Z_OVERLAY + 1;
     p.screenCenter();
     p.cameras = [PlayState.instance.camCutscene];
     PlayState.instance.add(p);
