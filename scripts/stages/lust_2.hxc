@@ -16,6 +16,7 @@ import funkin.play.stage.StageProp;
 import funkin.play.character.BaseCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.events.ScriptEvent;
+import funkin.modding.module.ModuleHandler;
 import funkin.Paths;
 
 class LustTwoStage extends Stage
@@ -54,6 +55,8 @@ class LustTwoStage extends Stage
     super.onCreate(event);
     var songId = PlayState.instance?.currentChart?.songName ?? '';
     isHardAche = songId.toLowerCase() == 'hard ache';
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['saku']]);
 
     // Background
     bg = makeSprite('bg', 'Background', bgX, bgY);

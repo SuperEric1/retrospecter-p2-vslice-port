@@ -24,6 +24,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.play.notes.Strumline;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class EgobrainiacSong extends Song
 {
@@ -40,6 +41,7 @@ class EgobrainiacSong extends Song
   var ogLaneX:Float;
   var ogOppLaneX:Float;
   var ogOppLaneY:Float;
+  var deaths:Int = 0;
 
   var izzyPercent = 14;
   var didLastThing:Bool = false;
@@ -111,6 +113,8 @@ class EgobrainiacSong extends Song
   public function onStepHit(event) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
     var downscroll = Preferences.downscroll;
     if(isMobile) downscroll = true;
     final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
@@ -261,6 +265,7 @@ class EgobrainiacSong extends Song
 		didLastThing = false;
     hasPlayedDialogue = false;
     hasPlayedCutscene = false;
+    deaths = 0;
 	}
 
 	private function resetTweens()
@@ -316,6 +321,15 @@ class EgobrainiacSong extends Song
 			}
 		}
 	}
+
+  override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    deaths += 1;
+
+    if (deaths >= 5) RetroAchievements.award('pride-lose5', true, true);
+  }
+
   function onSongRetry(event:ScriptEvent)
   {
     super.onSongRetry(event);
@@ -375,6 +389,7 @@ class EgobrainiacSong extends Song
 
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+    deaths = 0;
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['izzy']);
   }

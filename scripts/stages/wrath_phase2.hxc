@@ -21,23 +21,19 @@ import flixel.graphics.FlxGraphic;
 import StringTools;
 import funkin.audio.FunkinSound;
 import openfl.geom.ColorTransform;
-import funkin.modding.module.ModuleHandler;
 import funkin.play.PlayStatePlaylist;
 import funkin.effects.IntervalShake;
 import funkin.Preferences;
 
 class WrathPhase2Stage extends Stage
 {
-  // Constants
-  static inline var HIDDEN:Float = 0;
-
   // Variables
   var hasCreatedStage:Bool = false;
   var hasRefreshedProps:Bool = false;
   var isSpectral:Bool = false;
   var isEctospasm:Bool = false;
   var isWideScreen:Bool = true;
-  var optimize:Bool = false; // Lógica de otimização (false = criar todos os props)
+  var optimize:Bool = false;
 
   // Cutscene variables
   var hasPlayedInGameCutscene:Bool = false;
@@ -266,7 +262,7 @@ class WrathPhase2Stage extends Stage
         flamesChange.scrollFactor.set(0.7, 0.7);
         flamesChange.x += wrathXAdjust - 250;
         flamesChange.y += wrathYAdjust + 200;
-        flamesChange.alpha = HIDDEN;
+        flamesChange.alpha = 0;
         flamesChange.animation.play('blueFlame');
         flamesChange.antialiasing = false;
         add(flamesChange);
@@ -384,7 +380,7 @@ class WrathPhase2Stage extends Stage
         crystal.animation.play('idle');
         crystal.antialiasing = false;
 
-        if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) crystal.alpha = HIDDEN;
+        if (PlayStatePlaylist.isStoryMode && !hasPlayedInGameCutscene) crystal.alpha = 0;
 
         add(crystal);
         crystals.push(crystal);

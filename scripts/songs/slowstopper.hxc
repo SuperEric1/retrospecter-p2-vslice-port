@@ -13,6 +13,7 @@ import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroUtil;
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class SlowstopperSong extends Song
 {
@@ -171,6 +172,20 @@ class SlowstopperSong extends Song
 
       hasPlayedCutscene = true;
       event.cancel();
+      return;
+    }
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('sloth-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('sloth-hard');
+      }
+
+      RetroAchievements.grantAc('sloth-normal');
     }
   }
 

@@ -8,6 +8,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class GutlerySong extends Song
 {
@@ -65,6 +66,20 @@ class GutlerySong extends Song
 
       hasPlayedEndDialogue = true;
       event.cancel();
+      return;
+    }
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('gluttony-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('gluttony-hard');
+      }
+
+      RetroAchievements.grantAc('gluttony-normal');
     }
   }
 

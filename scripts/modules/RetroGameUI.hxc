@@ -806,6 +806,10 @@ class RetroGameUI extends Module {
     }
   }
 
+  function getAccuracy():Float {
+    return currentAccuracy;
+  }
+
   function loadHivemineText(?color:FlxColor = null) {
     var txtColor = color ?? 0xFFee8044;
     //if (color != null) txtColor = color;

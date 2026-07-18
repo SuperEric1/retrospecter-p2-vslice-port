@@ -25,6 +25,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.ui.FullScreenScaleMode;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class SuperbioSong extends Song
 {
@@ -139,6 +140,20 @@ class SuperbioSong extends Song
 
       hasPlayedCutscene = true;
       event.cancel();
+      return;
+    }
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('pride-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('pride-hard');
+      }
+
+      RetroAchievements.grantAc('pride-normal');
     }
   }
 

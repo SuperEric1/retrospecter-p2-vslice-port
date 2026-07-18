@@ -17,6 +17,7 @@ import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class ExtirpatientSong extends Song
 {

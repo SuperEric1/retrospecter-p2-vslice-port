@@ -442,15 +442,16 @@ class CatastrofiendSong extends Song
 
     if (PlayStatePlaylist.isStoryMode) {
       var diff = PlayState.instance.currentDifficulty.toLowerCase();
-      RetroAchievements.grantAc('wrath-normal');
+
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('wrath-hell');
+      }
 
       if (diff == 'normal' || diff == 'hard') {
         RetroAchievements.grantAc('wrath-hard');
       }
 
-      if (diff == 'hard') {
-        RetroAchievements.grantAc('wrath-hell');
-      }
+      RetroAchievements.grantAc('wrath-normal');
     }
   }
 

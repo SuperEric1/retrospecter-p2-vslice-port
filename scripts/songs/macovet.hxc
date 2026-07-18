@@ -12,6 +12,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class MacovetSong extends Song
 {
@@ -110,6 +111,20 @@ class MacovetSong extends Song
 
       hasPlayedEndDialogue = true;
       event.cancel();
+      return;
+    }
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('envy-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('envy-hard');
+      }
+
+      RetroAchievements.grantAc('envy-normal');
     }
   }
 

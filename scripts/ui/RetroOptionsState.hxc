@@ -1252,14 +1252,14 @@ class RetroOptionsState extends Module
         defaultValue: false,
         name: RetroLanguage.t("options.transform_notes"),
         description: RetroLanguage.t("options.transform_notes.desc"),
-      },*/
+      },
       {
         id: "retroCheckpoints",
         type: OptionType.CHECKBOX,
         defaultValue: true,
         name: RetroLanguage.t("options.checkpoints"),
         description: RetroLanguage.t("options.checkpoints.desc"),
-      },
+      },*/
       /*{
         id: "retroDefaultNotes",
         type: OptionType.CHECKBOX,

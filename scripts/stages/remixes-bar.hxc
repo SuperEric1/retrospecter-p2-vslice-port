@@ -100,6 +100,7 @@ class RemixesBarStage extends Stage
   var animationName:String = 'anim';
   var disableAnim:Bool = false;
   var gospelSnow:Bool = false;
+  var danced:Bool = false;
 
   public function new()
   {
@@ -716,6 +717,8 @@ class RemixesBarStage extends Stage
         cameo4 = true; cameo5 = true; cameo6 = true; cameo7 = true;
         cameo8 = true; cameo9 = true; cameo10 = true; cameo11 = true;
         cameo0Spr = buildCameo('remixes/cameos/zerktro', 260, -347);
+        cameo0Spr.animation.addByIndices('danceRight', 'idle0', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], '', 24, false);
+        cameo0Spr.animation.addByIndices('danceLeft', 'idle0', [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27], '', 24, false);
         cameo0Spr.scale.set(2, 2); cameo0Spr.updateHitbox(); add(cameo0Spr);
         cameo5Spr = buildCameo('remixes/cameos/food', 1020, 456); add(cameo5Spr);
         cameo1Spr = buildCameo('remixes/cameos/tails', 170, 450); add(cameo1Spr);
@@ -956,7 +959,10 @@ class RemixesBarStage extends Stage
 
     if (curBeat % 2 == 0 && !disableAnim)
     {
-      if (cameo0 && cameo0Spr != null) cameo0Spr.animation.play('anim', true);
+      if (cameo0 && cameo0Spr != null) {
+        if (songId == 'tripletrouble-r') cameo0Spr.animation.play(danced ? 'danceLeft' : 'danceRight');
+        //else cameo0Spr.animation.play('anim', true);
+      }
       if (cameo1 && cameo1Spr != null) cameo1Spr.animation.play('anim', true);
       if (cameo2 && cameo2Spr != null) cameo2Spr.animation.play('anim', true);
       if (cameo3 && cameo3Spr != null) cameo3Spr.animation.play(animationName, true);
@@ -968,6 +974,8 @@ class RemixesBarStage extends Stage
       if (cameo9 && cameo9Spr != null) cameo9Spr.animation.play('anim', true);
       if (cameo10 && cameo10Spr != null) cameo10Spr.animation.play('anim', true);
       if (cameo11 && cameo11Spr != null) cameo11Spr.animation.play('anim', true);
+      
+      danced = !danced;
     }
   }
 
@@ -1121,6 +1129,7 @@ class RemixesBarStage extends Stage
     animationName = 'anim';
     disableAnim = false;
     animNum = 0;
+    danced = false;
   }
 
   override function onDestroy(event:ScriptEvent):Void

@@ -12,6 +12,7 @@ import funkin.save.Save;
 import Std;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class FuzzyFeelingSong extends Song
 {
@@ -137,7 +138,7 @@ class FuzzyFeelingSong extends Song
   override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
-    if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
+    //if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
 
     if (!hasPlayedEndDialogue)
     {
@@ -149,7 +150,10 @@ class FuzzyFeelingSong extends Song
       rd.scriptCall('startDialogue', ['fuzzy-feeling story', 'post', function() {
         playState.endSong(true);
       }]);
+      return;
     }
+
+    RetroAchievements.award('lust-bouncer');
   }
 
   function storeDefaultStrumPositions():Void

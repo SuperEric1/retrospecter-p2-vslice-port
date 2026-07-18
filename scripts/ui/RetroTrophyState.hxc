@@ -83,7 +83,7 @@ class RetroTrophyState extends MusicBeatState
     { id: 'death', label: 'DEATH', color: 0xFFff001f, bgColor: FlxColor.BLACK, symbolFile: 'death' },
     { id: 'patience', label: 'PATIENCE', color: 0xFFf3c378, bgColor: 0xFFb58330, symbolFile: 'patience'  },
     { id: 'mixter', label: 'MIXTER', color: 0xFF8f57ff, bgColor: 0xFF390c94, symbolFile: 'mixter' },
-    { id: 'ace', label: 'ACE', color: 0xFFe7eefc, bgColor: 0xFF5c86dc, symbolFile: 'ace' },
+    //{ id: 'ace', label: 'ACE', color: 0xFFe7eefc, bgColor: 0xFF5c86dc, symbolFile: 'ace' },
     { id: 'misc', label: 'MISC', color: FlxColor.WHITE, bgColor: FlxColor.WHITE, symbolFile: 'misc' },
     //{ id: 'minus', label: 'MINUS', color: 0xFFFF4444, bgColor: 0xFF330000, symbolFile: 'minus' },
     //{ id: 'corruptro', label: 'CORRUPTRO', color: 0xFFAA44FF, bgColor: 0xFF1A0033, symbolFile: 'corrupt' },
@@ -143,6 +143,8 @@ class RetroTrophyState extends MusicBeatState
   var achTitle:FlxText;
   var achDesc:FlxText;
   var controlsText:FlxText;
+  var ACH_TITLE_SIZE = 44;
+  var ACH_TITLE_MIN_SIZE:Int = 30;
 
   var backBtn:FunkinBackButton;
 
@@ -201,6 +203,9 @@ class RetroTrophyState extends MusicBeatState
     }
 
     playEnterTransition();
+
+    RetroAchievements.checkAllCategories();
+    RetroAchievements.showQueuedToasts(0.3);
   }
 
   function playEnterTransition():Void
@@ -544,8 +549,10 @@ class RetroTrophyState extends MusicBeatState
 
     if (cat.id == 'misc') {
       selector.color = FlxColor.BLACK;
+      if (backBtn != null) backBtn.blend = null;
     } else {
       selector.color = -1;
+      if (backBtn != null) backBtn.blend = 0;
     }
 
     for (i in 0...GRID_SIZE) {
@@ -698,9 +705,9 @@ class RetroTrophyState extends MusicBeatState
     infoOverlay.scrollFactor.set(0, 0);
     add(infoOverlay);
 
-    var textPad:Float = 16;
-    achTitle = new FlxText(INFO_START_X + textPad / 2, INFO_Y + textPad, INFO_W - textPad, '');
-    achTitle.setFormat(Paths.font('Kenyan Coffee Rg.otf'), 31, FlxColor.WHITE, 'center');
+    var textPad:Float = 16; // se mudar aqui, mudar no resizeTitle também
+    achTitle = new FlxText(INFO_START_X + textPad / 2, INFO_Y + textPad - 6, INFO_W - textPad, '');
+    achTitle.setFormat(Paths.font('Kenyan Coffee Rg.otf'), ACH_TITLE_SIZE, FlxColor.WHITE, 'center'); // 31
     //achTitle.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
     achTitle.wordWrap = true;
     achTitle.scrollFactor.set(0, 0);
@@ -719,9 +726,30 @@ class RetroTrophyState extends MusicBeatState
       backBtn.colorTransform.alphaOffset = -255 * 0.5;
       backBtn.scale.set(0.65, 0.65);
       backBtn.updateHitbox();
-      backBtn.blend = 0;
       FlxTween.tween(backBtn, {x: FlxG.width - 230}, 1, {ease: FlxEase.expoOut});
     }
+  }
+
+  function resizeTitleToFit():Void
+  {
+    var textPad = 16;
+    var maxHeight:Float = (INFO_Y + 165) - (INFO_Y + textPad - 6) - 8;
+    var baseWidth:Float = INFO_W - textPad;
+    var size:Int = ACH_TITLE_SIZE;
+    var steps:Int = 0;
+    var ACH_TITLE_WIDTH_STEP:Float = 2;
+
+    achTitle.size = size;
+    achTitle.fieldWidth = baseWidth;
+
+    while (achTitle.height > maxHeight && size > ACH_TITLE_MIN_SIZE) {
+      size--;
+      steps++;
+      achTitle.size = size;
+      achTitle.fieldWidth = baseWidth - (steps * ACH_TITLE_WIDTH_STEP);
+    }
+
+    achTitle.x = infoOverlayBg.x + (infoOverlayBg.width / 2) - (achTitle.fieldWidth / 2);
   }
 
   function updateInfoPanel():Void
@@ -741,6 +769,7 @@ class RetroTrophyState extends MusicBeatState
     var descKey:String = 'achievement.' + catPart + '.' + idPart + '.description';
 
     achTitle.text = RetroLanguage.t(titleKey, ach.id);
+    resizeTitleToFit();
     achDesc.text = RetroLanguage.t(descKey, '');
   }
 
@@ -830,6 +859,9 @@ class RetroTrophyState extends MusicBeatState
       if (RetroAchievements.isUnlocked(ach.id)) unlocked++;
     }
     var total:Int = allForCategory.length;
+    for (ach in allForCategory) {
+      if (ach.unlockable != null && !ach.unlockable) total--;
+    }
     trophyText.text = ' ' + RetroLanguage.t('menu.achievements.trophies', 'TROPHIES').toUpperCase() + '\n ' + unlocked + ' / ' + total;
     trophyText.x = LEFT_COL_CENTER_X - (trophyText.width / 2);
   }

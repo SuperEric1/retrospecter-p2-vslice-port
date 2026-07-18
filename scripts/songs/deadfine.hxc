@@ -197,6 +197,20 @@ class DeadfineSong extends Song
       hasPlayedEndDialogue = true;
       turnOff = true;
       event.cancel();
+      return;
+    }
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('greed-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('greed-hard');
+      }
+
+      RetroAchievements.grantAc('greed-normal');
     }
   }
 

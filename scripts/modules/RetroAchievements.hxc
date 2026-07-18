@@ -62,12 +62,12 @@ class RetroAchievements extends Module
 
     // WRATH
     { id: 'wrath-p2' }, // done
-    { id: 'wrath-chained' },
+    { id: 'wrath-chained' }, // done
     { id: 'wrath-blindhydra' }, // done
     { id: 'wrath-funsizebf', unlockable: false },
 
     { id: 'wrath-hydradodge' }, // done
-    { id: 'wrath-phone' },
+    { id: 'wrath-phone' }, // done
     { id: 'wrath-hard' }, // done
     { id: 'wrath-all' },
 
@@ -76,7 +76,7 @@ class RetroAchievements extends Module
     { id: 'wrath-tenpoisons' }, // done
     { id: 'wrath-apocalypseecto' },
 
-    { id: 'wrath-fourchains' },
+    { id: 'wrath-fourchains' }, // done
     { id: 'wrath-sidestory', unlockable: false },
     { id: 'wrath-hell' }, // done
     { id: 'wrath-normal' }, // done
@@ -85,126 +85,127 @@ class RetroAchievements extends Module
     { id: 'wrath-brawnstorm', unlockable: false },
 
     // LUST
-    { id: 'lust-phone' },
+    { id: 'lust-phone' }, // done
     { id: 'lust-all' },
-    { id: 'lust-sakugf' },
-    { id: 'lust-hell' },
+    { id: 'lust-sakugf', unlockable: false },
+    { id: 'lust-hell' }, // done
 
-    { id: 'lust-normal' },
-    { id: 'lust-braku', iconOverride: 'lust/braku' },
-    { id: 'lust-censored' },
-    { id: 'lust-hard' },
+    { id: 'lust-normal' }, // done
+    { id: 'lust-braku', iconOverride: 'lust/braku' }, // done
+    { id: 'lust-censored' }, // done
+    { id: 'lust-hard' }, // done
 
-    { id: 'lust-mompoms' },
-    { id: 'lust-200' },
-    { id: 'lust-bouncer' },
-    { id: 'lust-funsizesaku' },
+    { id: 'lust-mompoms', unlockable: false },
+    { id: 'lust-200' }, // done
+    { id: 'lust-bouncer' }, // done
+    { id: 'lust-funsizesaku', unlockable: false },
 
-    { id: 'lust-specialnotes' },
-    { id: 'lust-sidestory' },
+    { id: 'lust-specialnotes' }, // done
+    { id: 'lust-sidestory', unlockable: false },
 
     // PRIDE
-    { id: 'pride-10second' },
-    { id: 'pride-hard' },
-    { id: 'pride-nohit' },
-    { id: 'pride-izzygf' },
+    { id: 'pride-10second' }, // done
+    { id: 'pride-hard' }, // done
+    { id: 'pride-nohit' }, // done
+    { id: 'pride-izzygf', unlockable: false },
 
-    { id: 'pride-sidestory' },
+    { id: 'pride-sidestory', unlockable: false },
     { id: 'pride-all' },
-    { id: 'pride-funsizeizzy' },
-    { id: 'pride-lose5' },
+    { id: 'pride-funsizeizzy', unlockable: false },
+    { id: 'pride-lose5' }, // done
 
-    { id: 'pride-200' },
-    { id: 'pride-hell' },
-    { id: 'pride-normal' },
+    { id: 'pride-200' }, // done
+    { id: 'pride-hell' }, // done
+    { id: 'pride-normal' }, // done
 
     // GLUTTONY
-    { id: 'gluttony-wrapped' },
-    { id: 'gluttony-hell' },
-    { id: 'gluttony-nohit' },
+    { id: 'gluttony-wrapped' }, // done
+    { id: 'gluttony-hell' }, // done
+    { id: 'gluttony-nohit' }, // done
     { id: 'gluttony-all' },
 
-    { id: 'gluttony-collapse' },
-    { id: 'gluttony-sidestory' },
-    { id: 'gluttony-insatiangf' },
-    { id: 'gluttony-funsizeinsatian' },
+    { id: 'gluttony-collapse' }, // done
+    { id: 'gluttony-sidestory', unlockable: false },
+    { id: 'gluttony-insatiangf', unlockable: false },
+    { id: 'gluttony-funsizeinsatian', unlockable: false },
 
-    { id: 'gluttony-twohundred' },
-    { id: 'gluttony-hard' },
-    { id: 'gluttony-normal' },
+    { id: 'gluttony-twohundred' }, // done
+    { id: 'gluttony-hard' }, // done
+    { id: 'gluttony-normal' }, // done
 
     // GREED
-    { id: 'greed-hiveless', iconOverride: 'greed/hiveless' },
-    { id: 'greed-allterrycoins' },
-    { id: 'greed-hard' },
-    { id: 'greed-srank' },
+    { id: 'greed-hiveless', iconOverride: 'greed/hiveless' }, // done
+    { id: 'greed-allterrycoins' }, // done
+    { id: 'greed-hard' }, // done
+    { id: 'greed-srank' }, // done
 
-    { id: 'greed-hell' },
-    { id: 'greed-hiveminegf' },
-    { id: 'greed-funsizehivemine' },
-    { id: 'greed-terry' },
+    { id: 'greed-hell' }, // done
+    { id: 'greed-hiveminegf', unlockable: false },
+    { id: 'greed-funsizehivemine', unlockable: false },
+    { id: 'greed-terry', unlockable: false },
 
-    { id: 'greed-sidestory' },
-    { id: 'greed-normal' },
+    { id: 'greed-sidestory', unlockable: false },
+    { id: 'greed-normal' }, // done
     { id: 'greed-all' },
-    { id: 'greed-dodge' },
+    { id: 'greed-dodge' }, // done
 
-    { id: 'greed-tenwebnotes' },
+    { id: 'greed-tenwebnotes' }, // done
 
     // ENVY
-    { id: 'envy-sidestory' },
+    { id: 'envy-sidestory', unlockable: false },
     { id: 'envy-all' },
-    { id: 'envy-atroceangf' },
-    { id: 'envy-funsizeatrocean' },
+    { id: 'envy-atroceangf', unlockable: false },
+    { id: 'envy-funsizeatrocean', unlockable: false },
 
-    { id: 'envy-nonotes' },
-    { id: 'envy-hard' },
-    { id: 'envy-fullcombo' },
-    { id: 'envy-hell' },
+    { id: 'envy-nonotes' }, // done
+    { id: 'envy-hard' }, // done
+    { id: 'envy-fullcombo' }, // done
+    { id: 'envy-hell' }, // done
 
-    { id: 'envy-saku' },
-    { id: 'envy-normal' },
-    { id: 'envy-chatty' },
+    { id: 'envy-saku', unlockable: false },
+    { id: 'envy-normal' }, // done
+    { id: 'envy-chatty' }, // done
 
     // SLOTH
-    { id: 'sloth-dozircgf' },
-    { id: 'sloth-perfectcombo' },
-    { id: 'sloth-100misses' },
-    { id: 'sloth-normal' },
+    { id: 'sloth-dozircgf', unlockable: false },
+    { id: 'sloth-perfectcombo', unlockable: false },
+    { id: 'sloth-100misses' }, // done
+    { id: 'sloth-normal' }, // done
 
     { id: 'sloth-all' },
-    { id: 'sloth-hell' },
-    { id: 'sloth-funsizedozirc' },
-    { id: 'sloth-hard' },
+    { id: 'sloth-hell' }, // done
+    { id: 'sloth-funsizedozirc', unlockable: false },
+    { id: 'sloth-hard' }, // done
 
-    { id: 'sloth-shocked' },
-    { id: 'sloth-drank' },
-    { id: 'sloth-sidestory' },
+    { id: 'sloth-shocked' }, // done
+    { id: 'sloth-drank' }, // done
+    { id: 'sloth-sidestory', unlockable: false },
 
     // DEATH
-    { id: 'death-deathgf' },
-    { id: 'death-point' },
-    { id: 'death-noscythenotes' },
-    { id: 'death-sidestory' },
+    { id: 'death-deathgf', unlockable: false },
+    { id: 'death-point' }, // done
+    { id: 'death-noscythenotes' }, // done
+    { id: 'death-sidestory', unlockable: false },
 
-    { id: 'death-nocheckpoints' },
+    { id: 'death-nocheckpoints', unlockable: false },
     { id: 'death-all' },
-    { id: 'death-meeting' },
-    { id: 'death-tenscythes' },
+    { id: 'death-meeting' }, // done
+    { id: 'death-tenscythes' }, // done
 
     // PATIENCE
-    { id: 'patience-sidestory' },
-    { id: 'patience-pride-ach-1', iconOverride: 'patience/pride-ach-1' },
+    { id: 'patience-sidestory', unlockable: false },
+    { id: 'patience-pride-ach-1', iconOverride: 'patience/pride-ach-1' }, // done
     { id: 'patience-all' },
-    { id: 'patience-wait3minutes' },
+    { id: 'patience-wait3minutes', unlockable: false }, // add this once the pause menu gets added or smth
 
-    { id: 'patience-retro' },
-    { id: 'patience-4holynotes' },
+    { id: 'patience-retro', unlockable: false },
+    { id: 'patience-4holynotes' }, // done
 
     // MIXTER
     //{ id: 'mixter-all' },
     { id: 'mixter-dadbattle-story', iconOverride: 'mixter/dadbattle-story' },
-    { id: 'mixter-thorns', iconOverride: 'mixter/thorns' },
+    // Make expansion later
+    /*{ id: 'mixter-thorns', iconOverride: 'mixter/thorns' },
     { id: 'mixter-philly', iconOverride: 'mixter/philly' },
     { id: 'mixter-agoti', iconOverride: 'mixter/agoti' },
     { id: 'mixter-agoti-k', iconOverride: 'mixter/agoti-k' },
@@ -217,9 +218,9 @@ class RetroAchievements extends Module
     { id: 'mixter-bopeebo', iconOverride: 'mixter/bopeebo' },
     { id: 'mixter-chiller', iconOverride: 'mixter/chiller' },
     { id: 'mixter-chkdsk', iconOverride: 'mixter/chkdsk' },
-    { id: 'mixter-cocoa', iconOverride: 'mixter/cocoa' },
+    { id: 'mixter-cocoa', iconOverride: 'mixter/cocoa' },*/
     { id: 'mixter-dadbattle', iconOverride: 'mixter/dadbattle' },
-    { id: 'mixter-dadbattle-k', iconOverride: 'mixter/dadbattle-k' },
+    /*{ id: 'mixter-dadbattle-k', iconOverride: 'mixter/dadbattle-k' },
     { id: 'mixter-darnell', iconOverride: 'mixter/darnell' },
     { id: 'mixter-deathtoll', iconOverride: 'mixter/deathtoll' },
     { id: 'mixter-expurgation', iconOverride: 'mixter/expurgation' },
@@ -263,10 +264,10 @@ class RetroAchievements extends Module
     { id: 'mixter-tripletrouble', iconOverride: 'mixter/tripletrouble' },
     { id: 'mixter-ugh', iconOverride: 'mixter/ugh' },
     { id: 'mixter-zavodila', iconOverride: 'mixter/zavodila' },
-    { id: 'mixter-zavodila-k', iconOverride: 'mixter/zavodila-k' },
+    { id: 'mixter-zavodila-k', iconOverride: 'mixter/zavodila-k' },*/
 
     // ACE
-    { id: 'ace-spell' },
+    /*{ id: 'ace-spell' },
     { id: 'ace-funsizeace' },
     { id: 'ace-5freeze' },
     { id: 'ace-all' },
@@ -278,30 +279,30 @@ class RetroAchievements extends Module
     { id: 'ace-ectosatis' },
     { id: 'ace-coldheartedcatwalk' },
     { id: 'ace-frostbite2' },
-    { id: 'ace-icebreaker' },
+    { id: 'ace-icebreaker' },*/
 
     // MISC
-    { id: 'misc-rockone' },
+    { id: 'misc-rockone', unlockable: false },
     { id: 'misc-nolock', iconOverride: 'misc/nolock' }, // done
     { id: 'misc-all' },
-    { id: 'misc-hell' },
+    { id: 'misc-hell', unlockable: false },
 
-    { id: 'misc-fallipe' },
-    { id: 'misc-diebaby' },
-    { id: 'misc-sans' },
-    { id: 'misc-crash' },
+    { id: 'misc-fallipe', unlockable: false },
+    { id: 'misc-diebaby', unlockable: false },
+    { id: 'misc-sans', unlockable: false },
+    { id: 'misc-crash', unlockable: false },
 
-    { id: 'misc-everynote' },
-    { id: 'misc-idiot' },
+    { id: 'misc-everynote', unlockable: false },
+    { id: 'misc-idiot', unlockable: false },
     { id: 'misc-incognito' }, // done
 
     // CORRUPTRO
-    { id: 'corruptro-fivepoisons' },
+    /*{ id: 'corruptro-fivepoisons' },
     { id: 'corruptro-hell' },
     { id: 'corruptro-nopoisons' },
     { id: 'corruptro-sidestory' },
     { id: 'corruptro-corruptro', iconOverride: 'corruptro/corruptro' },
-    { id: 'corruptro-all' },
+    { id: 'corruptro-all' },*/
 
     // MINUS
     /*{ id: 'minus-envy' },
@@ -358,12 +359,26 @@ class RetroAchievements extends Module
 
     trace("Awarded achievement: " + id);
 
-    if (showToast) {
-      if (instaShow) {
-        _showQueue([id]);
-      } else {
-        queueToast(id);
+    var grantedAllIds:Array<String> = [];
+    if (!isAllId(id)) {
+      var categoryAllId:String = grantCategoryAllIfComplete(getCategory(id));
+      if (categoryAllId != null) {
+        grantedAllIds.push(categoryAllId);
+        var overallAllId:String = grantAllAllIfComplete();
+        if (overallAllId != null) grantedAllIds.push(overallAllId);
       }
+    }
+
+    if (!showToast) return;
+
+    if (instaShow) {
+      var group:Array<String> = grantedAllIds.copy();
+      group.reverse();
+      group.push(id);
+      _showQueue(group);
+    } else {
+      for (allId in grantedAllIds) pendingQueue().unshift(allId);
+      queueToast(id);
     }
   }
 
@@ -404,6 +419,28 @@ class RetroAchievements extends Module
     {
       Save.instance.modOptions.set(SAVE_KEY, []);
       Save.instance.flush();
+      return;
+    }
+
+    var save:Array<Dynamic> = getSave();
+    var changed:Bool = false;
+
+    for (category in getCategories()) {
+      var allId:String = category + '-all';
+      if (save.contains(allId) && !isCategoryComplete(category)) {
+        save.remove(allId);
+        changed = true;
+      }
+    }
+
+    if (save.contains('all-all') && !isAllCategoriesComplete()) {
+      save.remove('all-all');
+      changed = true;
+    }
+
+    if (changed) {
+      Save.instance.modOptions.set(SAVE_KEY, save);
+      Save.instance.flush();
     }
   }
 
@@ -419,6 +456,124 @@ class RetroAchievements extends Module
     for (ach in ACHIEVEMENTS)
       if (ach.id == id) return ach;
     return null;
+  }
+
+  static function getCategory(id:String):String
+  {
+    return id.split('-')[0];
+  }
+
+  static function isAllId(id:String):Bool
+  {
+    var parts:Array<String> = id.split('-');
+    return parts.length == 2 && parts[1] == 'all';
+  }
+
+  static function getCategories():Array<String>
+  {
+    var categories:Array<String> = [];
+    for (ach in ACHIEVEMENTS) {
+      var category:String = getCategory(ach.id);
+      if (category == 'all') continue;
+      if (!categories.contains(category)) categories.push(category);
+    }
+    return categories;
+  }
+
+  static function getUnlockableAchievementsInCategory(category:String):Array<String>
+  {
+    var allId:String = category + '-all';
+    var ids:Array<String> = [];
+    for (ach in ACHIEVEMENTS) {
+      if (getCategory(ach.id) != category) continue;
+      if (ach.id == allId) continue;
+      if (ach.unlockable != null && ach.unlockable == false) continue;
+      ids.push(ach.id);
+    }
+    return ids;
+  }
+
+  static function isCategoryComplete(category:String):Bool
+  {
+    for (id in getUnlockableAchievementsInCategory(category))
+      if (!isUnlocked(id)) return false;
+    return true;
+  }
+
+  static function isAllCategoriesComplete():Bool
+  {
+    for (category in getCategories())
+      if (!isCategoryComplete(category)) return false;
+    return true;
+  }
+
+  static function grantCategoryAllIfComplete(category:String):String
+  {
+    var allId:String = category + '-all';
+    if (getAchievement(allId) == null) return null;
+    if (isUnlocked(allId)) return null;
+    if (!isCategoryComplete(category)) return null;
+
+    var save:Array<Dynamic> = getSave();
+    save.push(allId);
+    Save.instance.modOptions.set(SAVE_KEY, save);
+    Save.instance.flush();
+
+    trace("Awarded achievement: " + allId);
+    return allId;
+  }
+
+  static function grantAllAllIfComplete():String
+  {
+    if (getAchievement('all-all') == null) return null;
+    if (isUnlocked('all-all')) return null;
+    if (!isAllCategoriesComplete()) return null;
+
+    var save:Array<Dynamic> = getSave();
+    save.push('all-all');
+    Save.instance.modOptions.set(SAVE_KEY, save);
+    Save.instance.flush();
+
+    trace("Awarded achievement: all-all");
+    return 'all-all';
+  }
+
+  static function checkAndGrantCategoryAll(category:String, ?showToast:Bool = true, ?instaShow:Bool = false):Void
+  {
+    var allId:String = grantCategoryAllIfComplete(category);
+    if (allId == null) return;
+
+    if (showToast) {
+      if (instaShow) {
+        _showQueue([allId]);
+      } else {
+        pendingQueue().unshift(allId);
+      }
+    }
+
+    checkAndGrantAllAll(showToast, instaShow);
+  }
+
+  static function checkAndGrantAllAll(?showToast:Bool = true, ?instaShow:Bool = false):Void
+  {
+    var allId:String = grantAllAllIfComplete();
+    if (allId == null) return;
+
+    if (showToast) {
+      if (instaShow) {
+        _showQueue([allId]);
+      } else {
+        pendingQueue().unshift(allId);
+      }
+    }
+  }
+
+  public static function checkAllCategories():Void
+  {
+    for (category in getCategories())
+      checkAndGrantCategoryAll(category, true);
+
+    checkAndGrantAllAll(true);
   }
 
   static function toasts():Array<Dynamic>

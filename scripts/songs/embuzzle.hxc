@@ -18,6 +18,8 @@ import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
+import supereric.retrospecter.modules.RetroAchievements;
+
 class EmbuzzleSong extends Song
 {
   var tweens:Array<FlxTween> = [];
@@ -243,6 +245,7 @@ class EmbuzzleSong extends Song
     if (curStep >= 1296 && !showLogo) {
       showLogo = true;
       ModuleHandler.getModule('RetroTitle')?.scriptCall('play', []);
+      if (PlayStatePlaylist.isStoryMode) RetroAchievements.award('greed-hiveless', true, true);
     }
   }
 

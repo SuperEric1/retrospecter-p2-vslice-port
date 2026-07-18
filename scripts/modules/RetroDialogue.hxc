@@ -24,6 +24,7 @@ import funkin.mobile.input.ControlsHandler;
 import StringTools;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class RetroDialogue extends Module
 {
@@ -57,6 +58,7 @@ class RetroDialogue extends Module
   // Extra
   private var penduThing:Bool = false;
   private var outroZoom:Float = 0;
+  private var atroceanSpeaking:Bool = false;
 
   // Typewriter
   private var fullText:String = '';
@@ -524,7 +526,7 @@ class RetroDialogue extends Module
     ps.add(dialogueText);
 
     // Segundo texto do diálogo
-    if (needsSecText) {
+    if (needsSecText || true) { // Sempre criar, só pra ter certeza
       secDialogueText = new FlxText(0, TEXT_DEFAULT_Y, Std.int(FlxG.width - 160), '', 48);
       secDialogueText.setFormat(Paths.font(DEFAULT_FONT), 48, 0xFFFFFFFF, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
       secDialogueText.wordWrap = true;
@@ -941,6 +943,7 @@ class RetroDialogue extends Module
     if (!Assets.exists(Paths.font(nameFontName))) nameFontName = DEFAULT_FONT;
     var useNameBorder:Bool = line.exists('nameBorder') && line.get('nameBorder') == 'true';
     var nameBorderHex:String = line.exists('nameBorderColor') ? line.get('nameBorderColor') : '000000';
+    atroceanSpeaking = charName.toLowerCase() == 'atrocean' || charName.toLowerCase() == 'mercerrus?';
 
     nameText.setFormat(Paths.font(nameFontName), 60, FlxColor.fromString('#' + nameColorHex), 'center', FlxTextBorderStyle.OUTLINE);
     if (useNameBorder) nameText.borderColor = FlxColor.fromString('#' + nameBorderHex);
@@ -1283,7 +1286,10 @@ class RetroDialogue extends Module
     if (line.exists('soundPath')) currentSoundPath = line.get('soundPath');
     if (line.exists('sound') && currentSoundPath != '') {
       if (curSound != null && curSound != ambienceTheme) curSound.stop();
-      curSound = FunkinSound.playOnce(Paths.sound(currentSoundPath + line.get('sound')));
+      var callback:Void = nothing;
+      if (line.exists('retroPhoneEvent')) callback = retroPhoneAch;
+      if (line.exists('sakuPhoneEvent')) callback = sakuPhoneAch;
+      curSound = FunkinSound.playOnce(Paths.sound(currentSoundPath + line.get('sound')), 1, callback);
     }
     if (line.exists('soundEffect')) {
       if (curSoundEffect != null && curSoundEffect != ambienceTheme) curSoundEffect.stop();
@@ -1481,6 +1487,10 @@ class RetroDialogue extends Module
         applyLine(currentLines[currentLineIndex]);
       } else {
         beginFadeOut();
+        if (atroceanSpeaking && isTyping) {
+          RetroAchievements.award('envy-chatty', true, true);
+          atroceanSpeaking = false;
+        }
       }
       return;
     }
@@ -2050,6 +2060,15 @@ class RetroDialogue extends Module
     }
     repositionOutroSprites();
   }
+
+  private function retroPhoneAch():Void {
+    RetroAchievements.award('wrath-phone', true, true);
+  }
+  private function sakuPhoneAch():Void {
+    RetroAchievements.award('lust-phone', true, true);
+  }
+
+  private function nothing():Void {}
 
   private function resetIntroText(?dontCenter:Bool = false):Void {
     dialogueText.alignment = 'center';

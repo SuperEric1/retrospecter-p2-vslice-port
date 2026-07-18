@@ -97,6 +97,8 @@ class RetroPlayState extends Module {
   var isDrugged:Bool = false;
   var wiggleShader:FlxRuntimeShader = null;
   var wiggleFilter:ShaderFilter = null;
+  var izzyTenSecondAch:Float = null;
+  var izzyHits:Int = 0;
 
   var solidCameraSprite:FunkinSprite;
 
@@ -108,6 +110,8 @@ class RetroPlayState extends Module {
   var isStrumLocked:IntMap<Bool> = new IntMap();
   var chainText:FlxText;
   var webLockActive:Bool = false;
+  var chainAchievementTimer:Float = 0;
+  var fourChainsAchievement:Bool = false;
 
   // Hydra Notes - Sistema de beam que cobre os strums
   var hydraBeamSprites:Array<FunkinSprite> = [];
@@ -120,6 +124,8 @@ class RetroPlayState extends Module {
   var insatianHolesTimer:FlxTimer = null;
   var insatianNoteDamage:Float = Constants.HEALTH_MAX * 0.33; // 32%
   var insatianNoteCounter:Int = 0;
+  var insatianHits:Int = 0; // lemme hit PLEASE
+  var collapseAch:Bool = false;
 
   // Hivemine - Mecânicas relacionadas à nossa querida abelha.
   var hmpActive:Bool = false;
@@ -141,6 +147,9 @@ class RetroPlayState extends Module {
   var hmpMoneyGain:Array<Int> = [31446, 23148];
   var hmpMoneyLoss:Array<Int> = [-6289, -4629];
   var hmpMoneyLossNote:Array<Int> = [-62893, -46296];
+  var terryHits:Int = 0;
+  var jewelHits:Int = 0;
+  var coinsSpawned:Int = 0;
 
   // Atrocean Notes - Jumpscare com efeito
   var atroWaveAmplitude:Float = 0;
@@ -150,10 +159,25 @@ class RetroPlayState extends Module {
   var atroMechanicTweens:Array<FlxTween> = [];
   var atroDarkness:FunkinSprite;
   var atroHitCounter:Int = 0; // Caso ultrapasse de 3, matar o jogador.
+  var atroHitCounterTotal:Int = 0;
 
   // Dozirc Notes - Health drain
   var dozircMechanicTimer:FlxTimer = null;
   var dozircHitCounter:Int = 0;
+  var dozircHits:Int = 0;
+  var electricSpawned:Int = 0;
+
+  // Saku Notes - Fumaça que cobre a tela
+  //var sakuMechanicTimer:FlxTimer = null;
+  var sakuAlpha = 0;
+  var sakuTargetAlpha = 0;
+  var sakuAlphaIncrease:Float = 1 / 4;
+  var sakuHUDFog:FunkinSprite = null;
+  var sakuBlendFog:FunkinSprite = null;
+  var sakuBGFog:FunkinSprite = null;
+  var sakuFogs:Array<FunkinSprite> = [];
+  var smokeColor = 0xFF90126b;
+  var sakuTime:Float = 0;
 
   // Misc
   var loadedMechanics:Array<String> = []; // here we will store the names of the loaded mechanics for the current song (set by the song's scripts)
@@ -161,6 +185,9 @@ class RetroPlayState extends Module {
   var forceNotesAlpha:Float = null;    // alpha atual das notas do jogador (null = mechanic off)
   var forceOppNotesAlpha:Float = null; // alpha atual das notas do oponente (null = mechanic off)
   var minNoteAlpha:Float = 0;
+  var sicksInARow:Int = 0;
+  var sicks:Int = 0;
+  var scytheHits:Int = 0;
 
   var spectreHit:Bool = false;
   var spectreOppHit:Bool = false;
@@ -180,6 +207,7 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
     poisonAmount = 0;
     isDrugged = false;
+    izzyTenSecondAch = null;
     izzyMechanicTimer = null;
 
     // Inicializar sistema de chain notes
@@ -257,9 +285,15 @@ class RetroPlayState extends Module {
       if (event.note.isHoldNote) {
         tweens.push(FlxTween.tween(note.holdNoteSprite, {alpha: 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function(_:FlxTween) {
         if (note == null || !note.alive) return;
-        //note.holdNoteSprite.kill();
+        //note.holdNoteSprite.visible = false;
       }}));
       }
+    }
+
+    if (k == 'cashNote') {
+      coinsSpawned += 1;
+    } else if (k == 'dozircNote') {
+      electricSpawned += 1;
     }
 
     // Notas removíveis
@@ -390,6 +424,7 @@ class RetroPlayState extends Module {
       }
 
       insatianNoteCounter += 1;
+      insatianHits += 1;
       var holeMin:Int = 2;
       var holeMax:Int = 10;
       if (insatianNoteCounter > 1) {
@@ -420,6 +455,8 @@ class RetroPlayState extends Module {
       checkHealthCap();
       // Se for o quarto hit, matar o jogador de vez
       if (insatianNoteCounter >= 4 && !isPractice) PlayState.instance.health -= insatianNoteDamage;
+
+      if (insatianNoteCounter == 3 || PlayState.instance.health <= insatianNoteDamage) collapseAch = true;
 
       var baseTime:Float = 6;
       if (insatianNoteCounter > 1 && insatianNoteCounter <= 4) baseTime += insatianNoteCounter / 1.3;
@@ -490,6 +527,7 @@ class RetroPlayState extends Module {
       var baseDamage:Float = Constants.HEALTH_MAX / 2;
       var minDamage:Float = baseDamage * 0.2;
       var nearDeathTarget:Float = Constants.HEALTH_MAX * 0.4;
+      scytheHits += 1;
 
       if (fullHealth > halfHealth) {
         PlayState.instance.health -= baseDamage;
@@ -520,6 +558,7 @@ class RetroPlayState extends Module {
       }
 
       atroHitCounter += 1;
+      atroHitCounterTotal += 1;
       atroWaveSpeed = atroHitCounter * 0.9;
       atroWaveFrequency = atroHitCounter * 0.4;
       atroWaveAmplitude = atroHitCounter * 0.03;
@@ -623,6 +662,8 @@ class RetroPlayState extends Module {
         return;
       }
 
+      izzyHits += 1;
+
       // PlayState.instance.health -= Constants.HEALTH_KILLER_BONUS;
       FlxG.sound.play(Paths.sound('noteSounds/Izzy'));
       event.doesNotesplash = false;
@@ -666,6 +707,9 @@ class RetroPlayState extends Module {
           hmpInstructionText.visible = false;
         });
       }
+
+      if (k != 'autoCash') terryHits += 1;
+
       var moneyToAdd:Float = 0;
       switch (songId.toLowerCase()) {
         case 'sweet-talk':
@@ -683,6 +727,8 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+
+      jewelHits += 1;
 
       advanceHiveminePapers();
       var moneyToLose:Float = 0;
@@ -711,6 +757,16 @@ class RetroPlayState extends Module {
         event.stopPropagation();
         return;
       }
+      if (!loadedMechanics.contains('saku')) {
+        trace('LOADED UNLOADED MECHANIC: saku');
+        loadedMechanics.push('saku');
+        loadSakuMechanic();
+      }
+
+      var increase:Float = sakuAlpha + sakuAlphaIncrease <= 1 ? sakuAlphaIncrease : 1;
+
+      sakuTargetAlpha = (sakuAlpha + increase) * 1.2;
+      if (sakuTargetAlpha > 1) sakuTargetAlpha = 1;
 
       FlxG.sound.play(Paths.sound('noteSounds/Saku'));
       event.doesNotesplash = false;
@@ -730,6 +786,7 @@ class RetroPlayState extends Module {
 
       var time:Float = 4;
       if (dozircHitCounter < 4) dozircHitCounter += 1;
+      dozircHits += 1;
 
       retroGameUI.scriptCall('playDozircBarAnim', [event.note.noteData.getDirection(), time]);
       dozircMechanicTimer = new FlxTimer(globalTimerManager).start(time, function(tmr:FlxTimer) {
@@ -750,6 +807,20 @@ class RetroPlayState extends Module {
       event.note.visible = false; // So the discolored sprite doesn't appear.
       event.note.active = false;
     }
+
+    if (event.judgement == 'sick') {
+      sicksInARow += 1;
+      sicks += 1;
+
+      if (songId == 'egobrainiac' && sicksInARow >= 200) {
+        RetroAchievements.award('pride-200', true, true);
+      }
+      if (songId == 'glunisher' && sicks >= 200) {
+        RetroAchievements.award('gluttony-twohundred', true, true);
+      }
+    }
+
+    if (songId == 'heartmelter' && (Highscore.tallies.combo + 1) >= 10) RetroAchievements.award('lust-200', true, true);
   } // fim do if de checagem que é nota do player
 
     if (!event.note.noteData.getMustHitNote() && event.note.noteData.kind == 'spectre' && mechanicsEnabled && loadedMechanics.contains('spectre')) {
@@ -768,6 +839,9 @@ class RetroPlayState extends Module {
     if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
       var k = event.note.noteData.kind;
       var noteDir = event.note.noteData.getDirection();
+
+      sicksInARow = 0;
+
       if (k == "autoChain") {
         lockStrum(noteDir);
         if (k == 'autoChain') chainText.visible = true; // why did i put a if here
@@ -912,6 +986,9 @@ class RetroPlayState extends Module {
         if (loadedMechanics.contains('hydra')) {
           loadHydraBeamSprites();
         }
+        if (loadedMechanics.contains('saku')) {
+          loadSakuMechanic();
+        }
         if (loadedMechanics.contains('patience') && !loadedMechanics.contains('hydra')) {
           loadBeamSprites();
         }
@@ -927,6 +1004,7 @@ class RetroPlayState extends Module {
         }
         if (loadedMechanics.contains('atrocean')) {
           atroHitCounter = 0;
+          atroHitCounterTotal = 0;
           FunkinMemory.cacheSound(Paths.sound("noteSounds/Atrocean", "shared"));
           atroDarkness = FunkinSprite.create(0, 0, 'envy/darkness');
           atroDarkness.scrollFactor.set(0, 0);
@@ -1159,6 +1237,7 @@ class RetroPlayState extends Module {
     }
 
     isDrugged = true;
+    if (izzyTenSecondAch == null) izzyTenSecondAch = 0;
 
     izzyMechanicTimer = new FlxTimer(globalTimerManager).start(6, function(tmr:FlxTimer) { // Ao completar o timer
       if (PlayState.instance == null) {
@@ -1166,6 +1245,7 @@ class RetroPlayState extends Module {
         return;
       }
       if (PlayState.instance.isGameOverState) return;
+      izzyTenSecondAch = null;
       unscrambleStrumline(false, true);
     });
   }
@@ -1261,6 +1341,12 @@ class RetroPlayState extends Module {
         strum.colorTransform.greenMultiplier = darkness;
         strum.colorTransform.blueMultiplier = darkness;
         FlxG.sound.play(Paths.sound('noteSounds/ChainLock'));
+        if (songId == 'apocalyptro') {
+          for (i in 0...4) {
+            if (!isStrumLocked.get(i)) break;
+            if (i == 3) fourChainsAchievement = true;
+          }
+        }
       } else {
         var dir = direction;
         FlxTween.cancelTweensOf(lockSprite);
@@ -1421,8 +1507,58 @@ class RetroPlayState extends Module {
     chainText.visible = false;
     PlayState.instance.add(chainText);
 
+    chainAchievementTimer = 0;
+    fourChainsAchievement = false;
+
     // refresh where the function is called.
     //PlayState.instance.refresh();
+  }
+
+  function loadSakuMechanic():Void {
+    sakuAlpha = 0;
+    sakuTargetAlpha = 0;
+    sakuTime = 0;
+
+    var camZoom = PlayState.instance.stageZoom;
+    var w = Math.ceil((FlxG.width + 50) / camZoom);
+    var h = Math.ceil((FlxG.height + 50) / camZoom);
+
+    var bf = PlayState.instance.currentStage.getBoyfriend();
+    var dad = PlayState.instance.currentStage.getDad();
+
+    var highest = bf.zIndex > dad.zIndex ? bf.zIndex : dad.zIndex;
+    var lowest = bf.zIndex < dad.zIndex ? bf.zIndex : dad.zIndex;
+
+    // acima de tudo
+    sakuHUDFog = FunkinSprite.create(0, 0).makeSolidColor(FlxG.width, FlxG.height + 10, smokeColor);
+    sakuHUDFog.cameras = [PlayState.instance.camHUD];
+    sakuHUDFog.scrollFactor.set(0, 0);
+    sakuHUDFog.screenCenter();
+    sakuHUDFog.zIndex = 99999999;
+    sakuHUDFog.alpha = 0;
+    PlayState.instance.add(sakuHUDFog);
+
+    // acima do stage
+    sakuBlendFog = FunkinSprite.create(0, 0).makeSolidColor(w, h, smokeColor);
+    sakuBlendFog.scrollFactor.set(0, 0);
+    sakuBlendFog.screenCenter();
+    sakuBlendFog.zIndex = highest + 1;
+    sakuBlendFog.blend = 0;
+    sakuBlendFog.alpha = 0;
+    PlayState.instance.currentStage.add(sakuBlendFog);
+
+    // atrás dos personagens
+    sakuBGFog = FunkinSprite.create(0, 0).makeSolidColor(w, h, smokeColor);
+    sakuBGFog.scrollFactor.set(0, 0);
+    sakuBGFog.screenCenter();
+    sakuBGFog.zIndex = lowest - 1;
+    sakuBGFog.blend = 9;
+    sakuBGFog.alpha = 0;
+    PlayState.instance.currentStage.add(sakuBGFog);
+
+    PlayState.instance.currentStage.refresh();
+
+    sakuFogs = [sakuHUDFog, sakuBlendFog, sakuBGFog];
   }
 
   function loadWebLockSprites():Void {
@@ -1592,6 +1728,13 @@ class RetroPlayState extends Module {
         });
       });
     });
+
+    if (songId == 'waitkeeper') {
+      for (i in 0...4) {
+        if (hydraBeamStates.get(i) == 0) break;
+        if (i == 3) RetroAchievements.grantAc('patience-4holynotes', true, true);
+      }
+    }
   }
 
   public function onUpdate(event:UpdateScriptEvent):Void {
@@ -1684,6 +1827,35 @@ class RetroPlayState extends Module {
       }*/
     }
 
+    if (loadedMechanics.contains('saku')) {
+      for (fog in sakuFogs) {
+        if (fog == null || !fog.visible || !fog.active || !fog.alive) continue;
+        if (sakuTargetAlpha > 0) {
+          sakuAlpha = FlxMath.lerp(sakuAlpha, sakuTargetAlpha, FlxMath.bound(event.elapsed, 0, 1));
+          if (Math.abs(sakuTargetAlpha - sakuAlpha) < 0.01) {
+            sakuAlpha = sakuTargetAlpha;
+            sakuTargetAlpha = 0;
+          }
+        } else {
+          sakuAlpha = FlxMath.lerp(sakuAlpha, 0, FlxMath.bound(event.elapsed * 0.05, 0, 1));
+        }
+
+        for (fog in sakuFogs) {
+          if (fog == null || !fog.visible || !fog.active || !fog.alive) continue;
+          fog.alpha = sakuAlpha;
+        }
+      }
+
+      var songLength:Float = (FlxG.sound?.music?.length ?? 0.0) / 1000;
+
+      if (sakuAlpha > 0.01 && sakuTime != -1) sakuTime += event.elapsed;
+      if (sakuTime > songLength * 0.75) {
+        sakuTime = -1;
+        if (songId == 'hard-ache') RetroAchievements.award('lust-specialnotes', true, true, true);
+      }
+      //trace (sakuTime + ' ' + songLength * 0.75);
+    }
+
     if (wiggleShader != null) {
       wiggleShader.update(event.elapsed);
     }
@@ -1742,6 +1914,29 @@ class RetroPlayState extends Module {
           if (beam.y != beamTargetY) beam.y = beamTargetY;
           if (beam.alpha != strum.alpha) beam.alpha = strum.alpha;
         }
+      }
+
+      if (hasChainlock && songId == 'apocalyptro' && chainAchievementTimer != -1) {
+        for (i in 0...4) {
+          if (isStrumLocked.get(i)) {
+            if (chainAchievementTimer != -1) chainAchievementTimer += event.elapsed;
+            if (chainAchievementTimer >= 60) {
+              chainAchievementTimer = -1;
+              RetroAchievements.award('wrath-chained', true, true);
+            }
+            //trace(chainAchievementTimer);
+            break;
+          }
+        }
+      }
+
+      if (isDrugged && izzyTenSecondAch != null && izzyTenSecondAch >= 0) {
+        izzyTenSecondAch += event.elapsed;
+        if (izzyTenSecondAch > 10) {
+          izzyTenSecondAch = -1;
+          RetroAchievements.award('pride-10second', true, true);
+        }
+        //trace(izzyTenSecondAch);
       }
     }
 
@@ -2288,12 +2483,27 @@ class RetroPlayState extends Module {
 
     resetAtroMechanic(true);
 
+    sakuAlpha = 0;
+    sakuTargetAlpha = 0;
+    sakuTime = 0;
+    for (fog in sakuFogs) {
+      if (fog == null) continue;
+      fog.alpha = 0;
+    }
+
+    sicksInARow = 0;
+    sicks = 0;
+    scytheHits = 0;
+
     hmpActive = false;
     hmpSpeed = 0;
     hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
     hmpAnimating = false;
     hmpInstructionPlayed = false;
+    terryHits = 0;
+    jewelHits = 0;
+    coinsSpawned = 0;
     destroyHiveminePapers();
 
     if (dozircMechanicTimer != null) {
@@ -2301,6 +2511,8 @@ class RetroPlayState extends Module {
       dozircMechanicTimer = null;
     }
     dozircHitCounter = 0;
+    dozircHits = 0;
+    electricSpawned = 0;
 
     poisonAmount = 0;
     if (forceNotesAlpha != null) forceNotesAlpha = 0.5;
@@ -2319,8 +2531,12 @@ class RetroPlayState extends Module {
     }
 
     removeInsatianHoles(true);
+    insatianHits = 0;
+    collapseAch = false;
 
     isDrugged = false;
+    izzyTenSecondAch = null;
+    izzyHits = 0;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
       unscrambleStrumline(true, true);
@@ -2383,6 +2599,8 @@ class RetroPlayState extends Module {
         webLockSprites[i].kill();
       }
     }
+    chainAchievementTimer = 0;
+    fourChainsAchievement = false;
 
     // Resetar hydra beams
     hydraHits = 0;
@@ -2404,7 +2622,7 @@ class RetroPlayState extends Module {
     super.onGameOver(event);
     if (izzyMechanicTimer != null) unscrambleStrumline(true, true);
 
-    if (GameOverSubState.blueBallSuffix == "-acid") FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf-loss-sfx-acid'));
+    if (GameOverSubState.blueBallSuffix == "-acid") FunkinSound.playOnce(Paths.sound('gameplay/gameover/fnf-loss-sfx-acid'), 1, null, null, true);
 
     if (atroMechanicTweens != null) {
       for (tween in atroMechanicTweens)
@@ -2489,9 +2707,9 @@ class RetroPlayState extends Module {
 
     checkEndingAchievements();
 
-    poisonAmount = 0;
+    /*poisonAmount = 0;
     poisonSpriteYOffset = 0;
-    poisonTextYOffset = 0;
+    poisonTextYOffset = 0;*/
     isDrugged = false;
     if (izzyMechanicTimer != null) {
       izzyMechanicTimer.cancel();
@@ -2530,12 +2748,59 @@ class RetroPlayState extends Module {
   }
 
   private function checkEndingAchievements():Void {
+    var playerAcc = retroGameUI.scriptCall('getAccuracy', []);
+    var isStory = PlayStatePlaylist.isStoryMode;
+    var missed = Highscore.tallies.missed ?? 0;
+
     // showToast, instaShow, force
     switch (songId) {
       case 'spectral', 'ectospasm':
-        if (poisonAmount >= 10) RetroAchievements.award('wrath-tenpoisons');
+        if (poisonAmount >= 10) RetroAchievements.award('wrath-tenpoisons', true, isStory);
       case 'catastrofiend':
-        if (hydraHits == 0) RetroAchievements.award('wrath-hydradodge');
+        if (hydraHits == 0 && mechanicsEnabled) RetroAchievements.award('wrath-hydradodge');
+      case 'apocalyptro':
+        if (fourChainsAchievement) RetroAchievements.award('wrath-fourchains', true, isStory);
+
+      case 'superbio':
+        if (izzyHits == 0 && mechanicsEnabled) RetroAchievements.award('pride-nohit');
+
+      case 'gutlery':
+        if (insatianHits >= 15) RetroAchievements.award('gluttony-wrapped');
+        else if (insatianHits == 0 && mechanicsEnabled) RetroAchievements.award('gluttony-nohit');
+        if (collapseAch) RetroAchievements.award('gluttony-collapse');
+
+      case 'sweet-talk':
+        if (jewelHits <= 0 && mechanicsEnabled) RetroAchievements.award('greed-dodge', true, isStory);
+      case 'embuzzle':
+        if (terryHits >= coinsSpawned && coinsSpawned > 0 && mechanicsEnabled) RetroAchievements.award('greed-allterrycoins', true, isStory);
+      case 'deadfine':
+        if (playerAcc >= 90) RetroAchievements.award('greed-srank');
+        if (poisonAmount >= 10) RetroAchievements.award('greed-tenwebnotes');
+
+      case 'seasire':
+        if (missed == 0) RetroAchievements.award('envy-fullcombo', true, isStory);
+      case 'macovet':
+        if (atroHitCounterTotal == 0 && mechanicsEnabled) RetroAchievements.award('envy-nonotes');
+
+      case 'lullabyte':
+        if (missed > 100) RetroAchievements.award('sloth-100misses', true, isStory);
+        if (playerAcc <= 60) RetroAchievements.award('sloth-drank', true, isStory);
+      case 'slowstopper':
+        if (dozircHits >= electricSpawned && electricSpawned > 0 && mechanicsEnabled) RetroAchievements.award('sloth-shocked');
+        if (playerAcc <= 60) RetroAchievements.award('sloth-drank');
+
+      case 'extirpatient':
+        if (isStory) RetroAchievements.grantAc('death-meeting');
+        RetroAchievements.grantAc('death-point');
+        if (scytheHits == 0 && mechanicsEnabled) RetroAchievements.award('death-noscythenotes');
+        else if (scytheHits >= 10 && mechanicsEnabled) RetroAchievements.award('death-tenscythes');
+
+      case 'waitkeeper':
+        if (isStory) RetroAchievements.grantAc('patience-pride-ach-1');
+
+      case 'dadbattle-r':
+        if (isStory) RetroAchievements.grantAc('mixter-dadbattle-story');
+        else RetroAchievements.grantAc('mixter-dadbattle');
     }
   }
 
@@ -2550,6 +2815,8 @@ class RetroPlayState extends Module {
     poisonSprite = null;
     poisonSpriteYOffset = 0;
     poisonTextYOffset = 0;
+    sicksInARow = 0;
+    sicks = 0;
     lastIconP1Width = -1;
     forceNotesAlpha = null;
     forceOppNotesAlpha = null;
@@ -2560,6 +2827,10 @@ class RetroPlayState extends Module {
     ogBfId = null;
     songId = null;
     atroHitCounter = 0;
+    atroHitCounterTotal = 0;
+    izzyHits = 0;
+    insatianHits = 0;
+    collapseAch = false;
     destroyHiveminePapers();
     hmpActive = false;
     hmpAnimating = false;
@@ -2567,10 +2838,19 @@ class RetroPlayState extends Module {
     hmpIsAtLimit = false;
     hmpCurrentYValue = 0;
     hmpInstructionPlayed = false;
+    terryHits = 0;
+    jewelHits = 0;
+    coinsSpawned = 0;
     webLockActive = false;
     wiggleShader = null;
     wiggleFilter = null;
     isDoingVocalThing = false;
+    dozircHits = 0;
+    electricSpawned = 0;
+    scytheHits = 0;
+    sakuAlpha = 0;
+    sakuTargetAlpha = 0;
+    sakuTime = 0;
 
     removeInsatianHoles(true);
 
@@ -2588,8 +2868,8 @@ class RetroPlayState extends Module {
         if(PlayState.instance.members.contains(sprite)) {
           PlayState.instance.remove(sprite);
         }
-        sprite.destroy(); // Garante a limpeza da memória gráfica
-        sprite = null;    // Anula a referência
+        sprite.destroy();
+        sprite = null;
       }
     }
 

@@ -14,6 +14,8 @@ import funkin.modding.module.ModuleHandler;
 import funkin.FunkinMemory;
 import funkin.Paths;
 
+import supereric.retrospecter.modules.RetroAchievements;
+
 class HardAcheSong extends Song
 {
   var playState:PlayState;
@@ -58,7 +60,8 @@ class HardAcheSong extends Song
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p2', true]);
 
     if (!suggestive) {
-      playState.currentInstrumental = 'nolines';
+      playState.currentInstrumental = 'nolines'; // fuck why did it stop working
+      playState.currentChart.cacheInst(playState.currentInstrumental);
       if (playState.camSubtitles != null) playState.camSubtitles.visible = false;
     }
 
@@ -71,7 +74,7 @@ class HardAcheSong extends Song
     var w = Math.ceil((FlxG.width + 50) / camZoom);
     var h = Math.ceil((FlxG.height + 50) / camZoom);
 
-    blackFG = FunkinSprite.create(-2500, -1200).makeSolidColor(w, h, 0xFFFFFFFF);
+    blackFG = FunkinSprite.create(-2500, -1500).makeSolidColor(w, h, 0xFFFFFFFF);
     blackFG.color = smokeColor;
     blackFG.scrollFactor.set(0, 0);
     // blackFG.screenCenter();
@@ -135,7 +138,10 @@ class HardAcheSong extends Song
         event.cancel();
         playState.startSong();
         pauseNow = false;
+        RetroAchievements.grantAc('lust-braku', true, true);
       }
+
+      if (!suggestive) RetroAchievements.grantAc('lust-censored', true, true);
 
       PlayState.instance.camGame.bgColor = 0xFF000000;
     }
@@ -144,6 +150,20 @@ class HardAcheSong extends Song
   public override function onSongEnd(event:ScriptEvent):Void
   {
     super.onSongEnd(event);
+
+    if (PlayStatePlaylist.isStoryMode) {
+      var diff = PlayState.instance.currentDifficulty.toLowerCase();
+
+      if (diff == 'hard') {
+        RetroAchievements.grantAc('lust-hell');
+      }
+
+      if (diff == 'normal' || diff == 'hard') {
+        RetroAchievements.grantAc('lust-hard');
+      }
+
+      RetroAchievements.grantAc('lust-normal');
+    }
   }
 
   override function onBeatHit(event:SongTimeScriptEvent):Void
@@ -361,10 +381,10 @@ class HardAcheSong extends Song
         if (playState.camControls != null) playState.camControls.visible = false;
         playState.camHUD.visible = false;
 
-        playState.currentStage?.getBoyfriend().visible = false;
-        playState.currentStage?.getDad().visible = false;
-        playState.currentStage?.getDad().shouldBop = true;
-        playState.currentStage?.getDad().danceEvery = 1;
+        playState.currentStage?.getBoyfriend()?.visible = false;
+        playState.currentStage?.getDad()?.visible = false;
+        playState.currentStage?.getDad()?.shouldBop = true;
+        playState.currentStage?.getDad()?.danceEvery = 1;
 
         playState.currentCameraZoom = playState.stageZoom - 0.2;
         playState.tweenCameraZoom(playState.stageZoom, 8, true, FlxEase.quadOut);

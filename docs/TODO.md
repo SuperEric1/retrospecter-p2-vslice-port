@@ -6,20 +6,21 @@
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Judgement offset adjustment option (and italian translation for it)
 - [ ] Progression unlock thingy (beat a week to unlock others, etc)
 - [ ] Story mode menu?
-- [ ] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [ ] Song ratings for freeplay
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Update charters in song metadatas
 - [ ] Finish the opponent note skins
-- [ ] Dozirc, Izzy and Sakuroma note mechanics
 - [ ] Review mechanics for better accuracy
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] DadBattle credits and no death on story mode
+- [ ] insatian's stage cloud bug
+- [X] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
+- [X] Sakuroma note mechanic
+- [X] Judgement offset adjustment option (and italian translation for it)
 - [X] Spanish translation
 - [X] Superbio, Deadfine, Gutlery, Macovet, Slowstopper, Waitkeeper, Outro (extirpatient) "finish" dialogues translations
 - [X] Superbio camerabop and review english translation text for nightflaid event thing
