@@ -4,11 +4,11 @@ import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
 
-class PrideLevel extends Level
+class EnvyLevel extends Level
 {
   function new()
   {
-    super('20-pride');
+    super('50-envy');
   }
 
   override function isUnlocked():Bool
@@ -22,8 +22,8 @@ class PrideLevel extends Level
 
     if (Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
     {
-      list.remove("egobrainiac");
-      list.remove("superbio");
+      list.remove("seasire");
+      list.remove("macovet");
     }
 
     return list;
@@ -35,7 +35,7 @@ class PrideLevel extends Level
 
     if (!hasBeatenThis())
     {
-      list.remove("Superbio");
+      list.remove("Macovet");
       list.push("???");
     }
 
@@ -47,7 +47,7 @@ class PrideLevel extends Level
   {
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
-      if ((Save.instance.getLevelScore('20-pride', diff)?.score ?? 0) > 0) return true;
+      if ((Save.instance.getLevelScore('50-envy', diff)?.score ?? 0) > 0) return true;
     }
 
     return false;

@@ -128,6 +128,11 @@ class RetroSave extends Module
       save.modOptions.set("retroTitleDisclaimerSuggestive", false);
     }
 
+    // Other
+    if (!save.modOptions.exists("retroStoryModeInstruction")) {
+      save.modOptions.set("retroStoryModeInstruction", false);
+    }
+
     save.flush();
   }
 

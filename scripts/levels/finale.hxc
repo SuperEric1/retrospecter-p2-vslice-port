@@ -4,26 +4,27 @@ import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
 
-class PrideLevel extends Level
+class RetroFinaleLevel extends Level
 {
   function new()
   {
-    super('20-pride');
+    super('80-finale');
   }
 
   override function isUnlocked():Bool
   {
-    return RetroUtil.hasBeatenWrath();
+    return RetroUtil.hasBeatenWrath() && RetroUtil.hasBeatenLust();
   }
 
   override function getSongs():Array<String>
   {
     var list:Array<String> = super.getSongs();
 
-    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
+    if (!RetroUtil.hasBeatenLust() && Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
     {
-      list.remove("egobrainiac");
-      list.remove("superbio");
+      list.remove("waitkeeper");
+      list.remove("extirpatient");
+      list.remove("dadbattle-r");
     }
 
     return list;
@@ -35,10 +36,8 @@ class PrideLevel extends Level
 
     if (!hasBeatenThis())
     {
-      list.remove("Superbio");
-      list.push("???");
+      return ["???"];
     }
-
 
     return list;
   }
@@ -47,7 +46,7 @@ class PrideLevel extends Level
   {
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
-      if ((Save.instance.getLevelScore('20-pride', diff)?.score ?? 0) > 0) return true;
+      if ((Save.instance.getLevelScore('80-finale', diff)?.score ?? 0) > 0) return true;
     }
 
     return false;

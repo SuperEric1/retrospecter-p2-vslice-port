@@ -22,6 +22,7 @@ import funkin.ui.FullScreenScaleMode;
 import haxe.ds.IntMap;
 
 import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroUtil;
 
 class CatastrofiendSong extends Song
 {
@@ -452,6 +453,11 @@ class CatastrofiendSong extends Song
       }
 
       RetroAchievements.grantAc('wrath-normal');
+    }
+
+    if (!RetroUtil.hasBeatenWrath()) {
+      Save.instance.modOptions.set("retroStoryModeInstruction", true);
+      Save.instance.flush();
     }
   }
 

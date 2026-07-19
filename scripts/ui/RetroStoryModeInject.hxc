@@ -1,0 +1,285 @@
+package supereric.retrospecter.modules;
+
+import flixel.FlxG;
+import flixel.text.FlxText;
+import flixel.text.FlxTextFormat;
+import flixel.text.FlxTextBorderStyle;
+import flixel.util.FlxTimer;
+import flixel.util.FlxColor;
+import flixel.math.FlxRect;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import funkin.save.Save;
+import funkin.modding.module.Module;
+import funkin.modding.events.ScriptEvent;
+import funkin.modding.events.StateChangeScriptEvent;
+import funkin.modding.events.UpdateScriptEvent;
+import funkin.ui.story.StoryMenuState;
+import funkin.PlayerSettings;
+import funkin.util.TouchUtil;
+import funkin.util.ReflectUtil;
+import funkin.graphics.FunkinSprite;
+import funkin.mobile.input.ControlsHandler;
+import funkin.audio.FunkinSound;
+import StringTools;
+
+import supereric.retrospecter.modules.RetroSave;
+import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroLanguage;
+
+class RetroStoryModeInject extends Module
+{
+  static final PORT_LEVEL_IDS:Array<String> = [
+    '10-wrath',
+    '20-pride',
+    '30-gluttony',
+    '40-greed',
+    '50-envy',
+    '60-sloth',
+    '70-lust',
+    '80-finale'
+  ];
+
+  var storyState:StoryMenuState;
+  var isMobile:Bool = false;
+  var isStoryMenu:Bool = false;
+  var showingUnlockedPopup:Bool = false;
+  var canInteract:Bool = true;
+
+  var lockedText:FlxText;
+  var lockSprite:FunkinSprite;
+  var popupBG:FunkinSprite;
+  var popupText:FlxText;
+  var lastLevelId:String;
+
+  public function new()
+  {
+    super('RetroStoryModeInject');
+  }
+
+  override public function onStateChangeEnd(event:StateChangeScriptEvent):Void
+  {
+    isStoryMenu = Std.isOfType(event.targetState, StoryMenuState);
+
+    storyState = isStoryMenu ? event.targetState : null;
+    isMobile = FlxG.onMobile && !ControlsHandler.usingExternalInputDevice;
+    lastLevelId = null;
+
+    if (isStoryMenu)
+    {
+      lockedText = new FlxText(0, 80, FlxG.width, '');
+      lockedText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), 36, FlxColor.WHITE, 'center');
+      lockedText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2.7);
+      lockedText.zIndex = 1000;
+      lockedText.visible = false;
+      lockedText.antialiasing = false;
+      storyState.add(lockedText);
+
+      lockSprite = FunkinSprite.create(0, 440, 'ui/mainmenu/lock');
+      lockSprite.screenCenter(0x01);
+      lockSprite.x -= (FlxG.width * 0.33);
+      lockSprite.zIndex = 1000;
+      lockSprite.visible = false;
+      lockSprite.scale.set(0.7, 0.7);
+      lockSprite.alpha = 0.7;
+      storyState.add(lockSprite);
+
+      showingUnlockedPopup = Save.instance.modOptions.get("retroStoryModeInstruction") ?? false;
+
+      if (showingUnlockedPopup) {
+        createUnlockedPopup();
+
+        Save.instance.modOptions.set("retroStoryModeInstruction", false);
+        Save.instance.flush();
+      }
+    }
+
+    /*if (isStoryMenu) {
+      if (FlxG.mouse.cursor != null) FlxG.mouse.visible = false;
+    }*/
+  }
+
+  override public function onUpdate(event:UpdateScriptEvent):Void
+  {
+    if (storyState == null || !isStoryMenu) return;
+
+    updateLock();
+
+    var selectedLevel:Bool = ReflectUtil.getProperty(storyState, 'selectedLevel');
+    if (selectedLevel) return;
+
+    var triedSelect:Bool = PlayerSettings.player1.controls.ACCEPT_P;
+
+    if (!triedSelect)
+    {
+      var currentLevelTitle:Dynamic = ReflectUtil.getProperty(storyState, 'currentLevelTitle');
+      var pressed:Bool = isMobile && TouchUtil.justReleased && TouchUtil.pressAction(currentLevelTitle, null, false);
+      if (currentLevelTitle != null && pressed)
+      {
+        triedSelect = true;
+      }
+    }
+
+    var selectedAny:Bool = triedSelect || (FlxG.mouse.justPressed || FlxG.keys.justPressed.ANY || (isMobile && TouchUtil.justPressed));
+
+    if (selectedAny && canInteract && popupBG != null && popupBG.visible) {
+      animateUnlockedPopupExit();
+    }
+
+    if (!triedSelect) return;
+
+    var currentLevelId:String = ReflectUtil.getProperty(storyState, 'currentLevelId');
+    if (!PORT_LEVEL_IDS.contains(currentLevelId)) return;
+
+    var isLevelUnlocked:Bool = ReflectUtil.getProperty(storyState, 'isLevelUnlocked');
+    if (!isLevelUnlocked)
+    {
+      FunkinSound.playOnce(Paths.sound('menus/no'));
+      FlxG.camera.shake(0.003, 0.1, null, true);
+      RetroAchievements.award('misc-nolock', true, true);
+    }
+  }
+
+  private function updateLock():Void
+  {
+    if (lockedText == null) return;
+
+    var currentLevelId:String = ReflectUtil.getProperty(storyState, 'currentLevelId');
+    if (currentLevelId == lastLevelId) return;
+    lastLevelId = currentLevelId;
+
+    var isLevelUnlocked:Bool = ReflectUtil.getProperty(storyState, 'isLevelUnlocked');
+
+    var requiredName:String = null;
+    var requiredColor:FlxColor = FlxColor.WHITE;
+
+    switch (currentLevelId)
+    {
+      case '80-finale':
+        requiredName = 'LUST';
+        requiredColor = 0xFFf959dd;
+      default:
+        requiredName = 'WRATH';
+        requiredColor = 0xFF00ecd9;
+    }
+
+    if (requiredName == null || isLevelUnlocked)
+    {
+      lockedText.visible = false;
+      lockSprite.visible = false;
+      return;
+    }
+
+    var fullText:String = RetroLanguage.tf('storymenu.locked', [requiredName]);
+    var placeholderIndex:Int = fullText.indexOf(requiredName);
+
+    lockedText.text = fullText;
+    lockedText.clearFormats();
+    if (placeholderIndex != -1)
+    {
+      lockedText.addFormat(new FlxTextFormat(requiredColor), placeholderIndex, placeholderIndex + requiredName.length);
+    }
+
+    lockedText.visible = true;
+    lockSprite.visible = true;
+  }
+
+  override public function onStateChangeBegin(event:StateChangeScriptEvent)
+  {
+    super.onStateChangeBegin(event);
+    if (!isStoryMenu) return;
+
+    if (lockedText != null) {
+      lockedText.destroy();
+      lockedText = null;
+    }
+    if (lockSprite != null) {
+      lockSprite.destroy();
+      lockedText = null;
+    }
+
+    destroyPopup();
+    canInteract = false;
+  }
+
+  final popupBGSize = 450;
+
+  private function createUnlockedPopup():Void {
+    canInteract = false;
+
+    popupBG = new FunkinSprite(0, 0).makeSolidColor(popupBGSize, popupBGSize, FlxColor.BLACK);
+    popupBG.zIndex = 2000;
+    popupBG.alpha = 0.8;
+
+    var size:Int = 35;
+    var steps:Int = 0;
+    var maxHeight:Float = popupBG.height * 0.8;
+    popupText = new FlxText(0, 0, popupBG.width * 0.8, RetroLanguage.t('game.unlocksins'));
+    popupText.setFormat(Paths.font('Kenyan Coffee Rg.otf'), size, FlxColor.WHITE, 'center');
+    popupText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+    popupText.zIndex = popupBG.zIndex + 1;
+
+    while (popupText.height > maxHeight && size > 20) {
+      size--;
+      steps++;
+      popupText.size = size;
+    }
+
+    popupText.screenCenter();
+
+    storyState.add(popupBG);
+    storyState.add(popupText);
+
+    animateUnlockedPopup();
+  }
+  private function animateUnlockedPopup():Void {
+    if (storyState == null) return;
+    popupText.visible = false;
+    popupBG.makeSolidColor(popupBGSize, 1, FlxColor.BLACK);
+
+    var screenCenterX:Float = (FlxG.width - popupBG.width) / 2;
+    var screenCenterY:Float = FlxG.height / 2;
+
+    new FlxTimer().start(1, function(t:FlxTimer) {
+      FlxTween.num(1, popupBGSize, 0.3, { onUpdate: function(t:FlxTween) {}, onComplete: function(t:FlxTween) {
+        popupText.visible = true;
+        new FlxTimer().start(0.5, function(t:FlxTimer) { canInteract = true; });
+        new FlxTimer().start(7, animateUnlockedPopupExit);
+      } }, function(h:Float) {
+        popupBG.makeSolidColor(popupBGSize, Std.int(h), FlxColor.BLACK);
+        popupBG.x = screenCenterX;
+        popupBG.y = screenCenterY - h / 2;
+      });
+    });
+  }
+  private function animateUnlockedPopupExit():Void {
+    if (storyState == null || !popupBG.visible) return;
+    canInteract = false;
+    popupText.visible = false;
+
+    var screenCenterX:Float = (FlxG.width - popupBG.width) / 2;
+    var screenCenterY:Float = FlxG.height / 2;
+
+    FlxTween.num(popupBGSize, 1, 0.3, { onComplete: function(t:FlxTween) {
+      popupBG.visible = false;
+      canInteract = false;
+      destroyPopup();
+    } }, function(h:Float) {
+      popupBG.makeSolidColor(popupBGSize, Std.int(h), FlxColor.BLACK);
+      popupBG.x = screenCenterX;
+      popupBG.y = screenCenterY - h / 2;
+    });
+  }
+  private function destroyPopup():Void {
+    if (popupBG != null) {
+      FlxTween.cancelTweensOf(popupBG);
+      popupBG.destroy();
+      popupBG = null;
+    }
+    if (popupText != null) {
+      FlxTween.cancelTweensOf(popupText);
+      popupText.destroy();
+      popupText = null;
+    }
+  }
+}

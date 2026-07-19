@@ -14,6 +14,8 @@ stats.card.remix = "Remix por {0}"
 stats.card.original = "Original por {0}"
 stats.card.charter = "Chart por {0}"
 
+storymenu.locked = "Vence a {0} para Desbloquear!"
+
 judgement.sick = "¡GENIAL!!"
 judgement.good = "¡BIEN!"
 judgement.bad = "MAL"

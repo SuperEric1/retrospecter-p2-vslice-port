@@ -28,6 +28,7 @@ class LustLevel extends Level
 
     if (RetroUtil.hasBeatenWrath() && Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
     {
+      list.remove("fuzzy-feeling");
       list.remove("heartmelter");
       list.remove("hard-ache");
     }

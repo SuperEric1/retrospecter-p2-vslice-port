@@ -397,7 +397,7 @@ class RetroMainMenu extends MusicBeatState
     new FlxTimer().start(0.6, function(_:FlxTimer) {
       canNavigate = true;
     });
-    
+
     RetroAchievements.checkAllCategories();
     RetroAchievements.showQueuedToasts(0.3);
   }
@@ -859,7 +859,9 @@ class RetroMainMenu extends MusicBeatState
   function goToFreeplay():Void
   {
     var stateFunc:Dynamic = function():Void {
-      openSubState(new FreeplayState());
+      new FlxTimer().start(0.1, function (t:FlxTimer) {
+        openSubState(new FreeplayState());
+      });
     };
     FlxTransitionableState.skipNextTransIn = false;
 

@@ -1,0 +1,30 @@
+import funkin.ui.story.Level;
+import funkin.save.Save;
+import funkin.ui.freeplay.FreeplayState;
+
+import supereric.retrospecter.modules.RetroUtil;
+
+class WrathLevelExtras extends Level
+{
+  function new()
+  {
+    super('11-wrath_extras');
+  }
+
+  override function isUnlocked():Bool
+  {
+    return true;
+  }
+
+  override function getSongs():Array<String>
+  {
+    var list:Array<String> = super.getSongs();
+
+    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !RetroUtil.hasBeatenWrath())
+    {
+      list.remove("ectospasm");
+    }
+
+    return list;
+  }
+}

@@ -6,7 +6,6 @@
 - [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Progression unlock thingy (beat a week to unlock others, etc)
 - [ ] Story mode menu?
 - [ ] Song ratings for freeplay
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
@@ -17,6 +16,7 @@
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] insatian's stage cloud bug
+- [X] Progression unlock thingy (beat a week to unlock others, etc)
 - [X] DadBattle credits and no death on story mode
 - [X] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [X] Sakuroma note mechanic

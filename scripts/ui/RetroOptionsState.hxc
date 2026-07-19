@@ -1171,7 +1171,7 @@ class RetroOptionsState extends Module
   }
 
   function dozircSleep():Void {
-    if (!canSleep || browserOpenForApp == 6) {
+    if (curAnim != 'anims/default' || !canSleep || browserOpenForApp == 6) {
       resetIdleTimer();
       return;
     }
