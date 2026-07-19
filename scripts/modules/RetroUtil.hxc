@@ -253,6 +253,7 @@ class RetroUtil extends Module
 
   public static function hasBeatenWrath():Bool
   {
+    //return true;
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) > 0) return true;

@@ -22,6 +22,7 @@ class WrathLevel extends Level
 
     if (Std.isOfType(FlxG.state.subState, FreeplayState) && !RetroUtil.hasBeatenWrath())
     {
+      list.remove("satisfracture");
       list.remove("spectral");
       list.remove("apocalyptro");
       list.remove("catastrofiend");

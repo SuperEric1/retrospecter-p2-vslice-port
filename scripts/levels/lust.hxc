@@ -22,6 +22,7 @@ class LustLevel extends Level
 
     if (!RetroUtil.hasBeatenWrath())
     {
+      list.remove("fuzzy-feeling");
       list.remove("heartmelter");
       list.remove("hard-ache");
     }

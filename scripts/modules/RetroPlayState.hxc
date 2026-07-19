@@ -843,8 +843,12 @@ class RetroPlayState extends Module {
       sicksInARow = 0;
 
       if (k == "autoChain") {
-        lockStrum(noteDir);
         if (k == 'autoChain') chainText.visible = true; // why did i put a if here
+
+        // Simulate a note hit
+        var noteEvent:NoteScriptEvent = new HitNoteScriptEvent(event.note, 0.0, 0, 'perfect', false, 0);
+        PlayState.instance.dispatchEvent(noteEvent);
+        //PlayState.instance.playerStrumline.hitNote(event.note);
 
         event.note.kill();
         event.cancel();

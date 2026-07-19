@@ -15,11 +15,11 @@ class AutoChainNote extends NoteKind {
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
 		event.note.x += 1;
-		event.note.yOffset += -35 * -2;
+		event.note.yOffset += -100;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/ChainNotes');
+		//event.note.frames = Paths.getSparrowAtlas('notes/ChainNotes');
 		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
 			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
