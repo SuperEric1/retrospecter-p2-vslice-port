@@ -7,7 +7,7 @@
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] Story mode menu?
-- [ ] Song ratings for freeplay
+- [ ] Song ratings for freeplay & backingcards
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Update charters in song metadatas
 - [ ] Finish the opponent note skins
