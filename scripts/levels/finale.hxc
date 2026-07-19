@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class RetroFinaleLevel extends Level
 {
@@ -20,7 +21,7 @@ class RetroFinaleLevel extends Level
   {
     var list:Array<String> = super.getSongs();
 
-    if (!RetroUtil.hasBeatenLust() && Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
+    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
     {
       list.remove("waitkeeper");
       list.remove("extirpatient");
@@ -44,6 +45,8 @@ class RetroFinaleLevel extends Level
 
   private function hasBeatenThis():Bool
   {
+    if (RetroSave.isUnlockSongs()) return true;
+
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('80-finale', diff)?.score ?? 0) > 0) return true;

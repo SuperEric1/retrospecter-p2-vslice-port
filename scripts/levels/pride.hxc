@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class PrideLevel extends Level
 {
@@ -45,6 +46,8 @@ class PrideLevel extends Level
 
   private function hasBeatenThis():Bool
   {
+    if (RetroSave.isUnlockSongs()) return true;
+
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('20-pride', diff)?.score ?? 0) > 0) return true;

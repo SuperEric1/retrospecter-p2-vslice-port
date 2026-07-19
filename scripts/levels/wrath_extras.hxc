@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class WrathLevelExtras extends Level
 {
@@ -20,7 +21,7 @@ class WrathLevelExtras extends Level
   {
     var list:Array<String> = super.getSongs();
 
-    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !RetroUtil.hasBeatenWrath())
+    if (!RetroSave.isUnlockSongs() && Std.isOfType(FlxG.state.subState, FreeplayState) && !RetroUtil.hasBeatenWrath())
     {
       list.remove("ectospasm");
     }

@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class LustLevel extends Level
 {
@@ -20,14 +21,13 @@ class LustLevel extends Level
   {
     var list:Array<String> = super.getSongs();
 
-    if (!RetroUtil.hasBeatenWrath())
+    if (!RetroUtil.hasBeatenWrath() && !RetroSave.isUnlockSongs())
     {
-      list.remove("fuzzy-feeling");
       list.remove("heartmelter");
       list.remove("hard-ache");
     }
 
-    if (RetroUtil.hasBeatenWrath() && Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
+    if (Std.isOfType(FlxG.state.subState, FreeplayState) && !hasBeatenThis())
     {
       list.remove("fuzzy-feeling");
       list.remove("heartmelter");
@@ -53,6 +53,8 @@ class LustLevel extends Level
 
   private function hasBeatenThis():Bool
   {
+    if (RetroSave.isUnlockSongs()) return true;
+
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('70-lust', diff)?.score ?? 0) > 0) return true;

@@ -11,14 +11,23 @@ class RetroSave extends Module
   public static final folderNames:Array<String> = ["retrospecter-p2-vslice-port", "retrospecter-p2-vslice-port-main"];
 
   public static var debug:String = "false";
+  public static var unlockSongs:String = "false";
+  public static var unlockStory:String = "false";
   private static var resetWarns:String = "false";
   private static var resetAchievements:String = "false";
   private static var _initialized:Bool = false;
 
   public static function isDebug():Bool {
     if (!_initialized) initStatic();
-    //trace(debug);
     return debug == "true";
+  }
+  public static function isUnlockSongs():Bool {
+    if (!_initialized) initStatic();
+    return unlockSongs == "true";
+  }
+  public static function isUnlockStory():Bool {
+    if (!_initialized) initStatic();
+    return unlockStory == "true";
   }
   public static function isResetWarns():Bool {
     if (!_initialized) initStatic();
@@ -42,6 +51,8 @@ class RetroSave extends Module
 
     if (data != null) {
       debug = data.metadata?.get("debug") ?? "false";
+      unlockSongs = data.metadata?.get("unlock_songs") ?? "false";
+      unlockStory = data.metadata?.get("unlock_story") ?? "false";
       resetWarns = data.metadata?.get("reset_warns") ?? "false";
       resetAchievements = data.metadata?.get("reset_achievements") ?? "false";
     }

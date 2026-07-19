@@ -18,6 +18,8 @@ import funkin.play.event.SongEvent;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 
+import supereric.retrospecter.modules.RetroSave;
+
 class RetroUtil extends Module
 {
   public function new()
@@ -259,7 +261,7 @@ class RetroUtil extends Module
       if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) > 0) return true;
     }
 
-    return false;
+    return RetroSave.isUnlockStory(); // default false
   }
 
   public static function hasBeatenLust():Bool
@@ -269,11 +271,13 @@ class RetroUtil extends Module
       if ((Save.instance.getLevelScore('70-lust', diff)?.score ?? 0) > 0) return true;
     }
 
-    return false;
+    return RetroSave.isUnlockStory(); // default false
   }
 
   public static function hasBeatenOthers():Bool
   {
+    if (RetroSave.isUnlockStory()) return true;
+
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) <= 0) return false;

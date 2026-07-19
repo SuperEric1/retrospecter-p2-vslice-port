@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class GluttonyLevel extends Level
 {
@@ -45,6 +46,8 @@ class GluttonyLevel extends Level
 
   private function hasBeatenThis():Bool
   {
+    if (RetroSave.isUnlockSongs()) return true;
+    
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('30-gluttony', diff)?.score ?? 0) > 0) return true;

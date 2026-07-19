@@ -3,6 +3,7 @@ import funkin.save.Save;
 import funkin.ui.freeplay.FreeplayState;
 
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroSave;
 
 class WrathLevel extends Level
 {
@@ -33,7 +34,7 @@ class WrathLevel extends Level
 
   override function getSongDisplayNames(difficultyId:String):Array<String>
   {
-    if (RetroUtil.hasBeatenWrath()) {
+    if (RetroUtil.hasBeatenWrath() || RetroSave.isUnlockSongs()) {
       return ["Satisfracture", "Spectral", "Apocalyptro", "Catastrofiend"];
     }
     else {

@@ -18,6 +18,8 @@
   ],
   "metadata": {
     "debug": "false",
+    "unlock_songs": "false",
+    "unlock_story": "false",
     "reset_warns": "false",
     "reset_achievements": "false"
   },
