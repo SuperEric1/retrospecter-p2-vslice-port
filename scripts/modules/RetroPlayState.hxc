@@ -909,7 +909,7 @@ class RetroPlayState extends Module {
     }
   }
   public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
-    super('onNoteGhostMiss');
+    super.onNoteGhostMiss(event);
     if (PlayState.instance == null) return;
     if (!isRetro) return;
 

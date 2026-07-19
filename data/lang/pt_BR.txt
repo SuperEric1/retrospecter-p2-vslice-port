@@ -48,6 +48,16 @@ game.credits.role.programmers = "Programadores"
 game.credits.role.charters = "Charters"
 game.credits.role.voiceactors = "Dubladores"
 
+game.credits.additional = "Créditos adicionais da P2 e créditos de versões anteriores do mod podem ser encontrados na 2ª tela do menu principal!"
+game.credits.hugethanks = "Um agradecimento ENORME aos meus amigos, minha família, meus apoiadores e meus espectadores da stream por tornarem esse mod possível. O mod literalmente não teria sido finalizado sem todos vocês. <3"
+game.credits.bigthanks = "Também um grande agradecimento a PhantomArcade, KawaiSprite, NinjaMuffin99 e EvilSk8r por me darem um meio de expressar meu universo e personagens através do jogo de vocês."
+game.credits.butmost = "Mas o mais importante..."
+game.credits.thankplayer = "Obrigado a VOCÊ por jogar/assistir isso!"
+game.credits.portby = "Port mobile por {0} :)"
+
+game.unlocksins = "Parabéns por completar a História de Wrath! Porém, isso é só o começo. Desafie os outros Infernalings para ver o que mais te espera!"
+game.unlockmenus = "Agora você também pode acessar modos adicionais no Menu Principal, como Side Stories, Freeplay e mais."
+
 # - OPÇÕES -
 options.mod_desc = "Abaixo, você pode customizar sua experiência de jogo no port.\nFan port por SuperEric (youtube.com/@super_eric)"
 

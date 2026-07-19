@@ -32,8 +32,11 @@ class DadBattleRSong extends Song
   var isMobile:Bool = false;
   var gradientOffset:Float = 0;
   var globalMargin:Float = 20;
+  var songEnded:Bool = false;
+  var hideCredits:Bool = false;
 
   var gradient:FunkinSprite;
+  final atariFont = 'AtariST8x16SystemFont.ttf';
 
   // Credits
   var creditScale:Float = 1;
@@ -42,7 +45,7 @@ class DadBattleRSong extends Song
   var creditsTotalHeight:Float = 0;
   var creditsScrolling:Bool = false;
   var songDuration:Float = 0;
-  var creditsEndBuffer:Float = 3000;
+  var creditsEndBuffer:Float = 4000;
 
   public function new()
   {
@@ -54,6 +57,8 @@ class DadBattleRSong extends Song
   public override function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
+    songEnded = false;
+    hideCredits = false;
   }
 
   public override function onSongLoaded(event:ScriptEvent):Void
@@ -64,8 +69,11 @@ class DadBattleRSong extends Song
 
     if (!PlayStatePlaylist.isStoryMode) {
       hasCreatedSprites = true;
+      hideCredits = true;
       return;
     }
+
+    songEnded = false;
 
     if (!hasCreatedSprites) {
       FunkinMemory.cacheTexture(Paths.image('dialogue/special/bar', "shared"));
@@ -89,6 +97,10 @@ class DadBattleRSong extends Song
 
       buildCredits();
       PlayState.instance.refresh();
+
+      PlayState.instance.healthBar.alpha = 0;
+      PlayState.instance.iconP1.alpha = 0;
+      PlayState.instance.iconP2.alpha = 0;
     }
 
     if (gradient != null) {
@@ -100,6 +112,7 @@ class DadBattleRSong extends Song
 
   function buildCredits():Void
   {
+    hideCredits = false;
     creditObjects = [];
     creditScale = isMobile ? 0.9 : 1.5;
     creditAreaWidth = !isMobile ? FlxG.width / 2 : 450;
@@ -191,7 +204,7 @@ class DadBattleRSong extends Song
         var nameX:Float = globalMargin + spr.width + 12 * creditScale;
         var nameY:Float = currentY + (spr.height - nameFontSize * 1.2) / 2;
         var nameText:FlxText = new FlxText(nameX, nameY, 0, person.display);
-        nameText.setFormat(Paths.font('AtariST8x16SystemFont.ttf'), nameFontSize, FlxColor.WHITE);
+        nameText.setFormat(Paths.font(atariFont), nameFontSize, FlxColor.WHITE);
         nameText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
         nameText.cameras = [PlayState.instance.camCutscene];
         nameText.scrollFactor.set(0, 0);
@@ -203,6 +216,51 @@ class DadBattleRSong extends Song
       }
     }
 
+    var multScale:Float = isMobile ? 1.4 : 1;
+    var extraTextWidth:Int = Std.int(creditAreaWidth - globalMargin * 2);
+    var extraTextSize:Int = Std.int(16 * (creditScale * multScale));
+    var thankPlayerSize:Int = Std.int(30 * (creditScale * multScale));
+    var extraTextMargin:Float = globalMargin + 12;
+    var extraTextGap:Float = 120 * creditScale;
+    var beforeExtraTextsGap:Float = 200 * creditScale;
+    var portByGap:Float = 10 * creditScale;
+
+    currentY += beforeExtraTextsGap;
+
+    var extraKeys:Array<String> = ['game.credits.additional', 'game.credits.hugethanks', 'game.credits.bigthanks', 'game.credits.butmost'];
+
+    for (key in extraKeys) {
+      var extraText:FlxText = new FlxText(extraTextMargin, currentY, extraTextWidth, RetroLanguage.t(key));
+      extraText.setFormat(Paths.font(atariFont), extraTextSize, FlxColor.WHITE, 'center');
+      extraText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+      extraText.cameras = [PlayState.instance.camCutscene];
+      extraText.scrollFactor.set(0, 0);
+      //extraText.antialiasing = false;
+      PlayState.instance.add(extraText);
+      creditObjects.push({ obj: extraText, baseY: currentY });
+      currentY += extraText.height + extraTextGap;
+    }
+
+    var thankPlayerText:FlxText = new FlxText(extraTextMargin, currentY, extraTextWidth, RetroLanguage.t('game.credits.thankplayer'));
+    thankPlayerText.setFormat(Paths.font(atariFont), thankPlayerSize, FlxColor.WHITE, 'center');
+    thankPlayerText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+    thankPlayerText.cameras = [PlayState.instance.camCutscene];
+    thankPlayerText.scrollFactor.set(0, 0);
+    //thankPlayerText.antialiasing = false;
+    PlayState.instance.add(thankPlayerText);
+    creditObjects.push({ obj: thankPlayerText, baseY: currentY });
+    currentY += thankPlayerText.height + portByGap;
+
+    var portByText:FlxText = new FlxText(extraTextMargin, currentY, extraTextWidth, RetroLanguage.tf('game.credits.portby', ['SuperEric']));
+    portByText.setFormat(Paths.font(atariFont), extraTextSize, FlxColor.WHITE, 'center');
+    portByText.setBorderStyle(FlxTextBorderStyle.OUTLINE, FlxColor.BLACK, 2);
+    portByText.cameras = [PlayState.instance.camCutscene];
+    portByText.scrollFactor.set(0, 0);
+    //portByText.antialiasing = false;
+    PlayState.instance.add(portByText);
+    creditObjects.push({ obj: portByText, baseY: currentY });
+    currentY += portByText.height;
+
     creditsTotalHeight = currentY + globalMargin - FlxG.height;
   }
 
@@ -210,7 +268,10 @@ class DadBattleRSong extends Song
   {
     super.onSongStart(event);
 
-    if (gradient != null) FlxTween.tween(gradient, { x: 0 + gradientOffset }, 0.5, { ease: FlxEase.linear });
+    if (gradient != null) {
+      FlxTween.tween(gradient, { x: 0 + gradientOffset }, 0.5, { ease: FlxEase.linear });
+      gradient.alpha = 1;
+    }
 
     songDuration = FlxG.sound.music != null ? FlxG.sound.music.length : 0;
     creditsScrolling = songDuration > 0;
@@ -219,6 +280,9 @@ class DadBattleRSong extends Song
   public override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (PlayState.instance == null || songEnded) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
     if (!creditsScrolling || songDuration <= 0) return;
 
@@ -228,6 +292,35 @@ class DadBattleRSong extends Song
 
     for (entry in creditObjects)
       entry.obj.y = entry.baseY - scrollY;
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void
+  {
+    super.onStepHit(event);
+    var curStep = event.step;
+
+    if (curStep >= 2320 && !hideCredits) {
+      hideCredits = true;
+
+      for (entry in creditObjects)
+        FlxTween.tween(entry.obj, { x: entry.obj.x - 600 }, 0.5, { ease: FlxEase.quartOut });
+
+      if (gradient != null) FlxTween.tween(gradient, { alpha: 0 }, 0.5);
+    }
+  }
+
+  public override function onNoteMiss(event:NoteScriptEvent)
+	{
+    super.onNoteMiss(event);
+    if (event.note.noteData.getMustHitNote()) { // Só pro jogador!
+      if (PlayStatePlaylist.isStoryMode) PlayState.instance.health += event.healthChange;
+    }
+  }
+
+  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void
+  {
+    super.onNoteGhostMiss(event);
+    if (PlayStatePlaylist.isStoryMode) event.cancel();
   }
 
   public override function onCountdownStart(event:CountdownScriptEvent):Void
@@ -256,6 +349,8 @@ class DadBattleRSong extends Song
       event.cancel();
       hasPlayedEndCutscene = true;
 
+      PlayState.instance.camHUD.visible = false;
+
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['dadbattle story', 'post', function() {
         PlayState.instance.mayPauseGame = true;
@@ -264,12 +359,18 @@ class DadBattleRSong extends Song
     }
   }
 
+  public override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+  }
+
   public override function onDestroy(event)
 	{
 		super.onDestroy(event);
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;
     hasCreatedSprites = false;
+    songEnded = false;
   }
 
   public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool

@@ -17,6 +17,7 @@ class MixterCharacter extends SparrowCharacter {
 	var min = HealthIcon.LOSING_THRESHOLD * 0.9;
 
 	function onNoteHit(event:HitNoteScriptEvent) {
+		if (PlayState.instance == null) return;
 		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
 			switch (event.note.noteData.kind)
 			{

@@ -16,8 +16,8 @@
 - [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Check the end scythes cutscene colors to see if they match
-- [ ] DadBattle credits and no death on story mode
 - [ ] insatian's stage cloud bug
+- [X] DadBattle credits and no death on story mode
 - [X] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
 - [X] Sakuroma note mechanic
 - [X] Judgement offset adjustment option (and italian translation for it)
