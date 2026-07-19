@@ -2559,7 +2559,7 @@ class RetroPlayState extends Module {
           FlxTween.cancelTweensOf(note);
           note.x = ogStrumsX[i];
           note.y = ogStrumsY[i];
-          note.scale.set(ogOppStrumScales[i * 2], ogOppStrumScales[i * 2 + 1]);
+          note.scale.set(ogPlayerStrumScales[i * 2], ogPlayerStrumScales[i * 2 + 1]);
           note.angle = 0;
           note.alpha = 1;
           note.colorTransform.redMultiplier = 1;
@@ -2574,7 +2574,7 @@ class RetroPlayState extends Module {
           FlxTween.cancelTweensOf(note);
           note.x = ogOppStrumsX[i];
           note.y = ogOppStrumsY[i];
-          note.scale.set(ogPlayerStrumScales[i * 2], ogPlayerStrumScales[i * 2 + 1]);
+          note.scale.set(ogOppStrumScales[i * 2], ogOppStrumScales[i * 2 + 1]);
           note.angle = 0;
           note.alpha = 1;
           note.colorTransform.redMultiplier = 1;

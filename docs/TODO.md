@@ -12,11 +12,11 @@
 - [ ] Update charters in song metadatas
 - [ ] Finish the opponent note skins
 - [ ] Review mechanics for better accuracy
-- [ ] Fix reseting strum scales to default when restarting song
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] Fuzzy feeling entrance and rejection
 - [ ] insatian's stage cloud bug
+- [X] Fix reseting strum scales to default when restarting song
 - [X] Progression unlock thingy (beat a week to unlock others, etc)
 - [X] DadBattle credits and no death on story mode
 - [X] ACHIEVEMENTS!!! (god this will take too much work but okay lol)
