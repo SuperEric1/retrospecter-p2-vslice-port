@@ -3,17 +3,17 @@ import funkin.Paths;
 
 class ScytheNote extends NoteKind {
 	public function new() {
-		super('scytheNote', 'Scythe Note', null, [], true); // id, description, styleId, params, noanim
+		super('scytheNote', 'Scythe Note', 'scythe', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
-		event.note.x += -79;
-		event.note.yOffset += -74;
+		event.note.x += 4;
+		event.note.yOffset += -53;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/scytheNotes');
+		/*event.note.frames = Paths.getSparrowAtlas('notes/scytheNotes');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
@@ -25,10 +25,10 @@ class ScytheNote extends NoteKind {
 			case 1: scytheAnim = 'blueScroll';
 			case 2: scytheAnim = 'greenScroll';
 			case 3: scytheAnim = 'redScroll';
-		}
+		}*/
 
 		event.note.active = true;
-		event.note.animation.play(scytheAnim, true);
+		//event.note.animation.play(scytheAnim, true);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

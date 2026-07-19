@@ -226,6 +226,19 @@ class NightflaidCharacter extends AnimateAtlasCharacter
     hasFadenUI = false;
   }
 
+  // Load custom notestyle.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+    var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+    var strumStyle:String = 'nightflaid';
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+	}
+
   override function onAnimationFinished(name:String)
   {
     super.onAnimationFinished(name);
