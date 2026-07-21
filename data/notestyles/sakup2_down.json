@@ -1,0 +1,99 @@
+{
+  "version": "1.1.0",
+  "name": "Sakuroma (Phase 2)",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/Lust_Note_Assets",
+      "scale": 0.7,
+      "offsets": [10, -125],
+      "animated": true,
+      "data": {
+        "left": { "prefix": "Left(Down)0", "looped": true },
+        "down": { "prefix": "Down(Down)0", "looped": true },
+        "up": { "prefix": "Up(Down)0", "looped": true },
+        "right": { "prefix": "Right(Down)0", "looped": true }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": "shared:notes/Lust_Note_Assets",
+      "scale": 0.7,
+      "offsets": [-21, -130],
+      "data": {
+        "leftStatic": { "prefix": "static Left0" },
+        "leftPress": { "prefix": "static Left0" },
+        "leftConfirm": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
+
+        "downStatic": { "prefix": "static Down0" },
+        "downPress": { "prefix": "static Down0" },
+        "downConfirm": { "prefix": "confirm Down0", "offsets": [-5, 0] },
+        "downConfirmHold": { "prefix": "confirm Down0005", "offsets": [-5, 0] },
+
+        "upStatic": { "prefix": "static Up0" },
+        "upPress": { "prefix": "static Up0" },
+        "upConfirm": { "prefix": "confirm Up0", "offsets": [-5, 0] },
+        "upConfirmHold": { "prefix": "confirm Up0005", "offsets": [-5, 0] },
+
+        "rightStatic": { "prefix": "static Right0" },
+        "rightPress": { "prefix": "static Right0" },
+        "rightConfirm": { "prefix": "confirm Right0" },
+        "rightConfirmHold": { "prefix": "confirm Right0005" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "shared:notes/hold/Lust",
+      "scale": 0.7,
+      "offsets": [-6, 0],
+      "data": {}
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Lust_cover",
+      "offsets": [6, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    },
+    "noteSplash": {
+      "assetPath": null,
+      "alpha": 0.8,
+      "offsets": [40, 0],
+      "data": {
+        "enabled": false,
+        "leftSplashes": [
+          { "prefix": "note splash purple 1" }
+        ],
+        "rightSplashes": [
+          { "prefix": "note splash red 1" }
+        ],
+        "upSplashes": [
+          { "prefix": "note splash green 1" }
+        ],
+        "downSplashes": [
+          { "prefix": "note splash blue 1" }
+        ]
+      }
+    }
+  }
+}

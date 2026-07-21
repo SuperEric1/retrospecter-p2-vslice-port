@@ -1,0 +1,88 @@
+{
+  "version": "1.1.0",
+  "name": "Heart Note",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/HeartNotes",
+      "scale": 0.7,
+      "offsets": [0, 0],
+      "animated": true,
+      "data": {
+        "left": { "prefix": "Left(Down)0", "looped": true },
+        "down": { "prefix": "Down(Down)0", "looped": true },
+        "up": { "prefix": "Up(Down)0", "looped": true },
+        "right": { "prefix": "Right(Down)0", "looped": true }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": null,
+      "scale": 0.7,
+      "offsets": [0, 0],
+      "data": {
+        "leftStatic": { "prefix": "staticLeft0" },
+        "leftPress": { "prefix": "pressLeft0" },
+        "leftConfirm": { "prefix": "confirmLeft0" },
+        "leftConfirmHold": { "prefix": "confirmLeft0" },
+        "downStatic": { "prefix": "staticDown0" },
+        "downPress": { "prefix": "pressDown0" },
+        "downConfirm": { "prefix": "confirmDown0" },
+        "downConfirmHold": { "prefix": "confirmDown0" },
+        "upStatic": { "prefix": "staticUp0" },
+        "upPress": { "prefix": "pressUp0" },
+        "upConfirm": { "prefix": "confirmUp0" },
+        "upConfirmHold": { "prefix": "confirmUp0" },
+        "rightStatic": { "prefix": "staticRight0" },
+        "rightPress": { "prefix": "pressRight0" },
+        "rightConfirm": { "prefix": "confirmRight0" },
+        "rightConfirmHold": { "prefix": "confirmRight0" }
+      }
+    },
+    "holdNote": {
+      "assetPath": "shared:notes/hold/Lust",
+      "scale": 0.7,
+      "offsets": [-6, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": null,
+      "alpha": 0.8,
+      "offsets": [40, 0],
+      "data": {
+        "enabled": false,
+        "leftSplashes": [{ "prefix": "note splash purple 1" }],
+        "rightSplashes": [{ "prefix": "note splash red 1" }],
+        "upSplashes": [{ "prefix": "note splash green 1" }],
+        "downSplashes": [{ "prefix": "note splash blue 1" }]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Lust_cover",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

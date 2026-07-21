@@ -2,6 +2,8 @@ import flixel.FlxG;
 import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.play.character.CharacterType;
+import funkin.modding.module.ModuleHandler;
+import funkin.mobile.input.ControlsHandler;
 import funkin.play.character.AnimateAtlasCharacter;
 import StringTools;
 
@@ -44,4 +46,21 @@ class SakuPhaseTwoCharacter extends AnimateAtlasCharacter
       event.cancel();
     }
   }
+
+  // Load custom notestyle.
+	// TODO: Move this somewhere else.
+  function onSongLoaded(event:ScriptEvent):Void {
+		super.onSongLoaded(event);
+
+    var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
+
+    var downscroll = Preferences.downscroll;
+    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    var strumStyle:String = 'sakup2_' + (downscroll ? 'down' : 'up');
+
+    if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.
+
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('setStyle', [CharacterType.DAD, strumStyle]);
+    ModuleHandler.getModule('RetroNoteStyles')?.scriptCall('applyCustomNoteStyles', []);
+	}
 }

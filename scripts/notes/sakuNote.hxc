@@ -6,7 +6,7 @@ import funkin.mobile.input.ControlsHandler;
 
 class SakuNote extends NoteKind {
 	public function new() {
-		super('sakuNote', 'Saku Note', null, [], true); // id, description, styleId, params, noanim
+		super('sakuNote', 'Saku Note', 'heart', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -16,34 +16,31 @@ class SakuNote extends NoteKind {
 		var downscroll:Bool = Preferences.downscroll
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.x += -75;
-		event.note.yOffset += -225;
+		event.note.scale.set(1.4, 1.4);
+		event.note.x += 2;
+		event.note.yOffset += -45;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/HeartNotes');
-		if (downscroll) {
-			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
-			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
-			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
-			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
-		} else {
+		//event.note.frames = Paths.getSparrowAtlas('notes/HeartNotes');
+		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
 			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
 			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
 			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
-		}
 
-		var sakuAnim:String;
-		switch (event.note.noteData.data % 4) {
-			case 0: sakuAnim = 'purpleScroll';
-			case 1: sakuAnim = 'blueScroll';
-			case 2: sakuAnim = 'greenScroll';
-			case 3: sakuAnim = 'redScroll';
-		}
+			var sakuAnim:String;
+			switch (event.note.noteData.data % 4) {
+				case 0: sakuAnim = 'purpleScroll';
+				case 1: sakuAnim = 'blueScroll';
+				case 2: sakuAnim = 'greenScroll';
+				case 3: sakuAnim = 'redScroll';
+			}
 
+			event.note.active = true;
+			event.note.animation.play(sakuAnim);
+		}
 		event.note.active = true;
-		event.note.animation.play(sakuAnim);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {
