@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "name": "Bf",
+  "name": "Bf (RetroSpecter)",
   "assetPath": "characters/BOYFRIEND_Retro",
   "renderType": "multisparrow",
   "startingAnimation": "idle",

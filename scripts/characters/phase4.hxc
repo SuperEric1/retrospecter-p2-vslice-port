@@ -24,21 +24,14 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     this.updateHitbox();
   }
 
-  function onNoteHit(event:HitNoteScriptEvent) {
+  /*function onNoteHit(event:HitNoteScriptEvent) {
 		if (PlayState.instance == null) return;
 
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
-			if (event.note.isHoldNote) {
-				var durationInSeconds:Float = event.note.length / 1000;
-				PlayState?.instance?.camHUD?.shake(0.001, durationInSeconds + 0.1);
-				PlayState?.instance?.camGame?.shake(0.002, durationInSeconds + 0.1);
-			} else {
-				PlayState?.instance?.camHUD?.shake(0.001, 0.1);
-				PlayState?.instance?.camGame?.shake(0.002, 0.1);
-			}
+
 		}
 		super.onNoteHit(event);
-	}
+	}*/
 
   // Load custom notestyle.
 	// TODO: Move this somewhere else.

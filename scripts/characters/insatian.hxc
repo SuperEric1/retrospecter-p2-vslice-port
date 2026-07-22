@@ -3,12 +3,19 @@ import funkin.play.character.CharacterType;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
+import funkin.save.Save;
 import funkin.modding.module.ModuleHandler;
 
 class InsatianCharacter extends SparrowCharacter {
 	function new() {
 		super('insatian');
 	}
+
+	var save:Save;
+
+	var doShake:Bool = true;
+	var shakeStrength:Float = 0;
+  var shakeMult:Array<Float> = [0.7, 0.4];
 
 	override public function onSongEvent(event:SongEventScriptEvent):Void
   {
@@ -25,6 +32,8 @@ class InsatianCharacter extends SparrowCharacter {
 
 	function onNoteHit(event:HitNoteScriptEvent) {
 		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
+			shakeStrength += 0.025 * shakeMult[0];
+
 			switch (event.note.noteData.kind)
 			{
 				case "No Animation":
@@ -37,19 +46,33 @@ class InsatianCharacter extends SparrowCharacter {
 	public function onUpdate(event:UpdateScriptEvent):Void {
     super.onUpdate(event);
 		if (PlayState.instance == null) return;
+		if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
 
-		// this is now in the stage scripts for better accruacy
-		/*for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members)
+		var currentStage:String = PlayState.instance.currentStage.id.toLowerCase();
+
+		if (doShake && currentStage == 'gluttony' && shakeStrength > 0.01)
     {
-      if (holdNote == null || !holdNote.alive) continue;
-      // If she is screaming and finishing a hold note OR she missed the note due to lag, play the idle anim again.
-      if (this.animation.curAnim.name == 'scream' && holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength <= 3) {
-				playIdleAnim();
-      } else if (this.animation.curAnim.name == 'scream' && holdNote.missedNote) {
-				playIdleAnim();
-			}
-    }*/
+      var shakeSpeed:Float = 6.5 * event.elapsed;
+      PlayState.instance.camGame.shake(shakeStrength / 5, 0.04);
+      PlayState.instance.camHUD.shake(shakeStrength / 15, 0.04);
+      shakeStrength = shakeStrength + (0 - shakeStrength) * shakeSpeed;
+    }
 	}
+
+	override public function onStepHit(event:SongTimeScriptEvent) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        shakeStrength += 0.0125 * shakeMult[1];
+      }
+    }
+  }
 
 	function playIdleAnim():Void {
 		this.animation.finished = true;
@@ -85,9 +108,13 @@ class InsatianCharacter extends SparrowCharacter {
 
 	function onCreate(event:ScriptEvent):Void {
 		super.onCreate(event);
+		save = Save.instance.modOptions;
+
+    doShake = save.get('retroShake');
 	}
 
 	public function onDestroy(event):Void {
 		super.onDestroy(event);
+		shakeStrength = 0;
 	}
 }

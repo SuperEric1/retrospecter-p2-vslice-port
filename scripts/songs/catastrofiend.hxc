@@ -9,6 +9,7 @@ import flixel.math.FlxMath;
 import funkin.Conductor;
 import funkin.Preferences;
 import funkin.FunkinMemory;
+import funkin.effects.IntervalShake;
 import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import funkin.play.song.Song;
@@ -51,6 +52,10 @@ class CatastrofiendSong extends Song
   var flashingLights:Bool = true;
   var screenShake:Bool = true;
   var enabledUnderlay:Bool = false;
+  var cameraShakes:Array<IntervalShake> = [];
+  var shakeStrength:Float = 0;
+  var shakeMult:Array<Float> = [0.8, 0.7];
+  var doingRoar:Bool = false;
 
   // Beat timing arrays
   var smallFlashTime:Array<Int> = [32, 192];
@@ -153,6 +158,8 @@ class CatastrofiendSong extends Song
   {
     super.onSongLoaded(event);
 
+    screenShake = Save.instance.modOptions.get("retroShake") ?? true;
+
     if (retroNoteStyles == null) retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
 
     if (PlayState.instance.startTimestamp <= 10000) {
@@ -204,6 +211,13 @@ class CatastrofiendSong extends Song
     }
   }
 
+  function onNoteHit(event:HitNoteScriptEvent) {
+    super.onNoteHit(event);
+		if (PlayState.instance == null) return;
+
+		if (!event.note.noteData.getMustHitNote()) shakeStrength += 0.025 * shakeMult[0];
+	}
+
   public override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
@@ -214,6 +228,13 @@ class CatastrofiendSong extends Song
     {
       strumMovePattern();
       updateGreenColor(event.elapsed);
+    }
+
+    if (screenShake && shakeStrength > 0.01 && !doingRoar) {
+      var shakeSpeed:Float = 6.5 * event.elapsed;
+      PlayState.instance.camGame.shake(shakeStrength / 4, 0.04);
+      PlayState.instance.camHUD.shake(shakeStrength / 15, 0.04);
+      shakeStrength = shakeStrength + (0 - shakeStrength) * shakeSpeed;
     }
   }
 
@@ -342,13 +363,17 @@ class CatastrofiendSong extends Song
     {
       if (beat == roarBeat)
       {
+        doingRoar = true;
         // Apply camera shake
-        var conductor = Conductor.instance;
-        var crochet = conductor.crochet / 1000;
+        var crochet = (Conductor.instance.stepLengthMs * 4) / 1000;
 
         //FlxG.camera.shake(0.015, crochet * 16);
-        PlayState.instance.camHUD.shake(0.015, crochet * 16);
-        PlayState.instance.camGame.shake(0.015, crochet * 16);
+        PlayState.instance.camHUD.shake(0.015 / 5, crochet * 16, null, true);
+        PlayState.instance.camGame.shake(0.015, crochet * 16, null, true);
+
+        new FlxTimer().start(crochet * 16, function(t:FlxTimer) {
+          doingRoar = false;
+        });
       }
     }
   }
@@ -435,6 +460,13 @@ class CatastrofiendSong extends Song
         dad.playAnimation('idle', false);
       }
     }
+
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        shakeStrength += 0.0125 * shakeMult[1];
+      }
+    }
   }
 
    public override function onSongEnd(event:ScriptEvent):Void
@@ -506,6 +538,8 @@ class CatastrofiendSong extends Song
     hasCreatedSprites = false;
     retroNoteStyles = null;
     didIntroAnim = false;
+    shakeStrength = 0;
+    doingRoar = false;
 		resetTweens();
 	}
 
@@ -557,6 +591,8 @@ class CatastrofiendSong extends Song
     hasPlayedEndCutscene = true;
     didHide = false;
     didShowStrum = false;
+    doingRoar = false;
+    shakeStrength = 0;
 
     // Resetar o sistema de voicelines
     playedVoicelines = new IntMap();

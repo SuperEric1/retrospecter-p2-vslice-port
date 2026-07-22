@@ -4,6 +4,7 @@ import funkin.play.character.MultiSparrowCharacter;
 import funkin.play.character.CharacterType;
 import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
+import funkin.save.Save;
 import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
@@ -15,9 +16,17 @@ class PhaseTwoCharacter extends MultiSparrowCharacter {
 		super('phase2');
 	}
 
+	var save:Save;
+
+	var doShake:Bool = true;
+	var shakeStrength:Float = 0;
+  var shakeMult:Array<Float> = [0.8, 0.3];
+
 	function onNoteHit(event:HitNoteScriptEvent) {
 		if (PlayState.instance == null) return;
 		if (!event.note.noteData.getMustHitNote() && characterType == CharacterType.DAD) {
+			shakeStrength += 0.025 * shakeMult[0];
+
 			switch (event.note.noteData.kind)
 			{
 				case "hollowNotes":
@@ -59,27 +68,49 @@ class PhaseTwoCharacter extends MultiSparrowCharacter {
 
 	override public function onUpdate(event):Void {
     super.onUpdate(event);
+		if (PlayState.instance == null) return;
+		if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+		if (doShake && shakeStrength > 0.01)
+    {
+      var shakeSpeed:Float = 6.5 * event.elapsed;
+      PlayState.instance.camGame.shake(shakeStrength / 10, 0.04);
+      PlayState.instance.camHUD.shake(shakeStrength / 15, 0.04);
+      shakeStrength = shakeStrength + (0 - shakeStrength) * shakeSpeed;
+    }
 	}
+
+	override public function onStepHit(event:SongTimeScriptEvent) {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    for (holdNote in PlayState.instance.opponentStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
+        shakeStrength += 0.0125 * shakeMult[1];
+      }
+    }
+  }
 
   public function onSongRetry(event):Void {
     super.onSongRetry(event);
 		isGfDoingAnim = false;
+		shakeStrength = 0;
   }
 
   function onCreate(event) {
 		super.onCreate(event);
+		save = Save.instance.modOptions;
+
+    doShake = save.get('retroShake');
 	}
 
 	public function onDestroy(event):Void {
 		super.onDestroy(event);
 		isGfDoingAnim = false;
-	}
-
-	public function onPause(event) {
-		super.onPause(event);
-	}
-
-	public function onResume(event) {
-		super.onResume(event);
+		shakeStrength = 0;
 	}
 }

@@ -16,9 +16,9 @@
 - [ ] Check the end scythes cutscene colors to see if they match
 - [ ] Fuzzy feeling entrance and rejection
 - [ ] insatian's stage cloud bug
-- [ ] Screen shaking for zerktro and maybe insatian phase 2
 - [ ] Subtitles
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [X] Screen shaking for zerktro and maybe insatian phase 2
 - [X] Fix reseting strum scales to default when restarting song
 - [X] Progression unlock thingy (beat a week to unlock others, etc)
 - [X] DadBattle credits and no death on story mode
