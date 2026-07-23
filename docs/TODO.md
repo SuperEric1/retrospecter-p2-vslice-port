@@ -1,20 +1,18 @@
 # TODO
 
 - [ ] Remaining title screen bgs
-- [ ] Checkpoint event (+ add to all songs that have it)
-- [ ] Pause menu with custom music based on the opp/stage
 - [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Story mode menu?
 - [ ] Song ratings for freeplay & backingcards
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Update charters in song metadatas
 - [ ] Review mechanics for better accuracy
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
-- [ ] Check the end scythes cutscene colors to see if they match
 - [ ] insatian's stage cloud bug
 - [ ] Subtitles
+- [ ] optimize notes
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [X] Check the end scythes cutscene colors to see if they match
 - [X] Fuzzy feeling entrance and rejection
 - [X] Remaining extirpatient effects and modchart
 - [X] Finish the opponent note skins
@@ -52,3 +50,6 @@
 - [X] Crash in wrath_phase2 after restarting
 - [X] Catastrofiend difficulties
 - [X] Text engine for voicelines mid-song (maybe use the new subtitles?)
+- [ ] Checkpoint event (+ add to all songs that have it)
+- [ ] Pause menu with custom music based on the opp/stage
+- [ ] Story mode menu?

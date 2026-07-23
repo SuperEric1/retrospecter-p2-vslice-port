@@ -101,7 +101,7 @@ class MacovetSong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
 
     if (!hasPlayedEndDialogue) {
-      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFF12e476, true, true, function() {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFF4bffcf, true, true, function() {
         var rd = ModuleHandler.getModule('RetroDialogue');
         rd.scriptCall('startDialogue', ['macovet story', 'finish', function() {
           PlayState.instance.mayPauseGame = true;

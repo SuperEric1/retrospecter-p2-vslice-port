@@ -162,11 +162,11 @@ class SlowstopperSong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
 
     if (!hasPlayedCutscene) {
-      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFe39212, true, true, function() {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFff8e01, true, true, function() {
         var rd = ModuleHandler.getModule('RetroDialogue');
         rd.scriptCall('startDialogue', ['slowstopper story', 'finish', function() {
           PlayState.instance.mayPauseGame = true;
-          PlayState.instance.endSong();
+          PlayState.instance.endSong(true);
         }]);
       });
 

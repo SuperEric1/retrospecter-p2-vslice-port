@@ -109,7 +109,7 @@ class SeasireSong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
 
     if (!hasPlayedCutscene) {
-      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF12e476, true);
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF4bffcf, true);
       hasPlayedCutscene = true;
       event.cancel();
     }

@@ -354,7 +354,7 @@ class DadBattleRSong extends Song
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['dadbattle story', 'post', function() {
         PlayState.instance.mayPauseGame = true;
-        PlayState.instance.endSong();
+        PlayState.instance.endSong(true);
       }]);
     }
   }

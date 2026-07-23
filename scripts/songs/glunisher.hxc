@@ -77,7 +77,7 @@ class GlunisherSong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
 
     if (!hasPlayedCutscene) {
-      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFab164a, true);
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFfe2351, true);
       hasPlayedCutscene = true;
       event.cancel();
     }

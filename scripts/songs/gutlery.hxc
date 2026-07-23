@@ -56,7 +56,7 @@ class GutlerySong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedEndDialogue = true;
 
     if (!hasPlayedEndDialogue) {
-      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFab164a, true, true, function() {
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], null, true, true, function() {
         var rd = ModuleHandler.getModule('RetroDialogue');
         rd.scriptCall('startDialogue', ['gutlery story', 'finish', function() {
           PlayState.instance.mayPauseGame = true;

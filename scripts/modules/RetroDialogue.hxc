@@ -1186,7 +1186,7 @@ class RetroDialogue extends Module
       PlayState.instance.add(p);
       extraSprites.push(p);
 
-      var p2:FunkinSprite = FunkinSprite.create(0, 0);
+      var p2:FunkinSprite = FunkinSprite.create(FullScreenScaleMode.gameCutoutSize.x / 2, 0);
       p2.loadGraphic(Paths.image('dialogue/special/end', 'shared'));
       p2.zIndex = Z_SKIP + 5;
       p2.alpha = 0;

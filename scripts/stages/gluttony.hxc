@@ -269,7 +269,7 @@ class GluttonyStage extends Stage
     if (portalRayFg != null) portalRayFg.alpha = portalGlowAlpha;
 
     // Animate clouds (scrolling)
-    if (!PlayState.instance.isInCutscene && !PlayState.instance.isInDialogue)
+    if (!PlayState.instance.isInCutscene)
     {
       for (i in 0...cloudSprites.length)
       {

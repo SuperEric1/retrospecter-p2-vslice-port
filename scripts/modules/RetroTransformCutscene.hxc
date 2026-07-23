@@ -28,7 +28,7 @@ class RetroTransformCutscene extends Module
   public static var PHASE2_CYCLE:Float = 0.1;
 
   public static var CAM_FADE_IN:Float = 0.3;
-  public static var CAM_FADE_HOLD:Float = 0.6;
+  public static var CAM_FADE_HOLD:Float = 0.4;
   public static var CAM_FADE_OUT:Float = 0.3;
   public static var SCYTHE_ANIM_TIME:Float = 2.5;
 

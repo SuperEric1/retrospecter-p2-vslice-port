@@ -134,7 +134,7 @@ class SuperbioSong extends Song
         var rd = ModuleHandler.getModule('RetroDialogue');
         rd.scriptCall('startDialogue', ['superbio story', 'finish', function() {
           PlayState.instance.mayPauseGame = true;
-          PlayState.instance.endSong();
+          PlayState.instance.endSong(true);
         }]);
       });
 

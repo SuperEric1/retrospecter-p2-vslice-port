@@ -296,7 +296,7 @@ class HardAcheSong extends Song
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['hard-ache story', 'post', function() {
         PlayState.instance.mayPauseGame = true;
-        PlayState.instance.endSong();
+        PlayState.instance.endSong(true);
       }]);
 
       hasPlayedEndDialogue = true;

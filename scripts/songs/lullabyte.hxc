@@ -105,7 +105,7 @@ class LullabyteSong extends Song
     if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
 
     if (!hasPlayedCutscene) {
-      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFe39212, true);
+      RetroTransformCutscene.play([PlayState.instance.currentStage.getBoyfriend(), PlayState.instance.currentStage.getGirlfriend()], 0xFFff8e01, true);
       hasPlayedCutscene = true;
       event.cancel();
     }
