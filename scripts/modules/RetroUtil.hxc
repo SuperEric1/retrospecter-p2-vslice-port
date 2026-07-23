@@ -241,7 +241,7 @@ class RetroUtil extends Module
 
     if (gameZoom != 0 || gameZoom != null) {
       if (playState.cameraZoomTween != null && playState.cameraZoomTween.active) playState.cameraZoomTween.cancel();
-      playState.currentCameraZoom = playState.stageZoom;
+      //playState.currentCameraZoom = playState.stageZoom;
 
       playState.cameraZoomTween = FlxTween.tween(playState, { currentCameraZoom: playState.currentCameraZoom + gameZoom}, crochet / 7000, {ease: FlxEase.quintOut, onComplete: function (t:FlxTween) {
         playState.cameraZoomTween = FlxTween.tween(playState, { currentCameraZoom: playState.stageZoom }, crochet / 250, {ease: FlxEase.quartOut});
@@ -253,9 +253,14 @@ class RetroUtil extends Module
     //if (hudZoom != 0 || hudZoom != null) tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
   }
 
+  public static function stopCameraZoom():Void {
+    var playState = PlayState.instance;
+    if (playState.cameraZoomTween != null && playState.cameraZoomTween.active) playState.cameraZoomTween.cancel();
+  }
+
   public static function hasBeatenWrath():Bool
   {
-    //return true;
+    // return true;
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) > 0) return true;

@@ -29,7 +29,11 @@ class NightflaidEvents extends SongEvent {
           "Nightflaid swap sides" => 3,
           "Nightflaid lightings" => 4,
           "Set opp animation" => 5,
-          "tiky" => 6
+          "tiky" => 6,
+          "dadBatNote" => 7,
+          "doDarkScreen" => 8,
+          "nintendoShift" => 9,
+          "returner" => 10
         ]
       },
       {

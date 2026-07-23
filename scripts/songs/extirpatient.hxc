@@ -9,20 +9,26 @@ import funkin.Conductor;
 import funkin.Preferences;
 import funkin.FunkinMemory;
 import funkin.mobile.input.ControlsHandler;
+import funkin.play.character.CharacterType;
 import funkin.play.song.Song;
 import funkin.play.PlayState;
 import funkin.play.PlayStatePlaylist;
+import funkin.util.Constants;
 import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroUtil;
 
 class ExtirpatientSong extends Song
 {
   var tweens = [];
   var pausedTweens = [];
+  var retroGameUI = null;
+  var retroPlayState = null;
+  var retroNoteStyles = null;
 
   // Flags
   var f:Bool = false;
@@ -37,6 +43,8 @@ class ExtirpatientSong extends Song
   var g:Bool = false;
   var c:Bool = false;
   var d:Bool = false;
+  var duringCutscene:Bool = false;
+  var pauseZoom:Bool = false;
 
   var toggledShove:Bool = false;
   var isDownScroll:Bool = false;
@@ -110,6 +118,10 @@ class ExtirpatientSong extends Song
     playStage = PlayState.instance.currentStage;
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
+
+    retroGameUI = ModuleHandler.getModule('RetroGameUI');
+    retroPlayState = ModuleHandler.getModule('RetroPlayState');
+    retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
 
     // For testing purposes
     if (FlxG.onMobile) {
@@ -255,9 +267,12 @@ class ExtirpatientSong extends Song
     for (v in flashyBits) {
       if (curBeat == v) {
         playState.camHUD.zoom = 1;
-        playState.camGame.zoom = 0.34;
+        // playState.camGame.zoom = 0.34;
+        // playState.currentCameraZoom = 0.34;
+        playState.tweenCameraZoom(0.34, 0.3, true, FlxEase.expoIn);
         tweens.push(FlxTween.tween(playState.camHUD, {zoom: 1.08}, crochet / 1000, {ease: FlxEase.expoIn}));
-        tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn}));
+        playState.tweenCameraZoom(0.36, crochet / 1000, true, FlxEase.expoIn);
+        //tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn}));
       }
       if (curBeat == v + 1) {
         // Cancel tweens
@@ -266,8 +281,9 @@ class ExtirpatientSong extends Song
         }
 
         // Add camera zoom
-        playState.camGame.zoom += 0.025;
+        //playState.camGame.zoom += 0.025;
         playState.camHUD.zoom += 0.025;
+        RetroUtil.addCameraZoom(0.025, null);
 
         // Flash effect
         if (flashingLights) {
@@ -322,7 +338,8 @@ class ExtirpatientSong extends Song
         if (tween != null && !tween.finished) tween.cancel();
       }
 
-      playState.camGame.zoom += 0.05;
+      RetroUtil.addCameraZoom(0.05, null);
+      //playState.camGame.zoom += 0.05;
       playState.camHUD.zoom += 0.05;
 
       if (flashingLights) {
@@ -397,7 +414,8 @@ class ExtirpatientSong extends Song
       if (flashingLights) {
         createFlash(0xFFFF0000, 0.3);
       }
-      playState.camGame.zoom += 0.1;
+      //playState.camGame.zoom += 0.1;
+      RetroUtil.addCameraZoom(0.1, null);
       playState.camHUD.zoom += 0.05;
     }
 
@@ -412,7 +430,8 @@ class ExtirpatientSong extends Song
     }
 
     if (curBeat == 416) {
-      playState.camGame.zoom += 0.1;
+      // playState.camGame.zoom += 0.1;
+      RetroUtil.addCameraZoom(0.1, null);
       playState.camHUD.zoom += 0.06;
     }
     // END LESSERMODCHART BEAT EVENTS
@@ -554,20 +573,20 @@ class ExtirpatientSong extends Song
 
     // Flip mechanics (beats 607-608)
     if (curBeat == 607 && modcharts) {
-      //flipStrumlines(true);
+      flipStrumlines(true);
     }
 
     if (curBeat == 608 && modcharts) {
-      //applyFlipTransform();
+      applyFlipTransform();
     }
 
     // Unflip mechanics (beats 639-640)
     if (curBeat == 639 && modcharts) {
-      //flipStrumlines(false);
+      revertFlipTransform();
     }
 
     if (curBeat == 640 && modcharts) {
-      //revertFlipTransform();
+      applyColorTransform(0, 0, 0, 0, FlxEase.expoOut);
     }
 
     if (curBeat == 512 && modcharts) {
@@ -685,6 +704,20 @@ class ExtirpatientSong extends Song
         }]);
       });
     }
+
+    // Sync notes angle
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.playerStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle == targetAngle) continue;
+      note.angle = targetAngle;
+    }
+    for (note in PlayState.instance.opponentStrumline.notes.members) {
+      if (note == null || !note.alive || !note.visible) continue;
+      var targetAngle = PlayState.instance.opponentStrumline.strumlineNotes.members[note.noteData.getDirection()].angle;
+      if (note.angle == targetAngle) continue;
+      note.angle = targetAngle;
+    }
   }
 
   override function onUpdate(event:UpdateScriptEvent):Void
@@ -710,13 +743,19 @@ class ExtirpatientSong extends Song
     if ((curBeat >= 200 && curBeat < 250) || (curBeat >= 368 && curBeat < 416)) {
       var add = 20 * Math.sin(songPos / 500) * (1 - easingValueX);
 
-      for (i in 0...4) {
+      var oppStrum = PlayState.instance.opponentStrumline;
+      var playerStrum = PlayState.instance.playerStrumline;
+
+      oppStrum.x = defaultOpponentStrumX[4] + add;
+      playerStrum.x = defaultPlayerStrumX[4] + add;
+
+      /*for (i in 0...4) {
         var oppStrum = PlayState.instance.opponentStrumline.strumlineNotes.members[i];
         var playerStrum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
 
         oppStrum.x = defaultOpponentStrumX[i] + add;
         playerStrum.x = defaultPlayerStrumX[i] + add;
-      }
+      }*/
     }
 
     // Efeito de ondulação vertical (beats 224-250 e 392-416)
@@ -824,10 +863,16 @@ class ExtirpatientSong extends Song
 
     if (eventKind == "NightflaidEvents") {
       switch (Std.parseInt(value.eventType)) {
-        case 5: // Set opp anim
-          //if (value.value1.toLowerCase() == 'pokemon') toggledToll = true;
+        case 7:
+          dadBatNote(value.value1);
+        case 8:
+          doDarkScreen();
+        case 9:
+          nintendoShift();
+        case 10:
+          returner();
       }
-    }
+    } else if (eventKind == "RetroPlayVideo") preMidsongCutscene();
   }
 
   // HELPER FUNCTIONS
@@ -1261,7 +1306,7 @@ class ExtirpatientSong extends Song
     var playerStrums = PlayState.instance.playerStrumline;
     var multiplier = isDownScroll ? -1 : 1;
 
-    for (i in 0...4) {
+    /*for (i in 0...4) {
       if (opponentStrums != null) {
         var strum = opponentStrums.strumlineNotes.members[i];
         tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[i] + 525 * multiplier},
@@ -1272,16 +1317,16 @@ class ExtirpatientSong extends Song
         tweens.push(FlxTween.tween(strum, {y: defaultPlayerStrumY[i] + 525 * multiplier},
           crochet / 500, {ease: FlxEase.expoInOut}));
       }
-    }
+    }*/
 
-    applyColorTransform(-200, -200, 100, -200);
+    applyColorTransform(-200, -200, 100, -200, FlxEase.quadIn);
   }
 
   function applyFlipTransform():Void
   {
     if (!modcharts || PlayState.instance == null) return;
 
-    applyColorTransform(0, 0, 0, 0);
+    applyColorTransform(0, 0, 0, 0, FlxEase.quadOut);
   }
 
   function revertFlipTransform():Void
@@ -1292,7 +1337,7 @@ class ExtirpatientSong extends Song
     var opponentStrums = PlayState.instance.opponentStrumline;
     var playerStrums = PlayState.instance.playerStrumline;
 
-    for (i in 0...4) {
+    /*for (i in 0...4) {
       if (opponentStrums != null) {
         var strum = opponentStrums.strumlineNotes.members[i];
         tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[i] + (90 + 80 * 0.708) * negativity},
@@ -1303,17 +1348,218 @@ class ExtirpatientSong extends Song
         tweens.push(FlxTween.tween(strum, {y: defaultPlayerStrumY[i] + (90 - 80 * 0.708) * negativity},
           crochet / 500, {ease: FlxEase.expoInOut}));
       }
-    }
+    }*/
 
-    applyColorTransform(-200, -200, 100, -225);
+    applyColorTransform(-200, -200, 100, -225, FlxEase.cubeIn);
   }
 
-  function applyColorTransform(green:Int, blue:Int, red:Int, alpha:Int):Void
+  function applyColorTransform(green:Int, blue:Int, red:Int, alpha:Int, ease:FlxEase.EaseFunction):Void
   {
-    if (PlayState.instance == null) return;
+    if (PlayState.instance == null || retroGameUI == null) return;
 
-    // Apply color transform to HUD elements
-    // This would need access to healthBar, icons, etc.
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var targets:Array<FlxSprite> = [
+      retroGameUI.scriptCall('getObj', ['leftBar']),
+      retroGameUI.scriptCall('getObj', ['rightBar']),
+      retroGameUI.scriptCall('getObj', ['barOverlay']),
+      retroGameUI.scriptCall('getObj', ['scoreTxt']),
+      retroGameUI.scriptCall('getObj', ['combo']),
+      retroGameUI.scriptCall('getObj', ['judgement']),
+      retroGameUI.scriptCall('getObj', ['statsDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplaySub']),
+      PlayState.instance.iconP1,
+      PlayState.instance.iconP2
+    ];
+
+    for (target in targets) {
+      if (target == null) continue;
+      tweens.push(FlxTween.tween(target.colorTransform, {
+        greenOffset: green,
+        blueOffset: blue,
+        redOffset: red,
+        alphaOffset: alpha
+      }, crochet / 1000, {ease: ease}));
+    }
+  }
+
+  function doDarkScreen():Void
+  {
+    if (!modcharts || PlayState.instance == null) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var opponentStrums = PlayState.instance.opponentStrumline;
+
+    for (i in 0...4) {
+      var strum = opponentStrums.strumlineNotes.members[i];
+      tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[i] + (isDownScroll ? 159 : -100)}, crochet / 500, {ease: FlxEase.backIn}));
+    }
+  }
+
+  function nintendoShift():Void
+  {
+    toggledToll = false;
+    RetroUtil.stopCameraZoom();
+    duringCutscene = true;
+    if (!modcharts || PlayState.instance == null) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var opponentStrums = PlayState.instance.opponentStrumline;
+    var playerStrums = PlayState.instance.playerStrumline;
+
+    for (note in opponentStrums.strumlineNotes) {
+      tweens.push(FlxTween.tween(note.colorTransform, {greenOffset: -200, blueOffset: -200, redOffset: 200}, crochet / 1000, {ease: FlxEase.quadIn}));
+    }
+    FlxTween.tween(opponentStrums, {alpha: 0}, crochet / 1000, {ease: FlxEase.quartIn });
+
+    var underlayP = retroNoteStyles.scriptCall('getUnderlay', [true]);
+    if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, {alphaOffset: -255}, crochet / 1000, {ease: FlxEase.quadIn}));
+
+    /*var playerOffsets = [-430, -400, -230, -200];
+    for (i in 0...4) {
+      var strum = playerStrums.strumlineNotes.members[i];
+      tweens.push(FlxTween.tween(strum, {x: defaultPlayerStrumX[i] + playerOffsets[i]}, crochet / 500, {ease: FlxEase.circInOut}));
+    }*/
+  }
+
+  function preMidsongCutscene():Void
+  {
+    playState.cameraZoomRate = 0;
+    pauseZoom = true;
+
+    // Update health bar colors to white
+    retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
+
+    if (!modcharts) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var hideTime = crochet / 1000;
+    var playerStrums = PlayState.instance.playerStrumline;
+
+    tweens.push(FlxTween.tween(PlayState.instance.camHUD, {alpha: 0.75}, hideTime, {ease: FlxEase.cubeIn}));
+
+    var objects = [
+      playState.healthBar,
+      playState.iconP1,
+      playState.iconP2,
+      retroGameUI.scriptCall('getObj', ['scoreTxt']),
+      retroGameUI.scriptCall('getObj', ['combo']),
+      retroGameUI.scriptCall('getObj', ['judgement']),
+      retroGameUI.scriptCall('getObj', ['statsDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplaySub'])
+    ];
+
+    for (obj in objects) {
+      if (obj == null) continue;
+      tweens.push(FlxTween.tween(obj, {alpha: 0}, hideTime, {ease: FlxEase.cubeIn}));
+    }
+
+    //var playerOffsets = [-555, -505, -110, -60];
+    for (i in 0...4) {
+      var strum = playerStrums.strumlineNotes.members[i];
+      //tweens.push(FlxTween.tween(strum, {x: defaultPlayerStrumX[i] + playerOffsets[i]}, crochet / 500, {ease: FlxEase.cubeInOut}));
+      tweens.push(FlxTween.tween(strum.colorTransform, {greenOffset: -200, blueOffset: -200, redOffset: -50}, hideTime, {ease: FlxEase.cubeIn}));
+    }
+
+    applyColorTransform(-200, -200, 100, -500, FlxEase.cubeIn);
+  }
+
+  function returner():Void
+  {
+    playState.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
+    duringCutscene = false;
+    pauseZoom = false;
+    playState.iconP2.color = -1;
+
+    if (!modcharts) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var returnTime:Float = crochet / 500;
+    var opponentStrums = PlayState.instance.opponentStrumline;
+    var playerStrums = PlayState.instance.playerStrumline;
+
+    var objects = [
+      opponentStrums,
+      playState.healthBar,
+      playState.iconP1,
+      playState.iconP2,
+      playState.camHUD,
+      retroGameUI.scriptCall('getObj', ['scoreTxt']),
+      retroGameUI.scriptCall('getObj', ['combo']),
+      retroGameUI.scriptCall('getObj', ['judgement']),
+      retroGameUI.scriptCall('getObj', ['statsDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplay']),
+      retroGameUI.scriptCall('getObj', ['timeDisplaySub'])
+    ];
+
+    for (obj in objects) {
+      if (obj == null) continue;
+      tweens.push(FlxTween.tween(obj, {alpha: 1}, returnTime, {ease: FlxEase.cubeOut}));
+    }
+
+    var underlayP = retroNoteStyles.scriptCall('getUnderlay', [true]);
+    if (underlayP != null) tweens.push(FlxTween.tween(underlayP.colorTransform, {alphaOffset: 0}, returnTime, {ease: FlxEase.quadInOut}));
+
+    for (i in 0...4) {
+      var oppStrum = opponentStrums.strumlineNotes.members[i];
+      oppStrum.x = defaultOpponentStrumX[i];
+
+      var playerStrum = playerStrums.strumlineNotes.members[i];
+      //tweens.push(FlxTween.tween(playerStrum, {x: defaultPlayerStrumX[i]}, returnTime, {ease: FlxEase.quadInOut}));
+
+      tweens.push(FlxTween.tween(oppStrum, {y: defaultOpponentStrumY[i]}, returnTime, {ease: FlxEase.cubeInOut}));
+      tweens.push(FlxTween.tween(oppStrum.colorTransform, {greenOffset: 0, blueOffset: 0, redOffset: 0}, crochet / 1000, {ease: FlxEase.cubeIn}));
+      tweens.push(FlxTween.tween(oppStrum, {alpha: 1}, returnTime, {ease: FlxEase.cubeIn}));
+    }
+
+    applyColorTransform(0, 0, 0, 0, FlxEase.quadOut);
+
+    for (i in 0...4) {
+      tweens.push(FlxTween.tween(opponentStrums.strumlineNotes.members[i].colorTransform, {greenOffset: 0, blueOffset: 0, redOffset: 0}, returnTime, {ease: FlxEase.quadOut}));
+      tweens.push(FlxTween.tween(playerStrums.strumlineNotes.members[i].colorTransform, {greenOffset: 0, blueOffset: 0, redOffset: 0}, returnTime, {ease: FlxEase.quadOut}));
+    }
+  }
+
+  function dadBatNote(val:String):Void
+  {
+    if (!modcharts || PlayState.instance == null) return;
+
+    var crochet = Conductor.instance.stepLengthMs * 4;
+    var playerStrums = PlayState.instance.playerStrumline;
+    var opponentStrums = PlayState.instance.opponentStrumline;
+
+    retroPlayState.scriptCall('setNoteAlphaSync', [false]);
+
+    switch (val)
+    {
+      case '0':
+        for (i in 0...4) {
+          var strum = playerStrums.strumlineNotes.members[i];
+          tweens.push(FlxTween.tween(strum, {y: defaultPlayerStrumY[i] + 100, alpha: 0}, crochet / 1000, {ease: FlxEase.backIn}));
+          tweens.push(FlxTween.tween(strum.colorTransform, {greenOffset: -200, blueOffset: -200, redOffset: 100}, crochet / 1000, {ease: FlxEase.cubeIn}));
+        }
+      case '1':
+        for (i in 0...4) {
+          var strum = playerStrums.strumlineNotes.members[i];
+          tweens.push(FlxTween.tween(strum, {y: defaultPlayerStrumY[i], alpha: 1}, crochet / 1000, {ease: FlxEase.cubeOut}));
+          tweens.push(FlxTween.tween(strum.colorTransform, {greenOffset: 0, blueOffset: 0, redOffset: 0}, crochet / 1000, {ease: FlxEase.cubeOut}));
+        }
+      case '2':
+        for (i in 0...4) {
+          var strum = opponentStrums.strumlineNotes.members[i];
+          tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[i] + 100, alpha: 0}, crochet / 1000, {ease: FlxEase.backIn}));
+          tweens.push(FlxTween.tween(strum.colorTransform, {greenOffset: -200, blueOffset: -200, redOffset: 100}, crochet / 1000, {ease: FlxEase.cubeIn}));
+        }
+      case '3':
+        for (i in 0...4) {
+          var strum = opponentStrums.strumlineNotes.members[i];
+          tweens.push(FlxTween.tween(strum, {y: defaultOpponentStrumY[i], alpha: 1}, crochet / 1000, {ease: FlxEase.cubeOut, onComplete: function(t:FlxTween) {
+            retroPlayState.scriptCall('setNoteAlphaSync', [true]);
+          }}));
+          tweens.push(FlxTween.tween(strum.colorTransform, {greenOffset: 0, blueOffset: 0, redOffset: 0}, crochet / 1000, {ease: FlxEase.cubeOut }));
+        }
+    }
   }
 
   function resetStrumPositions():Void
@@ -1399,7 +1645,8 @@ class ExtirpatientSong extends Song
     for (beat in specialBeats) {
       if (curBeat == beat) {
         trulyBeats++;
-        playState.camGame.zoom += 0.01;
+        // playState.camGame.zoom += 0.01;
+        RetroUtil.addCameraZoom(0.01, null);
         playState.camHUD.zoom += 0.015;
         return;
       }
@@ -1414,11 +1661,13 @@ class ExtirpatientSong extends Song
     }
 
     // Normal zoom
-    if (beats % 2 == 0) {
-      playState.camGame.zoom += 0.0075;
+    if (beats % 2 == 0 && !pauseZoom) {
+      // playState.camGame.zoom += 0.0075;
+      if (!duringCutscene) RetroUtil.addCameraZoom(0.0075, null);
       playState.camHUD.zoom += 0.0125;
-    } else {
-      playState.camGame.zoom += 0.02;
+    } else if (!pauseZoom) {
+      // playState.camGame.zoom += 0.02;
+      if (!duringCutscene) RetroUtil.addCameraZoom(0.02, null);
       playState.camHUD.zoom += 0.025;
     }
   }
@@ -1466,6 +1715,8 @@ class ExtirpatientSong extends Song
     songEnded = false;
     testValue = -0.25;
     hasStoredStrums = false;
+    duringCutscene = false;
+    pauseZoom = false;
     defaultPlayerStrumX = [];
     defaultPlayerStrumY = [];
     defaultOpponentStrumX = [];
@@ -1537,6 +1788,7 @@ class ExtirpatientSong extends Song
   {
     super.onSongRetry(event);
 
+    playState.cameraZoomRate = Constants.DEFAULT_ZOOM_RATE;
     resetFlags();
     FlxTween.cancelTweensOf(scythe);
     FlxTween.cancelTweensOf(scythe2);

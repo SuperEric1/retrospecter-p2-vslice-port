@@ -299,7 +299,7 @@ class NightflaidStage extends Stage
     // Create black bars sprite for video letterboxing
     if (midsongVideoBlackBars != null) midsongVideoBlackBars.destroy();
     midsongVideoBlackBars = FunkinSprite.create(0, 0);
-    midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF160000); //#160000
+    midsongVideoBlackBars.makeGraphic(FlxG.width, FlxG.height * 1.1, FlxColor.BLACK /*0xFF160000*/); //#160000
     midsongVideoBlackBars.scrollFactor.set(0, 0);
     midsongVideoBlackBars.visible = false;
     midsongVideoBlackBars.active = false;
@@ -1092,10 +1092,10 @@ class NightflaidStage extends Stage
       PlayState.instance.currentCameraZoom = PlayState.instance.stageZoom;
       PlayState.instance.tweenCameraToPosition(getDad().cameraFocusPoint.x, getDad().cameraFocusPoint.y, 0.1, FlxEase.circOut);
       //PlayState.instance.opponentStrumline.visible = true;
-      FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+      /*FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       FlxTween.tween(PlayState.instance.healthBar, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       FlxTween.tween(PlayState.instance.iconP1, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
-      FlxTween.tween(PlayState.instance.iconP2, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
+      FlxTween.tween(PlayState.instance.iconP2, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});*/
       midsongVideo.visible = false;
       midsongVideoBlackBars.visible = false;
       //triggerColorTween('CCCCCC', 0.05, 'both');
@@ -1128,18 +1128,12 @@ class NightflaidStage extends Stage
       FlxTween.tween(unbeatableLightningRight, {x: unbeatableLightningRight.x + 500.0}, 0.5, {ease: FlxEase.quadIn});
     }
 
-    FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, /*onComplete: function(twn:FlxTween) {
-      PlayState.instance.opponentStrumline.visible = false;
-    }*/});
-    FlxTween.tween(PlayState.instance.healthBar, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
+    //FlxTween.tween(PlayState.instance.opponentStrumline, {alpha: 0}, 0.5, {ease: FlxEase.quadIn });
+    /*FlxTween.tween(PlayState.instance.healthBar, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
     FlxTween.tween(PlayState.instance.iconP1, {alpha: 0}, 0.5, {ease: FlxEase.quadIn});
     FlxTween.tween(PlayState.instance.iconP2, {alpha: 0}, 0.5, {ease: FlxEase.quadIn, onComplete: function(twn:FlxTween) {
       PlayState.instance.iconP2.color = -1;
-    }});
-
-    // Update health bar colors to white
-    // FlxTween.color(PlayState.instance.iconP2, 0.5, PlayState.instance.iconP2.color, -1, { ease: FlxEase.circOut });
-    retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
+    }});*/
 
     // After animation completes, switch character and reset
     new FlxTimer().start(0.5, function(tmr:FlxTimer) {

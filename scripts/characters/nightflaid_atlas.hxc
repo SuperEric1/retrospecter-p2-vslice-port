@@ -6,6 +6,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxColor;
 import funkin.play.PlayState;
 import funkin.util.Constants;
+import funkin.save.Save;
 import funkin.play.character.CharacterType;
 import funkin.play.character.AnimateAtlasCharacter;
 import funkin.modding.module.ModuleHandler;
@@ -40,6 +41,7 @@ class NightflaidCharacter extends AnimateAtlasCharacter
   var digideathShake:Bool = null;
   var digiMulti:Float = null;
   var hasFadenUI:Bool = false;
+  var doShake:Bool = true;
 
   var retroGameUI;
 
@@ -56,6 +58,7 @@ class NightflaidCharacter extends AnimateAtlasCharacter
     digideathShake = null;
     digiMulti = null;
     hasFadenUI = false;
+    doShake = Save.instance.modOptions.get('retroShake') ?? true;
 
     initializeCharacterColors();
   }
@@ -178,10 +181,10 @@ class NightflaidCharacter extends AnimateAtlasCharacter
       if (digideathNoteDrain == true && PlayState.instance.health > 0.3) {
         PlayState.instance.health -= HEALTH_DRAIN;
       }
-      if (digideathShake == true) {
+      if (digideathShake == true && doShake) {
         PlayState.instance.camGame.shake((2.75 * 4.5) * 0.001, 0.05);
       }
-      if (digideathScreenShake == true) {
+      if (digideathScreenShake == true && doShake) {
         PlayState.instance.camHUD.shake(2.75 * 0.001, 0.05);
       }
     }

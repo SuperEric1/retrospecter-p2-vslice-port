@@ -6,112 +6,269 @@
     "hard": 2.4
   },
   "events": [
-    {"t": 483.870967741935, "e": "PlayAnimation", "v": {"force": true, "anim": "intro", "target": "dad"}},
-    {"t": 23225.8064516129, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 38709.6774193548, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 54193.5483870968, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 61935.4838709677, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 69677.4193548387, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 77419.3548387097, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 79354.8387096774, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 83225.8064516129, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 90967.7419354839, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 98709.6774193548, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 100645.161290323, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 102580.64516129, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 104516.129032258, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 106451.612903226, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 108387.096774194, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 127741.935483871, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 135483.870967742, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 143225.806451613, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 147096.774193548, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 150967.741935484, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 152903.225806451, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 154838.709677419, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 156774.193548387, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 158709.677419355, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 160645.161290322, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 162580.64516129, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 164516.129032258, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 172258.064516129, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 178064.516129032, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 180000, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 181935.483870967, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 183870.967741935, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 185806.451612903, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 187741.935483871, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 189677.419354838, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 200080.64516129, "e": "PlayAnimation", "v": {"force": true, "anim": "descend", "target": "dad"}},
-    {"t": 201290.322580645, "e": "NightflaidEvents", "v": {"value1": "DAD", "eventType": 5}},
-    {"t": 201290.322580645, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 205161.29032258, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 209032.258064516, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 212903.225806451, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 216774.193548386, "e": "NightflaidEvents", "v": {"value1": "WHITTY", "eventType": 5}},
-    {"t": 216774.193548386, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 220645.161290322, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 224516.129032257, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 228387.096774193, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 232258.064516128, "e": "NightflaidEvents", "v": {"value1": "RUV", "eventType": 5}},
-    {"t": 232258.064516128, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 239999.999999999, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 246532.258064515, "e": "PlayAnimation", "v": {"force": true, "anim": "ascend", "target": "dad"}},
-    {"t": 247741.93548387, "e": "NightflaidEvents", "v": {"value1": "GARCELLO", "eventType": 5}},
-    {"t": 247741.93548387, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 251612.903225806, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 255483.870967741, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 259354.838709676, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 262016.129032257, "e": "PlayAnimation", "v": {"force": true, "anim": "descend", "target": "dad"}},
-    {"t": 263225.806451612, "e": "NightflaidEvents", "v": {"value1": "TABI", "eventType": 5}},
-    {"t": 263225.806451612, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 267096.774193547, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 270967.741935483, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 272903.225806451, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 274838.709677419, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 276774.193548386, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 277499.999999999, "e": "PlayAnimation", "v": {"force": true, "anim": "ascend", "target": "dad"}},
-    {"t": 278709.677419354, "e": "NightflaidEvents", "v": {"value1": "TRICKY", "eventType": 5}},
-    {"t": 278709.677419354, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 280645.161290322, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 280645.161290322, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 281854.838709677, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 282580.64516129, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 283306.451612902, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 284153.225806451, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 284516.129032257, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 286451.612903225, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 286451.612903225, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 286693.548387096, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 287661.29032258, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 288266.129032257, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 288870.967741935, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 290322.580645161, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 291048.387096773, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 291774.193548386, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 292258.064516128, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 292499.999999999, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 292741.93548387, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 292983.870967741, "e": "NightflaidEvents", "v": {"eventType": 6}},
-    {"t": 293225.806451612, "e": "PlayAnimation", "v": {"force": true, "anim": "EXPURGATION laugh", "target": "dad"}},
-    {"t": 294193.548387096, "e": "NightflaidEvents", "v": {"value1": "SHAGGY", "eventType": 5}},
-    {"t": 301935.483870967, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 308467.741935483, "e": "PlayAnimation", "v": {"force": true, "anim": "descend", "target": "dad"}},
-    {"t": 309677.419354838, "e": "NightflaidEvents", "v": {"value1": "SONIC", "eventType": 5}},
-    {"t": 316451.612903225, "e": "PlayAnimation", "v": {"force": true, "anim": "SONIC laugh", "target": "dad"}},
-    {"t": 324193.548387096, "e": "PlayAnimation", "v": {"force": true, "anim": "hey", "target": "bf"}},
-    {"t": 325161.29032258, "e": "NightflaidEvents", "v": {"value1": "POKEMON", "eventType": 5}},
-    {"t": 325161.29032258, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 329032.258064516, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 332903.225806451, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 336774.193548387, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 340524.193548387, "e": "RetroChangeCharacter", "v": {"newchar": "nightflaid_unbeatable", "character": "dad"}},
-    {"t": 340645.161290322, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 356129.032258064, "e": "RetroPlayVideo", "v": {"zIndex": 1, "duration": 0, "path": "nightflaid"}},
-    {"t": 386975.806451613, "e": "RetroChangeCharacter", "v": {"newchar": "nightflaid_atlas", "character": "dad"}},
-    {"t": 387096.774193548, "e": "FocusCamera", "v": {"char": 1}},
-    {"t": 402580.64516129, "e": "FocusCamera", "v": {"char": 0}},
-    {"t": 420967.741935484, "e": "PlayAnimation", "v": {"force": true, "anim": "final", "target": "dad"}}
+    {
+      "t": 483.870967741935,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "intro", "target": "dad" }
+    },
+    { "t": 23225.8064516129, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 38709.6774193548, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 54193.5483870968, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 61935.4838709677, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 69677.4193548387, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 77419.3548387097, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 79354.8387096774, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 83225.8064516129, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 90967.7419354839, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 98709.6774193548, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 100645.161290323, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 102580.64516129, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 104516.129032258, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 106451.612903226, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 108387.096774194, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 127741.935483871, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 135483.870967742, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 143225.806451613, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 147096.774193548, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 150967.741935484, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 152903.225806451, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 154838.709677419, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 156774.193548387, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 158709.677419355, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 160645.161290322, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 162580.64516129, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 164516.129032258, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 172258.064516129, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 178064.516129032, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 180000, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 181935.483870967, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 183870.967741935, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 185806.451612903, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 187741.935483871, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 189677.419354838, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 200080.64516129,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "descend", "target": "dad" }
+    },
+    {
+      "t": 201290.322580645,
+      "e": "NightflaidEvents",
+      "v": { "value1": "DAD", "eventType": 5 }
+    },
+    {
+      "t": 201290.322580645,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "0"
+      }
+    },
+    {
+      "t": 204435.483870967,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "1"
+      }
+    },
+    {
+      "t": 205161.29032258,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "2"
+      }
+    },
+    {
+      "t": 208306.451612903,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "3"
+      }
+    },
+    {
+      "t": 209032.258064516,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "0"
+      }
+    },
+    {
+      "t": 212177.419354838,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 7,
+        "value1": "1"
+      }
+    },
+    { "t": 201290.322580645, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 205161.29032258, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 209032.258064516, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 212903.225806451, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 216774.193548386,
+      "e": "NightflaidEvents",
+      "v": { "value1": "WHITTY", "eventType": 5 }
+    },
+    { "t": 216774.193548386, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 220645.161290322, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 224516.129032257, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 228387.096774193, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 232258.064516128,
+      "e": "NightflaidEvents",
+      "v": { "value1": "RUV", "eventType": 5 }
+    },
+    { "t": 232258.064516128, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 239999.999999999, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 246532.258064515,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "ascend", "target": "dad" }
+    },
+    {
+      "t": 247741.93548387,
+      "e": "NightflaidEvents",
+      "v": { "value1": "GARCELLO", "eventType": 5 }
+    },
+    { "t": 247741.93548387, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 251612.903225806, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 255483.870967741, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 259354.838709676, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 262016.129032257,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "descend", "target": "dad" }
+    },
+    {
+      "t": 263225.806451612,
+      "e": "NightflaidEvents",
+      "v": { "value1": "TABI", "eventType": 5 }
+    },
+    { "t": 263225.806451612, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 267096.774193547, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 270967.741935483, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 272903.225806451, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 274838.709677419, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 276774.193548386, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 277499.999999999,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "ascend", "target": "dad" }
+    },
+    {
+      "t": 278709.677419354,
+      "e": "NightflaidEvents",
+      "v": { "value1": "TRICKY", "eventType": 5 }
+    },
+    { "t": 278709.677419354, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 280645.161290322, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 280645.161290322, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 281854.838709677, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 282580.64516129, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 283306.451612902, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 284153.225806451, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 284516.129032257, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 286451.612903225, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 286451.612903225, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 286693.548387096, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 287661.29032258, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 288266.129032257, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 288870.967741935, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 290322.580645161, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 291048.387096773, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 291774.193548386, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 292258.064516128, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 292499.999999999, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 292741.93548387, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    { "t": 292983.870967741, "e": "NightflaidEvents", "v": { "eventType": 6 } },
+    {
+      "t": 293225.806451612,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "EXPURGATION laugh", "target": "dad" }
+    },
+    {
+      "t": 294193.548387096,
+      "e": "NightflaidEvents",
+      "v": { "value1": "SHAGGY", "eventType": 5 }
+    },
+    { "t": 301935.483870967, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 308467.741935483,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "descend", "target": "dad" }
+    },
+    {
+      "t": 309677.419354838,
+      "e": "NightflaidEvents",
+      "v": { "value1": "SONIC", "eventType": 5 }
+    },
+    {
+      "t": 316451.612903225,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "SONIC laugh", "target": "dad" }
+    },
+    {
+      "t": 324193.548387096,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "hey", "target": "bf" }
+    },
+    {
+      "t": 325161.29032258,
+      "e": "NightflaidEvents",
+      "v": { "value1": "POKEMON", "eventType": 5 }
+    },
+    {
+      "t": 339677.419354838,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 8
+      }
+    },
+    {
+      "t": 340161.29032258,
+      "e": "NightflaidEvents",
+      "v": {
+        "eventType": 9
+      }
+    },
+    { "t": 325161.29032258, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 329032.258064516, "e": "FocusCamera", "v": { "char": 0 } },
+    { "t": 332903.225806451, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 336774.193548387, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 340524.193548387,
+      "e": "RetroChangeCharacter",
+      "v": { "newchar": "nightflaid_unbeatable", "character": "dad" }
+    },
+    { "t": 340645.161290322, "e": "FocusCamera", "v": { "char": 1 } },
+    {
+      "t": 356129.032258064,
+      "e": "RetroPlayVideo",
+      "v": { "zIndex": 1, "duration": 0, "path": "nightflaid" }
+    },
+    {
+    "t": 386612.903225806,
+    "e": "NightflaidEvents",
+    "v": {
+      "eventType": 10
+    }
+  },
+    {
+      "t": 386975.806451613,
+      "e": "RetroChangeCharacter",
+      "v": { "newchar": "nightflaid_atlas", "character": "dad" }
+    },
+    { "t": 387096.774193548, "e": "FocusCamera", "v": { "char": 1 } },
+    { "t": 402580.64516129, "e": "FocusCamera", "v": { "char": 0 } },
+    {
+      "t": 420967.741935484,
+      "e": "PlayAnimation",
+      "v": { "force": true, "anim": "final", "target": "dad" }
+    }
   ],
   "notes": {
     "easy": [

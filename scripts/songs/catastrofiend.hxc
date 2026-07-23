@@ -381,8 +381,9 @@ class CatastrofiendSong extends Song
   function darkFlash():Void
   {
     // Camera zoom
-    PlayState.instance.camGame.zoom += 0.02;
-    PlayState.instance.camHUD.zoom += 0.035;
+    RetroUtil.addCameraZoom(0.02, 0.035);
+    // PlayState.instance.camGame.zoom += 0.02;
+    // PlayState.instance.camHUD.zoom += 0.035;
 
     // Create flash effects
     flashMultiply.active = true;
@@ -465,6 +466,7 @@ class CatastrofiendSong extends Song
       if (holdNote == null || !holdNote.alive) continue;
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
         shakeStrength += 0.0125 * shakeMult[1];
+        break;
       }
     }
   }

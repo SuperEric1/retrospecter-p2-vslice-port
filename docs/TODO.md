@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] Remaining extirpatient effects and modchart
 - [ ] Remaining title screen bgs
 - [ ] Checkpoint event (+ add to all songs that have it)
 - [ ] Pause menu with custom music based on the opp/stage
@@ -10,14 +9,15 @@
 - [ ] Song ratings for freeplay & backingcards
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [ ] Update charters in song metadatas
-- [ ] Finish the opponent note skins
 - [ ] Review mechanics for better accuracy
 - [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [ ] Check the end scythes cutscene colors to see if they match
-- [ ] Fuzzy feeling entrance and rejection
 - [ ] insatian's stage cloud bug
 - [ ] Subtitles
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [X] Fuzzy feeling entrance and rejection
+- [X] Remaining extirpatient effects and modchart
+- [X] Finish the opponent note skins
 - [X] Screen shaking for zerktro and maybe insatian phase 2
 - [X] Fix reseting strum scales to default when restarting song
 - [X] Progression unlock thingy (beat a week to unlock others, etc)

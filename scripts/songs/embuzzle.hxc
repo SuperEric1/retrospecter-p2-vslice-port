@@ -19,6 +19,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroUtil;
 
 class EmbuzzleSong extends Song
 {
@@ -661,12 +662,13 @@ class EmbuzzleSong extends Song
     if (playState == null) return;
     var time:Float = 0.05;
     //FlxTween.cancelTweensOf(playState.camGame, ['zoom']);
-    FlxTween.cancelTweensOf(playState.camHUD, ['zoom']);
-    //playState.camGame.zoom = playState.stageZoom;
-    playState.currentCameraZoom = playState.stageZoom;
-    playState.tweenCameraZoom(playState.stageZoom + gameZoom, 0.1, true, FlxEase.quadOut);
-    //tweens.push(FlxTween.tween(playState.camGame, { zoom: playState.camGame.zoom + gameZoom }, time, { ease: FlxEase.quadOut }));
-    tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
+    //FlxTween.cancelTweensOf(playState.camHUD, ['zoom']);
+
+    //playState.currentCameraZoom = playState.stageZoom;
+    //playState.tweenCameraZoom(playState.stageZoom + gameZoom, 0.1, true, FlxEase.quadOut);
+    RetroUtil.addCameraZoom(gameZoom, hudZoom);
+
+    //tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
     //playState.camHUD.zoom += hudZoom;
   }
 

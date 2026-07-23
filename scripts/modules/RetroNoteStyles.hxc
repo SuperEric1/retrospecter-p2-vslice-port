@@ -457,8 +457,11 @@ class RetroNoteStyles extends Module {
 
 			// Sync gradient backgrounds every frame.
 			if (opponentStrumBackground != null && oppStrum != null) {
+				// turns out, the opp underlay is always invisible in the original mod.
+				opponentStrumBackground.visible = false;
+
 				var targetAlpha = strumBackgroundOpacity * oppStrum.alpha;
-				if (opponentStrumBackground.visible != oppStrum.background.visible) opponentStrumBackground.visible = oppStrum.background.visible;
+				// if (opponentStrumBackground.visible != oppStrum.background.visible) opponentStrumBackground.visible = oppStrum.background.visible;
 				if (opponentStrumBackground.y != -1) opponentStrumBackground.y = -1;
 				if (opponentStrumBackground.visible && opponentStrumBackground.alpha != targetAlpha) opponentStrumBackground.alpha = targetAlpha;
 				if (oppStrum.background.visible && oppStrum.background.alpha != 0) oppStrum.background.alpha = 0;

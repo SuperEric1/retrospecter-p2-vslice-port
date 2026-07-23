@@ -235,6 +235,7 @@ class RetroPlayState extends Module {
     'dozircNote', 'holy',
     'none'
   ];
+  var disableNoteAlphaSync:Bool = false;
 
   public override function onNoteIncoming(event:NoteScriptEvent) {
     if (PlayState.instance == null) return;
@@ -257,7 +258,7 @@ class RetroPlayState extends Module {
     if (isRetro) {
       var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
       var strumNote = strum.strumlineNotes.members[event.note.noteData.getDirection()];
-      var targetAlpha = strumNote.alpha;
+      var targetAlpha = !disableNoteAlphaSync ? strumNote.alpha : strum.alpha;
       if (targetAlpha == 1) targetAlpha = strum.alpha;
       var forcedAlpha:Float = event.note.noteData.getMustHitNote() ? forceNotesAlpha : forceOppNotesAlpha;
       if (forcedAlpha != null) targetAlpha = forcedAlpha;
@@ -305,6 +306,10 @@ class RetroPlayState extends Module {
     }
 
     super('onNoteIncoming');
+  }
+
+  public function setNoteAlphaSync(v:Bool):Void {
+    disableNoteAlphaSync = !v;
   }
 
   public override function onNoteHit(event:HitNoteScriptEvent):Void {
@@ -820,7 +825,7 @@ class RetroPlayState extends Module {
       }
     }
 
-    if (songId == 'heartmelter' && (Highscore.tallies.combo + 1) >= 10) RetroAchievements.award('lust-200', true, true);
+    if (songId == 'heartmelter' && (Highscore.tallies.combo + 1) >= 200) RetroAchievements.award('lust-200', true, true);
   } // fim do if de checagem que é nota do player
 
     if (!event.note.noteData.getMustHitNote() && event.note.noteData.kind == 'spectre' && mechanicsEnabled && loadedMechanics.contains('spectre')) {
@@ -947,6 +952,8 @@ class RetroPlayState extends Module {
 
     mechanicsEnabled = Save.instance.modOptions.get('retroMechanics') ?? true;
     globalTimerManager = new FlxTimerManager();
+
+    disableNoteAlphaSync = false;
 
     songId = PlayState.instance?.currentChart?.song?.id ?? '';
 
@@ -2482,6 +2489,7 @@ class RetroPlayState extends Module {
       PlayState.instance.healthBar.x = healthBarOgPos[0];
       PlayState.instance.healthBar.y = healthBarOgPos[1];
     }
+    disableNoteAlphaSync = false;
 
     updatePoisonCounter(ogDadId ?? null);
 

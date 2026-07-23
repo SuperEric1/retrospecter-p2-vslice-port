@@ -17,6 +17,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroUtil;
 
 class DeadfineSong extends Song
 {
@@ -593,8 +594,9 @@ class DeadfineSong extends Song
   function addCameraZoom(gameZoom:Float, hudZoom:Float):Void
   {
     if (playState == null) return;
-    playState.camGame.zoom += gameZoom;
-    playState.camHUD.zoom += hudZoom;
+    RetroUtil.addCameraZoom(gameZoom, hudZoom);
+    //playState.camGame.zoom += gameZoom;
+    //playState.camHUD.zoom += hudZoom;
   }
 
   function doFlash(sprite:FunkinSprite, blendMode:Int, alpha:Float, duration:Float, ease:Dynamic):Void

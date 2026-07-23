@@ -84,6 +84,12 @@ class FuzzyFeelingSong extends Song
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['sakuroma/p1', true]);
 
     if (retroNoteStyles == null) retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
+
+    if (!RetroUtil.hasBeatenOthers())
+    {
+      PlayStatePlaylist.playlistSongIds.remove('heartmelter');
+      PlayStatePlaylist.playlistSongIds.remove('hard-ache');
+    }
   }
 
   override function onSongLoaded(event:ScriptEvent):Void
@@ -147,7 +153,7 @@ class FuzzyFeelingSong extends Song
 
       // TODO: add check for completing the other weeks
       var rd = ModuleHandler.getModule('RetroDialogue');
-      rd.scriptCall('startDialogue', ['fuzzy-feeling story', 'post', function() {
+      rd.scriptCall('startDialogue', ['fuzzy-feeling story', RetroUtil.hasBeatenOthers() ? 'post' : 'fork', function() {
         playState.endSong(true);
       }]);
       return;

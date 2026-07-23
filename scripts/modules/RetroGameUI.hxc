@@ -1156,11 +1156,11 @@ class RetroGameUI extends Module {
     } else score.text = Std.int(PlayState.instance.songScore);
 
     judgement.visible = true;
-    judgement.alpha = 1;
+    judgement.colorTransform.alphaOffset = 0;
     comboText.visible = true;
-    comboText.alpha = 1;
+    comboText.colorTransform.alphaOffset = 0;
     score.visible = true;
-    score.alpha = 1;
+    score.colorTransform.alphaOffset = 0;
 
     animateTexts(doesPopup, stayDuration);
   }
@@ -1343,6 +1343,10 @@ class RetroGameUI extends Module {
     if (isDozirc && dozircColorDir != 0) updateDozircIcon();
 
     // ---- Texts ----
+    if (ratingTextDisplay != null) {
+      if (ratingTextDisplay.alpha != statsDisplay.alpha) ratingTextDisplay.alpha = statsDisplay.alpha;
+      if (ratingTextDisplay.visible != statsDisplay.visible) ratingTextDisplay.visible = statsDisplay.visible;
+    }
     if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) {
       if (!PlayState.instance.startingSong) {
         var moneyIncrease = Math.round(event.elapsed * 1000) * 3;
@@ -1384,9 +1388,29 @@ class RetroGameUI extends Module {
 
     if (currentHealthCut > 0) resetHealthBarCut(0);
 
-    judgement.alpha = 0;
-    comboText.alpha = 0;
-    if (!PlayState.instance.isBotPlayMode) score.alpha = 0;
+    judgement.visible = false;
+    comboText.visible = false;
+    if (!PlayState.instance.isBotPlayMode) score.visible = false;
+
+    var coloredObjects = [
+      judgement,
+      comboText,
+      score,
+      retroHealthBarFill,
+      retroHealthBarFillBG,
+      retroHealthBarOverlay,
+      statsDisplay,
+      timeDisplay,
+      timeDisplaySub,
+      ratingTextDisplay
+    ];
+
+    for (obj in coloredObjects) {
+      if (obj == null) continue;
+      obj.colorTransform.redOffset = 0;
+      obj.colorTransform.blueOffset = 0;
+      obj.colorTransform.greenOffset = 0;
+    }
 
     // Reset stats display
     currentAccuracy = 0.0;
@@ -1714,6 +1738,31 @@ class RetroGameUI extends Module {
     });
   }
 
+  public function getObj(name:String):Dynamic {
+    switch (name) {
+      case 'rightBar':
+        return retroHealthBarFill;
+      case 'leftBar':
+        return retroHealthBarFillBG;
+      case 'barOverlay':
+        return retroHealthBarOverlay;
+      case 'scoreTxt':
+        return score;
+      case 'combo':
+        return comboText;
+      case 'judgement':
+        return judgement;
+      case 'statsDisplay':
+        return statsDisplay;
+      case 'timeDisplay':
+        return timeDisplay;
+      case 'timeDisplaySub':
+        return timeDisplaySub;
+      default:
+        return null;
+    }
+  }
+
   function cancelTweens(resetScale:Bool):Void {
     for (tween in judgementTweens) {
       if (tween != null) tween.cancel();
@@ -1791,7 +1840,7 @@ class RetroGameUI extends Module {
     var fadeDuration:Float = 0.3;
 
     judgementTweens.push(
-      FlxTween.tween(judgement, {alpha: 0}, fadeDuration, {
+      FlxTween.tween(judgement.colorTransform, {alphaOffset: -255}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {
@@ -1801,7 +1850,7 @@ class RetroGameUI extends Module {
     );
 
     comboTweens.push(
-      FlxTween.tween(comboText, {alpha: 0}, fadeDuration, {
+      FlxTween.tween(comboText.colorTransform, {alphaOffset: -255}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {
@@ -1811,7 +1860,7 @@ class RetroGameUI extends Module {
     );
 
     scoreTweens.push(
-      FlxTween.tween(score, {alpha: 0}, fadeDuration, {
+      FlxTween.tween(score.colorTransform, {alphaOffset: -255}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {
