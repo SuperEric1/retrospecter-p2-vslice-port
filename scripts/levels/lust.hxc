@@ -21,7 +21,7 @@ class LustLevel extends Level
   {
     var list:Array<String> = super.getSongs();
 
-    if ((!RetroUtil.hasBeatenWrath() && !RetroSave.isUnlockSongs()) || (hasBeatenThis() && !RetroUtil.hasBeatenOthers()))
+    if ((!RetroUtil.hasBeatenWrath() || (!hasBeatenThis() && !RetroUtil.hasBeatenOthers())) && !RetroSave.isUnlockSongs())
     {
       list.remove("heartmelter");
       list.remove("hard-ache");

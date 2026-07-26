@@ -25,9 +25,9 @@
     "stage": "wrath_phase3",
     "noteStyle": "retrospecter",
     "ratings": {
-      "easy": 0,
-      "normal": 0,
-      "hard": 0
+      "easy": 6,
+      "normal": 17,
+      "hard": 19
     }
   },
   "timeFormat": "ms",

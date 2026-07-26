@@ -25,9 +25,9 @@
     "stage": "heavens_gate",
     "noteStyle": "retrospecter",
     "ratings": {
-      "easy": 0,
-      "normal": 0,
-      "hard": 0
+      "easy": 3,
+      "normal": 10,
+      "hard": 12
     }
   },
   "timeFormat": "ms",

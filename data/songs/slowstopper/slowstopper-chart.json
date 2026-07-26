@@ -1,73 +1,105 @@
 {
   "events": [
     {
-    "t": 32000,
-    "e": "ScrollSpeed",
-    "v": {
-      "scroll": 1.1,
-      "duration": 3.0
-    }
-  },
-  {
-    "t": 32000,
-    "e": "SlothEvents",
-    "v": {
-      "eventType": "wakeUp"
-    }
-  },
-  {
-    "t": 34000,
-    "e": "SlothEvents",
-    "v": {
-      "eventType": "yawn"
-    }
-  },
-  {
-    "t": 65000,
-    "e": "SlothEvents",
-    "v": {
-      "eventType": "yawn"
-    }
-  },
-  {
-    "t": 121333.333333333,
-    "e": "ScrollSpeed",
-    "v": {
-      "scroll": 1.0,
-      "duration": 3.0
-    }
-  },
-  {
-    "t": 132000,
-    "e": "ScrollSpeed",
-    "v": {
-      "scroll": 1.1,
-      "duration": 10.0
-    }
-  },
-  {
-    "t": 142666.666666667,
-    "e": "ScrollSpeed",
-    "v": {
-      "scroll": 1.2,
-      "duration": 5.0
-    }
-  },
-  {
-    "t": 185333.333333334,
-    "e": "SlothEvents",
-    "v": {
-      "eventType": "sleep"
-    }
-  },
-  {
-    "t": 227833.333333334,
-    "e": "ScrollSpeed",
-    "v": {
-      "scroll": 1.1,
-      "duration": 1.0
-    }
-  },
+      "t": 230583.333333334,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 0.0,
+        "time": 0.3
+      }
+    },
+    {
+      "t": 232000.000000001,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 1.0,
+        "time": 0.0
+      }
+    },
+    {
+      "t": 233583.333333334,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 0.0,
+        "time": 0.3
+      }
+    },
+    {
+      "t": 234666.666666667,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 1.0,
+        "time": 0.0
+      }
+    },
+    {
+      "t": 32000,
+      "e": "ScrollSpeed",
+      "v": {
+        "scroll": 1.1,
+        "duration": 3.0
+      }
+    },
+    {
+      "t": 32000,
+      "e": "SlothEvents",
+      "v": {
+        "eventType": "wakeUp"
+      }
+    },
+    {
+      "t": 34000,
+      "e": "SlothEvents",
+      "v": {
+        "eventType": "yawn"
+      }
+    },
+    {
+      "t": 65000,
+      "e": "SlothEvents",
+      "v": {
+        "eventType": "yawn"
+      }
+    },
+    {
+      "t": 121333.333333333,
+      "e": "ScrollSpeed",
+      "v": {
+        "scroll": 1.0,
+        "duration": 3.0
+      }
+    },
+    {
+      "t": 132000,
+      "e": "ScrollSpeed",
+      "v": {
+        "scroll": 1.1,
+        "duration": 10.0
+      }
+    },
+    {
+      "t": 142666.666666667,
+      "e": "ScrollSpeed",
+      "v": {
+        "scroll": 1.2,
+        "duration": 5.0
+      }
+    },
+    {
+      "t": 185333.333333334,
+      "e": "SlothEvents",
+      "v": {
+        "eventType": "sleep"
+      }
+    },
+    {
+      "t": 227833.333333334,
+      "e": "ScrollSpeed",
+      "v": {
+        "scroll": 1.1,
+        "duration": 1.0
+      }
+    },
     {
       "t": 3000,
       "e": "PlayAnimation",

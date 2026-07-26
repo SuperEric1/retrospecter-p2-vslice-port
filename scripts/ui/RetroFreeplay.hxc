@@ -13,11 +13,18 @@ import flixel.FlxG;
 import funkin.Paths;
 import funkin.modding.base.ScriptedFlxRuntimeShader;
 import openfl.filters.ShaderFilter;
+import openfl.utils.Assets;
+import funkin.data.song.SongRegistry;
+import funkin.play.song.Song;
 import Std;
 
 class RetroFreeplay extends Module {
 
   var songConfig:StringMap<BackingCardTexts> = new StringMap();
+  var characterBackingAliases:StringMap<String> = new StringMap();
+
+  final CHARACTER_BACKING_PATH = 'freeplay/backgrounds/characters/';
+  final bgPath = 'freeplay/backgrounds/';
 
   var prevSongId:String = '';
   var prevWeekId:String = '';
@@ -33,85 +40,271 @@ class RetroFreeplay extends Module {
   var defaultTexts:BackingCardTexts = null;
   var defaultAlbumAngle:Float = 0.0;
 
+  final DEFAULT_CARD_COLOR = 0xFFFFD863;
+  final DEFAULT_ORANGE_COLOR = 0xFFFEDA00;
+
+  var colorLerpSpeed:Float = 10;
+  var colorCacheDelay:Float = 0.4;
+  var moreWaysBlend:Float = 0.6;
+  var funnyScrollBlend:Float = 0.2;
+  var funnyScroll2LightBlend:Float = 0.55;
+  var funnyScroll2DarkBlend:Float = 0.6;
+  var funnyScroll3Blend:Float = 0.4;
+  var orangeBlend:Float = 0.2;
+  var lightnessSplit:Float = 0.6;
+
+  var targetCardColor:FlxColor = DEFAULT_CARD_COLOR;
+  var targetMoreWaysColor:FlxColor = FlxColor.WHITE;
+  var targetFunnyScrollColor:FlxColor = FlxColor.WHITE;
+  var targetFunnyScroll2Color:FlxColor = FlxColor.WHITE;
+  var targetFunnyScroll3Color:FlxColor = FlxColor.WHITE;
+  var targetOrangeColor:FlxColor = DEFAULT_ORANGE_COLOR;
+  var currentOrangeColor:FlxColor = DEFAULT_ORANGE_COLOR;
+
+  var originalCardColor:FlxColor = DEFAULT_CARD_COLOR;
+  var originalMoreWaysColor:FlxColor = FlxColor.WHITE;
+  var originalFunnyScrollColor:FlxColor = FlxColor.WHITE;
+  var originalFunnyScroll2Color:FlxColor = FlxColor.WHITE;
+  var originalFunnyScroll3Color:FlxColor = FlxColor.WHITE;
+  var originalColorsCached:Bool = false;
+  var lastConfiguredColor:Null<Int> = null;
+
   public function new() {
     super('RetroFreeplay', 5, {
       state: FreeplayState
     });
 
-    var bgPath = 'freeplay/backgrounds/';
-
     songConfig.set('10-wrath', {
       bgImage: bgPath + 'wrath_blur',
-      funnyScroll: 'TEST TEXT',
+      moreWays: 'INFERNALING OF WRATH',
+      funnyScroll: 'RETROSPECTER',
+      txtNuts: 'INFERNALING OF WRATH',
+      funnyScroll2: 'RETROSPECTER',
+      moreWays2: 'INFERNALING OF WRATH',
+      funnyScroll3: 'RETROSPECTER',
+      color: 0xFF2fdac3, // #2fdac3
     });
     songConfig.set('11-wrath_extras', {
       bgImage: bgPath + 'wrath_blur',
+      moreWays: 'WRATH EXTRAS',
+      funnyScroll: 'RETROSPECTER',
+      txtNuts: 'WRATH EXTRAS',
+      funnyScroll2: 'RETROSPECTER',
+      moreWays2: 'WRATH EXTRAS',
+      funnyScroll3: 'RETROSPECTER',
+      color: 0xFF2fdac3,
     });
 
     songConfig.set('20-pride', {
       bgImage: bgPath + 'pride_blur',
+      moreWays: 'INFERNALING OF PRIDE',
+      funnyScroll: 'IZZURIUS',
+      txtNuts: 'INFERNALING OF PRIDE',
+      funnyScroll2: 'IZZURIUS',
+      moreWays2: 'INFERNALING OF PRIDE',
+      funnyScroll3: 'IZZURIUS',
+      color: 0xFF00365a, // #00365a
     });
     songConfig.set('21-pride_extras', {
       bgImage: bgPath + 'pride_blur',
+      moreWays: 'PRIDE EXTRAS',
+      funnyScroll: 'IZZURIUS',
+      txtNuts: 'PRIDE EXTRAS',
+      funnyScroll2: 'IZZURIUS',
+      moreWays2: 'PRIDE EXTRAS',
+      funnyScroll3: 'IZZURIUS',
+      color: 0xFF00365a,
     });
 
     songConfig.set('30-gluttony', {
       bgImage: bgPath + 'gluttony_blur',
+      moreWays: 'INFERNALING OF GLUTTONY',
+      funnyScroll: 'INSATIAN',
+      txtNuts: 'INFERNALING OF GLUTTONY',
+      funnyScroll2: 'INSATIAN',
+      moreWays2: 'INFERNALING OF GLUTTONY',
+      funnyScroll3: 'INSATIAN',
+      color: 0xFFcf092a, // #cf092a
     });
     songConfig.set('31-gluttony_extras', {
       bgImage: bgPath + 'gluttony_blur',
+      moreWays: 'GLUTTONY EXTRAS',
+      funnyScroll: 'INSATIAN',
+      txtNuts: 'GLUTTONY EXTRAS',
+      funnyScroll2: 'INSATIAN',
+      moreWays2: 'GLUTTONY EXTRAS',
+      funnyScroll3: 'INSATIAN',
+      color: 0xFFcf092a,
     });
 
     songConfig.set('40-greed', {
       bgImage: bgPath + 'greed_blur',
+      moreWays: 'INFERNALING OF GREED',
+      funnyScroll: 'HIVEMINE',
+      txtNuts: 'INFERNALING OF GREED',
+      funnyScroll2: 'HIVEMINE',
+      moreWays2: 'INFERNALING OF GREED',
+      funnyScroll3: 'HIVEMINE',
+      color: 0xFF9124cf, // #9124cf
     });
     songConfig.set('41-greed_extras', {
       bgImage: bgPath + 'greed_blur',
+      moreWays: 'GREED EXTRAS',
+      funnyScroll: 'HIVEMINE',
+      txtNuts: 'GREED EXTRAS',
+      funnyScroll2: 'HIVEMINE',
+      moreWays2: 'GREED EXTRAS',
+      funnyScroll3: 'HIVEMINE',
+      color: 0xFF9124cf,
+    });
+    songConfig.set('deadfine', {
+      color: 0xFF7602b9,
     });
 
     songConfig.set('50-envy', {
       bgImage: bgPath + 'envy_blur',
+      moreWays: 'INFERNALING OF ENVY',
+      funnyScroll: 'ATROCEAN',
+      txtNuts: 'INFERNALING OF ENVY',
+      funnyScroll2: 'ATROCEAN',
+      moreWays2: 'INFERNALING OF ENVY',
+      funnyScroll3: 'ATROCEAN',
+      color: 0xFF0bdd86, // #0bdd86
     });
     songConfig.set('51-envy_extras', {
       bgImage: bgPath + 'envy_blur',
+      moreWays: 'ENVY EXTRAS',
+      funnyScroll: 'ATROCEAN',
+      txtNuts: 'ENVY EXTRAS',
+      funnyScroll2: 'ATROCEAN',
+      moreWays2: 'ENVY EXTRAS',
+      funnyScroll3: 'ATROCEAN',
+      color: 0xFF0bdd86,
     });
 
     songConfig.set('60-sloth', {
       bgImage: bgPath + 'sloth_blur',
+      moreWays: 'INFERNALING OF SLOTH',
+      funnyScroll: 'DOZIRC',
+      txtNuts: 'INFERNALING OF SLOTH',
+      funnyScroll2: 'DOZIRC',
+      moreWays2: 'INFERNALING OF SLOTH',
+      funnyScroll3: 'DOZIRC',
+      color: 0xFFdd710b, // #dd710b
     });
     songConfig.set('61-sloth_extras', {
       bgImage: bgPath + 'sloth_blur',
+      moreWays: 'SLOTH EXTRAS',
+      funnyScroll: 'DOZIRC',
+      txtNuts: 'SLOTH EXTRAS',
+      funnyScroll2: 'DOZIRC',
+      moreWays2: 'SLOTH EXTRAS',
+      funnyScroll3: 'DOZIRC',
+      color: 0xFFdd710b,
     });
 
     songConfig.set('70-lust', {
       bgImage: bgPath + 'lust_blur',
+      moreWays: 'INFERNALING OF LUST',
+      funnyScroll: 'SAKUROMA',
+      txtNuts: 'INFERNALING OF LUST',
+      funnyScroll2: 'SAKUROMA',
+      moreWays2: 'INFERNALING OF LUST',
+      funnyScroll3: 'SAKUROMA',
+      color: 0xFFd338b9, // #d338b9
     });
     songConfig.set('71-lust_extras', {
       bgImage: bgPath + 'lust_blur',
+      moreWays: 'LUST EXTRAS',
+      funnyScroll: 'SAKUROMA',
+      txtNuts: 'LUST EXTRAS',
+      funnyScroll2: 'SAKUROMA',
+      moreWays2: 'LUST EXTRAS',
+      funnyScroll3: 'SAKUROMA',
+      color: 0xFFd338b9
     });
+    songConfig.set('hard-ache', {
+      color: 0xFFd81d8a // #d81d8a
+    });
+
     songConfig.set('91-remixes', {
       bgImage: bgPath + 'mixter',
-    });
-
-
-    songConfig.set('waitkeeper', {
-      bgImage: bgPath + 'pnim',
-    });
-    songConfig.set('rageweeper', {
-      bgImage: bgPath + 'pnim',
-    });
-    songConfig.set('extirpatient', {
-      bgImage: bgPath + 'death',
-    });
-    songConfig.set('hexerpatient', {
-      bgImage: bgPath + 'death',
-    });
-    songConfig.set('extiraging', {
-      bgImage: bgPath + 'death',
+      moreWays: 'REMIXES',
+      funnyScroll: 'MIXTER',
+      txtNuts: 'REMIXES',
+      funnyScroll2: 'MIXTER',
+      moreWays2: 'REMIXES',
+      funnyScroll3: 'MIXTER',
+      color: 0xFF6124c2, // #6124c2
     });
     songConfig.set('dadbattle-r', {
       bgImage: bgPath + 'mixter',
+      moreWays: 'REMIXES',
+      funnyScroll: 'MIXTER',
+      txtNuts: 'REMIXES',
+      funnyScroll2: 'MIXTER',
+      moreWays2: 'REMIXES',
+      funnyScroll3: 'MIXTER',
+      color: 0xFF6124c2,
     });
+
+    songConfig.set('waitkeeper', {
+      bgImage: bgPath + 'pnim',
+      moreWays: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll: 'PENDULUMBRA',
+      txtNuts: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll2: 'PENDULUMBRA',
+      moreWays2: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll3: 'PENDULUMBRA',
+      color: 0xFFffcb3c, // #ffcb3c
+    });
+    songConfig.set('rageweeper', {
+      bgImage: bgPath + 'pnim',
+      moreWays: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll: 'PENDULUMBRA',
+      txtNuts: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll2: 'PENDULUMBRA',
+      moreWays2: 'PROVIKNIGHT OF PATIENCE',
+      funnyScroll3: 'PENDULUMBRA',
+      color: 0xFFffcb3c,
+    });
+    songConfig.set('extirpatient', {
+      bgImage: bgPath + 'death',
+      moreWays: 'INFERNALORD OF DEATH',
+      funnyScroll: 'NIGHTFLAID',
+      txtNuts: 'INFERNALORD OF DEATH',
+      funnyScroll2: 'NIGHTFLAID',
+      moreWays2: 'INFERNALORD OF DEATH',
+      funnyScroll3: 'NIGHTFLAID',
+      color: 0xFF750010, // #750010
+    });
+    songConfig.set('hexerpatient', {
+      bgImage: bgPath + 'death',
+      moreWays: 'INFERNALORD OF DEATH',
+      funnyScroll: 'NIGHTFLAID',
+      txtNuts: 'INFERNALORD OF DEATH',
+      funnyScroll2: 'NIGHTFLAID',
+      moreWays2: 'INFERNALORD OF DEATH',
+      funnyScroll3: 'NIGHTFLAID',
+      color: 0xFF750010,
+    });
+    songConfig.set('extiraging', {
+      bgImage: bgPath + 'death',
+      moreWays: 'INFERNALORD OF DEATH',
+      funnyScroll: 'NIGHTFLAID',
+      txtNuts: 'INFERNALORD OF DEATH',
+      funnyScroll2: 'NIGHTFLAID',
+      moreWays2: 'INFERNALORD OF DEATH',
+      funnyScroll3: 'NIGHTFLAID',
+      color: 0xFF750010,
+    });
+
+    // Personagens que devem usar o backingcard de outro personagem (ex.: mesma pessoa, id diferente).
+    characterBackingAliases.set('dozirc-zzz', 'dozirc');
+    characterBackingAliases.set('doz', 'dozirc');
+
+    // A cor base do card pode ser customizada por música/semana com o campo "color" (ex.: color: 0xFFB33A3A).
+    // As demais cores (moreWays, funnyScroll, orange, etc.) são derivadas dela automaticamente.
   }
 
   public override function onFreeplayIntroDone(event:FreeplayScriptEvent):Void {
@@ -120,6 +313,9 @@ class RetroFreeplay extends Module {
     if (freeplay.currentCharacterId != "bf") return;
     isInFreeplay = true;
     cacheDefaultTexts();
+    new FlxTimer().start(colorCacheDelay, function(_) {
+      cacheOriginalColors();
+    });
     trace('Freeplay intro done');
 
     // initial update
@@ -151,6 +347,16 @@ class RetroFreeplay extends Module {
     curBgImage = '';
     defaultTexts = null;
     defaultAlbumAngle = 0.0;
+
+    targetCardColor = DEFAULT_CARD_COLOR;
+    targetMoreWaysColor = FlxColor.WHITE;
+    targetFunnyScrollColor = FlxColor.WHITE;
+    targetFunnyScroll2Color = FlxColor.WHITE;
+    targetFunnyScroll3Color = FlxColor.WHITE;
+    targetOrangeColor = DEFAULT_ORANGE_COLOR;
+    currentOrangeColor = DEFAULT_ORANGE_COLOR;
+    originalColorsCached = false;
+    lastConfiguredColor = null;
   }
 
   function cacheDefaultTexts():Void {
@@ -185,6 +391,29 @@ class RetroFreeplay extends Module {
       }
     } catch (e:Dynamic) {
       trace('[RetroFreeplay] Error caching default texts: ' + e);
+    }
+  }
+
+  function cacheOriginalColors():Void {
+    if (originalColorsCached) return;
+    var freeplayState:FreeplayState = FlxG.state.subState;
+
+    try {
+      @:privateAccess {
+        var backingCard = freeplayState.backingCard;
+        if (backingCard == null) return;
+
+        if (backingCard.pinkBack != null) originalCardColor = backingCard.pinkBack.color;
+        if (backingCard.moreWays != null) originalMoreWaysColor = backingCard.moreWays.color;
+        if (backingCard.funnyScroll != null) originalFunnyScrollColor = backingCard.funnyScroll.color;
+        if (backingCard.funnyScroll2 != null) originalFunnyScroll2Color = backingCard.funnyScroll2.color;
+        if (backingCard.funnyScroll3 != null) originalFunnyScroll3Color = backingCard.funnyScroll3.color;
+        originalColorsCached = true;
+
+        updateCardColorTargets(lastConfiguredColor);
+      }
+    } catch (e:Dynamic) {
+      trace('[RetroFreeplay] Error caching original colors: ' + e);
     }
   }
 
@@ -230,6 +459,93 @@ class RetroFreeplay extends Module {
       freeplayState.albumRoll.albumTitle.angle = isRetroBg ? 10 : 0;
       freeplayState.albumRoll.albumTitle.updateHitbox();
     }
+
+    updateCardColors(freeplayState, FlxG.elapsed);
+  }
+
+  function updateCardColorTargets(baseColor:Null<Int>):Void {
+    if (baseColor == null) {
+      targetCardColor = originalCardColor;
+      targetMoreWaysColor = originalMoreWaysColor;
+      targetFunnyScrollColor = originalFunnyScrollColor;
+      targetFunnyScroll2Color = originalFunnyScroll2Color;
+      targetFunnyScroll3Color = originalFunnyScroll3Color;
+      targetOrangeColor = DEFAULT_ORANGE_COLOR;
+      return;
+    }
+
+    var base:FlxColor = baseColor;
+
+    targetCardColor = base;
+    targetMoreWaysColor = FlxColor.interpolate(base, FlxColor.WHITE, moreWaysBlend);
+    targetFunnyScrollColor = FlxColor.interpolate(base, FlxColor.BLACK, funnyScrollBlend);
+    targetFunnyScroll2Color = base.lightness > lightnessSplit ? FlxColor.interpolate(base, FlxColor.BLACK, funnyScroll2LightBlend) : FlxColor.interpolate(base, FlxColor.WHITE, funnyScroll2DarkBlend);
+    targetFunnyScroll3Color = FlxColor.interpolate(base, FlxColor.BLACK, funnyScroll3Blend);
+    targetOrangeColor = FlxColor.interpolate(base, FlxColor.BLACK, orangeBlend);
+  }
+
+  function updateCardColors(freeplayState:FreeplayState, elapsed:Float):Void {
+    if (!originalColorsCached) return;
+
+    @:privateAccess {
+      var card = freeplayState.backingCard;
+      if (card == null) return;
+
+      var lerpAmount:Float = elapsed * colorLerpSpeed;
+
+      try {
+        if (card.pinkBack != null) card.pinkBack.color = FlxColor.interpolate(card.pinkBack.color, targetCardColor, lerpAmount);
+
+        if (card.moreWays != null) card.moreWays.color = FlxColor.interpolate(card.moreWays.color, targetMoreWaysColor, lerpAmount);
+
+        if (card.moreWays2 != null) card.moreWays2.color = FlxColor.interpolate(card.moreWays2.color, targetMoreWaysColor, lerpAmount);
+
+        if (card.funnyScroll != null) card.funnyScroll.color = FlxColor.interpolate(card.funnyScroll.color, targetFunnyScrollColor, lerpAmount);
+
+        if (card.funnyScroll2 != null) card.funnyScroll2.color = FlxColor.interpolate(card.funnyScroll2.color, targetFunnyScroll2Color, lerpAmount);
+
+        if (card.funnyScroll3 != null) card.funnyScroll3.color = FlxColor.interpolate(card.funnyScroll3.color, targetFunnyScroll3Color, lerpAmount);
+
+        if (currentOrangeColor != targetOrangeColor) {
+          currentOrangeColor = FlxColor.interpolate(currentOrangeColor, targetOrangeColor, lerpAmount);
+
+          var barWidth:Int = card.pinkBack != null ? Std.int(card.pinkBack.width) : 1280;
+          if (card.orangeBackShit != null) card.orangeBackShit.makeSolidColor(barWidth, 75, currentOrangeColor);
+          if (card.alsoOrangeLOL != null && card.orangeBackShit != null) card.alsoOrangeLOL.makeSolidColor(100, Std.int(card.orangeBackShit.height), currentOrangeColor);
+        }
+      } catch (e:Dynamic) {}
+    }
+  }
+
+  function getSongCharacterId(curSongId:String, ?variation:String):Null<String> {
+    if (curSongId == null || curSongId == '') return null;
+
+    try {
+      var freeplayState:FreeplayState = FlxG.state.subState;
+      var curDifficulty:String = null;
+      @:privateAccess curDifficulty = freeplayState.currentDifficulty;
+
+      var song:Null<Song> = SongRegistry.instance.fetchEntry(curSongId, {variation: variation});
+      if (song == null) return null;
+
+      return song.getDifficulty(curDifficulty, variation)?.characters.opponent;
+    } catch (e:Dynamic) {
+      trace('[RetroFreeplay] Error getting song character id: ' + e);
+      return null;
+    }
+  }
+
+  function resolveCharacterBackingId(characterId:String):String {
+    return characterBackingAliases.get(characterId) ?? characterId;
+  }
+
+  function getCharacterBackingCardImage(?characterId:String):Null<String> {
+    if (characterId == null || characterId == '') return null;
+
+    var resolvedId:String = resolveCharacterBackingId(characterId);
+    var path:String = CHARACTER_BACKING_PATH + resolvedId;
+
+    return Assets.exists(Paths.image(path)) ? path : null;
   }
 
   function updateBackingCardTexts(curSongId:String, curWeekId:String, ?variation:String):Void {
@@ -244,24 +560,27 @@ class RetroFreeplay extends Module {
         var styleData = freeplayState.styleData;
 
         var customTexts:BackingCardTexts = songConfig.get(curSongId);
-        if (customTexts == null && curWeekId != '' && curWeekId != null) {
-          customTexts = songConfig.get(curWeekId);
-          //trace('usando config da semana');
-        }
+        var weekTexts:BackingCardTexts = (curWeekId != '' && curWeekId != null) ? songConfig.get(curWeekId) : null;
+        if (customTexts == null) customTexts = weekTexts;
+
+        var characterBgImage:Null<String> = getCharacterBackingCardImage(getSongCharacterId(curSongId, variation));
+
+        lastConfiguredColor = customTexts?.color;
+        updateCardColorTargets(lastConfiguredColor);
 
         var textsToApply:BackingCardTexts;
         var usingDefault:Bool = false;
 
-        if (customTexts != null) {
+        if (characterBgImage != null || customTexts != null) {
           textsToApply = {
-            bgColor: customTexts.bgColor ?? -1,
-            bgImage: customTexts.bgImage ?? (styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey()),
-            funnyScroll: customTexts.funnyScroll ?? defaultTexts?.funnyScroll,
-            moreWays: customTexts.moreWays ?? defaultTexts?.moreWays,
-            txtNuts: customTexts.txtNuts ?? defaultTexts?.txtNuts,
-            funnyScroll2: customTexts.funnyScroll2 ?? defaultTexts?.funnyScroll2,
-            moreWays2: customTexts.moreWays2 ?? defaultTexts?.moreWays2,
-            funnyScroll3: customTexts.funnyScroll3 ?? defaultTexts?.funnyScroll3
+            bgColor: customTexts?.bgColor ?? -1,
+            bgImage: characterBgImage ?? customTexts?.bgImage ?? (styleData == null ? 'freeplay/freeplayBGweek1-bf' : styleData.getBgAssetKey()),
+            funnyScroll: customTexts?.funnyScroll ?? weekTexts?.funnyScroll ?? defaultTexts?.funnyScroll,
+            moreWays: customTexts?.moreWays ?? weekTexts?.moreWays ?? defaultTexts?.moreWays,
+            txtNuts: customTexts?.txtNuts ?? weekTexts?.txtNuts ?? defaultTexts?.txtNuts,
+            funnyScroll2: customTexts?.funnyScroll2 ?? weekTexts?.funnyScroll2 ?? defaultTexts?.funnyScroll2,
+            moreWays2: customTexts?.moreWays2 ?? weekTexts?.moreWays2 ?? defaultTexts?.moreWays2,
+            funnyScroll3: customTexts?.funnyScroll3 ?? weekTexts?.funnyScroll3 ?? defaultTexts?.funnyScroll3
           };
         } else {
           // Voltar totalmente ao padrão
@@ -306,6 +625,8 @@ class RetroFreeplay extends Module {
             });
           }*/
 
+          if (defaultTexts == null) return;
+
           var targetImg:String = textsToApply.bgImage;
           //trace('targetImg: ' + targetImg);
           //trace('curBgImage: ' + curBgImage);
@@ -320,7 +641,11 @@ class RetroFreeplay extends Module {
             freeplayState.backingImage.loadGraphic(Paths.image(targetImg));
             FlxTween.cancelTweensOf(freeplayState.backingImage);
 
-            if (targetImg != styleData.getBgAssetKey()) {
+            if (characterBgImage != null) {
+              FunkinMemory.cacheTexture(Paths.image(targetImg));
+              freeplayState.backingImage.color = -1;
+              freeplayState.angleMaskShader.extraColor = freeplayState.backingImage.color;
+            } else if (targetImg != styleData.getBgAssetKey()) {
               //freeplayState.backingImage.setGraphicSize(0, FlxG.height + 1);
               FunkinMemory.cacheTexture(Paths.image(targetImg));
 
@@ -357,6 +682,7 @@ class RetroFreeplay extends Module {
 typedef BackingCardTexts = {
   @:optional var bgColor:Int;
   @:optional var bgImage:String;
+  @:optional var color:Int;
   @:optional var funnyScroll:String;
   @:optional var moreWays:String;
   @:optional var txtNuts:String;

@@ -4,6 +4,7 @@ import funkin.modding.events.HitNoteScriptEvent;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroUtil;
@@ -30,6 +31,12 @@ class PoisonNote extends NoteKind {
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
 		if (!event.note.noteData.getMustHitNote()) return;
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
 
 		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 

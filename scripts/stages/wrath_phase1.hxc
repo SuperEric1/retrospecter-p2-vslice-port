@@ -5,6 +5,7 @@ import flixel.util.FlxGradient;
 import funkin.play.PlayState;
 import funkin.play.stage.Stage;
 import funkin.play.stage.StageProp;
+import funkin.save.Save;
 import funkin.graphics.shaders.DropShadowShader;
 import funkin.play.character.CharacterType;
 import openfl.display.BitmapData;
@@ -28,29 +29,31 @@ class wrathPhaseOneStage extends Stage
 
     isWideScreen = FlxG.width > 1280;
 
-    var objects = [
-      'velasma',
-      'serpenscheme',
-      'cat'
-    ];
+    if (Save.instance.modOptions.get('retroShaders')) {
+      var objects = [
+        'velasma',
+        'serpenscheme',
+        'cat'
+      ];
 
-    for (obj in objects) {
-      // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
-      var rim = new DropShadowShader();
-      rim.setAdjustColor(-5, 0, -5, 0); // brilho, hue, contraste e saturação
-      //rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
-      rim.color = 0xFF29c23e; // #29c23eff
-      rim.angle = 90;
-      rim.antialiasAmt = 0;
+      for (obj in objects) {
+        // o shader precisa estar aqui dentro pra que pegue nos outros objetos corretamente
+        var rim = new DropShadowShader();
+        rim.setAdjustColor(-5, 0, -5, 0); // brilho, hue, contraste e saturação
+        //rim.setAdjustColor(-33, 0, -23, 0); // brilho, hue, contraste e saturação
+        rim.color = 0xFF29c23e; // #29c23eff
+        rim.angle = 90;
+        rim.antialiasAmt = 0;
 
-      getNamedProp(obj).shader = rim;
-      rim.attachedSprite = getNamedProp(obj);
-      getNamedProp(obj).animation.onFrameChange.add(function() {
-        if (getNamedProp(obj) != null)
-        {
-          rim.updateFrameInfo(getNamedProp(obj).frame);
-        }
-      });
+        getNamedProp(obj).shader = rim;
+        rim.attachedSprite = getNamedProp(obj);
+        getNamedProp(obj).animation.onFrameChange.add(function() {
+          if (getNamedProp(obj) != null)
+          {
+            rim.updateFrameInfo(getNamedProp(obj).frame);
+          }
+        });
+      }
     }
   }
 

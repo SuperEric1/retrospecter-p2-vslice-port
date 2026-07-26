@@ -25,9 +25,9 @@
     "album": "phase2",
     "noteStyle": "retrospecter",
     "ratings": {
-      "easy": 0,
-      "normal": 0,
-      "hard": 0
+      "easy": 5,
+      "normal": 10,
+      "hard": 14
     }
   },
   "timeFormat": "ms",

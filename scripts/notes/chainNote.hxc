@@ -2,6 +2,7 @@ import funkin.play.notes.notekind.NoteKind;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
 
 class ChainNote extends NoteKind {
@@ -11,6 +12,13 @@ class ChainNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
+		
 		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
 		event.note.x += 1;

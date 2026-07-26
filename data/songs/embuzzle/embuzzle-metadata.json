@@ -25,9 +25,9 @@
     "stage": "bee",
     "noteStyle": "retrospecter",
     "ratings": {
-      "easy": 0,
-      "normal": 0,
-      "hard": 0
+      "easy": 4,
+      "normal": 12,
+      "hard": 14
     }
   },
   "timeFormat": "ms",

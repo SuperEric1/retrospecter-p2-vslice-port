@@ -2,6 +2,7 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.PlayState;
 import funkin.modding.events.HitNoteScriptEvent;
 import funkin.Paths;
+import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroUtil;
 
@@ -25,6 +26,13 @@ class HivemoreNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
+
 		event.note.x += -43;
 		event.note.yOffset += -25;
 

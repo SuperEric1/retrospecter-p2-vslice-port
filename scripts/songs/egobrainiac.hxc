@@ -1,27 +1,15 @@
-import flixel.addons.display.FlxRuntimeShader;
 import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.math.FlxBasePoint;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
-import funkin.Conductor;
+
 import funkin.play.song.Song;
 import funkin.save.Save;
+import funkin.play.stage.Stage;
 import funkin.play.PlayState;
-import funkin.audio.FunkinSound;
-import funkin.data.song.SongRegistry;
-import funkin.play.cutscene.CutsceneType;
-import funkin.play.cutscene.VideoCutscene;
-import funkin.play.stage.StageProp;
 import funkin.play.PlayStatePlaylist;
-import funkin.graphics.FunkinSprite;
-import funkin.util.Constants;
-import funkin.ui.FullScreenScaleMode;
 import funkin.Preferences;
 import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
-import funkin.play.notes.Strumline;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroAchievements;
@@ -34,6 +22,7 @@ class EgobrainiacSong extends Song
   var hasPlayedDialogue:Bool = false;
   var hasPlayedCutscene:Bool = false;
   var isMobile:Bool;
+  var wasCameraForced:Bool = false;
   var ogStrumsX:Array<Float> = [];
   var ogStrumsY:Array<Float> = [];
   var ogOppStrumsX:Array<Float> = [];
@@ -46,16 +35,36 @@ class EgobrainiacSong extends Song
   var izzyPercent = 14;
   var didLastThing:Bool = false;
 
-  // Beats para interrupções
+  var playerNoteTweenX:Array<FlxTween> = [null, null, null, null];
+  var playerNoteTweenY:Array<FlxTween> = [null, null, null, null];
+  var playerNoteTweenAlpha:Array<FlxTween> = [null, null, null, null];
+  var playerNoteTweenScale:Array<FlxTween> = [null, null, null, null];
+
   var interruptionBeatsStart:Array<Int> = [544, 560, 570, 581, 591, 599];
   var interruptionBeatsRetry:Array<Int> = [551, 567, 577, 588, 596, 605];
+
+  var playState:PlayState;
+  var playStage:Stage;
 
   public function new()
   {
     super('egobrainiac');
   }
 
-  public override function onCountdownStart(event:CountdownScriptEvent):Void
+  override function onCreate(event:ScriptEvent):Void
+  {
+    super.onCreate(event);
+
+    playState = PlayState.instance;
+    playStage = PlayState.instance.currentStage;
+    deaths = 0;
+
+    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['izzy']);
+
+    ModuleHandler.getModule('RetroPlayState')?.scriptCall('setNoteAlphaSync', [false]);
+  }
+
+  override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     super.onCountdownStart(event);
     izzyPercent = 14;
@@ -71,300 +80,26 @@ class EgobrainiacSong extends Song
       var rd = ModuleHandler.getModule('RetroDialogue');
       rd.scriptCall('startDialogue', ['egobrainiac story', 'pre', function() {
         PlayState.instance.startCountdown();
-        FlxTween.tween(PlayState.instance.camHUD, { alpha: 1 }, 0.5, { ease: FlxEase.quadIn });
+        FlxTween.tween(PlayState.instance.camHUD, {alpha: 1}, 0.5, {ease: FlxEase.quadIn});
       }]);
     }
   }
 
-  public override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
-    super('onNoteGhostMiss');
-    if (izzyPercent > 15 || didLastThing) {
-      event.cancel();
-      event.stopPropagation();
-      return;
-    }
-  }
-
-  public override function onBeatHit(event:SongTimeScriptEvent):Void
-  {
-    super.onBeatHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGamePaused) return;
-    if (PlayState.instance.isGameOverState) return;
-
-    var curBeat = event.beat;
-
-    cleanFinishedTweens();
-
-    // Verifica se o beat atual está no array de beats de start
-    if (interruptionBeatsStart.contains(curBeat)) {
-      if (curBeat == 544) {
-        // Define a câmera como forçada no boyfriend
-        playState.cameraFollowPoint.setPosition(playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y);
-      }
-      doThing();
-    }
-
-    if (interruptionBeatsRetry.contains(curBeat)) {
-      undoThing();
-    }
-  }
-
-  public function onStepHit(event) {
-    super.onStepHit(event);
-    if (PlayState.instance == null) return;
-    if (PlayState.instance.isGamePaused) return;
-    if (PlayState.instance.isGameOverState) return;
-    var downscroll = Preferences.downscroll;
-    if(isMobile) downscroll = true;
-    final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-    final playerStrumlineScale:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
-    final playerNoteSpacing:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
-
-    if (event.step == 2178) {
-      playStage.getBoyfriend().danceEvery = 0;
-    }
-    if (event.step == 2242) {
-      playStage.getBoyfriend().idleSuffix = '-alt';
-      playStage.getBoyfriend().danceEvery = 1;
-    }
-
-    // ultimo
-    if (event.step >= 2432 && didLastThing == false) {
-      didLastThing = true;
-      izzyPercent = 101;
-      doThing();
-
-      FlxG.camera.flash(0xFF9CFFF7, 1);
-      //playState.opponentStrumline.visible = true;
-      playStage.getBoyfriend().idleSuffix = '-angry';
-
-      tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 2, {ease: FlxEase.linear}));
-      if (downscroll) {
-        tweens.push(FlxTween.tween(playState.playerStrumline, {y: FlxG.height + 100}, 1.5, {ease: FlxEase.quadInOut}));
-      } else {
-        tweens.push(FlxTween.tween(playState.playerStrumline, {y: playState.playerStrumline.y - 100}, 1.5, {ease: FlxEase.quadInOut}));
-      }
-
-      // notas
-      var izzy = izzyPercent / 100;
-      if (isMobile) {
-        tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 256 * izzy}, 2, {ease: FlxEase.backOut}));
-        tweens.push(FlxTween.tween(playState.playerStrumline, {x: ogLaneX + (150 + FlxG.random.int(-50,50))}, 0.75, {ease: FlxEase.cubeOut}));
-      }
-      for (i in 0...4) {
-        var note = playState.playerStrumline.strumlineNotes.members[i];
-        if (note == null) continue;
-
-        if (!isMobile) tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (200 + FlxG.random.int(10,50))}, 0.75, {ease: FlxEase.cubeOut}));
-        tweens.push(FlxTween.tween(note, {y: ogStrumsY[i] + 72 + FlxG.random.int(-80,80)}, 0.75, {ease: FlxEase.cubeOut}));
-        tweens.push(FlxTween.tween(note, {alpha: 0}, 0.6, {ease: FlxEase.quadOut}));
-        tweens.push(FlxTween.tween(note, {angle: FlxG.random.int(-180,180)}, 0.9, {ease: FlxEase.cubeOut}));
-        tweens.push(FlxTween.tween(note.scale, {x: 0.4, y: 0.4}, 0.75, {ease: FlxEase.cubeOut}));
-      }
-    }
-  }
-
-  function doThing() {
-    if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
-
-    var izzy = izzyPercent / 100;
-    //fadeFakeNotes();
-    //tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 0.7, {ease: FlxEase.backOut}));
-
-    if (isMobile) {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 326 * izzy}, 0.5, {ease: FlxEase.backOut}));
-    } else {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
-    }
-    izzyPercent += 16;
-
-    // ---- ANTIGO ----
-    /*for (i in 0...4) {
-      // jogador
-      if (izzyPercent != 101) {
-        tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0.1}, 0.7, {ease: FlxEase.backOut}));
-
-        // Removido pq tava dando problema, mas funciona praticamente igual o mod original
-        var note = playState.playerStrumline.strumlineNotes.members[i];
-        if (note == null) continue;
-
-        tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (180 + i * -30) * izzy}, 0.5, {ease: FlxEase.backOut}));
-        tweens.push(FlxTween.tween(note, {y: ogStrumsY[i] + 64 * izzy}, 0.5, {ease: FlxEase.backOut}));
-        tweens.push(FlxTween.tween(note, {alpha: 0}, 0.5, {ease: FlxEase.backOut}));
-        tweens.push(FlxTween.tween(note.scale, {x: 0.7 - 0.2 * izzy, y: 0.7 - 0.2 * izzy}, 0.5, {ease: FlxEase.backOut}));
-      }
-      // oponente
-      var oppNote = playState.opponentStrumline.strumlineNotes.members[i];
-      if (oppNote == null) continue;
-
-      tweens.push(FlxTween.tween(oppNote, {x: ogOppStrumsX[i] + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
-    }*/
-  }
-
-  function undoThing() {
-    if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
-
-    var izzy = izzyPercent / 50;
-    //fadeFakeNotes(true);
-
-    //tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
-    if (isMobile) {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY}, 0.5, {ease: FlxEase.quadOut}));
-    } else {
-      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX}, 0.5, {ease: FlxEase.quadOut}));
-    }
-
-    // Removido pq tava dando problema, mas funciona igual o mod original
-    /*for (i in 0...4) {
-      // Jogador - volta para posições originais
-      var note = playState.playerStrumline.strumlineNotes.members[i];
-      if (note == null) continue;
-
-      tweens.push(FlxTween.tween(note, {x: ogStrumsX[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-      tweens.push(FlxTween.tween(note, {y: ogStrumsY[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-      tweens.push(FlxTween.tween(note, {alpha: 1}, 0.5, {ease: FlxEase.quadOut}));
-      tweens.push(FlxTween.tween(note.scale, {x: 0.7, y: 0.7}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-
-      // Oponente - volta para posições originais
-      var oppNote = playState.opponentStrumline.strumlineNotes.members[i];
-      if (oppNote == null) continue;
-
-      tweens.push(FlxTween.tween(oppNote, {x: ogOppStrumsX[i]}, 0.5 + izzy, {ease: FlxEase.quadOut}));
-    }*/
-  }
-
-  function fadeFakeNotes(?unfade:Bool = false) {
-    var time = 0.5;
-
-    for (note in PlayState.instance.playerStrumline.notes.members) {
-      if (note == null || note.noteData.kind != "Fake Note") continue;
-      var delay:Float = (note.get_strumTime() - Constants.HIT_WINDOW_MS * 0.01 - (time * 1000) - Conductor.instance.songPosition) / 1000;
-      FlxTween.cancelTweensOf(note, ['alpha']);
-      note.alpha = 1;
-      tweens.push(FlxTween.tween(note, {alpha: unfade ? 1 : 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function (_) {
-        note.kill();
-      }}));
-    }
-
-    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
-      if (holdNote == null || !holdNote.alive || holdNote.noteData.kind != "Fake Note") continue;
-      var delay:Float = (holdNote.get_strumTime() - Constants.HIT_WINDOW_MS * 0.1 - (time * 1000) - Conductor.instance.songPosition) / 1000;
-      FlxTween.cancelTweensOf(holdNote, ['alpha']);
-      holdNote.alpha = 1;
-      tweens.push(FlxTween.tween(holdNote, {alpha: unfade ? 1 : 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function (_) {
-        holdNote.kill();
-      }}));
-    }
-  }
-
-  override function onDestroy(event)
-	{
-		super.onDestroy(event);
-		resetTweens();
-		didLastThing = false;
-    hasPlayedDialogue = false;
-    hasPlayedCutscene = false;
-    deaths = 0;
-	}
-
-	private function resetTweens()
-	{
-		for (tween in tweens)
-		{
-			if (tween != null)
-				tween.cancel();
-		}
-		tweens = [];
-		pausedTweens = [];
-	}
-
-	private function cleanFinishedTweens()
-	{
-		// Remove tweens finalizados do array
-		var i = tweens.length - 1;
-		while (i >= 0)
-		{
-			if (tweens[i] == null || tweens[i].finished)
-			{
-				tweens.splice(i, 1);
-			}
-			i--;
-		}
-	}
-
-	override function onResume(event)
-	{
-		super.onResume(event);
-		for (tween in pausedTweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = true;
-			}
-		}
-		pausedTweens = [];
-	}
-
-	override function onPause(event)
-	{
-		super.onPause(event);
-		// Limpa tweens finalizados antes de pausar
-		cleanFinishedTweens();
-		pausedTweens = [];
-		for (tween in tweens)
-		{
-			if (tween != null && !tween.finished)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-	}
-
-  override function onGameOver(event:ScriptEvent)
-  {
-    super.onGameOver(event);
-    deaths += 1;
-
-    if (deaths >= 5) RetroAchievements.award('pride-lose5', true, true);
-  }
-
-  function onSongRetry(event:ScriptEvent)
-  {
-    super.onSongRetry(event);
-    resetTweens();
-    izzyPercent = 14;
-
-    if (didLastThing == true) FlxG.resetState(); // resetar tudo de uma vez caso num tenha mais oq fazer pra resetar
-
-    //playState.playerStrumline.x = ogLaneX;
-    //playStage.getBoyfriend().idleSuffix = '-alt';
-    //playStage.getBoyfriend().danceEvery = 1;
-    playState.playerStrumline.alpha = 1;
-  }
-
-  public override function onSongEnd(event:ScriptEvent):Void
-  {
-    super.onSongEnd(event);
-    didLastThing = false;
-
-    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
-
-    if (!hasPlayedCutscene) {
-      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF6ef9e2, true);
-      hasPlayedCutscene = true;
-      event.cancel();
-    }
-  }
-
-  public override function onSongLoaded(event:ScriptEvent):Void
+  override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
     if (PlayState.instance == null) return;
+    // no mobile com controle por setas (sem gamepad externo), a UI muda de eixo:
+    // o "empurrão" do modchart precisa ir pra Y em vez de X pra não vazar da tela
     isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
 
-    // salvar posicao real dos strums para os efeitos.
+    izzyPercent = 14;
+    wasCameraForced = false;
+    ogStrumsX = [];
+    ogStrumsY = [];
+    ogOppStrumsX = [];
+    ogOppStrumsY = [];
+
     for (i in 0...4) {
       var strum = PlayState.instance.playerStrumline.strumlineNotes.members[i];
       if (ogStrumsX[i] == null && ogStrumsY[i] == null) {
@@ -383,18 +118,259 @@ class EgobrainiacSong extends Song
     }
   }
 
-  function onCreate(event:ScriptEvent):Void
-  {
-    super.onCreate(event);
-
-    playState = PlayState.instance;
-    playStage = PlayState.instance.currentStage;
-    deaths = 0;
-
-    ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['izzy']);
+  override function onNoteGhostMiss(event:GhostMissNoteScriptEvent):Void {
+    super.onNoteGhostMiss(event);
+    if (izzyPercent > 15 || didLastThing) {
+      event.cancel();
+      event.stopPropagation();
+      return;
+    }
   }
 
-  public override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
+  override function onBeatHit(event:SongTimeScriptEvent):Void
+  {
+    super.onBeatHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+
+    var curBeat = event.beat;
+
+    cleanFinishedTweens();
+
+    if (interruptionBeatsStart.contains(curBeat)) {
+      if (curBeat == 544) {
+        wasCameraForced = true;
+        playState.cameraFollowPoint.setPosition(playStage.getBoyfriend().cameraFocusPoint.x, playStage.getBoyfriend().cameraFocusPoint.y);
+      }
+      doThing();
+    }
+
+    if (interruptionBeatsRetry.contains(curBeat)) {
+      undoThing();
+    }
+  }
+
+  override function onStepHit(event:SongTimeScriptEvent):Void {
+    super.onStepHit(event);
+    if (PlayState.instance == null) return;
+    if (PlayState.instance.isGamePaused) return;
+    if (PlayState.instance.isGameOverState) return;
+    var downscroll = Preferences.downscroll;
+    if (isMobile) downscroll = true;
+
+    if (event.step == 2178) {
+      playStage.getBoyfriend().danceEvery = 0;
+    }
+    if (event.step == 2242) {
+      playStage.getBoyfriend().idleSuffix = '-alt';
+      playStage.getBoyfriend().danceEvery = 1;
+    }
+
+    if (event.step >= 2432 && didLastThing == false) {
+      didLastThing = true;
+      izzyPercent = 101;
+      doThing();
+
+      FlxG.camera.flash(0xFF9CFFF7, 1);
+      playStage.getBoyfriend().idleSuffix = '-angry';
+
+      tweens.push(FlxTween.tween(playState.playerStrumline, {alpha: 0}, 2, {ease: FlxEase.linear}));
+      if (downscroll) {
+        tweens.push(FlxTween.tween(playState.playerStrumline, {y: FlxG.height + 100}, 1.5, {ease: FlxEase.quadInOut}));
+      } else {
+        tweens.push(FlxTween.tween(playState.playerStrumline, {y: playState.playerStrumline.y - 100}, 1.5, {ease: FlxEase.quadInOut}));
+      }
+
+      var izzy = izzyPercent / 100;
+      if (isMobile) {
+        tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 256 * izzy}, 2, {ease: FlxEase.backOut}));
+        tweens.push(FlxTween.tween(playState.playerStrumline, {x: ogLaneX + (150 + FlxG.random.int(-50, 50))}, 0.75, {ease: FlxEase.cubeOut}));
+      }
+      for (i in 0...4) {
+        var note = playState.playerStrumline.strumlineNotes.members[i];
+        if (note == null) continue;
+
+        cancelPlayerNoteTweens(i);
+
+        if (!isMobile) tweens.push(FlxTween.tween(note, {x: ogStrumsX[i] + (200 + FlxG.random.int(10, 50))}, 0.75, {ease: FlxEase.cubeOut}));
+        tweens.push(FlxTween.tween(note, {y: ogStrumsY[i] + 72 + FlxG.random.int(-80, 80)}, 0.75, {ease: FlxEase.cubeOut}));
+        tweens.push(FlxTween.tween(note, {alpha: 0}, 0.6, {ease: FlxEase.quadOut}));
+        tweens.push(FlxTween.tween(note, {angle: FlxG.random.int(-180, 180)}, 0.9, {ease: FlxEase.cubeOut}));
+        tweens.push(FlxTween.tween(note.scale, {x: 0.4, y: 0.4}, 0.75, {ease: FlxEase.cubeOut}));
+      }
+    }
+  }
+
+  function cancelPlayerNoteTweens(i:Int) {
+    if (playerNoteTweenX[i] != null) playerNoteTweenX[i].cancel();
+    if (playerNoteTweenY[i] != null) playerNoteTweenY[i].cancel();
+    if (playerNoteTweenAlpha[i] != null) playerNoteTweenAlpha[i].cancel();
+    if (playerNoteTweenScale[i] != null) playerNoteTweenScale[i].cancel();
+  }
+
+  function doThing() {
+    if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
+
+    var izzy = izzyPercent / 100;
+
+    if (isMobile) {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY + 326 * izzy}, 0.5, {ease: FlxEase.backOut}));
+    } else {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX + 316 * izzy}, 0.5, {ease: FlxEase.backOut}));
+    }
+
+    if (izzyPercent != 101) {
+      for (i in 0...4) {
+        var note = playState.playerStrumline.strumlineNotes.members[i];
+        if (note == null) continue;
+
+        cancelPlayerNoteTweens(i);
+
+        if (!isMobile) {
+          playerNoteTweenX[i] = FlxTween.tween(note, {x: ogStrumsX[i] + (180 + i * -30) * (14 / 100)}, 0.5, {ease: FlxEase.backOut});
+          tweens.push(playerNoteTweenX[i]);
+        }
+        playerNoteTweenY[i] = FlxTween.tween(note, {y: ogStrumsY[i] + 64 * izzy}, 0.5, {ease: FlxEase.backOut});
+        playerNoteTweenAlpha[i] = FlxTween.tween(note, {alpha: 1 - 0.5 * izzy}, 0.5, {ease: FlxEase.backOut});
+        playerNoteTweenScale[i] = FlxTween.tween(note.scale, {x: 0.7 - 0.2 * izzy, y: 0.7 - 0.2 * izzy}, 0.5, {ease: FlxEase.backOut});
+        tweens.push(playerNoteTweenY[i]);
+        tweens.push(playerNoteTweenAlpha[i]);
+        tweens.push(playerNoteTweenScale[i]);
+      }
+    }
+
+    izzyPercent += 16;
+  }
+
+  function undoThing() {
+    if (playState == null || playState.playerStrumline == null || playState.opponentStrumline == null) return;
+
+    var izzy = izzyPercent / 50;
+
+    if (isMobile) {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {y: ogOppLaneY}, 0.5, {ease: FlxEase.quadOut}));
+    } else {
+      tweens.push(FlxTween.tween(playState.opponentStrumline, {x: ogOppLaneX}, 0.5, {ease: FlxEase.quadOut}));
+    }
+
+    for (i in 0...4) {
+      var note = playState.playerStrumline.strumlineNotes.members[i];
+      if (note == null) continue;
+
+      cancelPlayerNoteTweens(i);
+
+      if (!isMobile) {
+        playerNoteTweenX[i] = FlxTween.tween(note, {x: ogStrumsX[i]}, 0.5 + izzy, {ease: FlxEase.quadOut});
+        tweens.push(playerNoteTweenX[i]);
+      }
+      playerNoteTweenY[i] = FlxTween.tween(note, {y: ogStrumsY[i]}, 0.5 + izzy, {ease: FlxEase.quadOut});
+      playerNoteTweenAlpha[i] = FlxTween.tween(note, {alpha: 1}, 0.5, {ease: FlxEase.quadOut});
+      playerNoteTweenScale[i] = FlxTween.tween(note.scale, {x: 0.7, y: 0.7}, 0.5 + izzy, {ease: FlxEase.quadOut});
+      tweens.push(playerNoteTweenY[i]);
+      tweens.push(playerNoteTweenAlpha[i]);
+      tweens.push(playerNoteTweenScale[i]);
+    }
+  }
+
+  override function onPause(event:PauseScriptEvent)
+  {
+    super.onPause(event);
+    cleanFinishedTweens();
+    pausedTweens = [];
+    for (tween in tweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = false;
+        pausedTweens.push(tween);
+      }
+    }
+  }
+
+  override function onResume(event:ScriptEvent)
+  {
+    super.onResume(event);
+    for (tween in pausedTweens)
+    {
+      if (tween != null && !tween.finished)
+      {
+        tween.active = true;
+      }
+    }
+    pausedTweens = [];
+  }
+
+  override function onGameOver(event:ScriptEvent)
+  {
+    super.onGameOver(event);
+    deaths += 1;
+
+    if (deaths >= 5) RetroAchievements.award('pride-lose5', true, true);
+  }
+
+  override function onSongRetry(event:SongRetryEvent)
+  {
+    super.onSongRetry(event);
+    resetTweens();
+    izzyPercent = 14;
+    wasCameraForced = false;
+    playState.playerStrumline.alpha = 1;
+  }
+
+  override function onSongEnd(event:ScriptEvent):Void
+  {
+    super.onSongEnd(event);
+    didLastThing = false;
+
+    if (!PlayStatePlaylist.isStoryMode) hasPlayedCutscene = true;
+
+    if (!hasPlayedCutscene) {
+      RetroTransformCutscene.play([playStage.getBoyfriend(), playStage.getGirlfriend()], 0xFF6ef9e2, true);
+      hasPlayedCutscene = true;
+      event.cancel();
+    }
+  }
+
+  override function onDestroy(event:ScriptEvent):Void
+  {
+    super.onDestroy(event);
+    resetTweens();
+    didLastThing = false;
+    hasPlayedDialogue = false;
+    hasPlayedCutscene = false;
+    deaths = 0;
+  }
+
+  function resetTweens()
+  {
+    for (tween in tweens)
+    {
+      if (tween != null)
+        tween.cancel();
+    }
+    tweens = [];
+    pausedTweens = [];
+    playerNoteTweenX = [null, null, null, null];
+    playerNoteTweenY = [null, null, null, null];
+    playerNoteTweenAlpha = [null, null, null, null];
+    playerNoteTweenScale = [null, null, null, null];
+  }
+
+  function cleanFinishedTweens()
+  {
+    var i = tweens.length - 1;
+    while (i >= 0)
+    {
+      if (tweens[i] == null || tweens[i].finished)
+      {
+        tweens.splice(i, 1);
+      }
+      i--;
+    }
+  }
+
+  override function isSongNew(currentDifficulty:String, currentVariation:String):Bool
   {
     return !Save.instance.hasBeatenSong(this.id, null);
   }

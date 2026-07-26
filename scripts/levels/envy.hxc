@@ -47,7 +47,7 @@ class EnvyLevel extends Level
   private function hasBeatenThis():Bool
   {
     if (RetroSave.isUnlockSongs()) return true;
-    
+
     for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
     {
       if ((Save.instance.getLevelScore('50-envy', diff)?.score ?? 0) > 0) return true;

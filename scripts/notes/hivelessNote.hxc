@@ -2,6 +2,7 @@ import funkin.play.notes.notekind.NoteKind;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
 
 class HivelessNote extends NoteKind {
@@ -11,9 +12,16 @@ class HivelessNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
+		
 		event.note.x += -50;
 		event.note.yOffset += -26;
-		
+
 		event.note.lowPriority = true;
 
 		event.note.frames = Paths.getSparrowAtlas('notes/Hiveless_Note_Assets');

@@ -1430,6 +1430,8 @@ class ExtirpatientSong extends Song
     // Update health bar colors to white
     retroGameUI?.scriptCall('updateBarColor', [CharacterType.DAD, FlxColor.WHITE, true, 0.5]);
 
+    retroGameUI?.scriptCall('setUpdateJudgementAlpha', [false]);
+
     if (!modcharts) return;
 
     var crochet = Conductor.instance.stepLengthMs * 4;
@@ -1471,6 +1473,8 @@ class ExtirpatientSong extends Song
     duringCutscene = false;
     pauseZoom = false;
     playState.iconP2.color = -1;
+
+    retroGameUI?.scriptCall('setUpdateJudgementAlpha', [true]);
 
     if (!modcharts) return;
 

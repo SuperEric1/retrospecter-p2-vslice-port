@@ -258,7 +258,7 @@ class RetroPlayState extends Module {
     if (isRetro) {
       var strum = event.note.noteData.getMustHitNote() ? PlayState.instance.playerStrumline : PlayState.instance.opponentStrumline;
       var strumNote = strum.strumlineNotes.members[event.note.noteData.getDirection()];
-      var targetAlpha = !disableNoteAlphaSync ? strumNote.alpha : strum.alpha;
+      var targetAlpha = (!disableNoteAlphaSync && k != "Fake Note") ? strumNote.alpha : strum.alpha;
       if (targetAlpha == 1) targetAlpha = strum.alpha;
       var forcedAlpha:Float = event.note.noteData.getMustHitNote() ? forceNotesAlpha : forceOppNotesAlpha;
       if (forcedAlpha != null) targetAlpha = forcedAlpha;
@@ -276,7 +276,7 @@ class RetroPlayState extends Module {
       event.note.scoreable = false; // não dar score/combo ao acertar.
     }*/
 
-    if (k == 'Fake Note') {
+    /*if (k == 'Fake Note') {
       var time:Float = 0.3;
       var delay:Float = (note.get_strumTime() - Constants.HIT_WINDOW_MS * 0.7 - (time * 1000) - Conductor.instance.songPosition) / 1000;
       tweens.push(FlxTween.tween(note, {alpha: 0}, time, {ease: FlxEase.quadOut, startDelay: delay, onComplete: function(_:FlxTween) {
@@ -289,7 +289,7 @@ class RetroPlayState extends Module {
         //note.holdNoteSprite.visible = false;
       }}));
       }
-    }
+    }*/
 
     if (k == 'cashNote') {
       coinsSpawned += 1;
@@ -1070,6 +1070,10 @@ class RetroPlayState extends Module {
         ogOppStrumScales.push(strum.scale.y);
       }
     }
+    ogStrumsX.push(PlayState.instance.playerStrumline.x);
+    ogStrumsY.push(PlayState.instance.playerStrumline.y);
+    ogOppStrumsX.push(PlayState.instance.opponentStrumline.x);
+    ogOppStrumsY.push(PlayState.instance.opponentStrumline.y);
   }
 
   function clearStrumPos():Void {
@@ -1758,6 +1762,9 @@ class RetroPlayState extends Module {
     if (globalTimerManager != null) globalTimerManager.update(event.elapsed);
 
     if (!FlxG.onMobile && RetroSave.isDebug() && FlxG.keys.pressed.F8) PlayState.instance.endSong();
+
+    PlayState.instance.camHUD.visible = false;
+    PlayState.instance.camCutscene.visible = false;
 
     if (forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre')) {
       if (!spectreHit) {
@@ -2560,6 +2567,10 @@ class RetroPlayState extends Module {
     }
 
     PlayState.instance.playerStrumline.alpha = 1;
+    PlayState.instance.playerStrumline.x = ogStrumsX[4];
+    PlayState.instance.playerStrumline.y = ogStrumsY[4];
+    PlayState.instance.opponentStrumline.x = ogOppStrumsX[4];
+    PlayState.instance.opponentStrumline.y = ogOppStrumsY[4];
     if (hasStoredStrums) {
       for (i in 0...4) {
         var note = PlayState.instance.playerStrumline.strumlineNotes.members[i];

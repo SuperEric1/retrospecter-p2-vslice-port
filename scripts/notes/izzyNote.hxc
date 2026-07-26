@@ -1,5 +1,6 @@
 import funkin.play.notes.notekind.NoteKind;
 import funkin.Paths;
+import funkin.save.Save;
 
 class IzzyNote extends NoteKind {
 	public function new() {
@@ -9,6 +10,12 @@ class IzzyNote extends NoteKind {
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
 		if (!event.note.noteData.getMustHitNote()) return;
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
 
 		event.note.x += 4;
 		event.note.yOffset += -25;

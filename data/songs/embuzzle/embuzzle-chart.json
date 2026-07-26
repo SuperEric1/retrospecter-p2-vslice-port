@@ -1,6 +1,22 @@
 {
   "events": [
     {
+      "t": 93315.7894736841,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 0.0,
+        "time": 0.3
+      }
+    },
+    {
+      "t": 94736.8421052631,
+      "e": "RetroChangeFakeAlpha",
+      "v": {
+        "alpha": 1.0,
+        "time": 0.0
+      }
+    },
+    {
       "t": 0,
       "e": "ScrollSpeed",
       "v": {

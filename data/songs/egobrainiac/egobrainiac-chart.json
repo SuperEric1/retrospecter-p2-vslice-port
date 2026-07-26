@@ -7,6 +7,134 @@
   },
   "events": [
     {
+    "t": 117176.470588235,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 118500,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 192000,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 193411.764705882,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 197647.058823529,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 199058.823529411,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 201529.411764705,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 203294.117647058,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 205235.294117647,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 206823.529411764,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 208764.705882353,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 210352.94117647,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 211588.235294117,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 213176.470588235,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+  {
+    "t": 214411.764705882,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 0.0,
+      "time": 0.3
+    }
+  },
+  {
+    "t": 216000,
+    "e": "RetroChangeFakeAlpha",
+    "v": {
+      "alpha": 1.0,
+      "time": 0.0
+    }
+  },
+    {
       "t": 0,
       "e": "FocusCamera",
       "v": {

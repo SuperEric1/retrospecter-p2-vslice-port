@@ -12,7 +12,7 @@ class RetroSetGFSpeed extends SongEvent {
   }
 
   override function getTitle() {
-    return "Add Cam Zoom";
+    return "Set GF Speed";
   }
 
   override function handleEvent(data) {

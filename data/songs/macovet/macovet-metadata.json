@@ -25,9 +25,9 @@
     "stage": "envy",
     "noteStyle": "retrospecter",
     "ratings": {
-      "easy": 0,
-      "normal": 0,
-      "hard": 0
+      "easy": 6,
+      "normal": 12,
+      "hard": 13
     }
   },
   "timeFormat": "ms",

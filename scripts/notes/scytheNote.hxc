@@ -1,4 +1,5 @@
 import funkin.play.notes.notekind.NoteKind;
+import funkin.save.Save;
 import funkin.Paths;
 
 class ScytheNote extends NoteKind {
@@ -8,6 +9,12 @@ class ScytheNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
 		event.note.x += 4;
 		event.note.yOffset += -53;
 

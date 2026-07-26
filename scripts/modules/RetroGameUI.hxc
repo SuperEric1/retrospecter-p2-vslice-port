@@ -109,6 +109,7 @@ class RetroGameUI extends Module {
   var judgement:FlxBitmapText;
   var comboText:FlxBitmapText;
   var score:FlxBitmapText;
+  var updateJudgementAlpha:Bool = true;
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
   var scoreTweens:Array<FlxTween> = [];
@@ -156,6 +157,7 @@ class RetroGameUI extends Module {
       judgementXOffset = (isMobileArrowScheme ? -30 : -60) + (Save.instance.modOptions.get('retroComboOffX') ?? 0);
       judgementYOffset = Save.instance.modOptions.get('retroComboOffY') ?? 0;
       judgementYOffset = downscroll ? -judgementYOffset : judgementYOffset;
+      updateJudgementAlpha = true;
 
       var playState = PlayState.instance;
       var playStage = PlayState.instance.currentStage;
@@ -1155,12 +1157,14 @@ class RetroGameUI extends Module {
       score.text = Std.string(Std.int(total + noteScore));
     } else score.text = Std.int(PlayState.instance.songScore);
 
-    judgement.visible = true;
-    judgement.colorTransform.alphaOffset = 0;
-    comboText.visible = true;
-    comboText.colorTransform.alphaOffset = 0;
-    score.visible = true;
-    score.colorTransform.alphaOffset = 0;
+    if (updateJudgementAlpha) {
+      judgement.visible = true;
+      judgement.alpha = 1;
+      comboText.visible = true;
+      comboText.alpha = 1;
+      score.visible = true;
+      score.alpha = 1;
+    }
 
     animateTexts(doesPopup, stayDuration);
   }
@@ -1371,6 +1375,7 @@ class RetroGameUI extends Module {
     badCount = 0;
     shitCount = 0;
     missCount = 0;
+    updateJudgementAlpha = true;
 
     for (tween in tweens) {
 			if (tween != null) tween.cancel();
@@ -1789,6 +1794,10 @@ class RetroGameUI extends Module {
     }
   }
 
+  public function setUpdateJudgementAlpha(bool:Bool) {
+    updateJudgementAlpha = bool;
+  }
+
   function animateTexts(doesPulse:Bool = true, stayDuration:Float = 0):Void {
     var pulseDuration:Float = 0.1;
     var pulseScale:Float = hudTextScale + 0.06;
@@ -1835,12 +1844,14 @@ class RetroGameUI extends Module {
       );
     }
 
+    if (!updateJudgementAlpha) return;
+
     var fadeDelay:Float = 3.0; // Tempo antes de começar a desaparecer
     if (stayDuration > 0) fadeDelay += stayDuration;
     var fadeDuration:Float = 0.3;
 
     judgementTweens.push(
-      FlxTween.tween(judgement.colorTransform, {alphaOffset: -255}, fadeDuration, {
+      FlxTween.tween(judgement, {alpha: 0}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {
@@ -1850,7 +1861,7 @@ class RetroGameUI extends Module {
     );
 
     comboTweens.push(
-      FlxTween.tween(comboText.colorTransform, {alphaOffset: -255}, fadeDuration, {
+      FlxTween.tween(comboText, {alpha: 0}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {
@@ -1860,7 +1871,7 @@ class RetroGameUI extends Module {
     );
 
     scoreTweens.push(
-      FlxTween.tween(score.colorTransform, {alphaOffset: -255}, fadeDuration, {
+      FlxTween.tween(score, {alpha: 0}, fadeDuration, {
         startDelay: fadeDelay,
         ease: FlxEase.quadOut,
         onComplete: function(twn:FlxTween) {

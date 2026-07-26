@@ -2,6 +2,7 @@ import funkin.play.notes.notekind.NoteKind;
 import funkin.play.PlayState;
 import funkin.modding.events.HitNoteScriptEvent;
 import funkin.Paths;
+import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroUtil;
 
@@ -24,6 +25,13 @@ class AutoCashNote extends NoteKind {
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+		if (!Save.instance.modOptions.get('retroMechanics')) {
+			event.note.kill();
+			event.note.active = false;
+			event.cancelEvent();
+			return;
+		}
+		
 		event.note.yOffset -= 60;
 
 		event.note.frames = Paths.getSparrowAtlas('notes/coin');

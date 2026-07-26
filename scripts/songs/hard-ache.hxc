@@ -24,7 +24,7 @@ class HardAcheSong extends Song
   var hasPlayedDialogue:Bool = false;
   var hasPlayedEndDialogue:Bool = false;
   var suggestive:Bool = true;
-  var testing:Bool = true;
+  var testing:Bool = false;
 
   var isStory:Bool = false;
   var smokeColor = 0xFF90126b;

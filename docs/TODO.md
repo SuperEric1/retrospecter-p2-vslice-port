@@ -1,17 +1,14 @@
 # TODO
 
 - [ ] Remaining title screen bgs
-- [ ] Make the settings work across all modules and songs
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Song ratings for freeplay & backingcards
 - [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
-- [ ] Update charters in song metadatas
-- [ ] Review mechanics for better accuracy
-- [ ] Change fake alpha event (for fake notes + apply to all songs that have it)
-- [ ] insatian's stage cloud bug
 - [ ] Subtitles
-- [ ] optimize notes
+- [ ] Optimize notes
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [X] Freeplay backingcards/texts
+- [X] Make the settings work across all modules and songs
+- [X] Change fake alpha event (for fake notes + apply to all songs that have it)
 - [X] Check the end scythes cutscene colors to see if they match
 - [X] Fuzzy feeling entrance and rejection
 - [X] Remaining extirpatient effects and modchart

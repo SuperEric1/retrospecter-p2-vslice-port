@@ -1,0 +1,65 @@
+import funkin.play.event.SongEvent;
+import funkin.play.PlayState;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import Std;
+
+/*
+ * This event change the "Fake Note" notes opacity.
+ */
+
+class RetroChangeFakeAlpha extends SongEvent {
+  function new() {
+    super('RetroChangeFakeAlpha', {
+			processOldEvents: false
+		});
+  }
+
+  override function getTitle() {
+    return "Change Fake Notes Alpha";
+  }
+
+  override function handleEvent(data) {
+    if (PlayState.instance == null) return;
+    var alpha = data.getFloat('alpha');
+    var time = data.getFloat('time');
+    var ease = FlxEase.linear;
+
+    for (note in PlayState.instance.playerStrumline.notes.members) {
+      if (note == null || !note.alive) continue;
+      if (note.noteData.kind != 'Fake Note') continue;
+      if (time == 0) {
+        note.alpha = alpha;
+      } else {
+        FlxTween.tween(note, {alpha: alpha}, time, {ease: ease});
+      }
+    }
+
+    for (holdNote in PlayState.instance.playerStrumline.holdNotes.members) {
+      if (holdNote == null || !holdNote.alive) continue;
+      if (holdNote.noteData.kind != 'Fake Note') continue;
+      if (time == 0) {
+        holdNote.alpha = alpha;
+      } else {
+        FlxTween.tween(holdNote, {alpha: alpha}, time, {ease: ease});
+      }
+    }
+  }
+
+  override function getEventSchema() {
+    return [
+      {
+        name: "alpha",
+        title: "Alpha",
+        defaultValue: 0,
+        type: "float"
+      },
+      {
+        name: "time",
+        title: "Time",
+        defaultValue: 0.3,
+        type: "float"
+      }
+    ];
+  }
+}
