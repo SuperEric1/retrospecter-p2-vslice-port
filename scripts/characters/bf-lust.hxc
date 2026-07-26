@@ -72,7 +72,7 @@ class BFLustCharacter extends MultiSparrowCharacter
     // BF's balls pulsating.
     if (name == 'deathLoop' && (frameNumber == 0 || frameNumber == 18))
     {
-      HapticUtil.vibrate(0, 0.1, 0.1, 1);
+      HapticUtil.vibrate(0, 0.1, 0.2, 1); // more intense vibration cuz of the pheromones.
     }
   }
 }
