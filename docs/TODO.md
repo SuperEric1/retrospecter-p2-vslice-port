@@ -1,10 +1,11 @@
 # TODO
 
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Review ALL song's charts to see if they have stacked notes, and remove them if they do
-- [ ] Subtitles
 - [ ] Optimize notes
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [ ] Main menu theme music handling
+- [X] Subtitles
+- [X] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [X] Remaining title screen bgs
 - [X] Freeplay backingcards/texts
 - [X] Make the settings work across all modules and songs

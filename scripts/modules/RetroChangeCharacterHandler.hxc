@@ -95,12 +95,17 @@ class RetroChangeCharacterModule extends Module {
 
 		for (i in PlayState.instance.songEvents) {
 			if (i.eventKind == "RetroChangeCharacter") {
-				if (CharacterDataParser.listCharacterIds().contains(i.value.newchar.toLowerCase())) {
+				var newCharId = i.value.newchar.toLowerCase();
+
+				// Don't waste time/memory caching story-exclusive characters outside of story mode.
+				if (storymodeOnlyChars.contains(newCharId) && !PlayStatePlaylist.isStoryMode) continue;
+
+				if (CharacterDataParser.listCharacterIds().contains(newCharId)) {
 					// Get the character we are precaching using it's ID from the event.
-					var exCharacter = CharacterDataParser.fetchCharacter(i.value.newchar.toLowerCase());
+					var exCharacter = CharacterDataParser.fetchCharacter(newCharId);
 
 					// Add the character to the precached list.
-					characterCaches.get(i.value.character).set(i.value.newchar.toLowerCase(), exCharacter);
+					characterCaches.get(i.value.character).set(newCharId, exCharacter);
 				} else {
 					// If the character ID in the event doesn't have a corresponding character in the registry, add to list of unknowns.
 					unknownCharacters.push(i.value.newchar);

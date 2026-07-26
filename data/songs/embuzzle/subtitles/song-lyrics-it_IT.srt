@@ -1,0 +1,19 @@
+1
+00:01:32,930 --> 00:01:34,099
+<font color="#fff350" face="Blenda Script" size="35px">Ho apprezzato</font>
+
+2
+00:01:34,100 --> 00:01:36,119
+<font color="#fff350" face="Blenda Script" size="35px">Il nostro tempo, caro~.</font>
+
+3
+00:01:36,120 --> 00:01:37,279
+<font color="#fff350" face="Blenda Script" size="35px">Davvero...</font>
+
+4
+00:01:37,280 --> 00:01:39,429
+<font color="#fff350" face="Blenda Script" size="35px">L'ho fatto!</font>
+
+5
+00:01:39,430 --> 00:01:40,700
+<font color="#aa57f8" face="Blenda Script" size="35px">MA SI STA FACENDO TARDI-</font>

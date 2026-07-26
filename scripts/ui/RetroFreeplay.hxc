@@ -318,8 +318,7 @@ class RetroFreeplay extends Module {
       cacheOriginalColors();
       forceBackShitColorChange = true;
     });
-    new FlxTimer().start(colorCacheDelay + 2, function(_) {
-      cacheOriginalColors();
+    new FlxTimer().start(colorCacheDelay + 0.2, function(_) {
       forceBackShitColorChange = false;
     });
     trace('Freeplay intro done');

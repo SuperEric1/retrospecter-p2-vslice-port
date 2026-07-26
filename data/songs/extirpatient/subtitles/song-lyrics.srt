@@ -1,3 +1,19 @@
 ﻿1
-00:00:00,000 --> 00:00:01,100
-<font face="Rythm Of Death" color="#FF001F" size="50px">HAHAHAHA...</font>
+00:00:00,490 --> 00:00:02,999
+<font face="Rythm Of Death" color="#fb002d" size="50px">HAHAHAHA...</font>
+
+2
+00:00:03,000 --> 00:00:05,549
+<font face="Rythm Of Death" color="#fb002d" size="47px">WELL WELL, LOOK AT YOU.</font>
+
+3
+00:00:05,550 --> 00:00:07,720
+<font face="Rythm Of Death" color="#fb002d" size="47px">VERY INTERESTING.</font>
+
+4
+00:07:00,950 --> 00:07:02,569
+<font face="Rythm Of Death" color="#fb002d" size="40px">RESULTS CONCLUSIVE.</font>
+
+5
+00:07:02,570 --> 00:07:05,250
+<font face="Rythm Of Death" color="#fb002d" size="40px">TA-TA!</font>

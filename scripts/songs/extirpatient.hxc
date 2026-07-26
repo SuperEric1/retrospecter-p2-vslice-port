@@ -17,6 +17,7 @@ import funkin.util.Constants;
 import funkin.modding.module.ModuleHandler;
 import funkin.graphics.FunkinSprite;
 import funkin.save.Save;
+import haxe.ds.IntMap;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroAchievements;
@@ -45,6 +46,7 @@ class ExtirpatientSong extends Song
   var d:Bool = false;
   var duringCutscene:Bool = false;
   var pauseZoom:Bool = false;
+  var beatEventFired:IntMap<Bool> = new IntMap();
 
   var toggledShove:Bool = false;
   var isDownScroll:Bool = false;
@@ -242,6 +244,14 @@ class ExtirpatientSong extends Song
     defaultOpponentStrumY.push(opponentStrums.y);
   }
 
+  function beatOnce(id:Int, beat:Int):Bool
+  {
+    var key = id * 10000 + beat;
+    if (beatEventFired.exists(key)) return false;
+    beatEventFired.set(key, true);
+    return true;
+  }
+
   public override function onBeatHit(event:SongTimeScriptEvent):Void
   {
     super.onBeatHit(event);
@@ -254,8 +264,8 @@ class ExtirpatientSong extends Song
     var crochet = Conductor.instance.stepLengthMs * 4;
 
     // Ajustes de beat
-    if (curBeat == 144 || curBeat == 172 || curBeat == 312 || curBeat == 340 || curBeat == 368) {
-      trulyBeats = curBeat;
+    for (v in [144, 172, 312, 340, 368]) {
+      if (curBeat >= v && beatOnce(1, v)) trulyBeats = v;
     }
 
     // Commits de beat
@@ -265,7 +275,7 @@ class ExtirpatientSong extends Song
 
     // Flashy bits
     for (v in flashyBits) {
-      if (curBeat == v) {
+      if (curBeat >= v && beatOnce(2, v)) {
         playState.camHUD.zoom = 1;
         // playState.camGame.zoom = 0.34;
         // playState.currentCameraZoom = 0.34;
@@ -274,7 +284,7 @@ class ExtirpatientSong extends Song
         playState.tweenCameraZoom(0.36, crochet / 1000, true, FlxEase.expoIn);
         //tweens.push(FlxTween.tween(playState.camGame, {zoom: 0.36}, crochet / 1000, {ease: FlxEase.expoIn}));
       }
-      if (curBeat == v + 1) {
+      if (curBeat >= v + 1 && beatOnce(3, v + 1)) {
         // Cancel tweens
         for (tween in tweens) {
           if (tween != null && !tween.finished) tween.cancel();
@@ -292,7 +302,7 @@ class ExtirpatientSong extends Song
       }
     }
 
-    if (curBeat == 1) {
+    if (curBeat >= 1 && beatOnce(4, 1)) {
       var dad = playStage.getDad();
       playState.tweenCameraZoom(0.55, 1, true, FlxEase.expoOut);
 
@@ -308,13 +318,13 @@ class ExtirpatientSong extends Song
       playState.opponentStrumline.alpha = 1;
     }
 
-    if (curBeat == 6) {
+    if (curBeat >= 6 && beatOnce(5, 6)) {
       var dad = playStage.getDad();
       playState.tweenCameraZoom(0.5, crochet / 250, true, FlxEase.sineOut);
       playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 100, playStage.getBoyfriend().cameraFocusPoint.y);
     }
 
-    if (curBeat == 12) {
+    if (curBeat >= 12 && beatOnce(6, 12)) {
       var dad = playStage.getDad();
       playState.tweenCameraZoom(playState.stageZoom, crochet / 250, true, FlxEase.quartIn);
       playState.cameraFollowPoint.setPosition(dad.cameraFocusPoint.x + 170, playStage.getBoyfriend().cameraFocusPoint.y);
@@ -326,14 +336,14 @@ class ExtirpatientSong extends Song
       }
     }
 
-    if (curBeat == 15) {
+    if (curBeat >= 15 && beatOnce(7, 15)) {
       FlxTween.tween(playState.camHUD, {zoom: 1.1}, crochet / 1000, {ease: FlxEase.expoIn});
       FlxTween.tween(playState.healthBar, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
       FlxTween.tween(playState.iconP1, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
       FlxTween.tween(playState.iconP2, {alpha: 1}, crochet / 1000, {ease: FlxEase.expoIn});
     }
 
-    if (curBeat == 16) {
+    if (curBeat >= 16 && beatOnce(8, 16)) {
       for (tween in tweens) {
         if (tween != null && !tween.finished) tween.cancel();
       }
@@ -363,54 +373,61 @@ class ExtirpatientSong extends Song
     }*/
 
     // Easing values
-    if (curBeat == 200 || curBeat == 368) {
-      tweenEasingValue('easingValueX', 0, 1);
+    for (v in [200, 368]) {
+      if (curBeat >= v && beatOnce(9, v)) tweenEasingValue('easingValueX', 0, 1);
     }
 
-    if (curBeat == 224 || curBeat == 392) {
-      tweenEasingValue('easingValueY', 0, 0.75);
-      var bf = playStage.getBoyfriend();
-      playState.cameraFollowPoint.setPosition(bf.cameraFocusPoint.x - 200, bf.cameraFocusPoint.y - 400);
+    for (v in [224, 392]) {
+      if (curBeat >= v && beatOnce(10, v)) {
+        tweenEasingValue('easingValueY', 0, 0.75);
+        var bf = playStage.getBoyfriend();
+        playState.cameraFollowPoint.setPosition(bf.cameraFocusPoint.x - 200, bf.cameraFocusPoint.y - 400);
+      }
     }
 
     // Zooms progressivos de câmera
-    if (curBeat == 224 || curBeat == 227 || curBeat == 230 || curBeat == 233 ||
-        curBeat == 395 || curBeat == 398 || curBeat == 401) {
-      var followPoint = playState.cameraFollowPoint;
-      followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
+    for (v in [224, 227, 230, 233, 395, 398, 401]) {
+      if (curBeat >= v && beatOnce(11, v)) {
+        var followPoint = playState.cameraFollowPoint;
+        followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
 
-      var newZoom = playState.currentCameraZoom + 0.02;
-      playState.tweenCameraZoom(newZoom, 0.5, true, FlxEase.cubeOut);
+        var newZoom = playState.currentCameraZoom + 0.02;
+        playState.tweenCameraZoom(newZoom, 0.5, true, FlxEase.cubeOut);
+      }
     }
 
-    if (curBeat == 236 || curBeat == 404) {
-      var followPoint = playState.cameraFollowPoint;
-      followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
+    for (v in [236, 404]) {
+      if (curBeat >= v && beatOnce(12, v)) {
+        var followPoint = playState.cameraFollowPoint;
+        followPoint.setPosition(followPoint.x + 15, followPoint.y + 15);
 
-      var newZoom = playState.currentCameraZoom + 0.06;
-      playState.tweenCameraZoom(newZoom, crochet / 1000 * 6, true, FlxEase.quadOut);
+        var newZoom = playState.currentCameraZoom + 0.06;
+        playState.tweenCameraZoom(newZoom, crochet / 1000 * 6, true, FlxEase.quadOut);
+      }
     }
 
-    if (curBeat == 242 || curBeat == 410) {
-      var followPoint = playState.cameraFollowPoint;
-      followPoint.setPosition(followPoint.x - 50, followPoint.y - 50);
+    for (v in [242, 410]) {
+      if (curBeat >= v && beatOnce(13, v)) {
+        var followPoint = playState.cameraFollowPoint;
+        followPoint.setPosition(followPoint.x - 50, followPoint.y - 50);
 
-      var newZoom = playState.currentCameraZoom - 0.05;
-      playState.tweenCameraZoom(newZoom, crochet / 1000 * 3, true, FlxEase.quadOut);
+        var newZoom = playState.currentCameraZoom - 0.05;
+        playState.tweenCameraZoom(newZoom, crochet / 1000 * 3, true, FlxEase.quadOut);
+      }
     }
 
-    if (curBeat == 245) {
+    if (curBeat >= 245 && beatOnce(14, 245)) {
       tweenEasingValue('easingValueX', 1, 2);
       tweenEasingValue('easingValueY', 1, 2);
 
       playState.tweenCameraZoom(0.34, crochet / 332, true, FlxEase.quartIn);
     }
 
-    if (curBeat == 247 || curBeat == 415) {
-      FlxTween.tween(playState.camHUD, {zoom: 1.1}, crochet / 1000, {ease: FlxEase.expoIn});
+    for (v in [247, 415]) {
+      if (curBeat >= v && beatOnce(15, v)) FlxTween.tween(playState.camHUD, {zoom: 1.1}, crochet / 1000, {ease: FlxEase.expoIn});
     }
 
-    if (curBeat == 248) {
+    if (curBeat >= 248 && beatOnce(16, 248)) {
       if (flashingLights) {
         createFlash(0xFFFF0000, 0.3);
       }
@@ -419,7 +436,7 @@ class ExtirpatientSong extends Song
       playState.camHUD.zoom += 0.05;
     }
 
-    if (curBeat == 413) {
+    if (curBeat >= 413 && beatOnce(17, 413)) {
       tweenEasingValue('easingValueX', 1, 2);
       tweenEasingValue('easingValueY', 1, 2);
 
@@ -429,7 +446,7 @@ class ExtirpatientSong extends Song
       playState.tweenCameraZoom(0.34, crochet / 332, true, FlxEase.quartIn);
     }
 
-    if (curBeat == 416) {
+    if (curBeat >= 416 && beatOnce(18, 416)) {
       // playState.camGame.zoom += 0.1;
       RetroUtil.addCameraZoom(0.1, null);
       playState.camHUD.zoom += 0.06;
@@ -437,14 +454,14 @@ class ExtirpatientSong extends Song
     // END LESSERMODCHART BEAT EVENTS
 
     // Beat 580: Start scythe2 movement
-    if (curBeat == 580) {
+    if (curBeat >= 580 && beatOnce(19, 580)) {
       scytheActive = true;
       if (!scythe2.alive) scythe2.revive();
       scythe2.visible = true;
     }
 
     // Stop scythe2 movement
-    if (curBeat == 586) {
+    if (curBeat >= 586 && beatOnce(20, 586)) {
       scytheActive = false;
       if (scythe2 != null) {
         FlxTween.tween(scythe2, {x: FlxG.width + (scythe2.width / 2)}, 0.5, {ease: FlxEase.backOut});
@@ -465,7 +482,7 @@ class ExtirpatientSong extends Song
     }
 
     // Scythe appears and clashes
-    if (curBeat == 588 && scythe != null) {
+    if (curBeat >= 588 && scythe != null && beatOnce(21, 588)) {
       if (!scythe.alive) scythe.revive();
       scythe.visible = true;
       FlxTween.tween(scythe, {
@@ -489,7 +506,7 @@ class ExtirpatientSong extends Song
     }
 
     // Scythe2 spin effect
-    if (curBeat == 594 && scythe2 != null) {
+    if (curBeat >= 594 && scythe2 != null && beatOnce(22, 594)) {
       var isM = false;
       scytheActive2 = true;
       scythe2.angle = 0;
@@ -522,7 +539,7 @@ class ExtirpatientSong extends Song
     }
 
     // Remove scythes
-    if (curBeat == 606) {
+    if (curBeat >= 606 && beatOnce(23, 606)) {
       scytheActive2 = false;
       toting = false;
 
@@ -572,28 +589,28 @@ class ExtirpatientSong extends Song
     }
 
     // Flip mechanics (beats 607-608)
-    if (curBeat == 607 && modcharts) {
+    if (curBeat >= 607 && modcharts && beatOnce(24, 607)) {
       flipStrumlines(true);
     }
 
-    if (curBeat == 608 && modcharts) {
+    if (curBeat >= 608 && modcharts && beatOnce(25, 608)) {
       applyFlipTransform();
     }
 
     // Unflip mechanics (beats 639-640)
-    if (curBeat == 639 && modcharts) {
+    if (curBeat >= 639 && modcharts && beatOnce(26, 639)) {
       revertFlipTransform();
     }
 
-    if (curBeat == 640 && modcharts) {
+    if (curBeat >= 640 && modcharts && beatOnce(27, 640)) {
       applyColorTransform(0, 0, 0, 0, FlxEase.expoOut);
     }
 
-    if (curBeat == 512 && modcharts) {
+    if (curBeat >= 512 && modcharts && beatOnce(28, 512)) {
       resetStrumPositions();
     }
 
-    if (curBeat == 543 && modcharts) {
+    if (curBeat >= 543 && modcharts && beatOnce(29, 543)) {
       toggledShove = true;
       //shoveStrumsInitial();
     }
@@ -905,14 +922,14 @@ class ExtirpatientSong extends Song
     // don't add the tweens to the tween list or else it will be misaligned sei lá como escreve KKKKKKKKKKKKK
     if (opponentStrums != null && index < opponentStrums.strumlineNotes.members.length) {
       var strum = opponentStrums.strumlineNotes.members[index];
-      FlxTween.tween(strum, {y: defaultOpponentStrumY[index]},
+      FlxTween.tween(strum, {y: defaultOpponentStrumY[index] + 10},
         crochet / 600, {ease: FlxEase.quadOut});
     }
 
     if (playerStrums != null && index < playerStrums.strumlineNotes.members.length) {
       var reversedIndex = 3 - index;
       var strum = playerStrums.strumlineNotes.members[reversedIndex];
-      FlxTween.tween(strum, {y: defaultPlayerStrumY[reversedIndex]},
+      FlxTween.tween(strum, {y: defaultPlayerStrumY[reversedIndex] + 10},
         crochet / 600, {ease: FlxEase.quadOut});
     }
   }
@@ -1715,6 +1732,7 @@ class ExtirpatientSong extends Song
     toggledShove = false;
     toggledToll = false;
     trulyBeats = 0;
+    beatEventFired = new IntMap();
     shakeTime = 0;
     songEnded = false;
     testValue = -0.25;

@@ -1,0 +1,19 @@
+1
+00:00:05,680 --> 00:00:08,509
+<font face="Blenda Script" size="35px">Non ti spezzerò il cuore...</font>
+
+2
+00:00:08,510 --> 00:00:10,080
+<font face="Blenda Script" size="35px">...lo aggiusterò.</font>
+
+3
+00:01:06,760 --> 00:01:08,239
+<font face="Blenda Script" size="35px">Il tuo corpo dice-</font>
+
+4
+00:01:08,240 --> 00:01:10,730
+<font face="Blenda Script" size="35px">"Calpestami, Mammina~!"</font>
+
+5
+00:03:34,740 --> 00:03:39,130
+<font face="Blenda Script" size="35px">Cedi alla tentazione...</font>

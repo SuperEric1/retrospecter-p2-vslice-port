@@ -1763,8 +1763,8 @@ class RetroPlayState extends Module {
 
     if (!FlxG.onMobile && RetroSave.isDebug() && FlxG.keys.pressed.F8) PlayState.instance.endSong();
 
-    PlayState.instance.camHUD.visible = false;
-    PlayState.instance.camCutscene.visible = false;
+    // PlayState.instance.camHUD.visible = false;
+    // PlayState.instance.camCutscene.visible = false;
 
     if (forceNotesAlpha != null && mechanicsEnabled && loadedMechanics.contains('spectre')) {
       if (!spectreHit) {

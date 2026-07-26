@@ -34,6 +34,7 @@ class EmbuzzleSong extends Song
   var showLogo:Bool = false;
   var hasStoredStrums:Bool = false;
   var hasPlayedDialogue:Bool = false;
+  var removedBlack:Bool = false;
 
   var modcharts:Bool = true;
   var isMobile = false;
@@ -385,6 +386,21 @@ class EmbuzzleSong extends Song
     var crochet = Conductor.instance.stepLengthMs * 4;
 
     var oppOffsetAdjustX = 60;
+
+    if (curBeat >= 320 && !removedBlack) {
+      removedBlack = true;
+
+      // Remove black overlay
+      if (tempBlack != null) {
+        tweens.push(FlxTween.tween(tempBlack, { alpha: 0.0 }, 0.3, {
+          ease: FlxEase.quadOut,
+          onComplete: function(_) {
+            tempBlack.kill();
+          }
+        }));
+      }
+    }
+
     switch (curBeat) {
       case 294:
         setOpponentCameraOffset(-70 + oppOffsetAdjustX, -100);
@@ -419,16 +435,6 @@ class EmbuzzleSong extends Song
 
       case 320:
         playState.tweenCameraZoom(0.445, crochet / 1000, true, FlxEase.quadOut);
-
-        // Remove black overlay
-        if (tempBlack != null) {
-          tweens.push(FlxTween.tween(tempBlack, { alpha: 0.0 }, 0.3, {
-            ease: FlxEase.quadOut,
-            onComplete: function(_) {
-              tempBlack.kill();
-            }
-          }));
-        }
 
         addCameraZoom(0.05, 0.055);
         doFlash(flashPurple, 9 /* multiply */, 1.0, 1.5, FlxEase.quadOut);
@@ -742,6 +748,7 @@ class EmbuzzleSong extends Song
 
   function resetFlags():Void
   {
+    removedBlack = false;
     turnOff = false;
     flipMode = true;
     hmp = false;

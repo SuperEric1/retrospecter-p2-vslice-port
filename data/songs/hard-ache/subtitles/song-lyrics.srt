@@ -1,3 +1,19 @@
 ﻿1
-00:00:00,000 --> 00:00:00,100
-SUBTITLE
+00:00:05,680 --> 00:00:08,509
+<font face="Blenda Script" size="35px">I won't break your heart...</font>
+
+2
+00:00:08,510 --> 00:00:10,080
+<font face="Blenda Script" size="35px">...I'll fix it.</font>
+
+3
+00:01:06,760 --> 00:01:08,239
+<font face="Blenda Script" size="35px">Your body says-</font>
+
+4
+00:01:08,240 --> 00:01:10,730
+<font face="Blenda Script" size="35px">"Step on me, Mommy~!"</font>
+
+5
+00:03:34,740 --> 00:03:39,130
+<font face="Blenda Script" size="35px">Give in to temptation...</font>
