@@ -32,7 +32,7 @@ class BFLustCharacter extends MultiSparrowCharacter
     if (PlayState.instance == null) return;
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       if (!suggestive) {
-        this.holdTimer = 0;
+        holdTimer = 0;
         return;
       }
     }
@@ -51,7 +51,7 @@ class BFLustCharacter extends MultiSparrowCharacter
 
 		if (event.note.noteData.getMustHitNote() && characterType == CharacterType.BF) {
       if (!suggestive) {
-        this.holdTimer = 0;
+        holdTimer = 0;
       }
     }
     super.onNoteMiss(event);
