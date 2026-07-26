@@ -44,7 +44,7 @@ class RetroFreeplay extends Module {
   final DEFAULT_ORANGE_COLOR = 0xFFFEDA00;
 
   var colorLerpSpeed:Float = 10;
-  var colorCacheDelay:Float = 0.4;
+  var colorCacheDelay:Float = 0.45;
   var moreWaysBlend:Float = 0.6;
   var funnyScrollBlend:Float = 0.2;
   var funnyScroll2LightBlend:Float = 0.55;
@@ -52,6 +52,7 @@ class RetroFreeplay extends Module {
   var funnyScroll3Blend:Float = 0.4;
   var orangeBlend:Float = 0.2;
   var lightnessSplit:Float = 0.6;
+  var forceBackShitColorChange:Bool = false;
 
   var targetCardColor:FlxColor = DEFAULT_CARD_COLOR;
   var targetMoreWaysColor:FlxColor = FlxColor.WHITE;
@@ -315,6 +316,11 @@ class RetroFreeplay extends Module {
     cacheDefaultTexts();
     new FlxTimer().start(colorCacheDelay, function(_) {
       cacheOriginalColors();
+      forceBackShitColorChange = true;
+    });
+    new FlxTimer().start(colorCacheDelay + 2, function(_) {
+      cacheOriginalColors();
+      forceBackShitColorChange = false;
     });
     trace('Freeplay intro done');
 
@@ -460,7 +466,7 @@ class RetroFreeplay extends Module {
       freeplayState.albumRoll.albumTitle.updateHitbox();
     }
 
-    updateCardColors(freeplayState, FlxG.elapsed);
+    updateCardColors(freeplayState, event.elapsed);
   }
 
   function updateCardColorTargets(baseColor:Null<Int>):Void {
@@ -485,7 +491,7 @@ class RetroFreeplay extends Module {
   }
 
   function updateCardColors(freeplayState:FreeplayState, elapsed:Float):Void {
-    if (!originalColorsCached) return;
+    if (!originalColorsCached || !isInFreeplay) return;
 
     @:privateAccess {
       var card = freeplayState.backingCard;
@@ -506,7 +512,7 @@ class RetroFreeplay extends Module {
 
         if (card.funnyScroll3 != null) card.funnyScroll3.color = FlxColor.interpolate(card.funnyScroll3.color, targetFunnyScroll3Color, lerpAmount);
 
-        if (currentOrangeColor != targetOrangeColor) {
+        if ((currentOrangeColor != targetOrangeColor) || forceBackShitColorChange) {
           currentOrangeColor = FlxColor.interpolate(currentOrangeColor, targetOrangeColor, lerpAmount);
 
           var barWidth:Int = card.pinkBack != null ? Std.int(card.pinkBack.width) : 1280;
