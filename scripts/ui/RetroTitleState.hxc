@@ -42,6 +42,7 @@ import funkin.modding.base.ScriptedFlxRuntimeShader;
 import openfl.filters.ShaderFilter;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroUtil;
 
 import funkin.ui.title.TitleState;
 
@@ -79,6 +80,7 @@ class RetroTitleState extends MusicBeatState
 
   // Câmeras
   var bgCam:FlxCamera;
+  var dozircCam:FlxCamera;
   var mainCamera:FlxCamera;
 
   // Background system
@@ -117,6 +119,25 @@ class RetroTitleState extends MusicBeatState
   var nightflaid_redLightTime:Float = 0.0;
   var nightflaid_leftColor:FlxSprite;
   var nightflaid_rightColor:FlxSprite;
+  // Patience specific
+  var patience_backClouds:Array<FlxSprite> = [];
+  var patience_frontClouds:Array<FlxSprite> = [];
+  var patience_stageClouds:Array<FlxSprite> = [];
+  var patience_globalScale:Float = 0.28;
+  // Mixter specific
+  var mixter_light:FunkinSprite;
+  var mixter_animNum:Int = 0;
+  // Lust specific
+  var lust_df:FlxSprite;
+  var lust_ht:FlxSprite;
+  var lust_heartFrame:Array<Int> = [0, 1, 2, 3, 4, 0, 4, 0];
+  var lust_fogShader:ScriptedFlxRuntimeShader;
+  var lust_fogTime:Float = 0.0;
+  // Dozirc (Sloth) specific
+  var dozirc_train:FlxSprite;
+  var dozirc_trainRed:FlxSprite;
+  // Greed specific
+  var greed_glitters:Array<FlxSprite> = [];
   // Envy specific
   var envy_soulsLeft:FlxSprite;
   var envy_souls:FlxSprite;
@@ -141,9 +162,12 @@ class RetroTitleState extends MusicBeatState
     // Criar câmeras
     bgCam = new FlxCamera();
     bgCam.bgColor = FlxColor.BLACK;
+    dozircCam = new FlxCamera();
+    dozircCam.bgColor = FlxColor.TRANSPARENT;
     mainCamera = new FlxCamera();
     mainCamera.bgColor = FlxColor.TRANSPARENT;
     FlxG.cameras.reset(bgCam);
+    FlxG.cameras.add(dozircCam, false);
     FlxG.cameras.add(mainCamera, false);
     FlxG.cameras.setDefaultDrawTarget(mainCamera, true);
 
@@ -182,85 +206,160 @@ class RetroTitleState extends MusicBeatState
 
   function registerBackgrounds():Void
   {
-    // Wrath/Satisfracture
-    backgrounds.push({
-      id: "wrath",
-      musicTrack: "Wrath",
-      flameColorR: defaultFlameColorR,
-      flameColorG: defaultFlameColorG,
-      flameColorB: defaultFlameColor,
-      bgZoom: 0.685
-    });
-
     // Phase 2
     backgrounds.push({
       id: "phase2",
-      musicTrack: "Wrath",
+      musicTrack: RetroUtil.hasBeatenWrath() ? "Wrath" : "freakyMenu",
       flameColorR: defaultFlameColorR,
       flameColorG: defaultFlameColorG,
       flameColorB: defaultFlameColor,
       bgZoom: 0.685
     });
 
-    // Phase 3
-    backgrounds.push({
-      id: "phase3",
-      musicTrack: "freakyMenu",
-      flameColorR: defaultFlameColorR,
-      flameColorG: defaultFlameColorG,
-      flameColorB: defaultFlameColor,
-      bgZoom: 1.0
-    });
+    if (RetroUtil.hasBeatenWrath()) {
+      // Wrath/Satisfracture
+      backgrounds.push({
+        id: "wrath",
+        musicTrack: "Wrath",
+        flameColorR: defaultFlameColorR,
+        flameColorG: defaultFlameColorG,
+        flameColorB: defaultFlameColor,
+        bgZoom: 0.685
+      });
 
-    // Phase 4
-    backgrounds.push({
-      id: "phase4",
-      musicTrack: "freakyMenu",
-      flameColorR: defaultFlameColorR,
-      flameColorG: defaultFlameColorG,
-      flameColorB: defaultFlameColor,
-      bgZoom: 1.001
-    });
+      // Phase 3
+      backgrounds.push({
+        id: "phase3",
+        musicTrack: "freakyMenu",
+        flameColorR: defaultFlameColorR,
+        flameColorG: defaultFlameColorG,
+        flameColorB: defaultFlameColor,
+        bgZoom: 1.0
+      });
 
-    // Nightflaid
-    backgrounds.push({
-      id: "nightflaid",
-      musicTrack: "Nightflaid",
-      flameColorR: 0xFF001F,
-      flameColorG: 0x000000,
-      flameColorB: 0xFF001F,
-      bgZoom: 1.0
-    });
+      // Phase 4
+      backgrounds.push({
+        id: "phase4",
+        musicTrack: "freakyMenu",
+        flameColorR: defaultFlameColorR,
+        flameColorG: defaultFlameColorG,
+        flameColorB: defaultFlameColor,
+        bgZoom: 1.001
+      });
+    }
 
-    // Pride
-    backgrounds.push({
-      id: "pride",
-      musicTrack: "Pride",
-      flameColorR: 0xEFFFFD,
-      flameColorG: 0x86FFF2,
-      flameColorB: 0x36FFE9,
-      bgZoom: 0.45
-    });
+    if (RetroUtil.hasBeatenLevel('80-finale')) {
+      // Nightflaid
+      backgrounds.push({
+        id: "nightflaid",
+        musicTrack: "Nightflaid",
+        flameColorR: 0xFF001F,
+        flameColorG: 0x000000,
+        flameColorB: 0xFF001F,
+        bgZoom: 1.0
+      });
 
-    // Gluttony
-    backgrounds.push({
-      id: "gluttony",
-      musicTrack: "Gluttony",
-      flameColorR: 0xEA588D,
-      flameColorG: 0xDB3153,
-      flameColorB: 0xAE1E3B,
-      bgZoom: 0.4
-    });
+      // Pendulumbra
+      backgrounds.push({
+        id: "patience",
+        musicTrack: "Patience",
+        flameColorR: 0xFEFFC4,
+        flameColorG: 0xF3C378,
+        flameColorB: 0xC78B48,
+        bgZoom: 1.0
+      });
 
-    // Envy
-    backgrounds.push({
-      id: "envy",
-      musicTrack: "Envy",
-      flameColorR: 0xE7FFED,
-      flameColorG: 0x69FCBF,
-      flameColorB: 0x01FC94,
-      bgZoom: 1.0
-    });
+      // Mixter
+      backgrounds.push({
+        id: "mixter",
+        musicTrack: "Mixter",
+        flameColorR: 0x8F43FF,
+        flameColorG: 0x4317C6,
+        flameColorB: 0x000067,
+        bgZoom: 0.7
+      });
+    }
+
+    if (RetroUtil.hasBeatenLevel('20-pride')) {
+      // Pride
+      backgrounds.push({
+        id: "pride",
+        musicTrack: "Pride",
+        flameColorR: 0xEFFFFD,
+        flameColorG: 0x86FFF2,
+        flameColorB: 0x36FFE9,
+        bgZoom: 0.45
+      });
+    }
+
+    if (RetroUtil.hasBeatenLevel('30-gluttony')) {
+      // Gluttony
+      backgrounds.push({
+        id: "gluttony",
+        musicTrack: "Gluttony",
+        flameColorR: 0xEA588D,
+        flameColorG: 0xDB3153,
+        flameColorB: 0xAE1E3B,
+        bgZoom: 0.4
+      });
+    }
+
+    if (RetroUtil.hasBeatenLevel('40-greed')) {
+      // Greed
+      backgrounds.push({
+        id: "greed",
+        musicTrack: "Greed",
+        flameColorR: 0xEBCDFF,
+        flameColorG: 0xBE7EF9,
+        flameColorB: 0x962DF9,
+        bgZoom: 0.4
+      });
+    }
+
+    if (RetroUtil.hasBeatenLevel('50-envy')) {
+      // Envy
+      backgrounds.push({
+        id: "envy",
+        musicTrack: "Envy",
+        flameColorR: 0xE7FFED,
+        flameColorG: 0x69FCBF,
+        flameColorB: 0x01FC94,
+        bgZoom: 1.0
+      });
+    }
+
+    if (RetroUtil.hasBeatenLevel('60-sloth')) {
+      // Sloth
+      backgrounds.push({
+        id: "sloth",
+        musicTrack: "Sloth",
+        flameColorR: 0xE9CEAC,
+        flameColorG: 0xD9995C,
+        flameColorB: 0xCF7A26,
+        bgZoom: 1.0
+      });
+    }
+
+    if (RetroUtil.hasBeatenLust() && RetroUtil.hasBeatenOthers()) {
+      // Lust
+      backgrounds.push({
+        id: "lust-exterior",
+        musicTrack: "Lust",
+        flameColorR: 0xFB94F7,
+        flameColorG: 0xF959DD,
+        flameColorB: 0xFF3ECF,
+        bgZoom: 1.0
+      });
+
+      backgrounds.push({
+        id: "lust-interior",
+        musicTrack: "Lust",
+        flameColorR: 0xFB94F7,
+        flameColorG: 0xF959DD,
+        flameColorB: 0xFF3ECF,
+        bgZoom: 0.325
+      });
+    }
   }
 
   var logoRetro:FlxSprite;
@@ -291,6 +390,16 @@ class RetroTitleState extends MusicBeatState
       bgCam.zoom = currentBgConfig.bgZoom;
       switch (currentBgConfig.id)
       {
+        case "mixter":
+          loadMixterBackground();
+        case "patience":
+          loadPatienceBackground();
+        case "lust-interior":
+          loadLustInteriorBackground();
+        case "lust-exterior":
+          loadLustExteriorBackground();
+        case "sloth":
+          loadSlothBackground();
         case "wrath":
           loadWrathBackground();
         case "phase2":
@@ -305,6 +414,8 @@ class RetroTitleState extends MusicBeatState
           loadPrideBackground();
         case "gluttony":
           loadGluttonyBackground();
+        case "greed":
+          loadGreedBackground();
         case "envy":
           loadEnvyBackground();
       }
@@ -427,7 +538,7 @@ class RetroTitleState extends MusicBeatState
   {
     if (obj == null) return;
     obj.cameras = [bgCam];
-    if (Std.isOfType(obj, FlxSprite)) {
+    if (Std.isOfType(obj, FlxSprite) ||Std.isOfType(obj, FunkinSprite)) {
       bgSprites.push(obj);
     }
     add(obj);
@@ -616,6 +727,17 @@ class RetroTitleState extends MusicBeatState
       if (envy_soulsLeft != null) {
         envy_soulsLeft.y -= elapsed * 1250;
         if (envy_soulsLeft.y <= -30000) envy_soulsLeft.y = 2000;
+      }
+    }
+
+    // Patience - nuvens se movendo
+    if (currentBgConfig != null && currentBgConfig.id == "patience")
+    {
+      for (i in 0...3)
+      {
+        movePatienceBackdrop(patience_backClouds[i], 100, 4400, elapsed);
+        movePatienceBackdrop(patience_frontClouds[i], 150, 5200, elapsed);
+        movePatienceBackdrop(patience_stageClouds[i], 200, 5200, elapsed);
       }
     }
 
@@ -822,6 +944,30 @@ class RetroTitleState extends MusicBeatState
           FlxTween.tween(nightflaid_rightRay, {alpha: 1}, 0.15);
         if (nightflaid_leftRay != null)
           FlxTween.tween(nightflaid_leftRay, {alpha: 0}, 0.15);
+      }
+    }
+
+    // Mixter - luz piscando
+    if (currentBgConfig != null && currentBgConfig.id == "mixter" && skippedIntro)
+    {
+      mixter_animNum = (mixter_animNum + 1) % 2;
+      if (mixter_light != null) mixter_light.animation.play('anim' + (mixter_animNum + 1), false);
+    }
+
+    // Lust interior - dance floor e coração
+    if (currentBgConfig != null && currentBgConfig.id == "lust-interior" && skippedIntro)
+    {
+      if (lust_ht != null) lust_ht.animation.curAnim.curFrame = lust_heartFrame[Conductor.instance.currentBeat % 8];
+      if (lust_df != null) lust_df.animation.curAnim.curFrame = Conductor.instance.currentBeat % 2;
+    }
+
+    // Sloth - trem
+    if (currentBgConfig != null && currentBgConfig.id == "sloth" && skippedIntro)
+    {
+      if (Conductor.instance.currentBeat % 15 == 0)
+      {
+        if (dozirc_train != null) dozirc_train.animation.play('idle');
+        if (dozirc_trainRed != null) dozirc_trainRed.animation.play('idle');
       }
     }
 
@@ -1793,6 +1939,418 @@ class RetroTitleState extends MusicBeatState
     fgFog.animation.play('fog');
     fgFog.antialiasing = false;
     addBg(fgFog);
+  }
+
+  function loadMixterBackground():Void
+  {
+    var noise = FunkinSprite.create(startPoint + 143, 78);
+    noise.frames = Paths.getSparrowAtlas('remixes/noise');
+    noise.animation.addByPrefix('anim', 'noise', 24, true);
+    noise.animation.play('anim');
+    noise.scale.set(2, 2);
+    noise.updateHitbox();
+    noise.screenCenter();
+    addBg(noise);
+
+    var bg = FunkinSprite.create(0, 0);
+    bg.loadGraphic(Paths.image('remixes/title', 'shared'));
+    bg.screenCenter();
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+
+    var rain = FunkinSprite.create(startPoint + 1165, 120);
+    rain.frames = Paths.getSparrowAtlas('remixes/rain');
+    rain.animation.addByPrefix('anim', 'rain', 24, true);
+    rain.animation.play('anim');
+    rain.scale.set(0.5, 0.5);
+    rain.updateHitbox();
+    addBg(rain);
+
+    mixter_animNum = 0;
+    mixter_light = FunkinSprite.create(startPoint + -341, -232, 'remixes/titlestate');
+    mixter_light.loadTextureAtlas('remixes/titlestate', 'shared', { applyStageMatrix: true });
+    mixter_light.animation.addBySymbolIndices('anim1', 'title', [0], 24, false);
+    mixter_light.animation.addBySymbolIndices('anim2', 'title', [1], 24, false);
+    mixter_light.animation.play('anim1', true);
+    mixter_light.scale.set(0.99, 0.99);
+    mixter_light.updateHitbox();
+    mixter_light.scrollFactor.set(0, 0);
+    mixter_light.alpha = 0.5;
+    mixter_light.blend = 0;
+    addBg(mixter_light);
+  }
+
+  function loadPatienceBackground():Void
+  {
+    patience_backClouds = [];
+    patience_frontClouds = [];
+    patience_stageClouds = [];
+
+    var sky = patienceSprite('sky', 0, 0);
+    sky.setGraphicSize(5144 * patience_globalScale);
+    sky.antialiasing = false;
+    sky.updateHitbox();
+
+    var scale:Float = 8877.0 / 6624.0 * patience_globalScale;
+    for (i in 0...3)
+    {
+      var bg = patienceSprite('back_clouds', 8000, 0);
+      bg.scale.set(scale, scale);
+      bg.updateHitbox();
+      bg.scrollFactor.x = 0.5;
+      bg.antialiasing = false;
+      patience_backClouds.push(bg);
+    }
+    patience_backClouds[1].x = patience_backClouds[0].x + patience_backClouds[0].width;
+    patience_backClouds[2].x = patience_backClouds[1].x + patience_backClouds[1].width;
+
+    var clock = FunkinSprite.create(startPoint + -30, -530, 'virtue/clock');
+    clock.loadTextureAtlas('virtue/clock', 'shared', { applyStageMatrix: true });
+    clock.animation.addBySymbol('anim', 'clocktower', 24, true);
+    clock.animation.play('anim', true);
+    clock.scrollFactor.set(0.8, 0.95);
+    clock.scale.set(0.3, 0.3);
+    clock.zIndex = 30;
+    clock.antialiasing = false;
+    addBg(clock);
+
+    var rightSpr = patienceSprite('right', 3030, 320);
+    rightSpr.scrollFactor.set(0.8, 0.95);
+
+    for (i in 0...3)
+    {
+      var bg1 = patienceSprite('front_clouds', 8000, 700);
+      bg1.scrollFactor.set(0.8, 1.0);
+      bg1.antialiasing = false;
+      patience_frontClouds.push(bg1);
+
+      var bg2 = patienceSprite('front_clouds', 9200, 1200);
+      bg2.flipX = true;
+      bg2.scrollFactor.set(0.9, 1.0);
+      bg2.antialiasing = false;
+      patience_stageClouds.push(bg2);
+    }
+    patience_frontClouds[1].x = patience_frontClouds[0].x + patience_frontClouds[0].width;
+    patience_frontClouds[2].x = patience_frontClouds[1].x + patience_frontClouds[1].width;
+
+    patience_stageClouds[1].x = patience_stageClouds[0].x + patience_stageClouds[0].width;
+    patience_stageClouds[2].x = patience_stageClouds[1].x + patience_stageClouds[1].width;
+
+    patienceSprite('Heaven Gate', 0, 0);
+
+    var fore = patienceSprite('fore', 0, 1529);
+    fore.setGraphicSize(5144 * patience_globalScale);
+    fore.updateHitbox();
+  }
+
+  function patienceSprite(img:String, px:Float, py:Float):FlxSprite
+  {
+    var spr = new FlxSprite(startPoint + ((px - 300.0) * patience_globalScale), py * patience_globalScale).loadGraphic(Paths.image('virtue/' + img));
+    spr.scale.set(patience_globalScale, patience_globalScale);
+    spr.updateHitbox();
+    spr.active = false;
+    addBg(spr);
+    return spr;
+  }
+
+  function movePatienceBackdrop(spr:FlxSprite, speed:Float, limit:Float, elapsed:Float):Void
+  {
+    if (spr == null) return;
+    spr.x += speed * patience_globalScale * elapsed;
+    while (spr.x > limit * patience_globalScale)
+    {
+      spr.x -= spr.width * 3.0;
+    }
+  }
+
+  function loadLustInteriorBackground():Void
+  {
+    var xOff:Float = -1450;
+    var yOff:Float = -950;
+
+    var bg = new FlxSprite(startPoint + xOff, yOff, Paths.image("lust/Background"));
+    bg.scrollFactor.set(1, 1);
+    addBg(bg);
+
+    var suggestiveEnabled = Save.instance.modOptions.get('retroSuggestive');
+    lustMast(xOff, yOff, suggestiveEnabled ? 'Sex toys' : 'SFW hooks');
+    lustMast(xOff, yOff, "BG chairs");
+    lustMast(xOff, yOff, "BG tables");
+    lustMast(xOff, yOff, "Barr");
+    lustMast(xOff, yOff, "Bar stools");
+
+    lust_df = new FlxSprite(startPoint + xOff, yOff);
+    lust_df.frames = Paths.getSparrowAtlas('lust/saku-master');
+    lust_df.animation.addByPrefix("idle", "Dance floor", 0, false);
+    lust_df.animation.play("idle");
+    addBg(lust_df);
+
+    lust_ht = new FlxSprite(startPoint + xOff, yOff);
+    lust_ht.frames = Paths.getSparrowAtlas('lust/saku-master');
+    lust_ht.animation.addByPrefix("idle", "Heart", 0, false);
+    lust_ht.animation.play("idle");
+    addBg(lust_ht);
+
+    lustMast(xOff, yOff, "FG_Bottom");
+    lustMast(xOff, yOff, "FG_cages");
+    lustMast(xOff, yOff, "FG_curtains");
+    lustMast(xOff, yOff, "FG_LeftTable");
+    lustMast(xOff, yOff, "FG_RightTable");
+  }
+
+  function lustMast(xOff:Float, yOff:Float, path:String):FlxSprite
+  {
+    var sprite = new FlxSprite(startPoint + xOff, yOff);
+    sprite.frames = Paths.getSparrowAtlas('lust/saku-master');
+    sprite.animation.addByPrefix(path, path, 0, false);
+    sprite.animation.play(path);
+    addBg(sprite);
+    return sprite;
+  }
+
+  function loadLustExteriorBackground():Void
+  {
+    var bg = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('lust/exterior', 'shared'));
+    bg.scale.set(0.666, 0.666);
+    bg.updateHitbox();
+    bg.screenCenter();
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+
+    var glow = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('lust/window glow', 'shared'));
+    glow.setGraphicSize(1501.83);
+    glow.updateHitbox();
+    glow.screenCenter(0x01);
+    glow.scrollFactor.set(0, 0);
+    glow.blend = 0;
+    glow.alpha = 0.5;
+    FlxTween.tween(glow, {alpha: 0.2}, 1, {type: 4, ease: FlxEase.quadOut});
+    addBg(glow);
+
+    var feelin = new FlxSprite(startPoint + 120, 92);
+    feelin.frames = Paths.getSparrowAtlas('lust/feeling');
+    feelin.animation.addByPrefix('idle', "feeling", 24, true);
+    feelin.animation.play('idle');
+    feelin.scale.set(0.275, 0.275);
+    feelin.updateHitbox();
+    addBg(feelin);
+
+    var light = new FlxSprite(startPoint + 424, 80);
+    light.frames = Paths.getSparrowAtlas('lust/light');
+    light.animation.addByPrefix('idle', "light idle", 24, true);
+    light.animation.play('idle');
+    light.scale.set(0.66, 0.66);
+    light.updateHitbox();
+    addBg(light);
+
+    var stagelight = new FlxSprite(startPoint + -65, 434);
+    stagelight.frames = Paths.getSparrowAtlas('lust/lights');
+    stagelight.animation.addByPrefix('idle', "lights", 24, true);
+    stagelight.animation.play('idle');
+    stagelight.scale.set(0.275, 0.275);
+    stagelight.updateHitbox();
+    addBg(stagelight);
+  }
+
+  function loadSlothBackground():Void
+  {
+    var yOff:Float = 30;
+
+    var bg = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/a0', 'shared'));
+    bg.setGraphicSize(1280);
+    bg.updateHitbox();
+    bg.screenCenter();
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+    bg.y += yOff;
+
+    var clouds = new FlxSprite(startPoint, -100);
+    clouds.frames = Paths.getSparrowAtlas('sloth/titlestate/aclouds', 'shared');
+    clouds.animation.addByPrefix('idle', 'exportableClouds', 24, true);
+    clouds.animation.play('idle');
+    clouds.setGraphicSize(1300);
+    clouds.updateHitbox();
+    clouds.scrollFactor.set(0, 0);
+    clouds.screenCenter(0x01);
+    addBg(clouds);
+
+    var smoke = new FlxSprite(startPoint + -400, -215);
+    smoke.frames = Paths.getSparrowAtlas('sloth/titlestate/asmoke', 'shared');
+    smoke.animation.addByPrefix('idle', 'smoke', 24, true);
+    smoke.animation.play('idle');
+    smoke.scrollFactor.set(0, 0);
+    smoke.scale.set(0.26, 0.26);
+    addBg(smoke);
+
+    var chimney = new FlxSprite(startPoint + 102, -402);
+    chimney.frames = Paths.getSparrowAtlas('sloth/titlestate/achim', 'shared');
+    chimney.animation.addByPrefix('idle', 'chimney', 24, true);
+    chimney.animation.play('idle');
+    chimney.scrollFactor.set(0, 0);
+    chimney.scale.set(0.26, 0.26);
+    addBg(chimney);
+
+    var bg1 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/a1', 'shared'));
+    bg1.setGraphicSize(1280);
+    bg1.updateHitbox();
+    bg1.screenCenter();
+    bg1.scrollFactor.set(0, 0);
+    addBg(bg1);
+    bg1.y += yOff;
+
+    var bg2 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/a2', 'shared'));
+    bg2.setGraphicSize(1280);
+    bg2.updateHitbox();
+    bg2.screenCenter();
+    bg2.scrollFactor.set(0, 0);
+    addBg(bg2);
+
+    dozirc_train = new FlxSprite(startPoint + -30, 388);
+    dozirc_train.frames = Paths.getSparrowAtlas('sloth/titlestate/atrain', 'shared');
+    dozirc_train.animation.addByPrefix('idle', 'reescaledTrain', 24, false);
+    dozirc_train.animation.addByPrefix('nothing', 'nothing', 24, false);
+    dozirc_train.animation.play('nothing');
+    dozirc_train.scrollFactor.set(0, 0);
+    dozirc_train.scale.set(1.2, 1.2);
+    addBg(dozirc_train);
+
+    bg2.y += yOff;
+
+    var bg3 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/a3', 'shared'));
+    bg3.setGraphicSize(1280);
+    bg3.updateHitbox();
+    bg3.screenCenter(0x01);
+    bg3.scrollFactor.set(0, 0);
+    addBg(bg3);
+    bg3.y = FlxG.height - bg3.height;
+    bg3.y += yOff;
+
+    loadSlothRedLayer(yOff);
+  }
+
+  function loadSlothRedLayer(yOff:Float):Void
+  {
+    var bg = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/b0', 'shared'));
+    bg.setGraphicSize(1280);
+    bg.updateHitbox();
+    bg.screenCenter();
+    bg.scrollFactor.set(0, 0);
+    addBg(bg);
+    bg.cameras = [dozircCam];
+    bg.y += yOff;
+
+    var clouds = new FlxSprite(startPoint, -100);
+    clouds.frames = Paths.getSparrowAtlas('sloth/titlestate/bclouds', 'shared');
+    clouds.animation.addByPrefix('idle', 'exportableClouds', 24, true);
+    clouds.animation.play('idle');
+    clouds.setGraphicSize(1300);
+    clouds.updateHitbox();
+    clouds.scrollFactor.set(0, 0);
+    clouds.screenCenter(0x01);
+    addBg(clouds);
+    clouds.cameras = [dozircCam];
+
+    var smoke = new FlxSprite(startPoint + -400, -215);
+    smoke.frames = Paths.getSparrowAtlas('sloth/titlestate/bsmoke', 'shared');
+    smoke.animation.addByPrefix('idle', 'smoke', 24, true);
+    smoke.animation.play('idle');
+    smoke.scrollFactor.set(0, 0);
+    smoke.scale.set(0.26, 0.26);
+    addBg(smoke);
+    smoke.cameras = [dozircCam];
+
+    var chimney = new FlxSprite(startPoint + 102, -402);
+    chimney.frames = Paths.getSparrowAtlas('sloth/titlestate/bchim', 'shared');
+    chimney.animation.addByPrefix('idle', 'chimney', 24, true);
+    chimney.animation.play('idle');
+    chimney.scrollFactor.set(0, 0);
+    chimney.scale.set(0.26, 0.26);
+    addBg(chimney);
+    chimney.cameras = [dozircCam];
+
+    var bg1 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/b1', 'shared'));
+    bg1.setGraphicSize(1280);
+    bg1.updateHitbox();
+    bg1.screenCenter();
+    bg1.scrollFactor.set(0, 0);
+    addBg(bg1);
+    bg1.cameras = [dozircCam];
+    bg1.y += yOff;
+
+    var bg2 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/b2', 'shared'));
+    bg2.setGraphicSize(1280);
+    bg2.updateHitbox();
+    bg2.screenCenter();
+    bg2.scrollFactor.set(0, 0);
+    addBg(bg2);
+    bg2.cameras = [dozircCam];
+
+    var lights = new FlxSprite(startPoint + -1.5, -1.2);
+    lights.frames = Paths.getSparrowAtlas('sloth/titlestate/lights', 'shared');
+    lights.animation.addByPrefix('idle', 'lights', 24, true);
+    lights.animation.play('idle');
+    lights.scrollFactor.set(0, 0);
+    lights.scale.set(0.670851063829787, 0.670851063829787);
+    lights.updateHitbox();
+    addBg(lights);
+    lights.cameras = [dozircCam];
+
+    dozirc_trainRed = new FlxSprite(startPoint + -30, 388);
+    dozirc_trainRed.frames = Paths.getSparrowAtlas('sloth/titlestate/btrain', 'shared');
+    dozirc_trainRed.animation.addByPrefix('idle', 'reescaledTrain', 24, false);
+    dozirc_trainRed.animation.addByPrefix('nothing', 'nothing', 24, false);
+    dozirc_trainRed.animation.play('nothing');
+    dozirc_trainRed.scrollFactor.set(0, 0);
+    dozirc_trainRed.scale.set(1.2, 1.2);
+    addBg(dozirc_trainRed);
+    dozirc_trainRed.cameras = [dozircCam];
+
+    bg2.y += yOff;
+
+    var bg3 = new FlxSprite(startPoint, 0).loadGraphic(Paths.image('sloth/titlestate/b3', 'shared'));
+    bg3.setGraphicSize(1280);
+    bg3.updateHitbox();
+    bg3.screenCenter(0x01);
+    bg3.scrollFactor.set(0, 0);
+    addBg(bg3);
+    bg3.y = FlxG.height - bg3.height;
+    bg3.y += yOff;
+    bg3.cameras = [dozircCam];
+
+    dozircCam.alpha = 1;
+    FlxTween.tween(dozircCam, {alpha: 0}, 1, {type: 4, loopDelay: 2, ease: FlxEase.sineInOut});
+  }
+
+  function loadGreedBackground():Void
+  {
+    var xOff:Float = -1400;
+    var yOff:Float = -1000;
+
+    greed_glitters = [];
+
+    var bg = new FlxSprite(startPoint + xOff, yOff, Paths.image("greed/hivemine_bg"));
+    bg.scrollFactor.set(1, 1);
+    addBg(bg);
+
+    var glitterSpots = [[465, 1833], [2299, 1811], [2890, 1800], [3546, 2200]];
+    var glitterNames = ['FarLeft', 'Center', 'Table', 'FarRight'];
+
+    for (i in 0...glitterNames.length)
+    {
+      var glitter = new FlxSprite(startPoint + xOff + glitterSpots[i][0], yOff + glitterSpots[i][1]);
+      glitter.frames = Paths.getSparrowAtlas('greed/Hivemine_GlitterPatch_' + glitterNames[i]);
+      glitter.animation.addByPrefix('idle', 'Hivemine_GlitterPatch_' + glitterNames[i], 24, true);
+      glitter.animation.play('idle');
+      glitter.scrollFactor.set(1, 1);
+      glitter.antialiasing = false;
+      addBg(glitter);
+      greed_glitters.push(glitter);
+    }
+
+    var fg = new FlxSprite(startPoint + xOff, yOff, Paths.image("greed/hivemine_fg"));
+    fg.scrollFactor.set(1, 1);
+    fg.antialiasing = false;
+    addBg(fg);
   }
 
   function loadEnvyBackground():Void

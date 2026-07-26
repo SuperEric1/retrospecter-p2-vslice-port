@@ -296,6 +296,16 @@ class RetroUtil extends Module
     return true;
   }
 
+  public static function hasBeatenLevel(levelId:String):Bool
+  {
+    for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
+    {
+      if ((Save.instance.getLevelScore(levelId, diff)?.score ?? 0) > 0) return true;
+    }
+
+    return RetroSave.isUnlockStory(); // default false
+  }
+
   /* --------------------------------------------------- */
 
   override function onSongRetry(event:ScriptEvent):Void
