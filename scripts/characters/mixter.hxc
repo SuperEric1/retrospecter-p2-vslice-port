@@ -21,7 +21,7 @@ class MixterCharacter extends SparrowCharacter {
 		if (!event.note.noteData.getMustHitNote() && this.characterType == CharacterType.DAD) {
 			switch (event.note.noteData.kind)
 			{
-				case "No Animation":
+				case "No Animation", "hollowNotes":
 					return;
 			}
 
