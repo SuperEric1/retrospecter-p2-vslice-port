@@ -415,19 +415,25 @@ class RetroNoteStyles extends Module {
 
 	override public function onNoteIncoming(event:NoteScriptEvent):Void {
 		super.onNoteIncoming(event);
-		if (!isRetro || !event.note.visible) return;
+		if (!isRetro) return;
 
 		if (!event.note.noteData.getMustHitNote()) {
 			// Opponent note
-			event.note.x += oppNoteOffset[0] ?? 0;
-			event.note.yOffset = 0;
-			event.note.yOffset += oppNoteOffset[1] ?? 0;
+			if (event.note.visible) {
+				event.note.x += oppNoteOffset[0] ?? 0;
+				event.note.yOffset = 0;
+				event.note.yOffset += oppNoteOffset[1] ?? 0;
+			}
 
+			// Disable note anim in case it's on mobile, since they're not visible.
+			if (mobileArrowsActive && isOppUsingCustomNote) event.note.active = false;
 		} else if (event.note.scoreable) {
 			// Player note
-			event.note.x += playerNoteOffset[0] ?? 0;
-			event.note.yOffset = 0;
-			event.note.yOffset = playerNoteOffset[1] ?? 0;
+			if (event.note.visible) {
+				event.note.x += playerNoteOffset[0] ?? 0;
+				event.note.yOffset = 0;
+				event.note.yOffset = playerNoteOffset[1] ?? 0;
+			}
 		}
 	}
 

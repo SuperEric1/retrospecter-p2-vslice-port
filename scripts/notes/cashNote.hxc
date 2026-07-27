@@ -8,7 +8,7 @@ import supereric.retrospecter.modules.RetroUtil;
 
 class CashNote extends NoteKind {
 	public function new() {
-		super('cashNote', 'Cash Note', null, [], true); // id, description, styleId, params, noanim
+		super('cashNote', 'Coin Note', 'coin', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -31,15 +31,15 @@ class CashNote extends NoteKind {
 			event.cancelEvent();
 			return;
 		}
-		
-		event.note.frames = Paths.getSparrowAtlas('notes/coin');
+
+		/*event.note.frames = Paths.getSparrowAtlas('notes/coin');
 		event.note.animation.addByPrefix('purpleScroll', 'idle0');
 		event.note.animation.addByPrefix('blueScroll', 'idle0');
 		event.note.animation.addByPrefix('greenScroll', 'idle0');
-		event.note.animation.addByPrefix('redScroll', 'idle0');
+		event.note.animation.addByPrefix('redScroll', 'idle0');*/
 
 		event.note.active = true;
-		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
+		// event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

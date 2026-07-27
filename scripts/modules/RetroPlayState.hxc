@@ -3008,20 +3008,18 @@ class RetroPlayState extends Module {
       var notesDir:String = 'notes/';
       var notesToCache:Array<String> = [
         'hollowNotes',
-        'PoisonNotes_down',
-        'PoisonNotes_up',
-        'Pride_Note_Assets',
-        'Atrocean_Note_Assets',
-        'Hivemore_Note_Assets',
+        //'Pride_Note_Assets',
+        //'Atrocean_Note_Assets',
+        //'Hivemore_Note_Assets',
         'PoisonArrowHit',
-        'ChainNotes',
+        //'ChainNotes',
         'strumChains',
-        'HydraNotes',
-        'scytheNotes',
-        'HeartNotes',
-        'Notes_Spectre',
+        //'HydraNotes',
+        //'scytheNotes',
+        //'HeartNotes',
+        //'Notes_Spectre',
         'SpectreHit',
-        'coin'
+        //'coin'
       ];
       for (noteName in notesToCache) {
         FunkinMemory.permanentCacheTexture(Paths.image(notesDir + noteName, "shared"));

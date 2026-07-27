@@ -8,7 +8,7 @@ import supereric.retrospecter.modules.RetroUtil;
 
 class HivemoreNote extends NoteKind {
 	public function new() {
-		super('hivemoreNote', 'Hivemore Note', null, [], true); // id, description, styleId, params, noanim
+		super('hivemoreNote', 'Hivemore Note', 'hivemore', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -33,19 +33,26 @@ class HivemoreNote extends NoteKind {
 			return;
 		}
 
-		event.note.x += -43;
-		event.note.yOffset += -25;
+		event.note.x += 5;
+		event.note.yOffset += -35;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Hivemore_Note_Assets');
+		switch (event.note.noteData.data % 4) {
+			case 0: event.note.x += -1;
+			case 1: event.note.x += 1;
+			case 2: event.note.x += 4;
+			case 3: event.note.yOffset += 10;
+		}
+
+		/*event.note.frames = Paths.getSparrowAtlas('notes/Hivemore_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
-		event.note.animation.addByPrefix('redScroll', 'Right0');
+		event.note.animation.addByPrefix('redScroll', 'Right0');*/
 
 		event.note.active = true;
-		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
+		//event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

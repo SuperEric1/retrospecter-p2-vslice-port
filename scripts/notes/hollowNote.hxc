@@ -3,10 +3,10 @@ import funkin.Paths;
 
 class HollowNote extends NoteKind {
 	public function new() {
-		super('hollowNotes', 'Hollow Note', null, [], true); // id, description, styleId, params, noanim
+		super('hollowNotes', 'Hollow Note', 'hollowNote', [], true); // id, description, styleId, params, noanim
 	}
 
-	public override function onNoteIncoming(event:NoteScriptEvent):Void {
+	/*public override function onNoteIncoming(event:NoteScriptEvent):Void {
 		event.note.frames = Paths.getSparrowAtlas('notes/hollowNotes');
 		event.note.animation.addByPrefix('purpleScroll', 'noteLeft');
 		event.note.animation.addByPrefix('blueScroll', 'noteDown');
@@ -22,5 +22,5 @@ class HollowNote extends NoteKind {
 		}
 
 		event.note.animation.play(hollowAnim);
-	}
+	}*/
 }

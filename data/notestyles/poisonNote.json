@@ -1,0 +1,91 @@
+{
+  "version": "1.1.0",
+  "name": "Poison Note",
+  "author": "Ported by SuperEric",
+  "fallback": "funkin",
+  "assets": {
+    "note": {
+      "assetPath": "shared:notes/PoisonNotes_Player",
+      "scale": 0.7,
+      "offsets": [0, 0],
+      "animated": true,
+      "data": {
+        "left": { "prefix": "PoisonArrows Downscroll Left0", "looped": true },
+        "down": { "prefix": "PoisonArrows Downscroll Down0", "looped": true },
+        "up": { "prefix": "PoisonArrows Downscroll Up0", "looped": true },
+        "right": { "prefix": "PoisonArrows Downscroll Right0", "looped": true }
+      }
+    },
+    "noteStrumline": {
+      "assetPath": null,
+      "scale": 0.7,
+      "offsets": [0, 0],
+      "data": {
+        "leftStatic": { "prefix": "static Left0" },
+        "leftPress": { "prefix": "static Left0" },
+        "leftConfirm": { "prefix": "confirm Left0" },
+        "leftConfirmHold": { "prefix": "confirm Left0005" },
+
+        "downStatic": { "prefix": "static Down0" },
+        "downPress": { "prefix": "static Down0" },
+        "downConfirm": { "prefix": "confirm Down0" },
+        "downConfirmHold": { "prefix": "confirm Down0003" },
+
+        "upStatic": { "prefix": "static Up0" },
+        "upPress": { "prefix": "static Up0" },
+        "upConfirm": { "prefix": "confirm Up0" },
+        "upConfirmHold": { "prefix": "confirm Up0012" },
+
+        "rightStatic": { "prefix": "static Right0" },
+        "rightPress": { "prefix": "static Right0" },
+        "rightConfirm": { "prefix": "confirm Right0" },
+        "rightConfirmHold": { "prefix": "confirm Right0030" }
+      }
+    },
+    "holdNote": {
+      "assetPath": null,
+      "scale": 0.7,
+      "offsets": [0, 0],
+      "data": {}
+    },
+    "noteSplash": {
+      "assetPath": null,
+      "alpha": 0.8,
+      "offsets": [0, 0],
+      "data": {
+        "enabled": false,
+        "leftSplashes": [{ "prefix": "destroy Left0" }],
+        "rightSplashes": [{ "prefix": "destroy Right0" }],
+        "upSplashes": [{ "prefix": "destroy Up0" }],
+        "downSplashes": [{ "prefix": "destroy Down0" }]
+      }
+    },
+    "holdNoteCover": {
+      "assetPath": "shared:notes/hold/Poison_cover",
+      "offsets": [0, 0],
+      "data": {
+        "enabled": true,
+        "left": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "right": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "up": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        },
+        "down": {
+          "start": { "prefix": "holdCoverStart0" },
+          "hold": { "prefix": "holdCover0" },
+          "end": { "prefix": "holdCoverEnd0" }
+        }
+      }
+    }
+  }
+}

@@ -7,7 +7,7 @@ import funkin.mobile.input.ControlsHandler;
 
 class HivelessNote extends NoteKind {
 	public function new() {
-		super('hivelessNote', 'Hiveless Note', null, [], true); // id, description, styleId, params, noanim
+		super('hivelessNote', 'Hiveless Note', 'hiveless', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -18,13 +18,19 @@ class HivelessNote extends NoteKind {
 			event.cancelEvent();
 			return;
 		}
-		
-		event.note.x += -50;
-		event.note.yOffset += -26;
+
+		event.note.x += 2;
+		event.note.yOffset += -28;
+
+		switch (event.note.noteData.data % 4) {
+			case 0: event.note.x += 2;
+			case 1: event.note.x += 9;
+			case 2: event.note.x += 12;
+		}
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Hiveless_Note_Assets');
+		/*event.note.frames = Paths.getSparrowAtlas('notes/Hiveless_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
@@ -39,7 +45,7 @@ class HivelessNote extends NoteKind {
 		}
 
 		// a anim é de 1 frame, não precisa de active = true
-		event.note.animation.play(hivelessAnim);
+		event.note.animation.play(hivelessAnim);*/
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

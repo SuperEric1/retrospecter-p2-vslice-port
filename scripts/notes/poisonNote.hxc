@@ -11,7 +11,7 @@ import supereric.retrospecter.modules.RetroUtil;
 
 class PoisonNote extends NoteKind {
 	public function new() {
-		super('poison', 'Poison Note', null, [], true); // id, description, styleId, params, noanim
+		super('poison', 'Poison Note', 'poisonNote', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -23,9 +23,10 @@ class PoisonNote extends NoteKind {
 			atlas: 'notes/PoisonArrowHit',
 			prefixes: ['Poison Arrow Hit Left0', 'Poison Arrow Hit Down0', 'Poison Arrow Hit Up0', 'Poison Arrow Hit Right0'],
 			relativePos: true,
-			xOffset: -146,
-			yOffset: -80,
-			antialiasing: false
+			xOffset: -170,
+			yOffset: -140,
+			antialiasing: true,
+			sizeMulti: 0.65
 		});
 	}
 
@@ -40,27 +41,22 @@ class PoisonNote extends NoteKind {
 
 		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.x += -3;
-		event.note.yOffset += -70;
+		var scale = 1.538462;
+		event.note.scale.set(event.note.scale.x * scale, event.note.scale.y * scale);
+		event.note.x += 15;
+		event.note.yOffset += -73;
 
 		event.note.lowPriority = true;
+		event.note.active = true;
 
-		if (downscroll) {
-			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_down');
-			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Downscroll Left0');
-			event.note.animation.addByPrefix('blueScroll', 'PoisonArrows Downscroll Down0');
-			event.note.animation.addByPrefix('greenScroll', 'PoisonArrows Downscroll Up0');
-			event.note.animation.addByPrefix('redScroll', 'PoisonArrows Downscroll Right0');
-		} else {
-			event.note.frames = Paths.getSparrowAtlas('notes/PoisonNotes_up');
+		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'PoisonArrows Upscroll Left0');
 			event.note.animation.addByPrefix('blueScroll', 'PoisonArrows Upscroll Down0');
 			event.note.animation.addByPrefix('greenScroll', 'PoisonArrows Upscroll Up0');
 			event.note.animation.addByPrefix('redScroll', 'PoisonArrows Upscroll Right0');
-		}
 
-		event.note.active = true;
-		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
+			event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
+		}
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

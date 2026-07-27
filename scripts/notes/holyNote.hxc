@@ -24,9 +24,10 @@ class HolyNote extends NoteKind {
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
 		event.note.x += 5;
-		event.note.yOffset += -87;
+		event.note.yOffset += -170;
 
 		event.note.lowPriority = true;
+		event.note.active = true;
 
 		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
@@ -45,7 +46,6 @@ class HolyNote extends NoteKind {
 			event.note.animation.play(holyAnim);
 		}
 
-		event.note.active = true;
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

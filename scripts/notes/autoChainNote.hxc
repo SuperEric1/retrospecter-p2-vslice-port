@@ -18,11 +18,11 @@ class AutoChainNote extends NoteKind {
 			event.cancelEvent();
 			return;
 		}
-		
+
 		var downscroll:Bool = Preferences.downscroll
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.x += 1;
+		event.note.x += 2;
 		event.note.yOffset += -100;
 
 		event.note.lowPriority = true;

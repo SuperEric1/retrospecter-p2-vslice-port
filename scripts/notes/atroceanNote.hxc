@@ -4,7 +4,7 @@ import funkin.save.Save;
 
 class AtroceanNote extends NoteKind {
 	public function new() {
-		super('atroceanNote', 'Atrocean Note', null, [], true); // id, description, styleId, params, noanim
+		super('atroceanNote', 'Atrocean Note', 'atrocean', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -15,15 +15,15 @@ class AtroceanNote extends NoteKind {
 			event.cancelEvent();
 			return;
 		}
-		
+
 		if (!event.note.noteData.getMustHitNote()) return;
 
-		event.note.x += -45;
-		event.note.yOffset += -47;
+		event.note.x += 2;
+		event.note.yOffset += -43;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Atrocean_Note_Assets');
+		/*event.note.frames = Paths.getSparrowAtlas('notes/Atrocean_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
@@ -35,10 +35,10 @@ class AtroceanNote extends NoteKind {
 			case 1: atroceanAnim = 'blueScroll';
 			case 2: atroceanAnim = 'greenScroll';
 			case 3: atroceanAnim = 'redScroll';
-		}
+		}*/
 
 		event.note.active = true;
-		event.note.animation.play(atroceanAnim);
+		//event.note.animation.play(atroceanAnim);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

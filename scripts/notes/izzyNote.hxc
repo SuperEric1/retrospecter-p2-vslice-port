@@ -18,7 +18,7 @@ class IzzyNote extends NoteKind {
 		}
 
 		event.note.x += 4;
-		event.note.yOffset += -25;
+		event.note.yOffset += -28;
 
 		event.note.lowPriority = true;
 

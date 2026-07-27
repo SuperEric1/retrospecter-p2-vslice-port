@@ -124,6 +124,8 @@ class EmbuzzleSong extends Song
     FunkinMemory.cacheSound(Paths.sound("beeTransformation", "shared"));
     FunkinMemory.cacheTexture(Paths.image("characters/OtherSins/hiveless", "shared"));
     FunkinMemory.cacheTexture(Paths.image("characters/OtherSins/hivemineTalks", "shared"));
+    FunkinMemory.cacheTexture(Paths.image("ui/healthBars/hiveless/overlay", "shared"));
+    FunkinMemory.cacheTexture(Paths.image("ui/healthBars/hiveless/bar", "shared"));
   }
 
   override function onSongLoaded(event:ScriptEvent):Void

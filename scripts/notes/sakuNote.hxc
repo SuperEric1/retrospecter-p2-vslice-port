@@ -23,11 +23,13 @@ class SakuNote extends NoteKind {
 		var downscroll:Bool = Preferences.downscroll
 			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.scale.set(1.4, 1.4);
+		var scale = 2;
+		event.note.scale.set(event.note.scale.x * scale, event.note.scale.y * scale);
 		event.note.x += 2;
 		event.note.yOffset += -45;
 
 		event.note.lowPriority = true;
+		event.note.active = true;
 
 		//event.note.frames = Paths.getSparrowAtlas('notes/HeartNotes');
 		if (!downscroll) {
@@ -44,10 +46,8 @@ class SakuNote extends NoteKind {
 				case 3: sakuAnim = 'redScroll';
 			}
 
-			event.note.active = true;
 			event.note.animation.play(sakuAnim);
 		}
-		event.note.active = true;
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?><TextureAtlas imagePath="PoisonNotes_Player.png">
+	<!-- Created using the Spritesheet and XML generator -->
+	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
+	<SubTexture name="PoisonArrows Downscroll Right0000" x="117" y="512" width="116" height="158" frameX="0" frameY="-6" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Right0001" x="233" y="171" width="116" height="164" frameX="0" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Right0002" x="109" y="338" width="116" height="163" frameX="0" frameY="-2" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Right0003" x="350" y="512" width="116" height="155" frameX="0" frameY="-9" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Left0000" x="0" y="512" width="117" height="159" frameX="10" frameY="-6" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Left0001" x="116" y="171" width="117" height="165" frameX="10" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Left0002" x="350" y="163" width="117" height="163" frameX="10" frameY="-2" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Left0003" x="233" y="512" width="117" height="156" frameX="10" frameY="-9" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Up0000" x="467" y="174" width="109" height="161" frameX="1" frameY="-6" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Up0001" x="686" y="168" width="109" height="167" frameX="1" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Up0002" x="686" y="501" width="109" height="165" frameX="1" frameY="-2" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Up0003" x="0" y="670" width="109" height="158" frameX="1" frameY="-9" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Down0000" x="686" y="0" width="109" height="168" frameX="5" frameY="-6" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Down0001" x="467" y="0" width="109" height="174" frameX="5" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Down0002" x="577" y="0" width="109" height="172" frameX="5" frameY="-2" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Downscroll Down0003" x="795" y="0" width="109" height="165" frameX="5" frameY="-9" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Right0000" x="226" y="338" width="116" height="163" frameX="0" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Right0001" x="117" y="0" width="116" height="170" frameX="0" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Right0002" x="0" y="171" width="116" height="167" frameX="0" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Right0003" x="459" y="338" width="116" height="160" frameX="0" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Left0000" x="350" y="0" width="117" height="163" frameX="10" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Left0001" x="0" y="0" width="117" height="171" frameX="10" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Left0002" x="233" y="0" width="117" height="168" frameX="10" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Left0003" x="342" y="338" width="117" height="161" frameX="10" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Up0000" x="686" y="335" width="109" height="166" frameX="1" frameY="-1" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Up0001" x="0" y="338" width="109" height="174" frameX="1" frameY="-1" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Up0002" x="577" y="172" width="109" height="171" frameX="1" frameY="-1" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Up0003" x="795" y="330" width="109" height="164" frameX="1" frameY="-1" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Down0000" x="795" y="494" width="109" height="161" frameX="5" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Down0001" x="577" y="343" width="109" height="168" frameX="5" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Down0002" x="795" y="165" width="109" height="165" frameX="5" frameY="0" frameWidth="125" frameHeight="174"/>
+	<SubTexture name="PoisonArrows Upscroll Down0003" x="109" y="670" width="109" height="158" frameX="5" frameY="0" frameWidth="125" frameHeight="174"/>
+</TextureAtlas>

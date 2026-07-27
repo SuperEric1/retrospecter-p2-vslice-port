@@ -11,7 +11,7 @@ import supereric.retrospecter.modules.RetroUtil;
 
 class InsatianNote extends NoteKind {
 	public function new() {
-		super('insatianNote', 'Insatian Note', null, [], true); // id, description, styleId, params, noanim
+		super('insatianNote', 'Insatian Note', 'insatian', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -36,18 +36,18 @@ class InsatianNote extends NoteKind {
 			return;
 		}
 
-		event.note.x += -50;
-		event.note.yOffset += -29;
+		event.note.x += 2;
+		event.note.yOffset += -30;
 
 		event.note.lowPriority = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Gluttony_Note_Assets');
+		/*event.note.frames = Paths.getSparrowAtlas('notes/Gluttony_Note_Assets');
 		event.note.animation.addByPrefix('purpleScroll', 'Left0');
 		event.note.animation.addByPrefix('blueScroll', 'Down0');
 		event.note.animation.addByPrefix('greenScroll', 'Up0');
 		event.note.animation.addByPrefix('redScroll', 'Right0');
 
-		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);
+		event.note.animation.play(RetroUtil.SPLASH_ANIM_NAMES[event.note.noteData.data % 4]);*/
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

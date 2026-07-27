@@ -354,7 +354,7 @@ class RetroGameUI extends Module {
         retroHealthBarOverlay.screenCenter(0x01);
 
         // Configurar o fundo da barra (cor do oponente)
-        retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 2;
+        retroHealthBarFillBG.zIndex = retroHealthBarOverlay.zIndex - 5;
         retroHealthBarFillBG.cameras = [playState.camHUD];
         retroHealthBarFillBG.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFillBG.screenCenter(0x01);
@@ -363,7 +363,7 @@ class RetroGameUI extends Module {
         retroHealthBarFillBG.antialiasing = false;
 
         // Configurar o preenchimento da barra (cor do jogador)
-        retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 1;
+        retroHealthBarFill.zIndex = retroHealthBarOverlay.zIndex - 4;
         retroHealthBarFill.cameras = [playState.camHUD];
         retroHealthBarFill.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarFill.screenCenter(0x01);
@@ -384,7 +384,7 @@ class RetroGameUI extends Module {
           dozircVertice1.scale.set(defaultScale[0], defaultScale[1]);
           dozircVertice1.updateHitbox();
           dozircVertice1.cameras = [playState.camHUD];
-          dozircVertice1.zIndex = retroHealthBarOverlay.zIndex - 1;
+          dozircVertice1.zIndex = retroHealthBarOverlay.zIndex - 2;
           dozircVertice1.screenCenter(0x01);
           dozircVertice1.y += 85;
           dozircVertice1.x -= 360;
@@ -394,7 +394,7 @@ class RetroGameUI extends Module {
           dozircVertice2.scale.set(defaultScale[0], defaultScale[1]);
           dozircVertice2.updateHitbox();
           dozircVertice2.cameras = [playState.camHUD];
-          dozircVertice2.zIndex = retroHealthBarOverlay.zIndex - 1;
+          dozircVertice2.zIndex = retroHealthBarOverlay.zIndex - 2;
           dozircVertice2.screenCenter(0x01);
           dozircVertice2.y += 85;
           dozircVertice2.x += 360;
@@ -405,7 +405,7 @@ class RetroGameUI extends Module {
           dozircEletric.scale.set(defaultScale[0], defaultScale[1]);
           dozircEletric.updateHitbox();
           dozircEletric.cameras = [playState.camHUD];
-          dozircEletric.zIndex = retroHealthBarFillBG.zIndex - 1;
+          dozircEletric.zIndex = retroHealthBarFillBG.zIndex - 2;
           dozircEletric.screenCenter(0x01);
           dozircEletric.y += 7.3;
           dozircEletric.x += 6;
@@ -426,7 +426,7 @@ class RetroGameUI extends Module {
       // Outros
       if (isCustomHealthBar) {
         if (isHivemine) loadHivemineText(hivemineTextColor);
-        if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 1;
+        if (isMobileArrowScheme) playState.opponentStrumline.zIndex = retroHealthBarOverlay.zIndex + 10;
       }
       configureIcon(); // setar zindex e tudo mais nos dois icons
 
@@ -1644,7 +1644,7 @@ class RetroGameUI extends Module {
 
   public function configureIcon(?icon = 'both', ?bop:Int = 0):Void { // This should not be called every frame because of the playstate refresh
     var playState = PlayState.instance;
-    var iZIndex = (retroHealthBarOverlay?.zIndex ?? playState.healthBar.zIndex) + 2;
+    var iZIndex = (retroHealthBarOverlay?.zIndex ?? playState.healthBar.zIndex) + 5;
     var iBopEvery = (bop == 0 || bop == null) ? 8 : bop;
     var iconLower = icon?.toLowerCase() ?? 'both';
 

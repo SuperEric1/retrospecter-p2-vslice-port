@@ -10,7 +10,7 @@ import supereric.retrospecter.modules.RetroUtil;
 
 class DozircNote extends NoteKind {
 	public function new() {
-		super('dozircNote', 'Dozirc Note', null, [], true); // id, description, styleId, params, noanim
+		super('dozircNote', 'Dozirc Note', 'dozirc_down', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
 	}
 
@@ -41,34 +41,30 @@ class DozircNote extends NoteKind {
 
 		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
 
-		event.note.x += -57;
-		event.note.yOffset += -40;
+		event.note.x += 4;
+		event.note.yOffset += -50;
 
 		event.note.lowPriority = true;
+		event.note.active = true;
 
-		event.note.frames = Paths.getSparrowAtlas('notes/Dozirc_Note_Assets');
-		if (downscroll) {
+		//event.note.frames = Paths.getSparrowAtlas('notes/Dozirc_Note_Assets');
+		if (!downscroll) {
 			event.note.animation.addByPrefix('purpleScroll', 'Left(Down)0');
 			event.note.animation.addByPrefix('blueScroll', 'Down(Down)0');
 			event.note.animation.addByPrefix('greenScroll', 'Up(Down)0');
 			event.note.animation.addByPrefix('redScroll', 'Right(Down)0');
-		} else {
-			event.note.animation.addByPrefix('purpleScroll', 'Left(Up)0');
-			event.note.animation.addByPrefix('blueScroll', 'Down(Up)0');
-			event.note.animation.addByPrefix('greenScroll', 'Up(Up)0');
-			event.note.animation.addByPrefix('redScroll', 'Right(Up)0');
+
+			var chainAnim:String;
+			switch (event.note.noteData.data % 4) {
+				case 0: chainAnim = 'purpleScroll';
+				case 1: chainAnim = 'blueScroll';
+				case 2: chainAnim = 'greenScroll';
+				case 3: chainAnim = 'redScroll';
+			}
+
+			event.note.animation.play(chainAnim);
 		}
 
-		var chainAnim:String;
-		switch (event.note.noteData.data % 4) {
-			case 0: chainAnim = 'purpleScroll';
-			case 1: chainAnim = 'blueScroll';
-			case 2: chainAnim = 'greenScroll';
-			case 3: chainAnim = 'redScroll';
-		}
-
-		event.note.active = true;
-		event.note.animation.play(chainAnim);
 	}
 
 	public override function onNoteMiss(event:NoteScriptEvent):Void {

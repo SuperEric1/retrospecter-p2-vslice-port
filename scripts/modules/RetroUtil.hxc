@@ -211,8 +211,8 @@ class RetroUtil extends Module
     var splash:FunkinSprite = acquireSplash(atlasKey, 'notes/Notes_Spectre', SPLASH_ANIM_NAMES, animPrefixes, 24, 1);
     if (splash == null) return;
 
-    splash.x = note.x - 25;
-    splash.y = note.y - 50;
+    splash.x = note.x - 10;
+    splash.y = note.y - 20;
     splash.scale.set(note.scale.x, note.scale.y);
     splash.zIndex = note.zIndex;
 
