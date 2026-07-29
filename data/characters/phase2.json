@@ -69,6 +69,7 @@
       "prefix": "transformation",
       "assetPath": "characters/wrath/retro-tf",
       "offsets": [0, 0],
+      "scale": 0.756,
       "frameRate": 24,
       "frameIndices": []
     },
@@ -77,6 +78,7 @@
       "prefix": "transformation",
       "assetPath": "characters/wrath/retro-tf",
       "offsets": [0, 0],
+      "scale": 0.756,
       "looped": true,
       "frameRate": 1,
       "frameIndices": [2]
@@ -86,6 +88,7 @@
       "prefix": "roar",
       "assetPath": "characters/wrath/retro-tf",
       "offsets": [0, 0],
+      "scale": 0.756,
       "frameRate": 24,
       "size": 0.5,
       "frameIndices": []

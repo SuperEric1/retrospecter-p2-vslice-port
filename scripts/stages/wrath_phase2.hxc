@@ -47,6 +47,7 @@ class WrathPhase2Stage extends Stage
   var ogStrumY:Float;
   var tweens:Array<FlxTween> = [];
   var pausedTweens:Array<FlxTween> = [];
+  var ogRetroScale:Float = 1;
 
   // Ending cutscene sounds
   var angySlam:FunkinSound;
@@ -631,6 +632,8 @@ class WrathPhase2Stage extends Stage
 
       PlayState.instance.camHUD.visible = false;
 
+      ogRetroScale = getDad().scale.x;
+      getDad().scale.set(1.1, 1.1);
       getDad().playAnimation('transformation-loop');
 
       buildProps(true);
@@ -1090,6 +1093,7 @@ class WrathPhase2Stage extends Stage
 
     new FlxTimer().start(4.75, function(tmr) {
       retro.playAnimation('idle', true);
+      getDad().scale.set(ogRetroScale, ogRetroScale);
     });
 
     // Cutscene acaba
