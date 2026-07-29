@@ -18,6 +18,7 @@ import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroUtil;
+import supereric.retrospecter.modules.RetroAchievements;
 
 class DeadfineSong extends Song
 {

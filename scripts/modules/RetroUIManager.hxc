@@ -63,10 +63,12 @@ class RetroUIManager extends Module
     else if (Std.isOfType(targetState, MainMenuState) && save.get('retroCustomMenus'))
     {
       #if (!ios)
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 0;
       createBG();
       targetState.insert(50, backBg);
       //disableNextTransition = true;
       if (!ReflectUtil.field(targetState, "overrideMusic")) FlxG.switchState(ScriptedMusicBeatState.init("RetroMainMenu"));
+      if (FlxG.sound.music != null) FlxG.sound.music.volume = 1;
       #end
     }
     else if (Std.isOfType(targetState, OptionsState) && save.get('retroCustomMenus'))

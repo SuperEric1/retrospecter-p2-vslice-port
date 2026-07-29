@@ -179,8 +179,6 @@ class RetroMainMenu extends MusicBeatState
 
     FlxG.camera.bgColor = FlxColor.BLACK;
 
-    if (!overrideMusic) playMenuMusic();
-
     if (FlxG.onMobile) {
       backBtn = addBackButton(FlxG.width - 230, FlxG.height - 200, FlxColor.WHITE, goBack, 0.25);
       /*backBtn.onConfirmStart.add(function() {
@@ -392,6 +390,8 @@ class RetroMainMenu extends MusicBeatState
         FlxTween.tween(backBtn, {x: FlxG.width - 230}, 1, {ease: FlxEase.expoOut});
       }
     }
+
+    /*if (!overrideMusic)*/ playMenuMusic();
 
     // Habilitar navegação
     new FlxTimer().start(0.6, function(_:FlxTimer) {
@@ -860,6 +860,7 @@ class RetroMainMenu extends MusicBeatState
   {
     var stateFunc:Dynamic = function():Void {
       new FlxTimer().start(0.1, function (t:FlxTimer) {
+        saveThemeTime();
         openSubState(new FreeplayState());
       });
     };
@@ -1052,8 +1053,10 @@ class RetroMainMenu extends MusicBeatState
     var tweenCallback:Dynamic = function(_:FlxTween) {
       if (FlxG.mouse.cursor != null) FlxG.mouse.visible = false;
       if (!isCustomFunction) {
+        saveThemeTime();
         FlxG.switchState(targetState);
       } else {
+        saveThemeTime();
         targetState();
       }
     };
@@ -1080,12 +1083,26 @@ class RetroMainMenu extends MusicBeatState
 
   function playMenuMusic():Void
   {
-    if (FlxG.sound.music != null) return;
+    if (!Save.instance.modOptions.get('retroSkipNextMenuThemeSync')) {
+      FunkinSound.playMusic(Save.instance.modOptions.get('retroMenuTheme'),
+      {
+        startingVolume: 1,
+        overrideExisting: true,
+        restartTrack: false,
+        persist: true,
+      });
+
+      FlxG.sound.music.time = Save.instance.modOptions.get('retroMenuThemeTime');
+    }
+
+    Save.instance.modOptions.set('retroSkipNextMenuThemeSync', false);
+    Save.instance.flush();
+    /*if (FlxG.sound.music != null) return;
     FunkinSound.playMusic('freakyMenu', {
       overrideExisting: true,
       restartTrack: false,
       persist: true
-    });
+    });*/
   }
 
   function resetCamera(snap:Bool = true, ?cam:FlxCamera, ?follow:FlxObject):Void
@@ -1265,6 +1282,7 @@ class RetroMainMenu extends MusicBeatState
     isBusy = true;
     FlxG.sound.music.fadeOut(time, 0);
     camMain.fade(0xFF262a34, time, false, function() {
+      saveThemeTime();
       FlxG.switchState(() -> new RetroTrophyState());
     }, true);
   }
@@ -1296,6 +1314,7 @@ class RetroMainMenu extends MusicBeatState
     canNavigate = false;
     rememberedSelectedIndex = selectedIndex;
     FunkinSound.playOnce(Paths.sound('cancelMenu'));
+    saveThemeTime();
 
     TitleState.initialized = false; // TitleState does a flash when it is initialized, making the screen appear white when going to the custom title (because it takes a while to load the sprites). So we disable this.
     var fallbackFunc:Dynamic = function():Void {
@@ -1307,6 +1326,12 @@ class RetroMainMenu extends MusicBeatState
     }
 
     camMain.fade(0xFF000000, 0.1, false, fallbackFunc, true);
+  }
+
+  function saveThemeTime():Void {
+    var time = FlxG?.sound?.music?.time ?? 0;
+    Save.instance.modOptions.set('retroMenuThemeTime', time);
+    Save.instance.flush();
   }
 
   override function destroy():Void

@@ -552,6 +552,13 @@ class RetroTitleState extends MusicBeatState
 
     var shouldFadeIn:Bool = FlxG.sound.music == null && !intro && !hasPlayedIntro;
 
+    if (!intro) {
+      Save.instance.modOptions.set('retroMenuTheme', path);
+      Save.instance.modOptions.set('retroSkipNextMenuThemeSync', true);
+      Save.instance.modOptions.set('retroMenuThemeTime', 0);
+      Save.instance.flush();
+    }
+
     FunkinSound.playMusic(path,
     {
       startingVolume: (shouldFadeIn) ? 0.0 : 1.0,

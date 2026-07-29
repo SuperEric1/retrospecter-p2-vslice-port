@@ -143,6 +143,9 @@ class RetroSave extends Module
     if (!save.modOptions.exists("retroStoryModeInstruction")) {
       save.modOptions.set("retroStoryModeInstruction", false);
     }
+    save.modOptions.set('retroMenuTheme', 'freakyMenu');
+    save.modOptions.set('retroSkipNextMenuThemeSync', false);
+    save.modOptions.set('retroMenuThemeTime', 0);
 
     save.flush();
   }

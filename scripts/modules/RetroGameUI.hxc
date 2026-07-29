@@ -349,7 +349,7 @@ class RetroGameUI extends Module {
         ogBarOffsetY = healthBgYOffset;
         //retroHealthBarOverlay.y += healthBgYOffset; // aplicar offset (antigo, agora é no onUpdate!!!)
         retroHealthBarOverlay.cameras = [playState.camHUD];
-        retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 5; //803
+        retroHealthBarOverlay.zIndex = playState.playerStrumline.zIndex + 15; //803
         retroHealthBarOverlay.scale.set(defaultScale[0], defaultScale[1]);
         retroHealthBarOverlay.screenCenter(0x01);
 
@@ -959,6 +959,7 @@ class RetroGameUI extends Module {
     txt.zIndex = PlayState.instance.playerStrumline.zIndex + 10;
     txt.antialiasing = false;
     PlayState.instance.add(txt);
+    PlayState.instance.refresh();
 
     var marketplace:Int = downscroll ? -1 : 1;
     FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.4, {ease: FlxEase.quintIn, onComplete: function(_) {

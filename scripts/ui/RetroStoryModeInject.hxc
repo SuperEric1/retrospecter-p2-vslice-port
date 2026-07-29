@@ -92,6 +92,8 @@ class RetroStoryModeInject extends Module
         Save.instance.modOptions.set("retroStoryModeInstruction", false);
         Save.instance.flush();
       }
+
+      playMenuMusic();
     }
 
     /*if (isStoryMenu) {
@@ -198,6 +200,7 @@ class RetroStoryModeInject extends Module
       lockedText = null;
     }
 
+    saveThemeTime();
     destroyPopup();
     canInteract = false;
   }
@@ -281,5 +284,33 @@ class RetroStoryModeInject extends Module
       popupText.destroy();
       popupText = null;
     }
+  }
+
+  function playMenuMusic():Void
+  {
+    FunkinSound.playMusic(Save.instance.modOptions.get('retroMenuTheme'),
+    {
+      startingVolume: 1,
+      overrideExisting: true,
+      restartTrack: false,
+      persist: true,
+    });
+
+    FlxG.sound.music.time = Save.instance.modOptions.get('retroMenuThemeTime');
+
+    Save.instance.modOptions.set('retroSkipNextMenuThemeSync', false);
+    Save.instance.flush();
+    /*if (FlxG.sound.music != null) return;
+    FunkinSound.playMusic('freakyMenu', {
+      overrideExisting: true,
+      restartTrack: false,
+      persist: true
+    });*/
+  }
+
+  function saveThemeTime():Void {
+    var time = FlxG?.sound?.music?.time ?? 0;
+    Save.instance.modOptions.set('retroMenuThemeTime', time);
+    Save.instance.flush();
   }
 }
