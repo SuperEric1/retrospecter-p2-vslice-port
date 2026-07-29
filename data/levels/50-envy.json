@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/atro",
-      "scale": 0.35,
-      "offsets": [-660, -370],
+      "scale": 1,
+      "offsets": [-90, 20],
       "animations": [
         {
           "name": "idle",

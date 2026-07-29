@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/insatian",
-      "scale": 0.4,
-      "offsets": [-460, -350],
+      "scale": 0.8,
+      "offsets": [-100, -60],
       "animations": [
         {
           "name": "idle",

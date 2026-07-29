@@ -44,7 +44,7 @@ class PoisonNote extends NoteKind {
 		var scale = 1.538462;
 		event.note.scale.set(event.note.scale.x * scale, event.note.scale.y * scale);
 		event.note.x += 15;
-		event.note.yOffset += -73;
+		event.note.yOffset += -40;
 
 		event.note.lowPriority = true;
 		event.note.active = true;

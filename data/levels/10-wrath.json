@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/retro",
-      "scale": 0.4,
-      "offsets": [-70, -210],
+      "scale": 0.533333,
+      "offsets": [10, -90],
       "animations": [
         {
           "name": "idle",

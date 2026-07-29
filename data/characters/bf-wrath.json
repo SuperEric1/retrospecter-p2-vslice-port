@@ -16,7 +16,7 @@
     "scale": 0.75
   },
   "death": {
-    "cameraZoom": 3.0
+    "cameraZoom": 1.4
   },
   "animations": [
     {
@@ -112,29 +112,26 @@
     },
     {
       "name": "firstDeath-acid",
-      "prefix": "BF dies0",
-      "assetPath": "characters/BfSkins/death/wrath_bf_death",
-      "scale": 1.055,
-      "offsets": [-270, -70],
+      "prefix": "BF dies acid0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death_acid",
+      "offsets": [-4, 10],
       "frameRate": 24,
       "frameIndices": []
     },
     {
       "looped": true,
       "name": "deathLoop-acid",
-      "prefix": "BF Dead Loop0",
-      "assetPath": "characters/BfSkins/death/wrath_bf_death",
-      "scale": 1.055,
-      "offsets": [-270, -70],
+      "prefix": "BF Dead Loop acid0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death_acid",
+      "offsets": [-4, 10],
       "frameRate": 24,
       "frameIndices": []
     },
     {
       "name": "deathConfirm-acid",
-      "prefix": "BF Dead confirm0",
-      "assetPath": "characters/BfSkins/death/wrath_bf_death",
-      "scale": 1.055,
-      "offsets": [-270, -70],
+      "prefix": "BF Dead confirm acid0",
+      "assetPath": "characters/BfSkins/death/wrath_bf_death_acid",
+      "offsets": [-4, 10],
       "frameRate": 24,
       "frameIndices": []
     }

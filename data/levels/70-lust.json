@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/saku",
-      "scale": 0.4,
-      "offsets": [-430, -240],
+      "scale": 0.8,
+      "offsets": [-110, 0],
       "animations": [
         {
           "name": "idle",

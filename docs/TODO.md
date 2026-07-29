@@ -1,9 +1,9 @@
 # TODO
 
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
-- [ ] Optimize notes
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
 - [ ] Main menu theme music handling
+- [X] Optimize notes
 - [X] Subtitles
 - [X] Review ALL song's charts to see if they have stacked notes, and remove them if they do
 - [X] Remaining title screen bgs

@@ -498,7 +498,7 @@ class RetroPlayState extends Module {
       updatePoisonCounter();
       if (k == 'poison') {
         FlxG.sound.play(Paths.sound('acid'));
-        if (ogBfId == 'bf-retrospecter' || ogBfId == 'bf-wind') {
+        if (ogBfId == 'bf-retrospecter' || ogBfId == 'bf-wind' || ogBfId == 'bf-wrath') {
           GameOverSubState.blueBallSuffix = '-acid';
           GameOverSubState.animationSuffix = '-acid';
         }
@@ -962,6 +962,7 @@ class RetroPlayState extends Module {
       ogBfId = PlayState.instance.currentStage.getBoyfriend().characterId;
       retroGameUI = ModuleHandler.getModule('RetroGameUI');
       poisonAmount = 0;
+      hasStoredStrums = false;
       loadUIElements();
 
       // TODO: use this later to load mechanics
@@ -2997,6 +2998,10 @@ class RetroPlayState extends Module {
       FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/options', "shared"));
       FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/side', "shared"));
       FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/story', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/trophies', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/gallery', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/extras', "shared"));
+      FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/freeplay', "shared"));
       FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosExtra', "shared"));
       FunkinMemory.permanentCacheTexture(Paths.image('ui/mainmenu/logosFirst', "shared"));
     });

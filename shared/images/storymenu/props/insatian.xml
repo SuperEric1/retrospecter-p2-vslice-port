@@ -1,19 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="insatian.png">
+<?xml version="1.0" encoding="utf-8"?><TextureAtlas imagePath="insatian.png">
 	<!-- Created using the Spritesheet and XML generator -->
 	<!-- https://uncertainprod.github.io/FNF-Spritesheet-XML-generator-Web -->
-	<SubTexture name="Insatian_Idle0000" x="0" y="912" width="1050" height="918" frameX="-229" frameY="-209" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0001" x="0" y="912" width="1050" height="918" frameX="-229" frameY="-209" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0002" x="2118" y="878" width="1006" height="866" frameX="-238" frameY="-261" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0003" x="2118" y="878" width="1006" height="866" frameX="-238" frameY="-261" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0004" x="0" y="1830" width="996" height="864" frameX="-241" frameY="-263" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0005" x="0" y="1830" width="996" height="864" frameX="-241" frameY="-263" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0006" x="2118" y="0" width="1030" height="878" frameX="-236" frameY="-249" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0007" x="2118" y="0" width="1030" height="878" frameX="-236" frameY="-249" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0008" x="1050" y="912" width="1062" height="903" frameX="-225" frameY="-224" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0009" x="1050" y="912" width="1062" height="903" frameX="-225" frameY="-224" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0010" x="0" y="0" width="1059" height="912" frameX="-230" frameY="-215" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0011" x="0" y="0" width="1059" height="912" frameX="-230" frameY="-215" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0012" x="1059" y="0" width="1059" height="912" frameX="-230" frameY="-215" frameWidth="1348" frameHeight="1140"/>
-	<SubTexture name="Insatian_Idle0013" x="1059" y="0" width="1059" height="912" frameX="-230" frameY="-215" frameWidth="1348" frameHeight="1140"/>
+	<SubTexture name="Insatian_Idle0000" x="0" y="456" width="525" height="459" frameX="-114" frameY="-104" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0001" x="0" y="456" width="525" height="459" frameX="-114" frameY="-104" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0002" x="1059" y="439" width="503" height="433" frameX="-119" frameY="-130" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0003" x="1059" y="439" width="503" height="433" frameX="-119" frameY="-130" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0004" x="0" y="915" width="498" height="432" frameX="-120" frameY="-131" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0005" x="0" y="915" width="498" height="432" frameX="-120" frameY="-131" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0006" x="1059" y="0" width="515" height="439" frameX="-118" frameY="-124" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0007" x="1059" y="0" width="515" height="439" frameX="-118" frameY="-124" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0008" x="525" y="456" width="531" height="452" frameX="-112" frameY="-112" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0009" x="525" y="456" width="531" height="452" frameX="-112" frameY="-112" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0010" x="0" y="0" width="530" height="456" frameX="-115" frameY="-107" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0011" x="0" y="0" width="530" height="456" frameX="-115" frameY="-107" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0012" x="530" y="0" width="530" height="456" frameX="-115" frameY="-107" frameWidth="674" frameHeight="570"/>
+	<SubTexture name="Insatian_Idle0013" x="530" y="0" width="530" height="456" frameX="-115" frameY="-107" frameWidth="674" frameHeight="570"/>
 </TextureAtlas>

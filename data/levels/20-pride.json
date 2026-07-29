@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/izzy",
-      "scale": 0.4,
-      "offsets": [-100, -170],
+      "scale": 0.42,
+      "offsets": [-100, -160],
       "animations": [
         {
           "name": "idle",

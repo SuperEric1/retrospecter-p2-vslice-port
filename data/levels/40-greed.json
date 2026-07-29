@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/hivemine",
-      "scale": 0.52,
-      "offsets": [-300, -200],
+      "scale": 1.04,
+      "offsets": [-20, 20],
       "animations": [
         {
           "name": "idle",

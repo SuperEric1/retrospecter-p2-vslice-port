@@ -21,6 +21,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.FunkinMemory;
 import flixel.text.FlxText;
 import funkin.Paths;
+import haxe.ds.StringMap;
 import Std;
 
 class WrathPhase4Stage extends Stage
@@ -59,17 +60,20 @@ class WrathPhase4Stage extends Stage
   var buildingsClose:StageProp;
   var dows:StageProp;
   var citygates:StageProp;
+  var citygates2:StageProp;
   var ground_M:StageProp;
   var ground_R:StageProp;
   var geyserM:StageProp;
   var geyserR:StageProp;
   var gateFront:StageProp;
+  var gateFront2:StageProp;
   var spotlight:FunkinSprite;
 
   var sectionOneSprites:Array<FunkinSprite> = [];
   var sectionTwoSprites:Array<FunkinSprite> = [];
   var sectionThreeSprites:Array<FunkinSprite> = [];
   var lowerSectionTwoSprites:Array<FunkinSprite> = [];
+  var propsPositions:StringMap<Array<Dynamic>> = new StringMap();
 
   var black:StageProp;
   var overlay:StageProp;
@@ -100,6 +104,7 @@ class WrathPhase4Stage extends Stage
   var showingPlayerStrums:Bool = false;
   var focusInDad:Bool = false;
   var loadedPart:Int = 0;
+  var startedSymbolTimer:Bool = false;
 
   var gaysar_t:Float = 0;
   var gaysar_t2:Float = 0.21;
@@ -127,6 +132,9 @@ class WrathPhase4Stage extends Stage
     if (hasCreatedStage) return;
 
     ModuleHandler.getModule('RetroPlayState')?.scriptCall('setMechanics', [['poison', 'chainlock', 'hydra']]);
+
+    var isWideScreen = FlxG.width > 1280;
+    propsPositions = new StringMap();
 
     // Create vortex
     vortex = FunkinSprite.create(600, -7850);
@@ -263,6 +271,12 @@ class WrathPhase4Stage extends Stage
     citygates = makeSprite('citygates', -500, 0, 1.5, 0.7, 0.7);
     citygates.antialiasing = false;
     sectionOneSprites.push(citygates);
+    if (isWideScreen) {
+      citygates2 = makeSprite('citygates', 0, 0, 1.5, 0.7, 0.7);
+      citygates2.antialiasing = false;
+      citygates2.flipX = true;
+      sectionOneSprites.push(citygates2);
+    }
 
     // Create grounds
     prefix = 'Phase3/';
@@ -334,6 +348,12 @@ class WrathPhase4Stage extends Stage
     gateFront = makeSprite('gateFront', 0, 5000, 1.5, 0.9, 0.7);
     gateFront.zIndex = 1000;
     sectionOneSprites.push(gateFront);
+    if (isWideScreen) {
+      gateFront2 = makeSprite('gateFront', 0, 0, 1.5, 0.9, 0.7);
+      gateFront2.zIndex = 1000;
+      gateFront2.flipX = true;
+      sectionOneSprites.push(gateFront2);
+    }
 
     hasCreatedStage = true;
     PlayState.instance.refresh();
@@ -479,6 +499,7 @@ class WrathPhase4Stage extends Stage
     sprite.scale.set(scale * 2, scale * 2);
     sprite.updateHitbox();
     PlayState.instance.add(sprite, name);
+    propsPositions.set(name, [sprite, x, y]);
     return sprite;
   }
 
@@ -513,6 +534,15 @@ class WrathPhase4Stage extends Stage
     var curStep = Conductor.instance.currentStepTime;
     var beatLen:Float = Conductor.instance.beatLengthMs / 1000;
 
+    if (citygates2 != null && citygates != null && citygates.alive) {
+      citygates2.x = citygates.x + citygates.width - 1;
+      citygates2.y = citygates.y;
+    }
+    if (gateFront2 != null && gateFront != null && gateFront.alive) {
+      gateFront2.x = gateFront.x + gateFront.width - 1;
+      gateFront2.y = gateFront.y;
+    }
+
     // Update position based on step
     if (curStep > 2560) {
       toGo = v * 750;
@@ -533,12 +563,20 @@ class WrathPhase4Stage extends Stage
           FlxTween.tween(geyserR, {alpha: 0}, 1.5, {ease: FlxEase.quadOut});
 
           gateFront.kill();
+          if (gateFront2 != null) gateFront2.kill();
         }
 
         if (curStep >= 1784) {
           white.alpha += v * 1;
           symbol.alpha = 1;
-          if (white.alpha >= 0.7 && white.alpha < 0.73) symbol.animation.play('show');
+
+          if (!startedSymbolTimer) {
+            startedSymbolTimer = true;
+            new FlxTimer().start(0.4, function(t:FlxTimer) {
+              symbol.animation.play('show');
+            });
+          }
+          //if (white.alpha >= 0.7 && white.alpha < 0.73) symbol.animation.play('show');
         }
 
         if (curStep >= 1760 && !ssj) {
@@ -602,8 +640,12 @@ class WrathPhase4Stage extends Stage
           geyserM.animation.play('loop');
           bfPositionX -= 150;
           getBoyfriend().antialiasing = false;
-          PlayState.instance.tweenCameraZoom(1.4, 2, false, FlxEase.quadOut);
-          FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut});
+          PlayState.instance.cameraFollowPoint.setPosition(getBoyfriend().cameraFocusPoint.x, getBoyfriend().cameraFocusPoint.y);
+          PlayState.instance.tweenCameraZoom(1.7, 0.2, false, FlxEase.quadOut);
+
+          FlxTween.tween(white, {alpha: 0}, 0.2, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
+            PlayState.instance.tweenCameraZoom(1.4, 2, false, FlxEase.quadOut);
+          }});
           FlxTween.tween(symbol, {alpha: 0}, 0.2, {ease: FlxEase.quadOut, onComplete: function(twn:FlxTween) {
             symbol.animation.play('nothing');
           }});
@@ -966,6 +1008,7 @@ class WrathPhase4Stage extends Stage
     didDaShit = false;
     ssj = false;
     goBackToMyShit = false;
+    startedSymbolTimer = false;
     bleh = false;
     hideIt = false;
     donthideIt = false;
@@ -974,6 +1017,13 @@ class WrathPhase4Stage extends Stage
     focusInDad = false;
 
     getBoyfriend().antialiasing = false;
+
+    for (name in propsPositions.keys()) {
+      var data = propsPositions.get(name);
+      var sprite:FunkinSprite = data[0];
+      sprite.x = data[1];
+      sprite.y = data[2];
+    }
 
     loadedPart = 0;
     loadSectionOne();
@@ -990,15 +1040,21 @@ class WrathPhase4Stage extends Stage
     currentCameraY = 8220;
     targetCameraY = 8220;
 
+    propsPositions = new StringMap();
+
     didDaShit = false;
     ssj = false;
     goBackToMyShit = false;
+    startedSymbolTimer = false;
     bleh = false;
     hideIt = false;
     donthideIt = false;
     bloh = false;
     showingPlayerStrums = false;
     focusInDad = false;
+
+    citygates2 = null;
+    gateFront2 = null;
 
     hasCreatedStage = false;
   }

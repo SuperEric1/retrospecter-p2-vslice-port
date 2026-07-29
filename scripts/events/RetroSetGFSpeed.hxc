@@ -18,7 +18,7 @@ class RetroSetGFSpeed extends SongEvent {
   override function handleEvent(data) {
     if (PlayState.instance == null || PlayState.instance.currentStage == null) return;
     if (PlayState.instance.isMinimalMode) return;
-    PlayState.instance.currentStage.getGirlfriend().danceEvery = data.getFloat('value') ?? 1;
+    PlayState.instance.currentStage.getGirlfriend().danceEvery = Std.int(data.getFloat('value') ?? 1);
   }
 
   override function getEventSchema() {
@@ -27,7 +27,7 @@ class RetroSetGFSpeed extends SongEvent {
         name: "value",
         title: "Dance Every",
         defaultValue: 0,
-        type: "int"
+        type: "float"
       }
     ];
   }

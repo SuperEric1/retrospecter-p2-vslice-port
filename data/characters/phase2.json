@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "name": "Story Zerktro",
-  "assetPath": "characters/wrath/optimized/zerktro-story",
+  "assetPath": "characters/wrath/optimized/zerktro-freeplay",
   "renderType": "multisparrow",
   "singTime": 4,
   "isPixel": false,
@@ -93,20 +93,6 @@
     {
       "name": "singUP",
       "prefix": "up",
-      "offsets": [0, 0],
-      "frameRate": 24,
-      "frameIndices": []
-    },
-    {
-      "name": "final",
-      "prefix": "final",
-      "offsets": [27, 0],
-      "frameRate": 24,
-      "frameIndices": []
-    },
-    {
-      "name": "static",
-      "prefix": "static",
       "offsets": [0, 0],
       "frameRate": 24,
       "frameIndices": []

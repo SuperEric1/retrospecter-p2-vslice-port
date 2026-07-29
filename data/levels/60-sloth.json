@@ -10,8 +10,8 @@
   "props": [
     {
       "assetPath": "storymenu/props/doz",
-      "scale": 0.8,
-      "offsets": [-10, -20],
+      "scale": 1.066667,
+      "offsets": [25, 35],
       "animations": [
         {
           "looped": true,
@@ -22,7 +22,7 @@
         {
           "name": "confirm",
           "prefix": "confirm",
-          "offsets": [-18.5, -17],
+          "offsets": [-14.5, -13],
           "frameRate": 24
         }
       ]
