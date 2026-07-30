@@ -1,8 +1,8 @@
 # TODO
 
-- [ ] optimize ogg files too
 - [ ] Encode textures to ASTC again, after running oxipng in all of them
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [X] optimize ogg files too
 - [X] Main menu theme music handling
 - [X] Optimize notes
 - [X] Subtitles
