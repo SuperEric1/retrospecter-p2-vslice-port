@@ -28,6 +28,7 @@ FILES_TO_REMOVE = {
     ".gitmodules",
     ".gitkeep",
     "CONTRIBUTING.md",
+    "README.md",
     "hxformat.json",
 }
 METADATA_FILES = ("polymod_meta.json", "_polymod_meta.json")
