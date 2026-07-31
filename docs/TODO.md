@@ -1,9 +1,9 @@
 # TODO
 
 - [ ] review subtitle fonts
-- [ ] TEST ON MOBILE, RELEASE THE PORT.
 - [ ] Phase2 roar and left border
 - [ ] main menu story mode sprite based on completed story
+- [ ] TEST ON MOBILE, RELEASE THE PORT.
 - [X] Encode textures to ASTC again, after running oxipng in all of them
 - [X] optimize ogg files too
 - [X] Main menu theme music handling
