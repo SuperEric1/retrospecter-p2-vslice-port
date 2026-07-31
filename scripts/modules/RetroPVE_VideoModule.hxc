@@ -1,3 +1,7 @@
+// Coded by AbnormalPoof, modified by SuperEric
+// Originally from https://gamebanana.com/mods/514499
+// Saw this being used in a lot of mods and tought it was public. Sorry!
+
 package supereric.retrospecter.modules;
 
 import flixel.FlxG;
