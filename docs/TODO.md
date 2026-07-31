@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] review subtitle fonts
 - [ ] TEST ON MOBILE, RELEASE THE PORT.
 - [ ] Phase2 roar and left border
 - [ ] main menu story mode sprite based on completed story
