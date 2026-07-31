@@ -12,6 +12,7 @@ import funkin.modding.events.ScriptEvent;
 import funkin.modding.module.Module;
 import funkin.play.PlayState;
 import funkin.ui.AtlasText;
+import haxe.ds.StringMap;
 import thx.Objects;
 import funkin.Paths;
 
@@ -64,6 +65,24 @@ class RetroPVE_VideoModule extends Module
   public var videoSpriteGroup:FlxTypedGroup<PVE_VideoData> = new FlxTypedGroup();
 
   /**
+   * Video players loaded ahead of time, grouped by their resolved file path.
+   * There is one player for every occurrence of RetroPlayVideo in the chart.
+   */
+  var preloadedVideos:StringMap<Array<FunkinVideoSprite>> = new StringMap();
+
+  /**
+   * The next preloaded player to use for each path.
+   * These cursors are reset on retry so every video can be played again.
+   */
+  var preloadedVideoCursors:StringMap<Int> = new StringMap();
+
+  /**
+   * onSongLoaded also fires on retry, so keep the cache alive for the whole
+   * PlayState and only populate it once.
+   */
+  var videosPreloaded:Bool = false;
+
+  /**
    * Whether or not to fade the HUD.
    * This is a global variable since other parts of the code outside of `createVideo()` use this.
    */
@@ -105,7 +124,13 @@ class RetroPVE_VideoModule extends Module
       config = Objects.shallowCombine(getDefaultConfig(), config);
     }
 
-    var videoSprite:FunkinVideoSprite = new FunkinVideoSprite(0, 0);
+    var videoSprite:FunkinVideoSprite = getPreloadedVideo(filePath);
+    var isPreloaded:Bool = videoSprite != null;
+    if (!isPreloaded)
+    {
+      videoSprite = new FunkinVideoSprite(0, 0);
+      setupVideoSizing(videoSprite);
+    }
     var blackBars:FunkinSprite = new FunkinSprite(0, 0).makeGraphic(FlxG.width, FlxG.height * 1.1, 0xFF000000);
 
     videoSprite.zIndex = config.zIndex;
@@ -120,12 +145,33 @@ class RetroPVE_VideoModule extends Module
     // Add the hud fade time (converted to ms) to the timestamp
     if (config.videoType == 2) config.timestamp += (config.hudFadeDuration * 1000);
 
+    var trackedVideo:Dynamic = {
+      videoSprite: videoSprite,
+      config: config,
+      letterBoxing: blackBars,
+      destroyOnClear: !isPreloaded
+    };
+    videoSpriteGroup.add(trackedVideo);
+
+    // A cached player may still have one-shot callbacks from an interrupted
+    // attempt. Replace them before attaching callbacks for this occurrence.
+    if (isPreloaded)
+    {
+      videoSprite.bitmap.onEncounteredError.removeAll();
+      videoSprite.bitmap.onEndReached.removeAll();
+    }
+
     // Ideally, the video itself should play without any issues.
     // If for some reason hxvlc shits itself or something, this error text will automatically show.
     videoSprite.bitmap.onEncounteredError.add(function() {
+      if (trackedVideo != null && videoSpriteGroup != null) {
+        videoSpriteGroup.remove(trackedVideo, true);
+        trackedVideo = null;
+      }
       if (videoSprite != null)
       {
         blackBars.destroy();
+        if (isPreloaded) removePreloadedVideo(filePath, videoSprite);
         videoSprite.destroy();
         videoSprite = null;
       }
@@ -139,6 +185,10 @@ class RetroPVE_VideoModule extends Module
     }, true);
 
     videoSprite.bitmap.onEndReached.add(function() {
+      if (trackedVideo != null && videoSpriteGroup != null) {
+        videoSpriteGroup.remove(trackedVideo, true);
+        trackedVideo = null;
+      }
       if (fadeHUD)
       {
         fadeInTween = FlxTween.tween(PlayState.instance.camHUD, {alpha: 1}, 0.5,
@@ -148,22 +198,24 @@ class RetroPVE_VideoModule extends Module
         fadeHUD = false;
       }
       blackBars.destroy();
-      videoSprite.destroy();
+      if (isPreloaded)
+      {
+        PlayState.instance.remove(videoSprite);
+        videoSprite.visible = false;
+        videoSprite.pause();
+        videoSprite.bitmap.time = 0;
+      }
+      else
+      {
+        videoSprite.destroy();
+      }
       PlayState.instance.camHUD.visible = true;
       PlayState.instance.disableKeys = false;
     }, true);
 
-    // scale the video to fit the screen while keepin the aspect ratio!!
-    videoSprite.bitmap.onFormatSetup.add(() -> {
-      var scale:Float = Math.min(FlxG.width / videoSprite.bitmap.bitmapData.width, FlxG.height / videoSprite.bitmap.bitmapData.height);
-
-      videoSprite.setGraphicSize((videoSprite.bitmap.bitmapData.width * scale) + 10, videoSprite.bitmap.bitmapData.height * scale);
-      videoSprite.updateHitbox();
-      videoSprite.screenCenter();
-    });
-
     PlayState.instance.add(blackBars);
     PlayState.instance.add(videoSprite);
+    videoSprite.visible = true;
     PlayState.instance.refresh();
 
     if (config.disableControls)
@@ -183,8 +235,9 @@ class RetroPVE_VideoModule extends Module
             onComplete: function(twn:FlxTween) {
               videoSprite.camera = PlayState.instance.camCutscene;
               blackBars.camera = PlayState.instance.camCutscene;
-              if (videoSprite.load(iSwearToGodIWillLiterallyStrangleFNFTheFilePathIsLiterallyRightThereYouCanFindItStopLying))
+              if (isPreloaded || videoSprite.load(iSwearToGodIWillLiterallyStrangleFNFTheFilePathIsLiterallyRightThereYouCanFindItStopLying))
               {
+                if (isPreloaded) videoSprite.bitmap.time = 0;
                 videoSprite.play();
                 videoSprite.bitmap.volumeAdjust = fuckingHell;
               }
@@ -194,29 +247,145 @@ class RetroPVE_VideoModule extends Module
         videoSprite.camera = PlayState.instance.camCutscene;
         blackBars.camera = PlayState.instance.camCutscene;
         PlayState.instance.camHUD.visible = false;
-        if (videoSprite.load(filePath))
+        if (isPreloaded || videoSprite.load(filePath))
         {
+          if (isPreloaded) videoSprite.bitmap.time = 0;
           videoSprite.play();
           videoSprite.bitmap.volumeAdjust = config.mute ? 0 : 1;
         }
       default:
         videoSprite.camera = PlayState.instance.camHUD;
         blackBars.camera = PlayState.instance.camHUD;
-        if (videoSprite.load(filePath))
+        if (isPreloaded || videoSprite.load(filePath))
         {
+          if (isPreloaded) videoSprite.bitmap.time = 0;
           videoSprite.play();
           videoSprite.bitmap.volumeAdjust = config.mute ? 0 : 1;
         }
     }
 
-    videoSpriteGroup.add(
-      {
-        videoSprite: videoSprite,
-        config: config,
-        letterBoxing: blackBars
-      });
-
     return videoSprite;
+  }
+
+  /**
+   * Loads every RetroPlayVideo player used by the current chart.
+   */
+  function preloadSongVideos():Void
+  {
+    if (videosPreloaded || PlayState.instance == null) return;
+    videosPreloaded = true;
+
+    for (songEvent in PlayState.instance.songEvents)
+    {
+      if (songEvent.eventKind != 'RetroPlayVideo') continue;
+
+      var filePath:String = Paths.videos(songEvent.value.path);
+      if (filePath == Paths.videos('nightflaid')) continue;
+
+      var videoSprite:FunkinVideoSprite = new FunkinVideoSprite(0, 0);
+      setupVideoSizing(videoSprite);
+
+      if (!videoSprite.load(filePath))
+      {
+        videoSprite.destroy();
+        trace('Failed to preload video: ' + filePath);
+        continue;
+      }
+
+      videoSprite.visible = false;
+      videoSprite.pause();
+
+      var videosForPath = preloadedVideos.get(filePath);
+      if (videosForPath == null)
+      {
+        videosForPath = [];
+        preloadedVideos.set(filePath, videosForPath);
+        preloadedVideoCursors.set(filePath, 0);
+      }
+      videosForPath.push(videoSprite);
+    }
+  }
+
+  /**
+   * Gets the next prepared player for a video path.
+   */
+  function getPreloadedVideo(filePath:String):FunkinVideoSprite
+  {
+    var videosForPath = preloadedVideos.get(filePath);
+    if (videosForPath == null) return null;
+
+    var cursor:Int = preloadedVideoCursors.get(filePath) ?? 0;
+    if (cursor >= videosForPath.length) return null;
+
+    preloadedVideoCursors.set(filePath, cursor + 1);
+    return videosForPath[cursor];
+  }
+
+  /**
+   * Installs sizing before load(), since onFormatSetup may fire during preload.
+   */
+  function setupVideoSizing(videoSprite:FunkinVideoSprite):Void
+  {
+    videoSprite.bitmap.onFormatSetup.add(() -> {
+      var scale:Float = Math.min(FlxG.width / videoSprite.bitmap.bitmapData.width, FlxG.height / videoSprite.bitmap.bitmapData.height);
+
+      videoSprite.setGraphicSize((videoSprite.bitmap.bitmapData.width * scale) + 10, videoSprite.bitmap.bitmapData.height * scale);
+      videoSprite.updateHitbox();
+      videoSprite.screenCenter();
+    });
+  }
+
+  /**
+   * Makes all prepared players available again without loading their files again.
+   */
+  function resetPreloadedVideos():Void
+  {
+    for (filePath in preloadedVideos.keys())
+    {
+      preloadedVideoCursors.set(filePath, 0);
+      for (videoSprite in preloadedVideos.get(filePath))
+      {
+        if (videoSprite == null) continue;
+        PlayState.instance.remove(videoSprite);
+        videoSprite.visible = false;
+        videoSprite.pause();
+        if (videoSprite.bitmap != null) videoSprite.bitmap.time = 0;
+      }
+    }
+  }
+
+  /**
+   * Releases the preload cache when leaving the song.
+   */
+  function destroyPreloadedVideos():Void
+  {
+    for (videosForPath in preloadedVideos)
+    {
+      for (videoSprite in videosForPath)
+      {
+        if (videoSprite != null) videoSprite.destroy();
+      }
+    }
+    preloadedVideos.clear();
+    preloadedVideoCursors.clear();
+    videosPreloaded = false;
+  }
+
+  function removePreloadedVideo(filePath:String, videoSprite:FunkinVideoSprite):Void
+  {
+    var videosForPath = preloadedVideos.get(filePath);
+    if (videosForPath == null) return;
+
+    var removedIndex:Int = videosForPath.indexOf(videoSprite);
+    videosForPath.remove(videoSprite);
+    var cursor:Int = preloadedVideoCursors.get(filePath) ?? 0;
+    if (removedIndex >= 0 && removedIndex < cursor) preloadedVideoCursors.set(filePath, cursor - 1);
+
+    if (videosForPath.length == 0)
+    {
+      preloadedVideos.remove(filePath);
+      preloadedVideoCursors.remove(filePath);
+    }
   }
 
   /**
@@ -252,11 +421,38 @@ class RetroPVE_VideoModule extends Module
     {
       if (video?.videoSprite != null)
       {
-        video.videoSprite.destroy();
-        video.letterBoxing.destroy();
+        var destroyOnClear:Bool = video.destroyOnClear ?? true;
+        if (destroyOnClear)
+        {
+          video.videoSprite.destroy();
+          video.letterBoxing.destroy();
+        }
+        else
+        {
+          video.videoSprite.visible = false;
+          video.videoSprite.pause();
+          if (isVideoPreloaded(video.videoSprite))
+          {
+            PlayState.instance.remove(video.videoSprite);
+            video.videoSprite.bitmap.onEncounteredError.removeAll();
+            video.videoSprite.bitmap.onEndReached.removeAll();
+          }
+          if (video.videoSprite.bitmap != null) video.videoSprite.bitmap.time = 0;
+          video.letterBoxing.active = false;
+          video.letterBoxing.visible = false;
+        }
       }
     }
     videoSpriteGroup.clear();
+  }
+
+  function isVideoPreloaded(videoSprite:FunkinVideoSprite):Bool
+  {
+    for (videosForPath in preloadedVideos)
+    {
+      if (videosForPath.contains(videoSprite)) return true;
+    }
+    return false;
   }
 
   /**
@@ -278,7 +474,8 @@ class RetroPVE_VideoModule extends Module
         mute: false,
         timestamp: Conductor.instance.songPosition
       },
-      letterBoxing: blackBars
+      letterBoxing: blackBars,
+      destroyOnClear: false
     });
   }
 
@@ -302,11 +499,16 @@ class RetroPVE_VideoModule extends Module
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
+    if (videoSpriteGroup == null || videoSpriteGroup.length == 0) return;
 
     for (video in videoSpriteGroup.members)
     {
-      video.letterBoxing.visible = video.videoSprite.visible;
-      video.letterBoxing.alpha = video.videoSprite.alpha;
+      if (video?.videoSprite == null || video?.letterBoxing == null) continue;
+
+      var videoSprite = video.videoSprite;
+      var letterBoxing = video.letterBoxing;
+      if (letterBoxing.visible != videoSprite.visible) letterBoxing.visible = videoSprite.visible;
+      if (letterBoxing.alpha != videoSprite.alpha) letterBoxing.alpha = videoSprite.alpha;
     }
   }
 
@@ -375,6 +577,7 @@ class RetroPVE_VideoModule extends Module
       PlayState.instance.camHUD.visible = true;
     }
     clearVideoSprites();
+    resetPreloadedVideos();
   }
 
   override function onGameOver(event:ScriptEvent):Void
@@ -385,11 +588,18 @@ class RetroPVE_VideoModule extends Module
   override function onSongEnd(event:ScriptEvent):Void
   {
     clearVideoSprites();
+    destroyPreloadedVideos();
   }
 
   override function onCountdownStart(event:CountdownScriptEvent):Void
   {
     clearVideoSprites();
+  }
+
+  override function onSongLoaded(event:ScriptEvent):Void
+  {
+    super.onSongLoaded(event);
+    preloadSongVideos();
   }
 }
 
@@ -404,6 +614,16 @@ typedef PVE_VideoData =
    * The configuration for the video.
    */
   config:PVE_ConfigData,
+
+  /**
+   * The black bars associated with the video.
+   */
+  letterBoxing:FunkinSprite,
+
+  /**
+   * False for reusable/preloaded players and external players owned by a stage.
+   */
+  ?destroyOnClear:Bool,
 }
 
 typedef PVE_ConfigData =

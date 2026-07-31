@@ -15,7 +15,6 @@ import funkin.play.GameOverSubState;
 import funkin.ui.FullScreenScaleMode;
 import funkin.modding.module.ModuleHandler;
 import funkin.play.song.Song;
-import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTitle;
 import supereric.retrospecter.modules.RetroAchievements;
@@ -41,6 +40,7 @@ class ApocalyptroSong extends Song
   var flag804:Bool = false;
   var showLogo:Bool = false;
 
+  var screenShake:Bool = true;
   var shakeStrength:Float = 0;
   var shakeMult:Array<Float> = [1, 1];
   var alterNate:Bool = false;
@@ -77,6 +77,8 @@ class ApocalyptroSong extends Song
     super.onSongLoaded(event);
     playState = PlayState.instance;
     playStage = PlayState.instance.currentStage;
+
+    screenShake = Save.instance.modOptions.get("retroShake") ?? true;
 
     isOgBf = playStage.getBoyfriend().characterId == 'bf-retrospecter';
 

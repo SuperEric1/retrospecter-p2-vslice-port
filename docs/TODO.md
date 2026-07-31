@@ -1,6 +1,7 @@
 # TODO
 
 - [ ] OPTIMIZE ALL ASSETS. RELEASE THE PORT.
+- [ ] Saku notesplash
 - [X] Encode textures to ASTC again, after running oxipng in all of them
 - [X] optimize ogg files too
 - [X] Main menu theme music handling

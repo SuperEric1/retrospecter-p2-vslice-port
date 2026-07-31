@@ -826,7 +826,6 @@ class RetroMainMenu extends MusicBeatState
     var selected:FlxSprite = menuItems[selectedIndex];
     var callback:Dynamic = menuCallbacks[selectedIndex];
 
-    //FunkinSound.playOnce(Paths.sound('confirmMenu'));
     HapticUtil.vibrate(0, 0.045, 0.005, 0);
 
     var alwaysDoTimer:Bool = true;
@@ -854,6 +853,7 @@ class RetroMainMenu extends MusicBeatState
       FunkinMemory.purgeCache();
     });
     startExitState(stateFunc, false);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function goToFreeplay():Void
@@ -869,6 +869,7 @@ class RetroMainMenu extends MusicBeatState
     FreeplayState.CUTOUT_WIDTH = FullScreenScaleMode.gameCutoutSize.x / 1.5;
 
     startExitState(stateFunc, true);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function goToOptions():Void
@@ -881,6 +882,7 @@ class RetroMainMenu extends MusicBeatState
     FlxTransitionableState.skipNextTransIn = true;
 
     startExitState(stateFunc, false, !Save.instance.modOptions.get('retroOptionsIntroPlayed') ? 1 : 0.15);
+    if (Save.instance.modOptions.get('retroOptionsIntroPlayed')) FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function goToCredits():Void
@@ -889,6 +891,7 @@ class RetroMainMenu extends MusicBeatState
       return new CreditsState();
     };
     startExitState(stateFunc, false);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function goToExtras():Void
@@ -896,6 +899,7 @@ class RetroMainMenu extends MusicBeatState
     if (isBusy || isExiting || currentPage != 0) return;
     setIdleState(true);
     startPageTransition(1);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function goBackToMain():Void
@@ -1285,6 +1289,7 @@ class RetroMainMenu extends MusicBeatState
       saveThemeTime();
       FlxG.switchState(() -> new RetroTrophyState());
     }, true);
+    FunkinSound.playOnce(Paths.sound('confirmMenu'));
   }
 
   function interactLocked():Void {

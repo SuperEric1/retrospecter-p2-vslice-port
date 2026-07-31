@@ -51,6 +51,7 @@ class RetroThirdStrumline extends Module
   // Flags de sincronização de frame para o sistema de sufixo da Pendulumbra.
   private static var _isDueling:Bool = false;
   private static var _dispatchingForThird:Bool = false;
+  private static var _opponentHitTimes:Array<Float> = [];
 
   // True se o terceiro strumline acertou alguma nota junto do opponentStrums neste frame.
   public static function isDuelingThisFrame():Bool { return _isDueling; }
@@ -192,6 +193,17 @@ class RetroThirdStrumline extends Module
     if (note.isHoldNote && note.holdNoteSprite.alpha != oppHoldNoteAlphaMult) note.holdNoteSprite.alpha = oppHoldNoteAlphaMult;
   }
 
+  override function onNoteHit(event:HitNoteScriptEvent):Void
+  {
+    super.onNoteHit(event);
+    if (_dispatchingForThird || event?.eventCanceled || event?.note?.noteData == null) return;
+
+    var opponentNotes = PlayState.instance?.opponentStrumline?.notes?.members;
+    if (opponentNotes == null || !opponentNotes.contains(event.note)) return;
+
+    _opponentHitTimes.push(event.note.noteData.time);
+  }
+
   override function onUpdate(event:UpdateScriptEvent):Void
   {
     super.onUpdate(event);
@@ -200,11 +212,15 @@ class RetroThirdStrumline extends Module
   }
 
   private static function postUpdate():Void {
-    if (PlayState.instance == null || !isActive()) return;
+    if (PlayState.instance == null || !isActive()) {
+      _opponentHitTimes.resize(0);
+      return;
+    }
 
     if (!PlayState.instance.isInCutscene) {
       _processNotes(PlayState.instance);
     }
+    _opponentHitTimes.resize(0);
   }
 
   /**
@@ -216,7 +232,6 @@ class RetroThirdStrumline extends Module
     var currentStage = playState.currentStage;
 
     _isDueling = false;
-    _didOppHitNote = false;
 
     final SYNC_WINDOW:Float = 20.0;
 
@@ -227,15 +242,14 @@ class RetroThirdStrumline extends Module
       if (!r.botplayHit) continue;
 
       // Checar se o opponentStrumline acertou uma nota no mesmo tempo
+      _isDueling = false;
       var noteTime = note.noteData.time;
-      for (oppNote in playState.opponentStrumline.notes.members) {
-        if (oppNote == null || !oppNote.hasBeenHit) continue;
-        if (Math.abs(oppNote.noteData.time - noteTime) <= SYNC_WINDOW) {
-          _didOppHitNote = true;
+      for (opponentHitTime in _opponentHitTimes) {
+        if (Math.abs(opponentHitTime - noteTime) <= SYNC_WINDOW) {
+          _isDueling = true;
           break;
         }
       }
-      _isDueling = _didOppHitNote;
       _dispatchingForThird = true;
 
       var event:NoteScriptEvent = new HitNoteScriptEvent(note, 0.0, 0, 'perfect', false, 0);
@@ -371,6 +385,7 @@ class RetroThirdStrumline extends Module
 
     _isDueling = false;
     _dispatchingForThird = false;
+    _opponentHitTimes.resize(0);
   }
 
   override function onSongRetry(event:ScriptEvent):Void
@@ -383,6 +398,7 @@ class RetroThirdStrumline extends Module
     }*/
 
     isPlayerDead = false;
+    _opponentHitTimes.resize(0);
   }
 
   override function onGameOver(event:ScriptEvent)

@@ -109,6 +109,7 @@ class RetroGameUI extends Module {
   var judgement:FlxBitmapText;
   var comboText:FlxBitmapText;
   var score:FlxBitmapText;
+  var lastDisplayedScore:Null<Int> = null;
   var updateJudgementAlpha:Bool = true;
   var judgementTweens:Array<FlxTween> = [];
   var comboTweens:Array<FlxTween> = [];
@@ -127,15 +128,23 @@ class RetroGameUI extends Module {
   var hivemineMoneyMulti = 1;
   var ogHivePlayerTextPos:Array<Float> = [];
   var ogHiveOppTextPos:Array<Float> = [];
+  var hivemineMoneyPopupPool:Array<FlxBitmapText> = [];
 
   // Accuracy/Stats Display
   var statsDisplay:FlxText;
   var ratingTextDisplay:FlxText;
   var currentAccuracy:Float = 0.0;
+  var lastStatsAccuracyNumerator:Null<Int> = null;
+  var lastStatsInteractions:Null<Int> = null;
+  var lastStatsGoods:Null<Int> = null;
+  var lastStatsMissed:Null<Int> = null;
+  var lastStatsLanguage:String = null;
 
   // Time Display
   var timeDisplay:FlxBitmapText;
   var timeDisplaySub:FlxBitmapText;
+  var lastDisplayedTimeSecond:Int = -1;
+  var lastDisplayedSongLengthSecond:Int = -1;
 
   // Story Mode support (unused rn)
   var talliesLevel:Tallies;
@@ -587,6 +596,7 @@ class RetroGameUI extends Module {
       score.x += judgementXOffset;
       FlxTween.tween(score, {alpha: 0.5}, 1.5, {type: 4, ease: FlxEase.sineOut});
     }
+    lastDisplayedScore = null;
 
     PlayState.instance.scoreText.alpha = 0;
     PlayState.instance.scoreText.visible = false;
@@ -626,6 +636,7 @@ class RetroGameUI extends Module {
     ratingTextDisplay.borderQuality = 0;
     PlayState.instance.add(ratingTextDisplay);
 
+    invalidateStatsCache();
     updateStatsDisplay(true);
   }
   function createTimeDisplay():Void {
@@ -662,6 +673,8 @@ class RetroGameUI extends Module {
     timeDisplaySub.visible = false;
     PlayState.instance.add(timeDisplaySub);
 
+    lastDisplayedTimeSecond = -1;
+    lastDisplayedSongLengthSecond = -1;
     updateTimeDisplay();
   }
 
@@ -680,11 +693,17 @@ class RetroGameUI extends Module {
     if (currentTime < 0) currentTime = 0;
     if (currentTime > songLength) currentTime = songLength;
 
-    var currentTimeStr:String = formatTime(currentTime);
-    var totalTimeStr:String = formatTime(songLength);
+    var currentTimeSecond:Int = Std.int(currentTime / 1000);
+    var songLengthSecond:Int = Std.int(songLength / 1000);
+    if (currentTimeSecond != lastDisplayedTimeSecond || songLengthSecond != lastDisplayedSongLengthSecond) {
+      lastDisplayedTimeSecond = currentTimeSecond;
+      lastDisplayedSongLengthSecond = songLengthSecond;
 
-    var targetDisplaySubText:String = currentTimeStr + '|' + totalTimeStr;
-    if (timeDisplaySub != null && timeDisplaySub?.text != targetDisplaySubText) timeDisplaySub?.text = targetDisplaySubText;
+      var currentTimeStr:String = formatTime(currentTime);
+      var totalTimeStr:String = formatTime(songLength);
+      var targetDisplaySubText:String = currentTimeStr + '|' + totalTimeStr;
+      if (timeDisplaySub.text != targetDisplaySubText) timeDisplaySub.text = targetDisplaySubText;
+    }
     //timeDisplay?.updateHitbox();
     //timeDisplaySub?.updateHitbox();
 
@@ -711,6 +730,14 @@ class RetroGameUI extends Module {
 
     // M:SS
     return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+  }
+
+  function invalidateStatsCache():Void {
+    lastStatsAccuracyNumerator = null;
+    lastStatsInteractions = null;
+    lastStatsGoods = null;
+    lastStatsMissed = null;
+    lastStatsLanguage = null;
   }
 
   function updateStatsDisplay(?hide:Bool = false):Void {
@@ -745,44 +772,61 @@ class RetroGameUI extends Module {
       missed += talliesLevel.missed;
     }*/
 
-    // Calculate accuracy
     var notesInteracted = sickCount + goodCount + badCount + shitCount + missCount;
-    if (notesInteracted > 0) {
-      currentAccuracy = ((sickCount + goodCount - missCount) / notesInteracted) * 100;
-      currentAccuracy = Math.min(100, Math.max(0, currentAccuracy));
-    } else {
-      currentAccuracy = 0.0;
+    var accuracyNumerator = sickCount + goodCount - missCount;
+    var currentLanguage = RetroLanguage.getCurrentLanguage();
+    var statsChanged = lastStatsAccuracyNumerator != accuracyNumerator
+      || lastStatsInteractions != notesInteracted
+      || lastStatsGoods != goods
+      || lastStatsMissed != missed
+      || lastStatsLanguage != currentLanguage;
+
+    if (statsChanged) {
+      lastStatsAccuracyNumerator = accuracyNumerator;
+      lastStatsInteractions = notesInteracted;
+      lastStatsGoods = goods;
+      lastStatsMissed = missed;
+      lastStatsLanguage = currentLanguage;
+
+      // Calculate accuracy
+      if (notesInteracted > 0) {
+        currentAccuracy = (accuracyNumerator / notesInteracted) * 100;
+        currentAccuracy = Math.min(100, Math.max(0, currentAccuracy));
+      } else {
+        currentAccuracy = 0.0;
+      }
+
+      // Get rating color
+      var ratingData = getVanillaRatingData(currentAccuracy, goods);
+
+      // Format accuracy
+      var accuracyStr:String = Std.string(Math.round(currentAccuracy));
+
+      // Update main stats text
+      var targetText:String = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
+      targetText += RetroLanguage.tf('stats.misses', [missed]) + '\n';
+      targetText += RetroLanguage.t('stats.rating', 'RANK:') + '  '; // we add the rating after. the two spaces are important
+      if (statsDisplay.text != targetText) statsDisplay.text = targetText;
+      //statsDisplay.text = ' \n';
+      /*statsDisplay.text = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
+      statsDisplay.text += RetroLanguage.tf('stats.misses', [missed]) + '\n';
+      statsDisplay.text += RetroLanguage.t('stats.rating', 'RANK:') + '  ';*/
+
+      // Update rating text with color
+      try {
+        if (ratingTextDisplay?.text != ratingData?.name) ratingTextDisplay.text = ratingData?.name;
+        if (ratingTextDisplay?.color != ratingData?.color) ratingTextDisplay.color = ratingData?.color;
+      } catch(e:Dynamic) {}
     }
 
-    // Get rating color
-    var ratingData = getVanillaRatingData(currentAccuracy, goods);
-
-    // Format accuracy
-    var accuracyStr:String = Std.string(Math.round(currentAccuracy));
-
-    // Update main stats text
-    var targetText:String = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
-    targetText += RetroLanguage.tf('stats.misses', [missed]) + '\n';
-    targetText += RetroLanguage.t('stats.rating', 'RANK:') + '  '; // we add the rating after. the two spaces are important
-    if (statsDisplay.text != targetText) statsDisplay.text = targetText;
-    //statsDisplay.text = ' \n';
-    /*statsDisplay.text = RetroLanguage.tf('stats.accuracy', [accuracyStr]) + '\n';
-    statsDisplay.text += RetroLanguage.tf('stats.misses', [missed]) + '\n';
-    statsDisplay.text += RetroLanguage.t('stats.rating', 'RANK:') + '  ';*/
     var targetY = (!isMobileArrowScheme && downscroll) ? statsTextMargin[1] : Std.int(FlxG.height) - statsDisplay.height - statsTextMargin[1];
     statsDisplay.x = FlxG.width - (FullScreenScaleMode.gameCutoutSize.x / 2) - statsDisplay.width - statsTextMargin[0];
     statsDisplay.y = !isMobileArrowScheme ? targetY : PlayState.instance.playerStrumline.y + (statsDisplay.height / 2) - 40;
 
-    // Update rating text with color
-    try {
-      if (ratingTextDisplay?.text != ratingData?.name) ratingTextDisplay.text = ratingData?.name;
-      if (ratingTextDisplay?.color != ratingData?.color) ratingTextDisplay.color = ratingData?.color;
-    } catch(e:Dynamic) {}
-
     // Position rating text right after "RANK: " text
     // Calculate the width of "RANK: " in the last line
     if (statsDisplay == null || statsDisplay?.textField == null) return;
-    var ratingLabelWidth = statsDisplay?.textField?.getLineMetrics(2)?.width ?? 0;
+    //var ratingLabelWidth = statsDisplay?.textField?.getLineMetrics(2)?.width ?? 0;
     ratingTextDisplay?.x = statsDisplay.x + statsDisplay?.textField?.width - ratingTextDisplay.width; //statsDisplay.x + ratingLabelWidth - (statsFontSize / 2)
     ratingTextDisplay?.y = statsDisplay.y + (statsFontSizeOLD * 2); // 2 lines down
   }
@@ -937,6 +981,42 @@ class RetroGameUI extends Module {
     }
     return value;
   }
+
+  function acquireHivemineMoneyPopup():FlxBitmapText {
+    for (popup in hivemineMoneyPopupPool) {
+      if (popup == null || popup.alive) continue;
+      FlxTween.cancelTweensOf(popup);
+      popup.revive();
+      popup.alpha = 1;
+      return popup;
+    }
+
+    var popup = new FlxBitmapText(0, 0, '-0', _font5by7);
+    popup.scale.set(0.35, 0.35);
+    popup.updateHitbox();
+    popup.borderStyle = FlxTextBorderStyle.OUTLINE;
+    popup.borderColor = FlxColor.BLACK;
+    popup.borderSize = 3;
+    popup.borderQuality = 0;
+    popup.cameras = [PlayState.instance.camHUD];
+    popup.antialiasing = false;
+    popup.zIndex = PlayState.instance.playerStrumline.zIndex + 10;
+    PlayState.instance.add(popup);
+    hivemineMoneyPopupPool.push(popup);
+    PlayState.instance.refresh();
+    return popup;
+  }
+
+  function resetHivemineMoneyPopupPool(?destroy:Bool = false):Void {
+    for (popup in hivemineMoneyPopupPool) {
+      if (popup == null) continue;
+      FlxTween.cancelTweensOf(popup);
+      popup.kill();
+      if (destroy) popup.destroy();
+    }
+    if (destroy) hivemineMoneyPopupPool.resize(0);
+  }
+
   public function spawnHivemineMoney(direction:Int, amount:Float) {
     if (PlayState.instance == null) return;
     var strum = PlayState.instance.playerStrumline.strumlineNotes.members[direction];
@@ -944,28 +1024,16 @@ class RetroGameUI extends Module {
 
     //var txt = new FlxText(strum.x, 0, 0, '-0', 23);
     //txt.setFormat(Paths.font('5by7.ttf'), 23, amount > 0 ? 0xFFffec44 : FlxColor.RED, 'center', FlxTextBorderStyle.OUTLINE, 0xFF000000);
-    var txt:FlxBitmapText = new FlxBitmapText(strum.x, 0, '-0', _font5by7);
+    var txt:FlxBitmapText = acquireHivemineMoneyPopup();
     txt.color = amount > 0 ? 0xFFffec44 : FlxColor.RED;
-    txt.scale.set(0.35, 0.35);
-    txt.updateHitbox();
-    txt.borderStyle = FlxTextBorderStyle.OUTLINE;
-    txt.borderColor = FlxColor.BLACK;
-    txt.borderSize = 3;
-    txt.borderQuality = 0;
-    txt.cameras = [PlayState.instance.camHUD];
     txt.text = amount >= 1 ? '+' + Std.string(amount) : Std.string(amount);
-    txt.x = strum.x + (strum.width / 2) - (txt.fieldWidth / 2);
+    txt.x = strum.x + (strum.width / 2) - (txt.width / 2);
     txt.y = (strum.y + (strum.height / 2) - (txt.height / 2)) + (downscroll ? -40 : 40);
-    txt.zIndex = PlayState.instance.playerStrumline.zIndex + 10;
-    txt.antialiasing = false;
-    PlayState.instance.add(txt);
-    PlayState.instance.refresh();
 
     var marketplace:Int = downscroll ? -1 : 1;
     FlxTween.tween(txt, {y: txt.y + (100 * marketplace)}, 0.4, {ease: FlxEase.quintIn, onComplete: function(_) {
       if (PlayState.instance == null || txt == null) return;
       txt.kill();
-      txt.destroy();
     }});
     FlxTween.tween(txt, {alpha: 0}, 0.07, {startDelay: 0.4 - 0.07});
   }
@@ -1042,7 +1110,7 @@ class RetroGameUI extends Module {
     }
   }
 
-  override public function onBeatHit(event:SongTimeScriptEvent) {
+  /*override public function onBeatHit(event:SongTimeScriptEvent) {
     super.onBeatHit(event);
     if (PlayState.instance == null) return;
     if (PlayState.instance.isGamePaused) return;
@@ -1058,7 +1126,7 @@ class RetroGameUI extends Module {
     if (songLengthEnabled && timeDisplay != null && timeDisplay.visible) {
       updateTimeDisplay();
     }
-  }
+  }*/
   override public function onStepHit(event:SongTimeScriptEvent) {
     super.onStepHit(event);
     if (PlayState.instance == null) return;
@@ -1069,7 +1137,7 @@ class RetroGameUI extends Module {
     // We update the texts here because updating texts each frame apparently can cause lag.
     if (statsDisplay != null && statsDisplay?.visible == true)
       updateStatsDisplay(); // So the values are accurate even if we don't miss or hit notes
-    if (songLengthEnabled && timeDisplay != null && timeDisplay.visible)
+    if (songLengthEnabled && timeDisplay != null && timeDisplaySub != null)
       updateTimeDisplay();
 
     if (isHivemine && hiveminePlayerMoney != null && hivemineOppMoney != null) updateHivemineText();
@@ -1134,6 +1202,12 @@ class RetroGameUI extends Module {
     }
   }
 
+  function updateScoreText(value:Int):Void {
+    if (score == null || lastDisplayedScore == value) return;
+    lastDisplayedScore = value;
+    score.text = Std.string(value);
+  }
+
   function updateJudgement(judgementName:String, noteScore:Float, isComboBreak = false, doesPopup:Bool = true, stayDuration:Float = 0):Void {
     cancelTweens(true);
     var judgementData = getJudgement(judgementName);
@@ -1153,10 +1227,8 @@ class RetroGameUI extends Module {
     judgement.x = ((FlxG.width - totalWidth) / 2) + judgementXOffset;
     comboText.x = judgement.x + judgement.width + 25;
 
-    if (noteScore > 0) {
-      total = PlayState.instance.songScore;
-      score.text = Std.string(Std.int(total + noteScore));
-    } else score.text = Std.int(PlayState.instance.songScore);
+    var displayedScore:Int = Std.int(PlayState.instance.songScore + (noteScore > 0 ? noteScore : 0));
+    updateScoreText(displayedScore);
 
     if (updateJudgementAlpha) {
       judgement.visible = true;
@@ -1211,6 +1283,7 @@ class RetroGameUI extends Module {
     isHivemine = false;
     resetDozircAnim(true);
     isDozirc = false;
+    resetHivemineMoneyPopupPool(true);
 
     if (cardsTimer != null) {
       cardsTimer.cancel();
@@ -1220,6 +1293,7 @@ class RetroGameUI extends Module {
     for (tween in tweens) {
 			if (tween != null) tween.cancel();
 		}
+    pausedTweens.resize(0);
   }
 
   override public function onCreate(event) {
@@ -1234,41 +1308,24 @@ class RetroGameUI extends Module {
     showCards();
   }
 
+  function pauseActiveTweens(source:Array<FlxTween>):Void
+  {
+    for (tween in source)
+    {
+      if (tween == null || !tween.active || tween.finished) continue;
+      tween.active = false;
+      pausedTweens.push(tween);
+    }
+  }
+
   public override function onPause(event:PauseScriptEvent)
   {
     if (!isRetro) return;
-    for (tween in tweens)
-		{
-			if (tween != null)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-    for (tween in scoreTweens)
-		{
-			if (tween != null)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-    for (tween in comboTweens)
-		{
-			if (tween != null)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
-    for (tween in judgementTweens)
-		{
-			if (tween != null)
-			{
-				tween.active = false;
-				pausedTweens.push(tween);
-			}
-		}
+    pausedTweens.resize(0);
+    pauseActiveTweens(tweens);
+    pauseActiveTweens(scoreTweens);
+    pauseActiveTweens(comboTweens);
+    pauseActiveTweens(judgementTweens);
 
     if (true) return; // not implemented yet
 
@@ -1302,8 +1359,7 @@ class RetroGameUI extends Module {
       if (holdNote.hitNote && !holdNote.missedNote && holdNote.sustainLength > 0) {
         // Update score text.
         if (!playState.isBotPlayMode) {
-          var newScoreStr:String = Std.string(Std.int(PlayState.instance.songScore));
-          if (score.text != newScoreStr) score.text = newScoreStr; //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
+          updateScoreText(Std.int(playState.songScore)); //+ Std.int(Constants.SCORE_HOLD_BONUS_PER_SECOND * event.elapsed);
         }
         break;
       }
@@ -1317,8 +1373,11 @@ class RetroGameUI extends Module {
 
     var clipX:Float = fillOriginalWidth - newWidth; // Cortar fill das barras
     //retroHealthBarFill.clipRect = FlxRect.get(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
-    _fillClipRect.set(clipX, 0, newWidth, retroHealthBarFill.frameHeight);
-    retroHealthBarFill.clipRect = _fillClipRect;
+    var fillFrameHeight:Float = retroHealthBarFill.frameHeight;
+    if (_fillClipRect.x != clipX || _fillClipRect.width != newWidth || _fillClipRect.height != fillFrameHeight) {
+      _fillClipRect.set(clipX, 0, newWidth, fillFrameHeight);
+      retroHealthBarFill.clipRect = _fillClipRect;
+    }
 
     // Isso aqui agora é na função de setCut, não tem pra que estar aqui
     /*if (currentHealthCut > 0 && (healthBarResetTween == null || !healthBarResetTween.active)) {
@@ -1339,7 +1398,7 @@ class RetroGameUI extends Module {
     if (retroHealthBarFill.y != targetBarY) retroHealthBarFill.y = targetBarY;
     if (retroHealthBarFill.alpha != targetBarAlpha) retroHealthBarFill.alpha = targetBarAlpha;
     if (retroHealthBarFillBG.y != targetBarY && !StringTools.startsWith(ogDadId, 'mixter')) retroHealthBarFillBG.y = targetBarY;
-    if (retroHealthBarFillBG.y != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
+    if (retroHealthBarFillBG.alpha != targetBarAlpha) retroHealthBarFillBG.alpha = targetBarAlpha;
 
     // workaround for the animated icons to bop.
     if (isPlayerIconAnimated && !PlayState.instance.iconP1.isLegacyStyle) PlayState.instance.iconP1.isLegacyStyle = true;
@@ -1377,6 +1436,11 @@ class RetroGameUI extends Module {
     shitCount = 0;
     missCount = 0;
     updateJudgementAlpha = true;
+    lastDisplayedScore = null;
+    lastDisplayedTimeSecond = -1;
+    lastDisplayedSongLengthSecond = -1;
+    invalidateStatsCache();
+    resetHivemineMoneyPopupPool();
 
     for (tween in tweens) {
 			if (tween != null) tween.cancel();
@@ -1446,9 +1510,9 @@ class RetroGameUI extends Module {
     if (!isRetro) return;
 
     for (tween in pausedTweens) {
-			if (tween != null) tween.active = true;
+			if (tween != null && !tween.finished) tween.active = true;
 		}
-		pausedTweens = [];
+		pausedTweens.resize(0);
   }
 
   public function getIconColor(characterId:String, ?updateIconAnim:Bool = false, ?bar:FunkinSprite = null):FlxColor {

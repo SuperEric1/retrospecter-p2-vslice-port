@@ -47,3 +47,20 @@ In-game credits list the original mod's team. The port's GameBanana page also li
 Found a bug or want to suggest something? Check [CONTRIBUTING.md](CONTRIBUTING.md) before opening an issue or pull request.
 
 Current development progress is tracked in [docs/TODO.md](docs/TODO.md).
+
+## Preparing a mobile build copy
+
+`prepare_mobile_build.py` prepares a **copy** of this source repository for a
+mobile build. Run it from the copy's root with Python 3.9 or newer:
+
+```sh
+python prepare_mobile_build.py
+```
+
+The script asks for an explicit `YES` confirmation before changing anything. It
+removes GitHub and development/editor configuration files, deletes every `.png`
+that has an `.astc` file with the same name in the same folder, and clears the
+`metadata` object in `polymod_meta.json` or `_polymod_meta.json`.
+
+These changes are permanent. Do not run the script in your development clone or
+in the repository you intend to contribute to.

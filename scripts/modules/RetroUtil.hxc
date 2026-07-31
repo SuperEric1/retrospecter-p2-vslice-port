@@ -239,7 +239,7 @@ class RetroUtil extends Module
     var time:Float = 0.05;
     var crochet:Float = Conductor.instance.stepLengthMs * 4;
 
-    if (gameZoom != 0 || gameZoom != null) {
+    if (gameZoom != null && gameZoom != 0) {
       if (playState.cameraZoomTween != null && playState.cameraZoomTween.active) playState.cameraZoomTween.cancel();
       //playState.currentCameraZoom = playState.stageZoom;
 
@@ -248,7 +248,7 @@ class RetroUtil extends Module
       }});
     }
 
-    if (hudZoom != 0 || hudZoom != null) playState.camHUD.zoom += hudZoom;
+    if (hudZoom != null && hudZoom != 0) playState.camHUD.zoom += hudZoom;
     //FlxTween.cancelTweensOf(playState.camHUD, ['zoom']);
     //if (hudZoom != 0 || hudZoom != null) tweens.push(FlxTween.tween(playState.camHUD, { zoom: playState.camHUD.zoom + hudZoom }, time, { ease: FlxEase.quadOut }));
   }
@@ -326,14 +326,14 @@ class RetroUtil extends Module
   {
     for (tween in tweens)
       if (tween != null) tween.cancel();
-    tweens = [];
-    pausedTweens = [];
+    tweens.resize(0);
+    pausedTweens.resize(0);
     hudZoomTween = null;
   }
   override function onPause(event:ScriptEvent):Void
   {
     super.onPause(event);
-    pausedTweens = [];
+    pausedTweens.resize(0);
     for (tween in tweens) {
       if (tween != null && !tween.finished) {
         tween.active = false;
@@ -348,7 +348,7 @@ class RetroUtil extends Module
     for (tween in pausedTweens) {
       if (tween != null && !tween.finished) tween.active = true;
     }
-    pausedTweens = [];
+    pausedTweens.resize(0);
     if (hudZoomTween != null && !hudZoomTween.finished) hudZoomTween.active = true;
   }
 }

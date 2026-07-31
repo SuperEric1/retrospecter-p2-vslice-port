@@ -375,6 +375,7 @@ class EmbuzzleSong extends Song
     playStage.getBoyfriend().cameraFocusPoint.x = bfFocusPoint[0];
     playStage.getBoyfriend().cameraFocusPoint.y = bfFocusPoint[1];
     playState.camHUD.angle = 0;
+    playState.camHUD.alpha = 1;
     resetFlags();
 
     if (ogDadPos[0] != null) {

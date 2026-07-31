@@ -1449,6 +1449,8 @@ class ExtirpatientSong extends Song
 
     retroGameUI?.scriptCall('setUpdateJudgementAlpha', [false]);
 
+    retroPlayState.scriptCall('setNoteAlphaSync', [false]);
+
     if (!modcharts) return;
 
     var crochet = Conductor.instance.stepLengthMs * 4;

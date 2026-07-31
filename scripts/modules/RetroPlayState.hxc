@@ -1092,7 +1092,12 @@ class RetroPlayState extends Module {
     if (!isRetro) return;
 
     // Limpeza de tweens já completados do array de tweens
-    tweens = tweens.filter(function(t) return t != null && t.active);
+    var activeTweenCount = 0;
+    for (tween in tweens) {
+      if (tween == null || !tween.active) continue;
+      tweens[activeTweenCount++] = tween;
+    }
+    tweens.resize(activeTweenCount);
   }
 
   function removeInsatianHoles(?instant:Bool = false):Void {
@@ -1830,7 +1835,7 @@ class RetroPlayState extends Module {
       }
       if (poisonSprite.alpha != PlayState.instance.healthBar.alpha) poisonSprite.alpha = PlayState.instance.healthBar.alpha;
       if (!poisonSprite.visible) poisonSprite.visible = true; // it's active, so we make it visible.
-      var targetZIndex = PlayState.instance.iconP1.zIndex + 2;
+      var targetZIndex = PlayState.instance.iconP1.zIndex + 5;
       if (poisonSprite.zIndex != targetZIndex) {
         poisonSprite.zIndex = targetZIndex;
         PlayState.instance.refresh();
@@ -1847,22 +1852,19 @@ class RetroPlayState extends Module {
     }
 
     if (loadedMechanics.contains('saku')) {
+      if (sakuTargetAlpha > 0) {
+        sakuAlpha = FlxMath.lerp(sakuAlpha, sakuTargetAlpha, FlxMath.bound(event.elapsed * 3, 0, 1));
+        if (Math.abs(sakuTargetAlpha - sakuAlpha) < 0.01) {
+          sakuAlpha = sakuTargetAlpha;
+          sakuTargetAlpha = 0;
+        }
+      } else {
+        sakuAlpha = FlxMath.lerp(sakuAlpha, 0, FlxMath.bound((event.elapsed * 0.05) * 3, 0, 1));
+      }
+
       for (fog in sakuFogs) {
         if (fog == null || !fog.visible || !fog.active || !fog.alive) continue;
-        if (sakuTargetAlpha > 0) {
-          sakuAlpha = FlxMath.lerp(sakuAlpha, sakuTargetAlpha, FlxMath.bound(event.elapsed, 0, 1));
-          if (Math.abs(sakuTargetAlpha - sakuAlpha) < 0.01) {
-            sakuAlpha = sakuTargetAlpha;
-            sakuTargetAlpha = 0;
-          }
-        } else {
-          sakuAlpha = FlxMath.lerp(sakuAlpha, 0, FlxMath.bound(event.elapsed * 0.05, 0, 1));
-        }
-
-        for (fog in sakuFogs) {
-          if (fog == null || !fog.visible || !fog.active || !fog.alive) continue;
-          fog.alpha = sakuAlpha;
-        }
+        fog.alpha = sakuAlpha;
       }
 
       var songLength:Float = (FlxG.sound?.music?.length ?? 0.0) / 1000;
@@ -2382,7 +2384,7 @@ class RetroPlayState extends Module {
     poisonSprite.animation.curAnim.frameRate = 0;
     poisonSprite.visible = false;
     poisonSprite.active = false;
-    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 3; // just to make sure
+    poisonSprite.zIndex = PlayState.instance.iconP1.zIndex + 5; // just to make sure
     PlayState.instance.add(poisonSprite);
     poisonSprite.kill();
 
@@ -2438,7 +2440,7 @@ class RetroPlayState extends Module {
           return;
       }
 
-      poisonSprite.zIndex += 2; // okay this might fix it this time
+      poisonSprite.zIndex += 5; // okay this might fix it this time
     }
 
     /*if (poisonText != null && poisonSprite.active) {

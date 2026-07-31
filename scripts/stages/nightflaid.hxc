@@ -223,8 +223,6 @@ class NightflaidStage extends Stage
     coverSpr.antialiasing = false;
     PlayState.instance.add(coverSpr, 'coverSpr');
 
-    initializeMidsongVideo(); // Create video sprite early
-
     // Unbeatable background
     unbeatableBG = makeSprite('unbeatableBG', 'nightflaid/unbeatableBG' + alt, -1000 + xAdjust, 0 + yAdjust); // old y: -900 + yAdjust
     unbeatableBG.scrollFactor.set(0, 0);
@@ -274,6 +272,7 @@ class NightflaidStage extends Stage
   override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
+    initializeMidsongVideo();
     if (unbeatableLightningLeft == null || unbeatableLightningRight == null) setupUnbeatableElements();
 
     if (ogNfY == 0 || ogNfY == null) ogNfY = getDad().y;
@@ -294,6 +293,9 @@ class NightflaidStage extends Stage
 
   function initializeMidsongVideo():Void
   {
+    // onSongLoaded fires again on retry. Keep the already loaded player.
+    if (hasVideoSpriteBeenCreated) return;
+
     midsongVideoLoaded = false;
 
     // Create black bars sprite for video letterboxing
@@ -312,17 +314,17 @@ class NightflaidStage extends Stage
     midsongVideo.zIndex = 130;
     midsongVideo.scrollFactor.set(0, 0);
 
+    // Register this before load(), since format setup can happen during preload.
+    midsongVideo.bitmap.onFormatSetup.add(() -> {
+      var scale:Float = Math.min(FlxG.width / midsongVideo.bitmap.bitmapData.width, FlxG.height / midsongVideo.bitmap.bitmapData.height);
+      midsongVideo.setGraphicSize((midsongVideo.bitmap.bitmapData.width * scale) + 10, midsongVideo.bitmap.bitmapData.height * scale);
+      midsongVideo.updateHitbox();
+      midsongVideo.screenCenter();
+    });
+
     if (midsongVideo.load(Paths.videos('nightflaid')))
     {
       midsongVideoLoaded = true;
-      // Scale the video to fit the screen while keeping aspect ratio
-      midsongVideo.bitmap.onFormatSetup.add(() -> {
-        var scale:Float = Math.min(FlxG.width / midsongVideo.bitmap.bitmapData.width, FlxG.height / midsongVideo.bitmap.bitmapData.height);
-        midsongVideo.setGraphicSize((midsongVideo.bitmap.bitmapData.width * scale) + 10, midsongVideo.bitmap.bitmapData.height * scale);
-        midsongVideo.updateHitbox();
-        midsongVideo.screenCenter();
-      });
-
       //midsongVideo.play(); // play later!
       midsongVideo.bitmap.volumeAdjust = 0; // mute video (it's already mute but yeah)
 
@@ -332,15 +334,16 @@ class NightflaidStage extends Stage
         midsongVideoBlackBars.visible = false;
         midsongVideo.active = false;
         midsongVideo.visible = false;
+        midsongVideo.pause();
+        midsongVideo.bitmap.time = 0;
 
         midsongVideoPlaying = false;
         midsongVideoPlayed = true;
-        midsongVideoLoaded = false;
-      }, true);
+      });
 
       // Handle video errors
       midsongVideo.bitmap.onEncounteredError.add(function() {
-        trace('ERROR: Failed to play midsong video: ' + videoPath);
+        trace('ERROR: Failed to play midsong video: ' + Paths.videos('nightflaid'));
         midsongVideoBlackBars.active = false;
         midsongVideoBlackBars.visible = false;
         midsongVideo.active = false;
@@ -349,11 +352,11 @@ class NightflaidStage extends Stage
         midsongVideoPlaying = false;
         midsongVideoPlayed = true;
         midsongVideoLoaded = false;
-      }, true);
+      });
     }
     else
     {
-      trace('ERROR: Could not load video file: ' + videoPath);
+      trace('ERROR: Could not load video file: ' + Paths.videos('nightflaid'));
       midsongVideoPlaying = false;
       midsongVideoLoaded = false;
     }
@@ -1149,6 +1152,8 @@ class NightflaidStage extends Stage
   {
     if (midsongVideo == null || !midsongVideoLoaded) return;
 
+    midsongVideo.bitmap.time = 0;
+
     // Make video and black bars visible and active
     midsongVideo.active = true;
     midsongVideo.visible = true;
@@ -1178,7 +1183,7 @@ class NightflaidStage extends Stage
     PlayState.instance.cameraFollowPoint.setPosition((getDad().cameraFocusPoint.x + getBoyfriend().cameraFocusPoint.x) / 2, getDad().cameraFocusPoint.y);
 
     stopGradientStripes();
-    if (midsongVideoPlayed) initializeMidsongVideo(); // rebuild the video
+    resetMidsongVideo();
 
     if (staticSprite != null) staticSprite.visible = false;
     if (spookieText != null) {
@@ -1193,16 +1198,25 @@ class NightflaidStage extends Stage
       unbeatableLightningRight.x = unbeatableLightningRightPos;
     }
 
-    if (midsongVideo != null) {
-      midsongVideoPlaying = false;
-      //midsongVideoLoaded = false;
-      //midsongVideo.destroy();
-      //midsongVideo = null;
-      //midsongVideoBlackBars.destroy();
-      //midsongVideoBlackBars = null;
-    }
-
     finalFadeout = false;
+  }
+
+  function resetMidsongVideo():Void
+  {
+    if (midsongVideo == null) return;
+
+    midsongVideo.pause();
+    if (midsongVideo.bitmap != null) midsongVideo.bitmap.time = 0;
+    midsongVideo.active = false;
+    midsongVideo.visible = false;
+    midsongVideoPlaying = false;
+    midsongVideoPlayed = false;
+
+    if (midsongVideoBlackBars != null)
+    {
+      midsongVideoBlackBars.active = false;
+      midsongVideoBlackBars.visible = false;
+    }
   }
 
   function resetFlags():Void {
@@ -1225,6 +1239,7 @@ class NightflaidStage extends Stage
     midsongVideoPlaying = false;
     midsongVideoPlayed = false;
     midsongVideoLoaded = false;
+    hasVideoSpriteBeenCreated = false;
     finalFadeout = false;
     resetFlags();
 
