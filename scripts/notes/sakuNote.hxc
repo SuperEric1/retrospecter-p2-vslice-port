@@ -2,13 +2,29 @@ import funkin.play.notes.notekind.NoteKind;
 import flixel.FlxG;
 import funkin.Paths;
 import funkin.Preferences;
+import funkin.play.PlayState;
 import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
+
+import supereric.retrospecter.modules.RetroUtil;
 
 class SakuNote extends NoteKind {
 	public function new() {
 		super('sakuNote', 'Saku Note', 'heart', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
+	}
+
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		if (PlayState.instance == null) return;
+		if (event.eventCanceled) return;
+		if (!event.note.noteData.getMustHitNote()) return;
+		RetroUtil.spawnSplash(event.note, {
+			atlas: 'notes/splash/saku',
+			prefixes: ['note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'],
+			sizeMulti: 0.6,
+			xOffset: -60,
+			yOffset: -40,
+		});
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {

@@ -1,11 +1,27 @@
 import funkin.play.notes.notekind.NoteKind;
 import funkin.Paths;
+import funkin.play.PlayState;
 import funkin.save.Save;
+
+import supereric.retrospecter.modules.RetroUtil;
 
 class IzzyNote extends NoteKind {
 	public function new() {
 		super('izzyNote', 'Izzy Note', 'pride', [], true); // id, description, styleId, params, noanim
 		scoreable = false;
+	}
+
+	public override function onNoteHit(event:HitNoteScriptEvent):Void {
+		if (PlayState.instance == null) return;
+		if (event.eventCanceled) return;
+		if (!event.note.noteData.getMustHitNote()) return;
+		RetroUtil.spawnSplash(event.note, {
+			atlas: 'notes/splash/izzy',
+			prefixes: ['note splash purple 1', 'note splash blue 1', 'note splash green 1', 'note splash red 1'],
+			sizeMulti: 1.4,
+			xOffset: -50,
+			yOffset: -35,
+		});
 	}
 
 	public override function onNoteIncoming(event:NoteScriptEvent):Void {

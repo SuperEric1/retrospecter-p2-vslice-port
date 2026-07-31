@@ -76,23 +76,15 @@
       }
     },
     "noteSplash": {
-      "assetPath": null,
+      "assetPath": "shared:notes/splash/saku",
       "alpha": 0.8,
-      "offsets": [40, 0],
+      "offsets": [15, 0],
       "data": {
-        "enabled": false,
-        "leftSplashes": [
-          { "prefix": "note splash purple 1" }
-        ],
-        "rightSplashes": [
-          { "prefix": "note splash red 1" }
-        ],
-        "upSplashes": [
-          { "prefix": "note splash green 1" }
-        ],
-        "downSplashes": [
-          { "prefix": "note splash blue 1" }
-        ]
+        "enabled": true,
+        "leftSplashes": [{ "prefix": "note splash purple 1" }],
+        "rightSplashes": [{ "prefix": "note splash red 1" }],
+        "upSplashes": [{ "prefix": "note splash green 1" }],
+        "downSplashes": [{ "prefix": "note splash blue 1" }]
       }
     }
   }
