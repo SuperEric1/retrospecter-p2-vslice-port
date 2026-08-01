@@ -1485,6 +1485,12 @@ class RetroDialogue extends Module
         currentLineIndex = skipTarget;
         inputCooldown = INPUT_COOLDOWN_SEC;
         applyLine(currentLines[currentLineIndex]);
+
+        timedNextTimer = -1;
+        if (fadeToNextLineTimer != null) {
+          fadeToNextLineTimer.cancel();
+          fadeToNextLineTimer = null;
+        }
       } else {
         beginFadeOut();
         if (atroceanSpeaking && isTyping) {

@@ -74,14 +74,14 @@ class RetroAchievements extends Module
     { id: 'wrath-catastro' }, // done
     { id: 'wrath-retrogf', unlockable: false },
     { id: 'wrath-tenpoisons' }, // done
-    { id: 'wrath-apocalypseecto' },
+    { id: 'wrath-apocalypseecto', unlockable: false },
 
     { id: 'wrath-fourchains' }, // done
     { id: 'wrath-sidestory', unlockable: false },
     { id: 'wrath-hell' }, // done
     { id: 'wrath-normal' }, // done
 
-    { id: 'wrath-ecto' }, // done
+    { id: 'wrath-ecto', unlockable: false },
     { id: 'wrath-brawnstorm', unlockable: false },
 
     // LUST
