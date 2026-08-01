@@ -12,8 +12,6 @@ vec2 hash22(vec2 p) {
 }
 
 vec4 mainPass(vec2 fragCoord) {
-  vec4 base = texture2D(bitmap, fragCoord);
-
   vec2 start = vec2(uFrameBounds.x + (startOffset / openfl_TextureSize.x), uFrameBounds.y);
   vec2 end   = vec2(uFrameBounds.x + (endPosition.x / openfl_TextureSize.x), uFrameBounds.w);
 
@@ -29,9 +27,8 @@ vec4 mainPass(vec2 fragCoord) {
   float uvA = atan(uv.y, uv.x);
 
   if (uvA < angle)
-    return base;
-  else
-    return vec4(0.0);
+    return texture2D(bitmap, fragCoord);
+  return vec4(0.0);
 }
 
 vec4 antialias(vec2 fragCoord) {

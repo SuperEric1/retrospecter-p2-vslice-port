@@ -7,51 +7,46 @@ const float MyDecay = 1.0;
 const float CircleSize = 1.0;
 //const float CircleSize = 0.1;
 
-float Weight = 1.0 / float(NUM_SAMPLES);
-float Decay = 1.0 - MyDecay / float(NUM_SAMPLES);
+const float WEIGHT = 1.0 / float(NUM_SAMPLES);
+const float DECAY = 1.0 - MyDecay / float(NUM_SAMPLES);
+const float INV_SAMPLE_COUNT_MINUS_ONE = 1.0 / float(NUM_SAMPLES - 1);
 
 vec2 LightPos;
 uniform vec2 _LightPos;
 
 // green screen effect on input texture where the foreground is made black, with a white gradient dot as background
-vec4 occlusion(vec2 q)
+float occlusion(vec2 q)
 {
 	float i = clamp(length((q-LightPos)*vec2(openfl_TextureSize.x/openfl_TextureSize.y, 1.0))/CircleSize, 0.0, 1.0);
 	i = 1.0 - i*i;
 
-	vec4 bg = vec4(i,i,i,i);
-	vec4 fg = flixel_texture2D( bitmap, q ).rgba;
-
-	float k = 1.0-fg.a;
-	fg = vec4(k,k,k,k);
-
-	return mix(fg, bg, k);
+	float k = 1.0 - flixel_texture2D(bitmap, q).a;
+	return mix(k, i, k);
 }
 
 
 // god ray effect
-vec4 godray(vec2 texCoord)
+float godray(vec2 texCoord)
 {
-	vec4 color = vec4(0,0,0,0);
+	float color = 0.0;
 	// Set up illumination decay factor.
 	float illuminationDecay = 1.0;
 	// Evaluate summation from Equation 3 NUM_SAMPLES iterations.
 	for (int i = 0; i < NUM_SAMPLES; i++)
 	{
 		// Step sample location along ray.
-		vec2 uv = mix(texCoord, LightPos, float(i) / float(NUM_SAMPLES-1));
+		vec2 uv = mix(texCoord, LightPos, float(i) * INV_SAMPLE_COUNT_MINUS_ONE);
 
 		// Retrieve sample at new location.
-		vec4 sampl = occlusion(uv);
+		float sampl = occlusion(uv);
 		// Apply sample attenuation scale/decay factors.
-		sampl *= illuminationDecay * Weight;
+		sampl *= illuminationDecay * WEIGHT;
 		// Accumulate combined color.
 		color += sampl;
 		// Update exponential decay factor.
-		illuminationDecay *= Decay;
+		illuminationDecay *= DECAY;
 	}
-	// Output final color with a further scale control factor.
-	return vec4( color * Exposure );
+	return color * Exposure;
 }
 
 float blendScreen(float base, float blend) {
@@ -89,14 +84,12 @@ vec3 blendAdd(vec3 base, vec3 blend, float opacity) {
 void main()
 {
 	vec2 uv = openfl_TextureCoordv.xy;
-	vec2 fragCoord = uv * openfl_TextureSize.xy;
-
 	LightPos = _LightPos;// / openfl_TextureSize.xy;
 	// fragColor = godray(uv) + vec4(greenscreen(uv),1);
 	// fragColor = vec4(greenscreen(uv),1);
-	vec4 gr = godray(uv);
+	float gr = godray(uv);
 	vec4 cola = flixel_texture2D(bitmap, uv);
-	vec3 col = blendNormal(cola.rgb, gr.rgb*6.0, 0.3);
+	vec3 col = blendNormal(cola.rgb, vec3(gr * 6.0), 0.3);
 	//vec3 col = blendAdd(cola.rgb, clamp(gr.rgb*1.0, 0.0, 1.0), 1.0);
-	gl_FragColor = vec4(col, max(cola.a, gr.a));
+	gl_FragColor = vec4(col, max(cola.a, gr));
 }
