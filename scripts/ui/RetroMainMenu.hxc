@@ -17,6 +17,7 @@ import funkin.save.Save;
 import flixel.graphics.frames.FlxAtlasFrames;
 import funkin.FunkinMemory;
 import funkin.mobile.ui.FunkinBackButton;
+import funkin.mobile.ui.FunkinButton;
 import funkin.util.Constants;
 import funkin.util.TouchUtil;
 import funkin.util.HapticUtil;
@@ -58,7 +59,7 @@ class RetroMainMenu extends MusicBeatState
   var bgCurtainBorders:Array<FunkinSprite>;
 
   // Menu (referências para a página ativa)
-  var menuItems:Array<FunkinSprite>;
+  var menuItems:Array<FunkinButton>;
   var menuCallbacks:Array<Dynamic>;
   var menuHitboxes:Array<FlxObject>;
   var menuNames:Array<String>;
@@ -75,7 +76,7 @@ class RetroMainMenu extends MusicBeatState
   var isWideScreen:Bool = false;
 
   // Menu (dados de todas as páginas; index 0 = principal, index 1 = extras)
-  var pagesMenuItems:Array<Array<FunkinSprite>> = [[], []];
+  var pagesMenuItems:Array<Array<FunkinButton>> = [[], []];
   var pagesMenuCallbacks:Array<Array<Dynamic>> = [[], []];
   var pagesMenuHitboxes:Array<Array<FlxObject>> = [[], []];
   var pagesMenuNames:Array<Array<String>> = [[], []];
@@ -406,7 +407,7 @@ class RetroMainMenu extends MusicBeatState
 
   function createMenuItem(name:String, atlasPath:String, callback:Dynamic, sizeMult:Int, page:Int):Void
   {
-    var item:FunkinSprite = FunkinSprite.create(0, 0);
+    var item:FunkinButton = new FunkinButton(0, 0);
 
     item.frames = Paths.getSparrowAtlas(atlasPath);
 
@@ -1180,21 +1181,21 @@ class RetroMainMenu extends MusicBeatState
       lastMousePos.set(currentMouseX, currentMouseY);
     }
 
-    var justPressed:Bool = (TouchUtil.justPressed || FlxG.mouse.justPressed) && !SwipeUtil.justSwipedAny;
-    var justReleased:Bool = TouchUtil.justReleased || FlxG.mouse.justReleased;
+    // O toque aciona no momento em que começa, como FunkinButton.onDown, mas
+    // usa a hitbox personalizada do item em vez do retângulo inteiro do sprite.
+    var touchJustPressed:Bool = FlxG.onMobile && TouchUtil.justPressed && !SwipeUtil.justSwipedAny;
 
-    /*if (FlxG.onMobile && TouchUtil != null && !ControlsHandler.usingExternalInputDevice)
-    {
-      justPressed = TouchUtil.justPressed;
-      justReleased = TouchUtil.justReleased;
-    }*/
+    // O mouse continua usando os hitboxes auxiliares, inclusive em mobile com
+    // um dispositivo de entrada externo conectado.
+    var justPressed:Bool = FlxG.mouse.justPressed && !SwipeUtil.justSwipedAny;
 
     // Detectar hover/click
     for (i in 0...menuHitboxes.length)
     {
       var hitbox = menuHitboxes[i];
 
-      var isOverlapping:Bool = (FlxG.isMobile && TouchUtil.overlapsComplex(hitbox)) || FlxG.mouse.overlaps(hitbox);
+      var isTouchOverlapping:Bool = touchJustPressed && TouchUtil.overlapsComplex(hitbox);
+      var isOverlapping:Bool = isTouchOverlapping || FlxG.mouse.overlaps(hitbox);
 
       if (isOverlapping)
       {
@@ -1206,7 +1207,7 @@ class RetroMainMenu extends MusicBeatState
           hadInput = true;
         }
 
-        if (justPressed)
+        if (isTouchOverlapping || justPressed)
         {
           blockMouse = false; // Mouse teve um input, desbloquear.
           hadInput = true;
