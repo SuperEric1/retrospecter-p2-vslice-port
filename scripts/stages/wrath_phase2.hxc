@@ -154,7 +154,7 @@ class WrathPhase2Stage extends Stage
     hasPlayedInGameCutscene = false;
     hasPlayedOutroCutscene = false;
 
-    isWideScreen = FlxG.width > 1280 || true;
+    isWideScreen = FlxG.width > 1280;
 
     if (hasCreatedStage) return;
 
