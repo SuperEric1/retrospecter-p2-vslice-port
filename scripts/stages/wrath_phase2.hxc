@@ -622,7 +622,7 @@ class WrathPhase2Stage extends Stage
     super.onCountdownStart(event);
 
     if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) {
-      //hasPlayedInGameCutscene = true;
+      hasPlayedInGameCutscene = true;
       hasPlayedOutroCutscene = true;
     }
 
