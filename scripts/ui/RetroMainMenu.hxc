@@ -40,6 +40,7 @@ import StringTools;
 
 import supereric.retrospecter.modules.RetroLanguage;
 import supereric.retrospecter.modules.RetroSave;
+import supereric.retrospecter.modules.RetroUtil;
 import supereric.retrospecter.shaders.RetroAngleMaskShader;
 import supereric.retrospecter.modules.RetroAchievements;
 import supereric.retrospecter.ui.RetroTrophyState;
@@ -245,7 +246,8 @@ class RetroMainMenu extends MusicBeatState
     createMenuItem('gallery', path + 'gallerylocked', interactLocked, 0.75, 1);
 
     pagesMenuStartIndex[0] = members.length;
-    createMenuItem('story', path + 'story', goToStory, 0.87, 0);
+    var storyName:String = (RetroUtil.hasBeatenWrath() ? 'story' : 'firststory');
+    createMenuItem(storyName, path + storyName, goToStory, 0.87, 0);
     createMenuItem('freeplay', path + 'firstfreeplay', interactLocked, 0.87, 0);
     createMenuItem('extras', path + 'extras', goToExtras, 1, 0);
     createMenuItem('options', path + 'options', goToOptions, 0.75, 0);
@@ -423,7 +425,7 @@ class RetroMainMenu extends MusicBeatState
     var shaderEndOffset:Float = 0;
 
     switch (name) {
-      case 'story':
+      case 'story', 'firststory':
         cutLeft = 20;
         cutRight += 50;
       case 'options':
@@ -747,13 +749,15 @@ class RetroMainMenu extends MusicBeatState
       return;
     }
 
+    var theName:Bool = name;
+    if (name == 'firststory') theName = 'story';
     var isExtra:Bool = (name == 'side' || name == 'credits' || name == 'trophies' || name == 'gallery');
     var activeLabel = isExtra ? label2 : label1;
     var inactiveLabel = isExtra ? label1 : label2;
 
     inactiveLabel.animation.play('nothing');
 
-    activeLabel.animation.play(name);
+    activeLabel.animation.play(theName);
     FlxTween.cancelTweensOf(activeLabel);
     FlxTween.tween(activeLabel, {alpha: 1}, 0.2, {ease: FlxEase.quadOut});
 
@@ -768,7 +772,7 @@ class RetroMainMenu extends MusicBeatState
 
     var side:Float = 1.0;
 
-    switch(name) {
+    switch(theName) {
       case 'story':
         side = 1.0;
         offsetExtra = 150;

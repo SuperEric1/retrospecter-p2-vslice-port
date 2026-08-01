@@ -154,7 +154,7 @@ class WrathPhase2Stage extends Stage
     hasPlayedInGameCutscene = false;
     hasPlayedOutroCutscene = false;
 
-    isWideScreen = FlxG.width > 1280;
+    isWideScreen = FlxG.width > 1280 || true;
 
     if (hasCreatedStage) return;
 
@@ -557,7 +557,7 @@ class WrathPhase2Stage extends Stage
       overlay.y += -128;
       overlay.x += 40;
       overlay.scale.set(1.1, 1);
-      overlay.zIndex = 9000;
+      overlay.zIndex = 350;
       add(overlay);
 
       // Borders for wide screens
@@ -582,10 +582,10 @@ class WrathPhase2Stage extends Stage
         var color = 0xFF000f03; // #000f03
 
         var border1 = FlxGradient.createGradientFlxSprite(w, h, [color, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, FlxColor.TRANSPARENT], 1, 0);
-        border1.x = -1000;
+        border1.x = -1044;
         border1.screenCenter(0x10);
-        border1.scrollFactor.set(rocksLeft.scrollFactor.x, 0);
-        border1.zIndex = rocksLeft.zIndex + 1;
+        border1.scrollFactor.set(1.1, 0);
+        border1.zIndex = 400;
         add(border1);
         var fillBorderLeft = FunkinSprite.create(border1.x, border1.y).makeSolidColor(w * 5, h, color);
         fillBorderLeft.zIndex = border1.zIndex;
@@ -594,10 +594,10 @@ class WrathPhase2Stage extends Stage
         add(fillBorderLeft);
 
         var border2 = FlxGradient.createGradientFlxSprite(w, h, [FlxColor.TRANSPARENT, FlxColor.TRANSPARENT, color, color], 1, 0);
-        border2.x = wrathXAdjust + 1970;
+        border2.x = 2058;
         border2.screenCenter(0x10);
-        border2.scrollFactor.set(rocks.scrollFactor.x, 0);
-        border2.zIndex = rocks.zIndex + 1;
+        border2.scrollFactor.set(1.1, 0);
+        border2.zIndex = 401;
         add(border2);
         var fillBorderRight = FunkinSprite.create(border2.x + border2.width, border2.y).makeSolidColor(w * 5, h, color);
         fillBorderRight.zIndex = border2.zIndex;
@@ -622,7 +622,7 @@ class WrathPhase2Stage extends Stage
     super.onCountdownStart(event);
 
     if (!PlayStatePlaylist.isStoryMode || PlayState.instance.isChartingMode) {
-      hasPlayedInGameCutscene = true;
+      //hasPlayedInGameCutscene = true;
       hasPlayedOutroCutscene = true;
     }
 
@@ -1073,7 +1073,7 @@ class WrathPhase2Stage extends Stage
       if (flames != null) {
         tweens.push(FlxTween.tween(flames, {y: bgFlamesY}, 1.4, {ease: FlxEase.backOut}));
       }
-      retro.playAnimation('roar', true);
+      //retro.playAnimation('roar', true);
       roarSound.play();
       FlxG.camera.shake(0.025, 0.35);
       PlayState.instance.tweenCameraZoom(PlayState.instance.stageZoom, 0.5, true, FlxEase.quadInOut);
