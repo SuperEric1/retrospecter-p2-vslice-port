@@ -14,7 +14,7 @@ This mod contains a character resembling the sin of Lust, which may make some pl
 
 ## Download
 
-Download it through the alternate file sources on the port's GameBanana page: https://gamebanana.com/mods/653579
+Download it through the port's GameBanana page: https://gamebanana.com/mods/653579
 
 ## What this port HAS from the original
 
