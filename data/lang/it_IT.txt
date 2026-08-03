@@ -74,7 +74,7 @@ options.mechanics = "Note Speciali"
 options.mechanics.desc = "Attiva/disattiva note speciali per tutte le canzoni che le usano."
 
 options.transform_notes = "Trasforma Note Speciali"
-options.transform_notes.desc = "Trasforma le note speciali in note normali. L'opzione Note Speciali deve essere attiva per poter funzionare.
+options.transform_notes.desc = "Trasforma le note speciali in note normali. L'opzione Note Speciali deve essere attiva per poter funzionare."
 
 options.checkpoints = "Checkpoint"
 options.checkpoints.desc = "Permette di riprendere una canzone in un determinato punto automaticamente dopo il Game Over."
@@ -88,7 +88,7 @@ options.shake.desc = "Scuote violentemente lo schermo in certi momenti. (es. Qua
 options.song_timer = "Timer Durata Canzone"
 options.song_timer.desc = "Se abilitato, mostra il tempo di durata della canzone durante gameplay. (Non consigliato per Modalità Storia.)"
 
-options.suggestive = "Suggestive Content Contenuti Suggestivi"
+options.suggestive = "Contenuti Suggestivi"
 options.suggestive.desc = "Se disabilitato, alcune animazioni o elementi suggestivi verranno rimossi dall'ultima canzone di Sakuroma."
 
 options.combooffsetx = "Offset X Giudizio"

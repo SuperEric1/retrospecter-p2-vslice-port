@@ -279,21 +279,29 @@ class RetroUtil extends Module
     return RetroSave.isUnlockStory(); // default false
   }
 
+  public static var weeksList:Array<String> = ['10-wrath', '20-pride', '30-gluttony', '40-greed', '50-envy', '60-sloth'];
   public static function hasBeatenOthers():Bool
   {
     if (RetroSave.isUnlockStory()) return true;
 
-    for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
-    {
-      if ((Save.instance.getLevelScore('10-wrath', diff)?.score ?? 0) <= 0) return false;
-      if ((Save.instance.getLevelScore('20-pride', diff)?.score ?? 0) <= 0) return false;
-      if ((Save.instance.getLevelScore('30-gluttony', diff)?.score ?? 0) <= 0) return false;
-      if ((Save.instance.getLevelScore('40-greed', diff)?.score ?? 0) <= 0) return false;
-      if ((Save.instance.getLevelScore('50-envy', diff)?.score ?? 0) <= 0) return false;
-      if ((Save.instance.getLevelScore('60-sloth', diff)?.score ?? 0) <= 0) return false;
-    }
+    var weeksCompleted:Int = 0;
+    var weeksNeeded:Int = 6;
 
-    return true;
+    for (levelId in weeksList)
+    {
+      for (diff in Constants.DEFAULT_DIFFICULTY_LIST)
+      {
+        var score = Save.instance.getLevelScore(levelId, diff)?.score ?? 0;
+        trace('$levelId [$diff] = $score');
+        if (score > 0)
+        {
+          weeksCompleted++;
+          break;
+        }
+      }
+    }
+    //trace('weeksCompleted = $weeksCompleted / $weeksNeeded');
+    return weeksCompleted >= weeksNeeded;
   }
 
   public static function hasBeatenLevel(levelId:String):Bool
