@@ -18,6 +18,13 @@ class RetroCredits extends Module {
 		});
 
 		CreditsDataHandler.CREDITS_DATA.entries.unshift({
+			header: "Optimization & IOS Fixes",
+			body: [
+				{line: "CRIMSONISER"},
+			]
+		});
+
+		CreditsDataHandler.CREDITS_DATA.entries.unshift({
 			header: "Translators",
 			body: [
 				{line: "MatDenFunnyMan - Italian translation"},

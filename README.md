@@ -6,8 +6,6 @@ This is a high quality **mobile port** of [Vs. RetroSpecter - Part Two: Infernad
 
 > **On PC?** Go play [the original mod](https://gamebanana.com/mods/317366) instead — this port is made for mobile devices.
 
-> **iOS is NOT supported.** I don't own an iPhone to test or fix issues on it, so iOS builds are not provided.
-
 ## ⚠️ Content Warning
 
 This mod contains a character resembling the sin of Lust, which may make some players uncomfortable. The port's options menu has a toggle to disable voice acting and poses for that character's final song.
