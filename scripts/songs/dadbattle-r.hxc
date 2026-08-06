@@ -23,6 +23,7 @@ import haxe.ds.StringMap;
 import StringTools;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroUtil;
 
 class DadBattleRSong extends Song
 {
@@ -64,7 +65,7 @@ class DadBattleRSong extends Song
   public override function onSongLoaded(event:ScriptEvent):Void
   {
     super.onSongLoaded(event);
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     //isMobile = true;
 
     if (!PlayStatePlaylist.isStoryMode) {

@@ -72,7 +72,7 @@ class EmbuzzleSong extends Song
     super.onCreate(event);
 
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
     hasPlayedDialogue = false;

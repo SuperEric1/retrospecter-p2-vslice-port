@@ -5,6 +5,8 @@ import funkin.Preferences;
 import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class ChainNote extends NoteKind {
 	public function new() {
 		super('chain', 'Chain Note', 'chain_down', [], true); // id, description, styleId, params, noanim
@@ -19,7 +21,7 @@ class ChainNote extends NoteKind {
 			return;
 		}
 
-		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+		var downscroll:Bool = Preferences.downscroll || (RetroUtil.isMobileScheme());
 
 		event.note.x += 2;
 		event.note.yOffset += -73;

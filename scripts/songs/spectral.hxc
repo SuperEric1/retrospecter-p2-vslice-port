@@ -26,6 +26,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.util.Constants;
 import funkin.ui.FullScreenScaleMode;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class SpectralSong extends Song
 {
   var tweens = [];
@@ -254,7 +256,7 @@ class SpectralSong extends Song
   function onCreate(event:ScriptEvent):Void
   {
     super.onCreate(event);
-    isMobile = true || FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = true || RetroUtil.isMobileScheme();
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     hasPlayedInGameCutscene = false;
     hasPlayedEndCutscene = false;

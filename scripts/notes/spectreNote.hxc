@@ -20,7 +20,7 @@ class SpectreNote extends NoteKind {
 		if (event.eventCanceled) return;
 		if (!event.note.noteData.getMustHitNote()) return;
 
-		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+		var downscroll:Bool = Preferences.downscroll || (RetroUtil.isMobileScheme());
 		RetroUtil.spawnSpectreSplash(event.note, downscroll);
 	}
 
@@ -33,7 +33,7 @@ class SpectreNote extends NoteKind {
 		}
 
 		var downscroll:Bool = Preferences.downscroll
-			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+			|| (RetroUtil.isMobileScheme());
 
 		event.note.x += -37;
 		event.note.yOffset += -67;

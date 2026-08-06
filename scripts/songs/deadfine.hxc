@@ -101,7 +101,7 @@ class DeadfineSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     flashingLights = Preferences.flashingLights;
     isDownscroll = Preferences.downscroll;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     if (isMobile) isDownscroll = true;
     retroGameUI = ModuleHandler.getModule('RetroGameUI') ?? null;
     hasPlayedDialogue = false;

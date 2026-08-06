@@ -9,6 +9,8 @@ import funkin.graphics.FunkinSprite;
 import funkin.play.PlayStatePlaylist;
 import funkin.modding.module.Module;
 import funkin.audio.FunkinSound;
+import funkin.Preferences;
+import funkin.mobile.input.ControlsHandler;
 import funkin.util.Constants;
 import flixel.math.FlxRandom;
 import flixel.math.FlxMath;
@@ -312,6 +314,11 @@ class RetroUtil extends Module
     }
 
     return RetroSave.isUnlockStory(); // default false
+  }
+
+  public static function isMobileScheme():Bool
+  {
+    return FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice && !FlxG.gamepads.lastActive?.connected;
   }
 
   /* --------------------------------------------------- */

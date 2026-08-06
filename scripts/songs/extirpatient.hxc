@@ -135,9 +135,9 @@ class ExtirpatientSong extends Song
 
     // Check if downscroll
     isDownScroll = Preferences.downscroll;
-    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownScroll = true;
+    if (RetroUtil.isMobileScheme()) isDownScroll = true;
 
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
 
     negativity = isDownScroll ? -1 : 1;
 
@@ -1054,8 +1054,6 @@ class ExtirpatientSong extends Song
   function setupScytheElements():Void
   {
     if (!modcharts || PlayState.instance == null) return;
-    var isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
-    //var isMobile = true;
 
     scythe = FunkinSprite.create(0, isDownScroll ? 0 : PlayState.instance.healthBar.y + 100); // isDownScroll ? -550 : 200
     scythe.loadTexture('nightflaid/scythe');

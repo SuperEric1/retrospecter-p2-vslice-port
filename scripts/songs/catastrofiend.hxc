@@ -627,7 +627,7 @@ class CatastrofiendSong extends Song
 
     // Check if downscroll
     isDownscroll = Preferences.downscroll;
-    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) isDownscroll = true;
+    if(RetroUtil.isMobileScheme()) isDownscroll = true;
 
     // Resetar o sistema de voicelines
     playedVoicelines = new IntMap();

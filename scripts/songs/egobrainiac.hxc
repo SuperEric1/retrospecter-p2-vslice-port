@@ -13,6 +13,7 @@ import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroUtil;
 
 class EgobrainiacSong extends Song
 {
@@ -91,7 +92,7 @@ class EgobrainiacSong extends Song
     if (PlayState.instance == null) return;
     // no mobile com controle por setas (sem gamepad externo), a UI muda de eixo:
     // o "empurrão" do modchart precisa ir pra Y em vez de X pra não vazar da tela
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
 
     izzyPercent = 14;
     wasCameraForced = false;

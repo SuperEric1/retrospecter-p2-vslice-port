@@ -67,7 +67,7 @@ class SlowstopperSong extends Song
 
     downscroll = Preferences.downscroll;
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     if (isMobile) downscroll = true;
     flashingLights = Preferences.flashingLights;
     showLogo = false;

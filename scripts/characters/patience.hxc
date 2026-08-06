@@ -6,6 +6,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 
 import supereric.retrospecter.modules.RetroThirdStrumline;
+import supereric.retrospecter.modules.RetroUtil;
 
 class PatienceCharacter extends AnimateAtlasCharacter
 {
@@ -41,7 +42,7 @@ class PatienceCharacter extends AnimateAtlasCharacter
     var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
 
     var downscroll = Preferences.downscroll;
-    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if (RetroUtil.isMobileScheme()) downscroll = true;
     var strumStyle:String = 'pendu_' + (downscroll ? 'down' : 'up');
     var strumStyleThird:String = 'dulum_' + (downscroll ? 'down' : 'up');
 

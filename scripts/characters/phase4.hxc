@@ -7,6 +7,8 @@ import funkin.modding.module.ModuleHandler;
 import funkin.mobile.input.ControlsHandler;
 import StringTools;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class PhaseFourCharacter extends AnimateAtlasCharacter
 {
   function new()
@@ -41,7 +43,7 @@ class PhaseFourCharacter extends AnimateAtlasCharacter
     var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
 
     var downscroll = Preferences.downscroll;
-    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if (RetroUtil.isMobileScheme()) downscroll = true;
     var strumStyle:String = 'hydra_' + (downscroll ? 'down' : 'up');
 
     if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.

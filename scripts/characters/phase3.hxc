@@ -9,6 +9,8 @@ import funkin.util.Constants;
 import flixel.util.FlxTimer;
 import funkin.effects.IntervalShake;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class PhaseThreeCharacter extends SparrowCharacter {
 
 	function new() {
@@ -39,7 +41,7 @@ class PhaseThreeCharacter extends SparrowCharacter {
     var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
 
     var downscroll = Preferences.downscroll;
-    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if (RetroUtil.isMobileScheme()) downscroll = true;
     var strumStyle:String = 'chain_' + (downscroll ? 'down' : 'up');
 
     if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.

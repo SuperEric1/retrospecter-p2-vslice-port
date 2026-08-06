@@ -49,6 +49,7 @@ import Math;
 
 import supereric.retrospecter.ui.RetroPauseMenu;
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroUtil;
 
 class RetroGameUI extends Module {
   public function new() {
@@ -161,7 +162,7 @@ class RetroGameUI extends Module {
       if (hasBeenCreated) return;
 
       downscroll = Preferences.downscroll;
-      isMobileArrowScheme = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+      isMobileArrowScheme = RetroUtil.isMobileScheme();
       if (isMobileArrowScheme) downscroll = true;
       judgementXOffset = (isMobileArrowScheme ? -30 : -60) + (Save.instance.modOptions.get('retroComboOffX') ?? 0);
       judgementYOffset = Save.instance.modOptions.get('retroComboOffY') ?? 0;

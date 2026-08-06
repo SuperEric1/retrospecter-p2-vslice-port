@@ -13,6 +13,7 @@ import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
 import supereric.retrospecter.modules.RetroAchievements;
+import supereric.retrospecter.modules.RetroUtil;
 
 class MacovetSong extends Song
 {
@@ -47,7 +48,7 @@ class MacovetSong extends Song
   {
     super.onCreate(event);
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     randomGen = FlxG.random.float(0.9, 3.0);
     hasPlayedDialogue = false;
     hasPlayedEndDialogue = false;

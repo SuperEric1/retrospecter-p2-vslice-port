@@ -76,7 +76,7 @@ class FuzzyFeelingSong extends Song
     super.onCreate(event);
 
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
 
     hasPlayedDialogue = false;
     hasPlayedEndDialogue = false;

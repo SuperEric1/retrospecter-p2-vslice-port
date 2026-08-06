@@ -9,6 +9,8 @@ import funkin.play.PlayState;
 import funkin.util.Constants;
 import flixel.util.FlxTimer;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class PhaseTwoCharacter extends MultiSparrowCharacter {
 	var isGfDoingAnim:Bool = false;
 
@@ -57,7 +59,7 @@ class PhaseTwoCharacter extends MultiSparrowCharacter {
     var strum = (this.characterType == CharacterType.DAD) ? PlayState.instance.opponentStrumline : null;
 
     var downscroll = Preferences.downscroll;
-    if (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if (RetroUtil.isMobileScheme()) downscroll = true;
     var strumStyle:String = 'poison_' + (downscroll ? 'down' : 'up');
 
     if (strum != null && strum.noteStyle.id == strumStyle) return; // already applied.

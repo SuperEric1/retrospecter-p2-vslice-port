@@ -28,6 +28,7 @@ import funkin.mobile.input.ControlsHandler;
 import funkin.util.Constants;
 
 import supereric.retrospecter.modules.RetroLanguage;
+import supereric.retrospecter.modules.RetroUtil;
 
 class SatisfractureSong extends Song
 {
@@ -781,7 +782,7 @@ class SatisfractureSong extends Song
   {
     super.onCreate(event);
 
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['retro/p1']);
 

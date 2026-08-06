@@ -37,7 +37,7 @@ class SakuNote extends NoteKind {
 		}
 
 		var downscroll:Bool = Preferences.downscroll
-			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+			|| (RetroUtil.isMobileScheme());
 
 		var scale = 2;
 		event.note.scale.set(event.note.scale.x * scale, event.note.scale.y * scale);

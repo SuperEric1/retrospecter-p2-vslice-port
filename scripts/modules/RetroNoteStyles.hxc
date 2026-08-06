@@ -23,6 +23,7 @@ import haxe.ds.IntMap;
 import haxe.ds.StringMap;
 
 import supereric.retrospecter.modules.RetroThirdStrumline;
+import supereric.retrospecter.modules.RetroUtil;
 
 class RetroNoteStyles extends Module {
 	public function new() {
@@ -128,7 +129,7 @@ class RetroNoteStyles extends Module {
 		super.onSongLoaded(event);
 		if (isRetro == null) isRetro = PlayState.instance.playerStrumline.noteStyle.id == 'retrospecter';
 		if (!isRetro) return;
-		mobileArrowsActive = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+		mobileArrowsActive = RetroUtil.isMobileScheme();
 
 		applyCustomNoteStyles();
 		if (!hasBuiltStrumBackgrounds) {

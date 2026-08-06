@@ -52,7 +52,7 @@ class SeasireSong extends Song
     super.onCreate(event);
     modcharts = Save.instance.modOptions.get('retroModcharts') ?? true;
     flashingLights = Preferences.flashingLights;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
     hasPlayedDialogue = false;
     hasPlayedCutscene = false;
 

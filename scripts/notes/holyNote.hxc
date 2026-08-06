@@ -5,6 +5,8 @@ import funkin.Preferences;
 import funkin.save.Save;
 import funkin.mobile.input.ControlsHandler;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class HolyNote extends NoteKind {
 	public function new() {
 		super('holy', 'Holy Note', 'pendu_down', [], true); // id, description, styleId, params, noanim
@@ -21,7 +23,7 @@ class HolyNote extends NoteKind {
 		}
 
 		var downscroll:Bool = Preferences.downscroll
-			|| (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+			|| (RetroUtil.isMobileScheme());
 
 		event.note.x += 5;
 		event.note.yOffset += -170;

@@ -17,6 +17,7 @@ import funkin.modding.module.ModuleHandler;
 import funkin.save.Save;
 
 import supereric.retrospecter.modules.RetroTransformCutscene;
+import supereric.retrospecter.modules.RetroUtil;
 
 class SweetTalkSong extends Song
 {
@@ -90,7 +91,7 @@ class SweetTalkSong extends Song
     modcharts = Save.instance.modOptions.get('retroModcharts');
     flashingLights = Preferences.flashingLights;
     retroPlayState = ModuleHandler.getModule('RetroPlayState') ?? null;
-    isMobile = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    isMobile = RetroUtil.isMobileScheme();
 
     ModuleHandler.getModule('RetroTitle')?.scriptCall('load', ['hivemine/p1', true]);
 

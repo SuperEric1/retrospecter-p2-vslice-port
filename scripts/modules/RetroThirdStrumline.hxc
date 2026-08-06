@@ -17,6 +17,8 @@ import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
 import haxe.ds.StringMap;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class RetroThirdStrumline extends Module
 {
   public function new()
@@ -103,7 +105,7 @@ class RetroThirdStrumline extends Module
     if (!THIRD_STRUMLINE_SONGS.exists(curSongId)) return;
 
     var variation:String = THIRD_STRUMLINE_SONGS.get(curSongId);
-    var isMobile:Bool = FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice;
+    var isMobile:Bool = RetroUtil.isMobileScheme();
 
     // Não adicionar ao postUpdate se não vai causar uns null object references bizarros.
     // Por isso utilizamos um timer

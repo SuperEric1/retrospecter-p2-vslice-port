@@ -39,7 +39,7 @@ class DozircNote extends NoteKind {
 			return;
 		}
 
-		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+		var downscroll:Bool = Preferences.downscroll || (RetroUtil.isMobileScheme());
 
 		event.note.x += 4;
 		event.note.yOffset += -50;

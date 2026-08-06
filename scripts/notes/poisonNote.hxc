@@ -39,7 +39,7 @@ class PoisonNote extends NoteKind {
 			return;
 		}
 
-		var downscroll:Bool = Preferences.downscroll || (FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice);
+		var downscroll:Bool = Preferences.downscroll || (RetroUtil.isMobileScheme());
 
 		var scale = 1.538462;
 		event.note.scale.set(event.note.scale.x * scale, event.note.scale.y * scale);

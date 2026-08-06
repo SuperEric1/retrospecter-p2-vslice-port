@@ -24,6 +24,8 @@ import funkin.Paths;
 import haxe.ds.StringMap;
 import Std;
 
+import supereric.retrospecter.modules.RetroUtil;
+
 class WrathPhase4Stage extends Stage
 {
   var prefix:String = 'Phase4/';
@@ -457,7 +459,7 @@ class WrathPhase4Stage extends Stage
     }
 
     downscroll = Preferences.downscroll;
-    if(FlxG.onMobile && Preferences.controlsScheme == 'Arrows' && !ControlsHandler.usingExternalInputDevice) downscroll = true;
+    if (RetroUtil.isMobileScheme()) downscroll = true;
 
     if (retroNoteStyles == null) retroNoteStyles = ModuleHandler.getModule('RetroNoteStyles');
 
